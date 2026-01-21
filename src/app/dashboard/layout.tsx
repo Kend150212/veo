@@ -15,7 +15,8 @@ import {
     Sparkles,
     Menu,
     X,
-    Film
+    Film,
+    Tv
 } from 'lucide-react'
 import { useState } from 'react'
 
@@ -23,6 +24,7 @@ const navItems = [
     { href: '/dashboard', label: 'Dashboard', labelVi: 'Tổng quan', icon: LayoutDashboard },
     { href: '/dashboard/builder', label: 'Builder', labelVi: 'Tạo Prompt', icon: PenTool },
     { href: '/dashboard/story', label: 'Story Mode', labelVi: 'Phim/Video', icon: Film },
+    { href: '/dashboard/channels', label: 'Channels', labelVi: 'Kênh YouTube', icon: Tv },
     { href: '/dashboard/templates', label: 'Templates', labelVi: 'Mẫu', icon: Library },
     { href: '/dashboard/history', label: 'History', labelVi: 'Lịch sử', icon: History },
     { href: '/dashboard/settings', label: 'Settings', labelVi: 'Cài đặt', icon: Settings },

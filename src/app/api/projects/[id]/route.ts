@@ -104,7 +104,7 @@ export async function POST(
             sceneCount: project.totalScenes,
             characters,
             genre: project.genre,
-            style: 'cinematic, photorealistic',
+            style: project.visualStyle || 'cinematic, photorealistic',
             duration: settings?.defaultSceneLength || 8
         })
 

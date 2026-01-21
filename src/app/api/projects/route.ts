@@ -12,6 +12,9 @@ interface CharacterInput {
     accessories?: string
     personality?: string
     voiceStyle?: string
+    skinTone?: string
+    faceDetails?: string
+    hairDetails?: string
 }
 
 // GET all projects for user
@@ -49,6 +52,7 @@ export async function POST(request: Request) {
         const {
             title,
             genre,
+            visualStyle,
             selectedIdea,
             storyOutline,
             description,
@@ -61,6 +65,7 @@ export async function POST(request: Request) {
             data: {
                 title,
                 genre,
+                visualStyle,
                 selectedIdea,
                 storyOutline,
                 description,

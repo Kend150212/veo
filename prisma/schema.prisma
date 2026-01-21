@@ -20,6 +20,7 @@ model User {
   history       PromptHistory[]
   templates     Template[]
   projects      Project[]
+  channels      Channel[]
   settings      UserSettings?
 }
 
@@ -92,6 +93,7 @@ model Project {
   title         String
   description   String?   // Mô tả nội dung câu chuyện
   genre         String    // action, drama, horror, thriller, romance, scifi, comedy, documentary
+  visualStyle   String?   // Visual style: cinematic, anime, jellytoon, watercolor, etc.
   selectedIdea  String?   // JSON: Ý tưởng đã chọn
   storyOutline  String?   // AI-generated or user story outline
   totalScenes   Int       @default(10)
@@ -133,6 +135,9 @@ model Character {
   accessories   String?   // Phụ kiện, vật dụng
   personality   String?   // Tính cách (cho AI reference)
   voiceStyle    String?   // Giọng nói, cách nói
+  skinTone      String?   // Chi tiết màu da
+  faceDetails   String?   // Chi tiết khuôn mặt
+  hairDetails   String?   // Chi tiết kiểu tóc
   createdAt     DateTime  @default(now())
   
   projectId     String
@@ -144,4 +149,86 @@ model Setting {
   key           String    @unique
   value         String
   updatedAt     DateTime  @updatedAt
+}
+
+// ============================================
+// YOUTUBE CHANNEL SYSTEM
+// ============================================
+
+model Channel {
+  id                String    @id @default(cuid())
+  name              String    // Tên kênh YouTube
+  niche             String    // Chủ đề/Ngách (VD: "Tâm lý học", "Khoa học vui")
+  nicheKeywords     String?   // Keywords phân tích từ niche
+  knowledgeBase     String?   // JSON: thông tin từ YouTube trends, có thể edit
+  trendingChannels  String?   // JSON: các kênh trending đã tìm được
+  targetAudience    String?   // Đối tượng khán giả
+  contentStyle      String?   // Phong cách nội dung
+  visualStyleId     String?   // Style ID đã chọn
+  visualStyleKeywords String? // Keywords cho style
+  hasCharacters     Boolean   @default(true) // Có sử dụng nhân vật không
+  suggestedCharCount Int?     // AI đề xuất số nhân vật
+  
+  // Relations
+  characters        ChannelCharacter[]
+  episodes          Episode[]
+  
+  userId            String
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+}
+
+model ChannelCharacter {
+  id              String    @id @default(cuid())
+  name            String
+  role            String    // host, sidekick, narrator, mascot, etc.
+  fullDescription String    // Mô tả chi tiết để dùng xuyên suốt
+  appearance      String?   // Ngoại hình
+  clothing        String?   // Trang phục mặc định
+  skinTone        String?   // Màu da
+  faceDetails     String?   // Chi tiết khuôn mặt
+  hairDetails     String?   // Chi tiết tóc
+  personality     String?   // Tính cách
+  voiceStyle      String?   // Giọng nói
+  isMain          Boolean   @default(false) // Nhân vật chính
+  createdAt       DateTime  @default(now())
+  
+  channelId       String
+  channel         Channel   @relation(fields: [channelId], references: [id], onDelete: Cascade)
+}
+
+model Episode {
+  id              String    @id @default(cuid())
+  episodeNumber   Int       // Tập số mấy
+  title           String
+  synopsis        String?   // Tóm tắt nội dung (AI tự tạo)
+  storyOutline    String?   // Kịch bản chi tiết
+  topicIdea       String?   // Ý tưởng chủ đề episode
+  totalScenes     Int       @default(10)
+  generatedScenes Int       @default(0)
+  status          String    @default("draft") // draft, generating, completed, error
+  
+  scenes          EpisodeScene[]
+  
+  channelId       String
+  channel         Channel   @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+model EpisodeScene {
+  id            String    @id @default(cuid())
+  order         Int       // Thứ tự cảnh
+  title         String?
+  promptText    String    // Full prompt với character descriptions
+  duration      Int       @default(8)
+  hookType      String?   // opening, climax, etc.
+  notes         String?
+  isEdited      Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  episodeId     String
+  episode       Episode   @relation(fields: [episodeId], references: [id], onDelete: Cascade)
 }

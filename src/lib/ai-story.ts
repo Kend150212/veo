@@ -18,6 +18,10 @@ export interface Character {
     appearance?: string
     clothing?: string
     accessories?: string
+    skinTone?: string       // Chi tiết màu da
+    faceDetails?: string    // Chi tiết khuôn mặt
+    hairDetails?: string    // Chi tiết kiểu tóc
+    ageRange?: string       // Độ tuổi cụ thể (18+)
 }
 
 export interface ScenePrompt {
@@ -452,10 +456,19 @@ export async function generateScenes(
 ): Promise<ScenePrompt[]> {
     const hooks = distributeHooks(input.sceneCount)
 
-    // Build character bible string (Verbatim rule)
-    const characterBible = input.characters.map(c =>
-        `[${c.name}]: ${c.fullDescription}`
-    ).join(' | ')
+    // Build comprehensive character bible with ALL visual details
+    const characterBible = input.characters.map(c => {
+        const details = [
+            c.fullDescription,
+            c.appearance ? `Appearance: ${c.appearance}` : '',
+            c.clothing ? `Clothing: ${c.clothing}` : '',
+            c.skinTone ? `Skin: ${c.skinTone}` : '',
+            c.faceDetails ? `Face: ${c.faceDetails}` : '',
+            c.hairDetails ? `Hair: ${c.hairDetails}` : '',
+            c.accessories ? `Accessories: ${c.accessories}` : ''
+        ].filter(Boolean).join(', ')
+        return `[${c.name}]: ${details}`
+    }).join(' || ')
 
     // Helper function to build prompt for a range of scenes
     const buildPrompt = (startScene: number, endScene: number, totalScenes: number) => {
@@ -474,24 +487,36 @@ STORY OUTLINE:
 ${input.storyOutline}
 
 GENRE: ${input.genre}
-STYLE: ${input.style}
+VISUAL STYLE (MANDATORY FOR ALL SCENES): ${input.style}
+
+STYLE ENFORCEMENT RULES (CRITICAL):
+- EVERY scene MUST use the exact visual style: "${input.style}"
+- Include the style keywords "${input.style}" in EVERY promptText
+- Do NOT mix styles (e.g., no anime in cinematic project, no realistic in cartoon project)
+- The style must appear AFTER character description in each prompt
+- Maintain 100% style consistency across ALL scenes
+
 DURATION PER SCENE: ${input.duration} seconds
 UNIQUE ID: ${Date.now()}-${Math.random().toString(36).substring(7)}
 
-CHARACTER BIBLE (use EXACTLY these descriptions for consistency):
+CHARACTER BIBLE (COPY VERBATIM - use EXACTLY these descriptions):
 ${characterBible || 'No specific characters'}
+
+CHARACTER CONSISTENCY RULES (CRITICAL):
+- EVERY character that appears in a scene MUST have their FULL description from CHARACTER BIBLE
+- Copy EXACTLY: name, age, skin tone, face details, hair, clothing, accessories
+- NEVER abbreviate or shorten character descriptions
+- If a character appears, use 100% of their bible description verbatim
+- Consistent appearance across ALL scenes is MANDATORY
 
 HOOK ASSIGNMENTS:
 ${hookAssignments}
 
-STORY UNIQUENESS REQUIREMENTS (CRITICAL):
-- Create a COMPLETELY NEW and ORIGINAL story - NEVER repeat previously generated stories
-- Use fresh, unique character names, locations, and plot elements
+STORY UNIQUENESS REQUIREMENTS:
+- Create a COMPLETELY NEW and ORIGINAL story
+- Use fresh, unique locations and plot elements
 - Avoid common clichés and predictable story beats
-- Each scene must have unique and creative visual elements
-- Generate different scenarios even for same genre/style combinations
 - Be inventive with camera angles, lighting, and visual compositions
-- Create unexpected twists and fresh narrative approaches
 
 CONTENT SAFETY RULES (MANDATORY):
 - ALL characters MUST be adults (18+ years old) - NO EXCEPTIONS
@@ -499,39 +524,39 @@ CONTENT SAFETY RULES (MANDATORY):
 - If a younger appearance is needed, use "young adult 18-25 years old"
 - Family-friendly content only
 
-RULES:
+PROMPT FORMAT RULES:
 1. Each prompt must be ONE LINE, no line breaks
-2. Include character descriptions VERBATIM in each scene they appear
-3. Use professional cinematography terms (camera angles, movements, lighting)
-4. Each scene should flow naturally from the previous
-5. Include DIALOGUE/ACTIONS: Add character speeches in quotes, e.g. "This is the beginning." spoken by the detective
-6. For dialogue scenes, include: who speaks, what they say (short), their expression/emotion
-7. Opening hook: start with action or mystery
-8. Include negative prompts at the end: "Negative: flickering, blurry, distorted, low quality, children, minors, underage"
-9. IMPORTANT: Generate EXACTLY ${endScene - startScene + 1} scenes (from scene ${startScene} to ${endScene})
+2. Format: "[CHARACTER FULL DESCRIPTION] doing [ACTION] in [SETTING]. Style: ${input.style}. Camera: [CAMERA DETAILS]. Lighting: [LIGHTING]. Mood: [MOOD]. Dialogue: [IF ANY]. Negative: flickering, blurry, distorted, children, minors"
+3. Character descriptions MUST be copied VERBATIM from CHARACTER BIBLE
+4. Use professional cinematography terms
+5. Each scene should flow naturally from the previous
+6. Include DIALOGUE in quotes if characters speak
+7. Generate EXACTLY ${endScene - startScene + 1} scenes (from scene ${startScene} to ${endScene})
 
-DIALOGUE FORMAT EXAMPLES:
-- "Run!" shouted by the hero with determined expression
-- The woman whispers "I know the truth" while looking away
-- Close-up of man saying "We need to leave now" with serious face
+DIALOGUE FORMAT:
+- "Run!" shouted by [CHARACTER NAME] with determined expression
+- [CHARACTER NAME] whispers "I know the truth" while looking away
 
 Return a JSON array with EXACTLY ${endScene - startScene + 1} scenes:
 [{
   "order": ${startScene},
   "title": "Scene ${startScene}: Opening",
-  "promptText": "Full prompt in ONE LINE with character descriptions, action, DIALOGUE if any, setting, camera, style, lighting, mood. Negative: flickering, blurry, distorted, children, minors",
+  "promptText": "[Full character description verbatim] [action] in [setting]. Style: ${input.style}. Camera: [details]. Lighting: [details]. Mood: [mood]. Negative: flickering, blurry, distorted, children, minors",
   "hookType": "opening",
   "duration": ${input.duration}
 }]
 
-Generate scenes ${startScene} to ${endScene}. Return ONLY JSON array with EXACTLY ${endScene - startScene + 1} scenes.`
+Generate scenes ${startScene} to ${endScene}. Return ONLY valid JSON array.`
     }
 
     // Helper function to generate scenes for a range with retry on smaller batches
+    const MAX_RETRIES = 3
+
     const generateScenesForRange = async (
         startScene: number,
         endScene: number,
-        totalScenes: number
+        totalScenes: number,
+        retryCount: number = 0
     ): Promise<ScenePrompt[]> => {
         const scenesNeeded = endScene - startScene + 1
 
@@ -552,15 +577,21 @@ Generate scenes ${startScene} to ${endScene}. Return ONLY JSON array with EXACTL
                     const lastScene = scenes[scenes.length - 1]
                     const nextStart = (lastScene?.order || startScene + scenes.length - 1) + 1
                     if (nextStart <= endScene) {
-                        const moreScenes = await generateScenesForRange(nextStart, endScene, totalScenes)
+                        await new Promise(resolve => setTimeout(resolve, 300)) // Small delay
+                        const moreScenes = await generateScenesForRange(nextStart, endScene, totalScenes, 0)
                         return [...scenes, ...moreScenes]
                     }
                     return scenes
                 }
             }
 
-            // If parsing failed or no scenes, throw to trigger retry with smaller batch
-            throw new Error('Failed to parse scenes or empty result')
+            // If parsing failed or no scenes, retry or throw
+            if (retryCount < MAX_RETRIES) {
+                console.log(`Parse failed for scenes ${startScene}-${endScene}, retrying (${retryCount + 1}/${MAX_RETRIES})...`)
+                await new Promise(resolve => setTimeout(resolve, 1000)) // Wait before retry
+                return generateScenesForRange(startScene, endScene, totalScenes, retryCount + 1)
+            }
+            throw new Error('Failed to parse scenes after retries')
 
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : String(error)
@@ -572,9 +603,21 @@ Generate scenes ${startScene} to ${endScene}. Return ONLY JSON array with EXACTL
                 errorMessage.toLowerCase().includes('too long') ||
                 errorMessage.toLowerCase().includes('maximum')
 
-            // If we're already at minimum batch or it's not a token error with >1 scenes, throw
-            if (scenesNeeded <= 5 && !isTokenError) {
-                console.error(`Failed to generate scenes ${startScene}-${endScene}:`, error)
+            // If not a token error and we can still retry, do so
+            if (!isTokenError && retryCount < MAX_RETRIES) {
+                console.log(`Error generating scenes ${startScene}-${endScene}, retrying (${retryCount + 1}/${MAX_RETRIES})...`)
+                await new Promise(resolve => setTimeout(resolve, 1000))
+                return generateScenesForRange(startScene, endScene, totalScenes, retryCount + 1)
+            }
+
+            // If batch size is 1 and still failing, try one more time then give up
+            if (scenesNeeded === 1) {
+                if (retryCount < MAX_RETRIES) {
+                    console.log(`Single scene ${startScene} failed, final retry...`)
+                    await new Promise(resolve => setTimeout(resolve, 1500))
+                    return generateScenesForRange(startScene, endScene, totalScenes, retryCount + 1)
+                }
+                console.error(`Failed to generate scene ${startScene} after all retries`)
                 return []
             }
 
@@ -582,9 +625,9 @@ Generate scenes ${startScene} to ${endScene}. Return ONLY JSON array with EXACTL
             const midPoint = Math.floor((startScene + endScene) / 2)
             console.log(`Splitting batch: ${startScene}-${endScene} into ${startScene}-${midPoint} and ${midPoint + 1}-${endScene}`)
 
-            const firstHalf = await generateScenesForRange(startScene, midPoint, totalScenes)
+            const firstHalf = await generateScenesForRange(startScene, midPoint, totalScenes, 0)
             await new Promise(resolve => setTimeout(resolve, 500)) // Small delay between batches
-            const secondHalf = await generateScenesForRange(midPoint + 1, endScene, totalScenes)
+            const secondHalf = await generateScenesForRange(midPoint + 1, endScene, totalScenes, 0)
 
             return [...firstHalf, ...secondHalf]
         }
@@ -592,7 +635,37 @@ Generate scenes ${startScene} to ${endScene}. Return ONLY JSON array with EXACTL
 
     // Try to generate all scenes at once, will auto-batch on failure
     console.log(`Generating ${input.sceneCount} scenes...`)
-    const scenes = await generateScenesForRange(1, input.sceneCount, input.sceneCount)
+    let scenes = await generateScenesForRange(1, input.sceneCount, input.sceneCount, 0)
+
+    // Check for missing scenes and try to regenerate them
+    if (scenes.length < input.sceneCount) {
+        console.log(`Got ${scenes.length}/${input.sceneCount} scenes, checking for missing...`)
+
+        // Find which scene numbers are missing
+        const existingOrders = new Set(scenes.map(s => s.order))
+        const missingScenes: number[] = []
+        for (let i = 1; i <= input.sceneCount; i++) {
+            if (!existingOrders.has(i)) {
+                missingScenes.push(i)
+            }
+        }
+
+        // Try to regenerate missing scenes one by one
+        if (missingScenes.length > 0) {
+            console.log(`Missing scenes: ${missingScenes.join(', ')}. Regenerating...`)
+            for (const sceneNum of missingScenes) {
+                try {
+                    const missingScene = await generateScenesForRange(sceneNum, sceneNum, input.sceneCount, 0)
+                    if (missingScene.length > 0) {
+                        scenes = [...scenes, ...missingScene]
+                    }
+                    await new Promise(resolve => setTimeout(resolve, 300))
+                } catch (err) {
+                    console.error(`Failed to regenerate scene ${sceneNum}:`, err)
+                }
+            }
+        }
+    }
 
     if (onProgress) {
         onProgress(scenes.length, input.sceneCount)

@@ -478,6 +478,7 @@ export default function NewStoryPage() {
                 body: JSON.stringify({
                     title: finalTitle,
                     genre: selectedGenre,
+                    visualStyle: selectedStyle ? (VISUAL_STYLES.find(s => s.id === selectedStyle)?.promptKeywords || selectedStyle) : undefined,
                     selectedIdea: JSON.stringify(selectedIdea),
                     storyOutline,
                     description: userDescription,
