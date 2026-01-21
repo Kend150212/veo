@@ -80,6 +80,16 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
     const [copied, setCopied] = useState(false)
     const [actionLoading, setActionLoading] = useState<string | null>(null)
 
+    // Character management
+    const [showAddCharacter, setShowAddCharacter] = useState(false)
+    const [editingCharacter, setEditingCharacter] = useState<ChannelCharacter | null>(null)
+    const [newCharacter, setNewCharacter] = useState({
+        name: '',
+        role: 'host',
+        fullDescription: '',
+        isMain: false
+    })
+
     useEffect(() => {
         fetchChannel()
     }, [id])
@@ -153,6 +163,74 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
         }
     }
 
+    const handleToggleCharacters = async (hasCharacters: boolean) => {
+        try {
+            await fetch(`/api/channels/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ hasCharacters })
+            })
+            if (channel) {
+                setChannel({ ...channel, hasCharacters })
+            }
+            toast.success(hasCharacters ? 'Đã bật nhân vật' : 'Đã tắt nhân vật')
+        } catch {
+            toast.error('Lỗi cập nhật')
+        }
+    }
+
+    const handleDeleteCharacter = async (characterId: string) => {
+        if (!confirm('Xóa nhân vật này?')) return
+        try {
+            await fetch(`/api/channels/${id}/characters/${characterId}`, {
+                method: 'DELETE'
+            })
+            toast.success('Đã xóa nhân vật')
+            fetchChannel()
+        } catch {
+            toast.error('Lỗi xóa nhân vật')
+        }
+    }
+
+    const handleSaveCharacter = async () => {
+        try {
+            if (editingCharacter) {
+                // Update existing
+                await fetch(`/api/channels/${id}/characters/${editingCharacter.id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(newCharacter)
+                })
+                toast.success('Đã cập nhật nhân vật')
+            } else {
+                // Create new
+                await fetch(`/api/channels/${id}/characters`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(newCharacter)
+                })
+                toast.success('Đã thêm nhân vật')
+            }
+            setShowAddCharacter(false)
+            setEditingCharacter(null)
+            setNewCharacter({ name: '', role: 'host', fullDescription: '', isMain: false })
+            fetchChannel()
+        } catch {
+            toast.error('Lỗi lưu nhân vật')
+        }
+    }
+
+    // When editing, populate form
+    const handleEditCharacter = (char: ChannelCharacter) => {
+        setEditingCharacter(char)
+        setNewCharacter({
+            name: char.name,
+            role: char.role,
+            fullDescription: char.fullDescription,
+            isMain: char.isMain
+        })
+        setShowAddCharacter(true)
+    }
     const handleTranslateEpisode = async (episodeId: string, targetLang: string) => {
         setActionLoading(episodeId)
         try {
@@ -282,26 +360,148 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
                 </div>
             </div>
 
-            {/* Characters */}
-            {channel.characters.length > 0 && (
-                <div className="glass-card p-4 mb-6">
-                    <h3 className="font-semibold mb-3 flex items-center gap-2">
+            {/* Characters Management */}
+            <div className="glass-card p-4 mb-6">
+                <div className="flex items-center justify-between mb-3">
+                    <h3 className="font-semibold flex items-center gap-2">
                         <Users className="w-4 h-4" />
-                        Nhân vật xuyên suốt
+                        Nhân vật xuyên suốt ({channel.characters.length})
                     </h3>
-                    <div className="flex gap-3 flex-wrap">
+                    <div className="flex items-center gap-2">
+                        <label className="flex items-center gap-2 text-sm cursor-pointer">
+                            <input
+                                type="checkbox"
+                                checked={channel.hasCharacters}
+                                onChange={(e) => handleToggleCharacters(e.target.checked)}
+                                className="w-4 h-4 rounded"
+                            />
+                            Sử dụng nhân vật
+                        </label>
+                        {channel.hasCharacters && (
+                            <button
+                                onClick={() => setShowAddCharacter(true)}
+                                className="btn-secondary text-sm flex items-center gap-1"
+                            >
+                                <Plus className="w-3 h-3" />
+                                Thêm
+                            </button>
+                        )}
+                    </div>
+                </div>
+
+                {channel.hasCharacters && channel.characters.length > 0 && (
+                    <div className="space-y-2">
                         {channel.characters.map(char => (
-                            <div key={char.id} className="flex items-center gap-2 px-3 py-2 bg-[var(--bg-tertiary)] rounded-lg">
-                                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white text-sm font-bold">
-                                    {char.name.charAt(0)}
+                            <div key={char.id} className="flex items-center justify-between p-3 bg-[var(--bg-tertiary)] rounded-lg">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold">
+                                        {char.name.charAt(0)}
+                                    </div>
+                                    <div>
+                                        <p className="font-medium">{char.name}</p>
+                                        <p className="text-xs text-[var(--text-muted)]">{char.role} {char.isMain && '• Main'}</p>
+                                    </div>
                                 </div>
-                                <div>
-                                    <p className="font-medium text-sm">{char.name}</p>
-                                    <p className="text-xs text-[var(--text-muted)]">{char.role}</p>
+                                <div className="flex gap-1">
+                                    <button
+                                        onClick={() => {
+                                            setEditingCharacter(char)
+                                            setShowAddCharacter(true)
+                                        }}
+                                        className="p-2 rounded-lg hover:bg-[var(--bg-hover)] text-[var(--text-secondary)]"
+                                    >
+                                        <Edit2 className="w-4 h-4" />
+                                    </button>
+                                    <button
+                                        onClick={() => handleDeleteCharacter(char.id)}
+                                        className="p-2 rounded-lg hover:bg-red-500/20 text-red-400"
+                                    >
+                                        <Trash2 className="w-4 h-4" />
+                                    </button>
                                 </div>
-                                {char.isMain && <span className="tag text-xs">Main</span>}
                             </div>
                         ))}
+                    </div>
+                )}
+
+                {channel.hasCharacters && channel.characters.length === 0 && (
+                    <p className="text-sm text-[var(--text-muted)] text-center py-4">
+                        Chưa có nhân vật. Bấm "Thêm" để tạo nhân vật mới.
+                    </p>
+                )}
+
+                {!channel.hasCharacters && (
+                    <p className="text-sm text-[var(--text-muted)] text-center py-2">
+                        Không sử dụng nhân vật - tạo nội dung không có nhân vật cụ thể.
+                    </p>
+                )}
+            </div>
+
+            {/* Add/Edit Character Modal */}
+            {showAddCharacter && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+                    <div className="glass-card p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto">
+                        <h3 className="font-semibold mb-4">
+                            {editingCharacter ? 'Chỉnh sửa nhân vật' : 'Thêm nhân vật mới'}
+                        </h3>
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium mb-1">Tên nhân vật *</label>
+                                <input
+                                    type="text"
+                                    value={newCharacter.name}
+                                    onChange={(e) => setNewCharacter({ ...newCharacter, name: e.target.value })}
+                                    className="input-field"
+                                    placeholder="VD: Minh"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium mb-1">Vai trò *</label>
+                                <input
+                                    type="text"
+                                    value={newCharacter.role}
+                                    onChange={(e) => setNewCharacter({ ...newCharacter, role: e.target.value })}
+                                    className="input-field"
+                                    placeholder="VD: Host chính, Khách mời..."
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium mb-1">Mô tả chi tiết *</label>
+                                <textarea
+                                    value={newCharacter.fullDescription}
+                                    onChange={(e) => setNewCharacter({ ...newCharacter, fullDescription: e.target.value })}
+                                    className="input-field min-h-[100px]"
+                                    placeholder="Mô tả ngoại hình, trang phục, đặc điểm nhận dạng chi tiết..."
+                                />
+                            </div>
+                            <label className="flex items-center gap-2">
+                                <input
+                                    type="checkbox"
+                                    checked={newCharacter.isMain}
+                                    onChange={(e) => setNewCharacter({ ...newCharacter, isMain: e.target.checked })}
+                                />
+                                Nhân vật chính
+                            </label>
+                        </div>
+                        <div className="flex gap-2 mt-6">
+                            <button
+                                onClick={handleSaveCharacter}
+                                disabled={!newCharacter.name || !newCharacter.fullDescription}
+                                className="btn-primary flex-1"
+                            >
+                                {editingCharacter ? 'Lưu thay đổi' : 'Thêm nhân vật'}
+                            </button>
+                            <button
+                                onClick={() => {
+                                    setShowAddCharacter(false)
+                                    setEditingCharacter(null)
+                                    setNewCharacter({ name: '', role: 'host', fullDescription: '', isMain: false })
+                                }}
+                                className="btn-secondary"
+                            >
+                                Hủy
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}
