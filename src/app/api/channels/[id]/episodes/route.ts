@@ -59,11 +59,19 @@ export async function POST(
             ).join('\n\n')}`
             : ''
 
+        // Dialogue language
+        const dialogueLang = channel.dialogueLanguage || 'vi'
+        const langInstruction = dialogueLang === 'en'
+            ? 'ALL dialogue and spoken text MUST be in ENGLISH. Do NOT mix Vietnamese and English.'
+            : 'ALL dialogue and spoken text MUST be in VIETNAMESE (tiếng Việt). Do NOT mix English and Vietnamese.'
+        const dialogueLangLabel = dialogueLang === 'en' ? 'English' : 'Vietnamese'
+
         // AI Generate episode content
         const episodePrompt = `You are a professional YouTube content creator and scriptwriter for the channel: "${channel.name}"
 NICHE: ${channel.niche}
 ${channel.targetAudience ? `TARGET AUDIENCE: ${channel.targetAudience}` : ''}
 VISUAL STYLE: ${styleKeywords}
+DIALOGUE LANGUAGE: ${dialogueLangLabel.toUpperCase()}
 ${characterBible}
 
 Create Episode ${nextEpisodeNumber} with ${totalScenes} scenes.
@@ -76,10 +84,11 @@ IMPORTANT REQUIREMENTS:
 2. ENVIRONMENT CONTINUITY: Maintain consistent setting/location descriptions across scenes. If scene moves to new location, describe the transition
 3. DIALOGUE: Each scene MUST include natural dialogue (what characters say) that advances the story
 4. CHARACTER ACTIONS: Describe what characters are doing, their expressions, body language
+5. LANGUAGE CONSISTENCY: ${langInstruction}
 
 Generate a complete episode in JSON format:
 {
-    "title": "Catchy episode title in Vietnamese",
+    "title": "Catchy episode title",
     "synopsis": "2-3 sentence episode summary",
     "storyOutline": "Detailed story arc: beginning -> development -> climax -> resolution",
     "topicIdea": "Main topic/theme of this episode",
@@ -88,8 +97,8 @@ Generate a complete episode in JSON format:
         {
             "order": 1,
             "title": "Scene 1: Opening",
-            "dialogue": "Character dialogue in Vietnamese for this scene (what they say)",
-            "promptText": "[CHARACTER DESCRIPTION VERBATIM] [specific action and expression] in [detailed environment matching mainLocation]. Speaking: [key dialogue phrase]. Style: ${styleKeywords}. Camera: [camera movement]. Lighting: [lighting]. Mood: [emotional tone]. Negative: flickering, blurry, distorted",
+            "dialogue": "Character dialogue in ${dialogueLangLabel} for this scene (what they say)",
+            "promptText": "[CHARACTER DESCRIPTION VERBATIM] [specific action and expression] in [detailed environment matching mainLocation]. Speaking: [key dialogue phrase in ${dialogueLangLabel}]. Style: ${styleKeywords}. Camera: [camera movement]. Lighting: [lighting]. Mood: [emotional tone]. Negative: flickering, blurry, distorted",
             "duration": 8,
             "hookType": "opening",
             "environmentDetails": "Detailed description of the scene's environment/setting"
@@ -105,7 +114,7 @@ CRITICAL RULES:
 5. ENVIRONMENT must be consistent - describe the same location consistently or clearly show transitions
 6. Scene flow must be SEAMLESS - each scene should naturally connect to the next
 7. promptText should describe character actions, expressions, and speaking the dialogue
-8. All text in Vietnamese
+8. **LANGUAGE RULE (CRITICAL)**: ${langInstruction} ALL scenes MUST use the SAME language consistently.
 9. Create engaging content appropriate for YouTube
 
 Return ONLY valid JSON, no markdown.`

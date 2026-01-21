@@ -168,6 +168,7 @@ model Channel {
   visualStyleKeywords String? // Keywords cho style
   hasCharacters     Boolean   @default(true) // Có sử dụng nhân vật không
   suggestedCharCount Int?     // AI đề xuất số nhân vật
+  dialogueLanguage  String    @default("vi") // vi = tiếng Việt, en = tiếng Anh
   
   // Relations
   characters        ChannelCharacter[]

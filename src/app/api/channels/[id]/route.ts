@@ -77,7 +77,8 @@ export async function PUT(
                 visualStyleKeywords: updates.visualStyleKeywords,
                 hasCharacters: updates.hasCharacters,
                 suggestedCharCount: updates.suggestedCharCount,
-                trendingChannels: updates.trendingChannels
+                trendingChannels: updates.trendingChannels,
+                dialogueLanguage: updates.dialogueLanguage
             }
         })
 

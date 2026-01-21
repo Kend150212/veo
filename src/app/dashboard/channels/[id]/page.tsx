@@ -59,6 +59,7 @@ interface Channel {
     visualStyleKeywords: string | null
     hasCharacters: boolean
     knowledgeBase: string | null
+    dialogueLanguage: string
     characters: ChannelCharacter[]
     episodes: Episode[]
 }
@@ -129,6 +130,23 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
         setCopied(true)
         toast.success('Đã copy tất cả scenes')
         setTimeout(() => setCopied(false), 2000)
+    }
+
+    const handleUpdateLanguage = async (lang: string) => {
+        try {
+            await fetch(`/api/channels/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ dialogueLanguage: lang })
+            })
+            // Update local state
+            if (channel) {
+                setChannel({ ...channel, dialogueLanguage: lang })
+            }
+            toast.success(lang === 'vi' ? 'Đã chuyển sang Tiếng Việt' : 'Switched to English')
+        } catch {
+            toast.error('Lỗi cập nhật ngôn ngữ')
+        }
     }
 
     if (isLoading) {
@@ -222,8 +240,8 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
             {/* Generate New Episode */}
             <div className="glass-card p-6 mb-6">
                 <h3 className="font-semibold mb-4">Tạo Episode Mới</h3>
-                <div className="flex items-end gap-4">
-                    <div className="flex-1">
+                <div className="flex items-end gap-4 flex-wrap">
+                    <div>
                         <label className="block text-sm font-medium mb-2">Số cảnh</label>
                         <input
                             type="number"
@@ -236,6 +254,29 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
                         <p className="text-xs text-[var(--text-muted)] mt-1">
                             ~{Math.round(sceneCount * 8 / 60)} phút video
                         </p>
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium mb-2">Ngôn ngữ lời thoại</label>
+                        <div className="flex gap-2">
+                            <button
+                                onClick={() => handleUpdateLanguage('vi')}
+                                className={`px-4 py-2 rounded-lg text-sm font-medium transition ${channel.dialogueLanguage === 'vi'
+                                    ? 'bg-[var(--accent-primary)] text-white'
+                                    : 'bg-[var(--bg-tertiary)] text-[var(--text-secondary)]'
+                                    }`}
+                            >
+                                🇻🇳 Tiếng Việt
+                            </button>
+                            <button
+                                onClick={() => handleUpdateLanguage('en')}
+                                className={`px-4 py-2 rounded-lg text-sm font-medium transition ${channel.dialogueLanguage === 'en'
+                                    ? 'bg-[var(--accent-primary)] text-white'
+                                    : 'bg-[var(--bg-tertiary)] text-[var(--text-secondary)]'
+                                    }`}
+                            >
+                                🇺🇸 English
+                            </button>
+                        </div>
                     </div>
                     <button
                         onClick={handleGenerateEpisode}
