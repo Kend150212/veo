@@ -1,0 +1,147 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  password      String
+  name          String?
+  role          String    @default("user") // admin, user
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  prompts       Prompt[]
+  history       PromptHistory[]
+  templates     Template[]
+  projects      Project[]
+  settings      UserSettings?
+}
+
+model UserSettings {
+  id            String    @id @default(cuid())
+  geminiKey     String?   // Google Gemini API Key
+  openaiKey     String?   // OpenAI API Key
+  deepseekKey   String?   // Deepseek API Key
+  anthropicKey  String?   // Anthropic API Key
+  geminiModel   String    @default("gemini-2.0-flash")
+  openaiModel   String    @default("gpt-4o-mini")
+  deepseekModel String    @default("deepseek-chat")
+  anthropicModel String   @default("claude-3-haiku-20240307")
+  preferredAI   String    @default("gemini") // gemini, openai, deepseek, anthropic
+  defaultSceneLength Int  @default(8)  // seconds per scene
+  defaultAspectRatio String @default("16:9")
+  language      String    @default("vi")
+  updatedAt     DateTime  @updatedAt
+  
+  userId        String    @unique
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+
+model Prompt {
+  id            String    @id @default(cuid())
+  title         String
+  content       String    // Full compiled prompt text
+  structure     String    // JSON structure of prompt sections
+  category      String?
+  tags          String?   // JSON array of tags
+  isFavorite    Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Template {
+  id            String    @id @default(cuid())
+  name          String
+  nameVi        String?   // Vietnamese name
+  description   String?
+  descriptionVi String?   // Vietnamese description
+  category      String    // cinematic, product, nature, scifi, romance, horror, music
+  structure     String    // JSON structure
+  thumbnail     String?
+  isPublic      Boolean   @default(true)
+  usageCount    Int       @default(0)
+  createdAt     DateTime  @default(now())
+  
+  createdById   String?
+  createdBy     User?     @relation(fields: [createdById], references: [id])
+}
+
+model PromptHistory {
+  id            String    @id @default(cuid())
+  promptText    String
+  structure     String?   // JSON structure
+  exportFormat  String?   // text, json, api
+  createdAt     DateTime  @default(now())
+  
+  userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Project {
+  id            String    @id @default(cuid())
+  title         String
+  description   String?   // Mô tả nội dung câu chuyện
+  genre         String    // action, drama, horror, thriller, romance, scifi, comedy, documentary
+  selectedIdea  String?   // JSON: Ý tưởng đã chọn
+  storyOutline  String?   // AI-generated or user story outline
+  totalScenes   Int       @default(10)
+  generatedScenes Int     @default(0)
+  status        String    @default("draft") // draft, generating, completed, error
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  scenes        Scene[]
+  characters    Character[]
+}
+
+model Scene {
+  id            String    @id @default(cuid())
+  order         Int       // Thứ tự cảnh (1, 2, 3...)
+  title         String?   // Tên cảnh (Scene 1: Opening)
+  promptText    String    // Full prompt - inline, no line breaks
+  structure     String?   // JSON structure nếu cần edit
+  duration      Int       @default(8) // seconds
+  hookType      String?   // opening, cliffhanger, reveal, twist, tension, payoff, callback, closing
+  notes         String?   // Ghi chú cho scene
+  isEdited      Boolean   @default(false) // User đã edit chưa
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  projectId     String
+  project       Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model Character {
+  id            String    @id @default(cuid())
+  name          String
+  role          String    // protagonist, antagonist, supporting, extra
+  fullDescription String  // VERBATIM: Copy này vào mọi scene
+  appearance    String?   // Chi tiết ngoại hình
+  clothing      String?   // Trang phục mặc định
+  accessories   String?   // Phụ kiện, vật dụng
+  personality   String?   // Tính cách (cho AI reference)
+  voiceStyle    String?   // Giọng nói, cách nói
+  createdAt     DateTime  @default(now())
+  
+  projectId     String
+  project       Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model Setting {
+  id            String    @id @default(cuid())
+  key           String    @unique
+  value         String
+  updatedAt     DateTime  @updatedAt
+}
