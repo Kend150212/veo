@@ -89,6 +89,7 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
         fullDescription: '',
         isMain: false
     })
+    const [showKnowledge, setShowKnowledge] = useState(false)
 
     useEffect(() => {
         fetchChannel()
@@ -360,7 +361,34 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
                 </div>
             </div>
 
-            {/* Characters Management */}
+            {/* Channel Knowledge Base - Collapsible */}
+            {channel.knowledgeBase && (
+                <div className="glass-card p-4 mb-6">
+                    <button
+                        onClick={() => setShowKnowledge(!showKnowledge)}
+                        className="w-full flex items-center justify-between"
+                    >
+                        <h3 className="font-semibold flex items-center gap-2">
+                            📚 Mô tả kênh & Knowledge Base
+                        </h3>
+                        {showKnowledge ? (
+                            <ChevronDown className="w-5 h-5" />
+                        ) : (
+                            <ChevronRight className="w-5 h-5" />
+                        )}
+                    </button>
+                    {showKnowledge && (
+                        <div className="mt-3 text-sm text-[var(--text-secondary)] max-h-[300px] overflow-y-auto bg-[var(--bg-primary)] p-3 rounded-lg whitespace-pre-wrap">
+                            {channel.knowledgeBase}
+                        </div>
+                    )}
+                    {!showKnowledge && (
+                        <p className="mt-2 text-xs text-[var(--text-muted)]">
+                            Bấm để xem chi tiết mô tả kênh
+                        </p>
+                    )}
+                </div>
+            )}
             <div className="glass-card p-4 mb-6">
                 <div className="flex items-center justify-between mb-3">
                     <h3 className="font-semibold flex items-center gap-2">
