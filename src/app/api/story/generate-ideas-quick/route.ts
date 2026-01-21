@@ -36,7 +36,10 @@ CONTENT SAFETY (MUST FOLLOW):
 - NO drugs, alcohol, smoking
 - NO hate speech, discrimination
 - NO scary, disturbing imagery
-- Positive, uplifting, educational messaging`
+- Positive, uplifting, educational messaging
+- NO MINORS/CHILDREN under 18 years old - ALL characters must be adults (18+)
+- Never include children, teenagers, or minors in any scenes
+- If story needs young characters, use animated/cartoon style for non-realistic depiction`
 
         const descriptionContext = description.trim()
             ? `USER'S DESCRIPTION/IDEA (use this as the main inspiration):\n"${description.trim()}"\n\n`

@@ -52,15 +52,23 @@ Dựa trên nội dung trên, hãy:
 1. Đề xuất số lượng nhân vật phù hợp (${suggestCount ? suggestCount : 'từ 2-5 nhân vật'})
 2. Tạo mô tả chi tiết cho từng nhân vật
 
+QUY TẮC AN TOÀN NỘI DUNG (BẮT BUỘC):
+- TẤT CẢ nhân vật PHẢI từ 18 tuổi trở lên
+- KHÔNG tạo nhân vật là trẻ em, thiếu niên, hoặc người chưa thành niên
+- Tuổi tối thiểu cho mọi nhân vật là 18 tuổi
+- Nếu cần nhân vật trẻ, hãy mô tả là "người trưởng thành trẻ tuổi" (18-25 tuổi)
+
 Yêu cầu cho mỗi nhân vật:
 - name: Tên nhân vật
 - role: protagonist (chính), antagonist (phản diện), supporting (phụ), extra (phụ họa)
-- fullDescription: Mô tả đầy đủ 1 câu để dùng trong prompt (bao gồm tuổi, ngoại hình, trang phục, đặc điểm nhận dạng)
-- appearance: Chi tiết ngoại hình (tuổi, chiều cao, vóc dáng, tóc, mắt, da)
+- fullDescription: Mô tả đầy đủ 1 câu để dùng trong prompt (bao gồm tuổi 18+, ngoại hình, trang phục, đặc điểm nhận dạng)
+- appearance: Chi tiết ngoại hình (tuổi 18+, chiều cao, vóc dáng, tóc, mắt, da)
 - clothing: Trang phục mặc định
 - personality: Tính cách, phong thái
 
-QUAN TRỌNG: fullDescription phải là MỘT CÂU hoàn chỉnh có thể copy-paste trực tiếp vào video prompt.
+QUAN TRỌNG: 
+- fullDescription phải là MỘT CÂU hoàn chỉnh có thể copy-paste trực tiếp vào video prompt
+- Tuổi của mọi nhân vật PHẢI từ 18 trở lên
 
 Trả về ĐÚNG JSON array, không giải thích:
 [{

@@ -353,14 +353,22 @@ export default function NewStoryPage() {
             })
 
             const data = await res.json()
+
+            if (!res.ok) {
+                // Show specific error message (like "API key not configured")
+                toast.error(data.error || 'Lỗi hệ thống')
+                return
+            }
+
             if (data.genres) {
                 setSuggestedGenres(data.genres)
                 setStep('genre')
             } else {
-                toast.error(data.error || 'Không thể phân tích')
+                toast.error('Không thể phân tích thể loại. Vui lòng thử lại.')
             }
-        } catch {
-            toast.error('Không thể phân tích thể loại')
+        } catch (error) {
+            console.error('Analyze genre error:', error)
+            toast.error('Không thể kết nối đến server')
         } finally {
             setIsLoading(false)
         }
@@ -452,7 +460,10 @@ export default function NewStoryPage() {
 
     // Create project
     const handleCreateProject = async () => {
-        if (!projectTitle) {
+        // Use fallback title from selectedIdea if projectTitle is empty
+        const finalTitle = projectTitle || selectedIdea?.title || 'Dự án mới'
+
+        if (!finalTitle) {
             toast.error('Vui lòng nhập tên dự án')
             return
         }
@@ -465,7 +476,7 @@ export default function NewStoryPage() {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    title: projectTitle,
+                    title: finalTitle,
                     genre: selectedGenre,
                     selectedIdea: JSON.stringify(selectedIdea),
                     storyOutline,
@@ -476,10 +487,23 @@ export default function NewStoryPage() {
             })
 
             const data = await res.json()
+
+            if (!res.ok) {
+                // API returned an error
+                toast.error(data.error || 'Lỗi tạo dự án')
+                setStep('story')
+                return
+            }
+
             if (data.project) {
                 router.push(`/dashboard/story/${data.project.id}?generate=true`)
+            } else {
+                // Unexpected response - no project returned
+                toast.error('Lỗi không xác định khi tạo dự án')
+                setStep('story')
             }
-        } catch {
+        } catch (error) {
+            console.error('Create project error:', error)
             toast.error('Không thể tạo dự án')
             setStep('story')
         } finally {
@@ -1185,7 +1209,13 @@ VD: Đạo diễn Christopher Nolan vừa công bố dự án phim mới với c
                             <button onClick={() => setStep('ideas')} className="btn-secondary flex items-center gap-2">
                                 <ArrowLeft className="w-4 h-4" /> Quay lại
                             </button>
-                            <button onClick={() => setStep('story')} className="btn-primary flex items-center gap-2">
+                            <button onClick={() => {
+                                // Set project title from idea if not already set
+                                if (!projectTitle && selectedIdea?.title) {
+                                    setProjectTitle(selectedIdea.title)
+                                }
+                                setStep('story')
+                            }} className="btn-primary flex items-center gap-2">
                                 Tiếp tục <ArrowRight className="w-4 h-4" />
                             </button>
                         </div>
@@ -1264,7 +1294,7 @@ VD: Đạo diễn Christopher Nolan vừa công bố dự án phim mới với c
                             <button onClick={() => setStep('characters')} className="btn-secondary flex items-center gap-2">
                                 <ArrowLeft className="w-4 h-4" /> Quay lại
                             </button>
-                            <button onClick={handleCreateProject} disabled={isLoading || !projectTitle} className="btn-primary flex items-center gap-2">
+                            <button onClick={handleCreateProject} disabled={isLoading || !(projectTitle || selectedIdea?.title)} className="btn-primary flex items-center gap-2">
                                 {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Film className="w-4 h-4" />}
                                 Tạo {sceneCount} cảnh
                             </button>

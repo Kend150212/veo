@@ -47,7 +47,10 @@ MANDATORY CONTENT SAFETY RULES (MUST FOLLOW):
 - Focus on HEALTHY lifestyle choices and behaviors
 - Content suitable for ALL AGES including children
 - Humor should be CLEAN and WHOLESOME
-- Scientific accuracy for educational value`
+- Scientific accuracy for educational value
+- NO MINORS/CHILDREN under 18 years old as characters - ALL characters must be adults (18+ years old)
+- If a story requires younger characters, use adult actors or cartoon/animated characters instead
+- Never describe physical appearance, actions, or situations involving minors`
 
         // Description context for personalized generation
         const descriptionContext = description.trim()
@@ -148,13 +151,24 @@ ${CONTENT_SAFETY}
 Return ONLY valid JSON, no markdown or explanations.`
         } else {
             // Standard prompt for other genres
+            const uniqueId = `${Date.now()}-${Math.random().toString(36).substring(7)}`
             prompt = `You are a professional screenwriter creating FAMILY-FRIENDLY video content.
 
 IMPORTANT: All content must be appropriate for general audiences.
+UNIQUE GENERATION ID: ${uniqueId}
 ${descriptionContext}${visualStyleContext}
 Create a COMPLETE video story for the genre: "${genreName}"
 
 Language for dialogue/script: ${languageName}
+
+STORY UNIQUENESS REQUIREMENTS (CRITICAL):
+- Create a COMPLETELY NEW and ORIGINAL story - NEVER repeat previously generated stories
+- Use fresh, unique character names (avoid common names like John, Maria, etc.)
+- Design unique locations and settings (be specific and creative)
+- Avoid common clichés and predictable story beats
+- Generate completely different scenarios even for same genre combinations
+- Create unexpected twists and fresh narrative approaches
+- Each story must feel completely fresh and never-before-seen
 
 Generate a JSON response with this structure:
 {
@@ -182,7 +196,7 @@ Generate a JSON response with this structure:
 }
 
 REQUIREMENTS:
-1. Be creative and original
+1. Be EXTREMELY creative and original - NEVER repeat stories
 2. Make the story engaging and visually compelling
 3. Include 2-4 characters with distinct appearances
 4. The outline should be detailed enough to generate ${sceneCount} scenes

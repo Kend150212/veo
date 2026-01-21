@@ -335,6 +335,12 @@ For each idea, provide:
 4. Tone description
 5. Key hooks to keep viewers engaged
 
+CONTENT SAFETY RULES (MANDATORY):
+- ALL characters MUST be 18 years old or older - NO minors, children, or teenagers
+- If younger characters are needed, use animated/cartoon style or describe as "young adults" (18-25)
+- Never include physical descriptions or situations involving anyone under 18
+- Family-friendly content only
+
 Return ONLY a JSON array with format:
 [{
   "id": "1",
@@ -383,6 +389,12 @@ ${input.userDescription ? `User's vision: ${input.userDescription}` : ''}
 
 Characters:
 ${characterList || 'No specific characters defined yet'}
+
+CONTENT SAFETY RULES (MANDATORY):
+- ALL characters MUST be adults (18+ years old)
+- NO children, minors, or teenagers in any scenes
+- If story needs younger characters, describe them as "young adults" (18-25 years old)
+- Family-friendly content only
 
 Create an engaging story outline that:
 1. Has a strong opening hook to grab attention in first 3 seconds
@@ -466,12 +478,28 @@ ${input.storyOutline}
 GENRE: ${input.genre}
 STYLE: ${input.style}
 DURATION PER SCENE: ${input.duration} seconds
+UNIQUE ID: ${Date.now()}-${Math.random().toString(36).substring(7)}
 
 CHARACTER BIBLE (use EXACTLY these descriptions for consistency):
 ${characterBible || 'No specific characters'}
 
 HOOK ASSIGNMENTS:
 ${hookAssignments}
+
+STORY UNIQUENESS REQUIREMENTS (CRITICAL):
+- Create a COMPLETELY NEW and ORIGINAL story - NEVER repeat previously generated stories
+- Use fresh, unique character names, locations, and plot elements
+- Avoid common clichés and predictable story beats
+- Each scene must have unique and creative visual elements
+- Generate different scenarios even for same genre/style combinations
+- Be inventive with camera angles, lighting, and visual compositions
+- Create unexpected twists and fresh narrative approaches
+
+CONTENT SAFETY RULES (MANDATORY):
+- ALL characters MUST be adults (18+ years old) - NO EXCEPTIONS
+- Never describe or depict minors, children, or teenagers
+- If a younger appearance is needed, use "young adult 18-25 years old"
+- Family-friendly content only
 
 RULES:
 1. Each prompt must be ONE LINE, no line breaks
@@ -481,7 +509,7 @@ RULES:
 5. Include DIALOGUE/ACTIONS: Add character speeches in quotes, e.g. "This is the beginning." spoken by the detective
 6. For dialogue scenes, include: who speaks, what they say (short), their expression/emotion
 7. Opening hook: start with action or mystery
-8. Include negative prompts at the end: "Negative: flickering, blurry, distorted, low quality"
+8. Include negative prompts at the end: "Negative: flickering, blurry, distorted, low quality, children, minors, underage"
 
 DIALOGUE FORMAT EXAMPLES:
 - "Run!" shouted by the hero with determined expression
@@ -492,7 +520,7 @@ Return a JSON array:
 [{
   "order": 1,
   "title": "Scene 1: Opening",
-  "promptText": "Full prompt in ONE LINE with character descriptions, action, DIALOGUE if any, setting, camera, style, lighting, mood. Negative: flickering, blurry, distorted",
+  "promptText": "Full prompt in ONE LINE with character descriptions, action, DIALOGUE if any, setting, camera, style, lighting, mood. Negative: flickering, blurry, distorted, children, minors",
   "hookType": "opening",
   "duration": ${input.duration}
 }]

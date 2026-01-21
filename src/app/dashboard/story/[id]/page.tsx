@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { use } from 'react'
@@ -74,15 +74,27 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
     const [copied, setCopied] = useState(false)
     const [expandedScenes, setExpandedScenes] = useState<Set<string>>(new Set())
 
+    // Ref to prevent duplicate auto-generation
+    const hasTriggeredGeneration = useRef(false)
+
     useEffect(() => {
         fetchProject()
     }, [id])
 
     useEffect(() => {
-        if (shouldGenerate && project && project.status === 'draft' && project.scenes.length === 0) {
+        // Auto-generate scenes when redirected with ?generate=true
+        if (
+            shouldGenerate &&
+            project &&
+            project.status === 'draft' &&
+            project.scenes.length === 0 &&
+            !isGenerating &&
+            !hasTriggeredGeneration.current
+        ) {
+            hasTriggeredGeneration.current = true
             handleGenerateScenes()
         }
-    }, [shouldGenerate, project])
+    }, [shouldGenerate, project, isGenerating])
 
     const fetchProject = async () => {
         try {
