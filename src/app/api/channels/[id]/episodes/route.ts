@@ -60,7 +60,7 @@ export async function POST(
             : ''
 
         // AI Generate episode content
-        const episodePrompt = `You are a YouTube content creator for the channel: "${channel.name}"
+        const episodePrompt = `You are a professional YouTube content creator and scriptwriter for the channel: "${channel.name}"
 NICHE: ${channel.niche}
 ${channel.targetAudience ? `TARGET AUDIENCE: ${channel.targetAudience}` : ''}
 VISUAL STYLE: ${styleKeywords}
@@ -68,35 +68,45 @@ ${characterBible}
 
 Create Episode ${nextEpisodeNumber} with ${totalScenes} scenes.
 ${knowledgeBase.episodeIdeas && knowledgeBase.episodeIdeas.length > 0
-                ? `\nInspired by these topic ideas (pick one or create similar):\n${knowledgeBase.episodeIdeas.map((e, i) => `${i + 1}. ${e.title}: ${e.synopsis}`).join('\n')}`
+                ? `\nInspired by these topic ideas (pick one or create similar):\n${knowledgeBase.episodeIdeas.map((e: { title: string; synopsis: string }, i: number) => `${i + 1}. ${e.title}: ${e.synopsis}`).join('\n')}`
                 : ''}
+
+IMPORTANT REQUIREMENTS:
+1. STORY CONTINUITY: Create a coherent, flowing narrative where each scene logically follows the previous
+2. ENVIRONMENT CONTINUITY: Maintain consistent setting/location descriptions across scenes. If scene moves to new location, describe the transition
+3. DIALOGUE: Each scene MUST include natural dialogue (what characters say) that advances the story
+4. CHARACTER ACTIONS: Describe what characters are doing, their expressions, body language
 
 Generate a complete episode in JSON format:
 {
     "title": "Catchy episode title in Vietnamese",
     "synopsis": "2-3 sentence episode summary",
-    "storyOutline": "Detailed story/script outline",
+    "storyOutline": "Detailed story arc: beginning -> development -> climax -> resolution",
     "topicIdea": "Main topic/theme of this episode",
+    "mainLocation": "Primary setting for this episode",
     "scenes": [
         {
             "order": 1,
             "title": "Scene 1: Opening",
-            "promptText": "[CHARACTER DESCRIPTION VERBATIM] [action] in [setting]. Style: ${styleKeywords}. Camera: [camera details]. Lighting: [lighting]. Mood: [mood]. Negative: flickering, blurry, distorted",
+            "dialogue": "Character dialogue in Vietnamese for this scene (what they say)",
+            "promptText": "[CHARACTER DESCRIPTION VERBATIM] [specific action and expression] in [detailed environment matching mainLocation]. Speaking: [key dialogue phrase]. Style: ${styleKeywords}. Camera: [camera movement]. Lighting: [lighting]. Mood: [emotional tone]. Negative: flickering, blurry, distorted",
             "duration": 8,
-            "hookType": "opening"
+            "hookType": "opening",
+            "environmentDetails": "Detailed description of the scene's environment/setting"
         }
-        // ... more scenes
     ]
 }
 
 CRITICAL RULES:
-1. Generate EXACTLY ${totalScenes} scenes
+1. Generate EXACTLY ${totalScenes} scenes that form a COMPLETE STORY with beginning, middle, and end
 2. If channel has characters, include their FULL DESCRIPTION VERBATIM at the start of each promptText
 3. Every promptText MUST include the visual style keywords: "${styleKeywords}"
-4. Create engaging, educational content appropriate for YouTube
-5. Scene titles should be descriptive
-6. promptText should be detailed enough for AI video generation
-7. All text in Vietnamese
+4. DIALOGUE is MANDATORY - each scene must have meaningful dialogue that fits the story
+5. ENVIRONMENT must be consistent - describe the same location consistently or clearly show transitions
+6. Scene flow must be SEAMLESS - each scene should naturally connect to the next
+7. promptText should describe character actions, expressions, and speaking the dialogue
+8. All text in Vietnamese
+9. Create engaging content appropriate for YouTube
 
 Return ONLY valid JSON, no markdown.`
 
