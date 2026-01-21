@@ -437,7 +437,7 @@ function distributeHooks(sceneCount: number): Record<number, string> {
     return hooks
 }
 
-// Generate all scene prompts in batches
+// Generate all scene prompts - tries full request first, batches on token limit
 export async function generateScenes(
     config: AIConfig,
     input: {
@@ -450,27 +450,25 @@ export async function generateScenes(
     },
     onProgress?: (current: number, total: number) => void
 ): Promise<ScenePrompt[]> {
-    const scenes: ScenePrompt[] = []
     const hooks = distributeHooks(input.sceneCount)
-    const batchSize = 10 // Generate 10 scenes at a time
 
     // Build character bible string (Verbatim rule)
     const characterBible = input.characters.map(c =>
         `[${c.name}]: ${c.fullDescription}`
     ).join(' | ')
 
-    for (let batchStart = 0; batchStart < input.sceneCount; batchStart += batchSize) {
-        const batchEnd = Math.min(batchStart + batchSize, input.sceneCount)
-        const batchSceneNumbers = Array.from(
-            { length: batchEnd - batchStart },
-            (_, i) => batchStart + i + 1
+    // Helper function to build prompt for a range of scenes
+    const buildPrompt = (startScene: number, endScene: number, totalScenes: number) => {
+        const sceneNumbers = Array.from(
+            { length: endScene - startScene + 1 },
+            (_, i) => startScene + i
         )
 
-        const hookAssignments = batchSceneNumbers.map(num =>
+        const hookAssignments = sceneNumbers.map(num =>
             hooks[num] ? `Scene ${num}: ${hooks[num]} hook` : `Scene ${num}: regular`
         ).join(', ')
 
-        const prompt = `Generate video prompts for scenes ${batchStart + 1} to ${batchEnd} of ${input.sceneCount}.
+        return `Generate video prompts for scenes ${startScene} to ${endScene} of ${totalScenes}.
 
 STORY OUTLINE:
 ${input.storyOutline}
@@ -510,46 +508,98 @@ RULES:
 6. For dialogue scenes, include: who speaks, what they say (short), their expression/emotion
 7. Opening hook: start with action or mystery
 8. Include negative prompts at the end: "Negative: flickering, blurry, distorted, low quality, children, minors, underage"
+9. IMPORTANT: Generate EXACTLY ${endScene - startScene + 1} scenes (from scene ${startScene} to ${endScene})
 
 DIALOGUE FORMAT EXAMPLES:
 - "Run!" shouted by the hero with determined expression
 - The woman whispers "I know the truth" while looking away
 - Close-up of man saying "We need to leave now" with serious face
 
-Return a JSON array:
+Return a JSON array with EXACTLY ${endScene - startScene + 1} scenes:
 [{
-  "order": 1,
-  "title": "Scene 1: Opening",
+  "order": ${startScene},
+  "title": "Scene ${startScene}: Opening",
   "promptText": "Full prompt in ONE LINE with character descriptions, action, DIALOGUE if any, setting, camera, style, lighting, mood. Negative: flickering, blurry, distorted, children, minors",
   "hookType": "opening",
   "duration": ${input.duration}
 }]
 
-Generate scenes ${batchStart + 1} to ${batchEnd}. Return ONLY JSON array.`
+Generate scenes ${startScene} to ${endScene}. Return ONLY JSON array with EXACTLY ${endScene - startScene + 1} scenes.`
+    }
+
+    // Helper function to generate scenes for a range with retry on smaller batches
+    const generateScenesForRange = async (
+        startScene: number,
+        endScene: number,
+        totalScenes: number
+    ): Promise<ScenePrompt[]> => {
+        const scenesNeeded = endScene - startScene + 1
 
         try {
+            const prompt = buildPrompt(startScene, endScene, totalScenes)
             const result = await generateText(config, prompt)
             const jsonMatch = result.match(/\[[\s\S]*\]/)
 
             if (jsonMatch) {
-                const batchScenes = JSON.parse(jsonMatch[0]) as ScenePrompt[]
-                scenes.push(...batchScenes)
+                const scenes = JSON.parse(jsonMatch[0]) as ScenePrompt[]
+                // Verify we got the right number of scenes
+                if (scenes.length >= scenesNeeded) {
+                    return scenes.slice(0, scenesNeeded)
+                }
+                // If we got fewer scenes, try to get the missing ones
+                if (scenes.length > 0 && scenes.length < scenesNeeded) {
+                    console.log(`Got ${scenes.length} scenes, needed ${scenesNeeded}. Fetching missing...`)
+                    const lastScene = scenes[scenes.length - 1]
+                    const nextStart = (lastScene?.order || startScene + scenes.length - 1) + 1
+                    if (nextStart <= endScene) {
+                        const moreScenes = await generateScenesForRange(nextStart, endScene, totalScenes)
+                        return [...scenes, ...moreScenes]
+                    }
+                    return scenes
+                }
             }
-        } catch (e) {
-            console.error(`Failed to generate batch ${batchStart + 1}-${batchEnd}:`, e)
-        }
 
-        if (onProgress) {
-            onProgress(scenes.length, input.sceneCount)
-        }
+            // If parsing failed or no scenes, throw to trigger retry with smaller batch
+            throw new Error('Failed to parse scenes or empty result')
 
-        // Small delay between batches to avoid rate limits
-        if (batchEnd < input.sceneCount) {
-            await new Promise(resolve => setTimeout(resolve, 1000))
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : String(error)
+
+            // Check if it's a token limit or context length error
+            const isTokenError = errorMessage.toLowerCase().includes('token') ||
+                errorMessage.toLowerCase().includes('context') ||
+                errorMessage.toLowerCase().includes('length') ||
+                errorMessage.toLowerCase().includes('too long') ||
+                errorMessage.toLowerCase().includes('maximum')
+
+            // If we're already at minimum batch or it's not a token error with >1 scenes, throw
+            if (scenesNeeded <= 5 && !isTokenError) {
+                console.error(`Failed to generate scenes ${startScene}-${endScene}:`, error)
+                return []
+            }
+
+            // Split into smaller batches and retry
+            const midPoint = Math.floor((startScene + endScene) / 2)
+            console.log(`Splitting batch: ${startScene}-${endScene} into ${startScene}-${midPoint} and ${midPoint + 1}-${endScene}`)
+
+            const firstHalf = await generateScenesForRange(startScene, midPoint, totalScenes)
+            await new Promise(resolve => setTimeout(resolve, 500)) // Small delay between batches
+            const secondHalf = await generateScenesForRange(midPoint + 1, endScene, totalScenes)
+
+            return [...firstHalf, ...secondHalf]
         }
     }
 
-    return scenes
+    // Try to generate all scenes at once, will auto-batch on failure
+    console.log(`Generating ${input.sceneCount} scenes...`)
+    const scenes = await generateScenesForRange(1, input.sceneCount, input.sceneCount)
+
+    if (onProgress) {
+        onProgress(scenes.length, input.sceneCount)
+    }
+
+    // Sort by order and return
+    return scenes.sort((a, b) => a.order - b.order)
 }
 
 // Format scenes for export
