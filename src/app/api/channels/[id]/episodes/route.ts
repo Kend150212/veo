@@ -20,11 +20,20 @@ export async function POST(
         const { id } = await params
         const { totalScenes = 10 } = await req.json()
 
-        // Get channel with characters
+        // Get channel with characters AND existing episodes
         const channel = await prisma.channel.findFirst({
             where: { id, userId: session.user.id },
             include: {
                 characters: true,
+                episodes: {
+                    select: {
+                        episodeNumber: true,
+                        title: true,
+                        topicIdea: true,
+                        synopsis: true
+                    },
+                    orderBy: { episodeNumber: 'asc' }
+                },
                 _count: { select: { episodes: true } }
             }
         })
@@ -54,9 +63,16 @@ export async function POST(
 
         // Build character bible for prompts
         const characterBible = channel.characters.length > 0
-            ? `\n\nCHARACTER BIBLE (use VERBATIM in every scene):\n${channel.characters.map(c =>
+            ? `\n\nCHARACTER BIBLE (use VERBATIM in every scene):\n${channel.characters.map((c: { name: string; role: string; fullDescription: string }) =>
                 `[${c.name}] - ${c.role.toUpperCase()}:\n${c.fullDescription}`
             ).join('\n\n')}`
+            : ''
+
+        // Build existing episodes summary to avoid duplication
+        const existingEpisodesSummary = channel.episodes.length > 0
+            ? `\n\n⚠️ EXISTING EPISODES (DO NOT DUPLICATE THESE TOPICS/CONTENT):\n${channel.episodes.map((ep: { episodeNumber: number; title: string; topicIdea: string | null; synopsis: string | null }) =>
+                `Episode ${ep.episodeNumber}: "${ep.title}" - ${ep.topicIdea || ep.synopsis || 'No summary'}`
+            ).join('\n')}`
             : ''
 
         // Dialogue language
@@ -73,6 +89,7 @@ ${channel.targetAudience ? `TARGET AUDIENCE: ${channel.targetAudience}` : ''}
 VISUAL STYLE: ${styleKeywords}
 DIALOGUE LANGUAGE: ${dialogueLangLabel.toUpperCase()}
 ${characterBible}
+${existingEpisodesSummary}
 
 Create Episode ${nextEpisodeNumber} with ${totalScenes} scenes.
 ${knowledgeBase.episodeIdeas && knowledgeBase.episodeIdeas.length > 0

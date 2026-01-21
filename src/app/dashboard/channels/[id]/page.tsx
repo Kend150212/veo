@@ -314,10 +314,9 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
                         <label className="block text-sm font-medium mb-2">Số cảnh</label>
                         <input
                             type="number"
-                            min="5"
-                            max="50"
+                            min="1"
                             value={sceneCount}
-                            onChange={(e) => setSceneCount(Math.max(5, parseInt(e.target.value) || 10))}
+                            onChange={(e) => setSceneCount(Math.max(1, parseInt(e.target.value) || 10))}
                             className="input-field w-32"
                         />
                         <p className="text-xs text-[var(--text-muted)] mt-1">
