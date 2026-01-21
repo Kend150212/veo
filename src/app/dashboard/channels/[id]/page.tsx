@@ -19,7 +19,10 @@ import {
     Edit2,
     Settings,
     Tv,
-    Check
+    Check,
+    Globe,
+    RefreshCw,
+    Trash2
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 
@@ -75,6 +78,7 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
     const [sceneCount, setSceneCount] = useState(10)
     const [expandedEpisode, setExpandedEpisode] = useState<string | null>(null)
     const [copied, setCopied] = useState(false)
+    const [actionLoading, setActionLoading] = useState<string | null>(null)
 
     useEffect(() => {
         fetchChannel()
@@ -146,6 +150,71 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
             toast.success(lang === 'vi' ? 'Đã chuyển sang Tiếng Việt' : 'Switched to English')
         } catch {
             toast.error('Lỗi cập nhật ngôn ngữ')
+        }
+    }
+
+    const handleTranslateEpisode = async (episodeId: string, targetLang: string) => {
+        setActionLoading(episodeId)
+        try {
+            const res = await fetch(`/api/channels/${id}/episodes/${episodeId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'translate', targetLanguage: targetLang })
+            })
+            const data = await res.json()
+            if (data.success) {
+                toast.success(data.message)
+                fetchChannel()
+            } else {
+                toast.error(data.error || 'Lỗi dịch')
+            }
+        } catch {
+            toast.error('Lỗi dịch episode')
+        } finally {
+            setActionLoading(null)
+        }
+    }
+
+    const handleRegenerateEpisode = async (episodeId: string) => {
+        if (!confirm('Tạo lại sẽ thay thế toàn bộ nội dung. Tiếp tục?')) return
+        setActionLoading(episodeId)
+        try {
+            const res = await fetch(`/api/channels/${id}/episodes/${episodeId}/regenerate`, {
+                method: 'POST'
+            })
+            const data = await res.json()
+            if (data.success) {
+                toast.success('Đã tạo lại episode!')
+                fetchChannel()
+            } else {
+                toast.error(data.error || 'Lỗi tạo lại')
+            }
+        } catch {
+            toast.error('Lỗi tạo lại episode')
+        } finally {
+            setActionLoading(null)
+        }
+    }
+
+    const handleDeleteEpisode = async (episodeId: string) => {
+        if (!confirm('Xóa episode này? Không thể hoàn tác.')) return
+        setActionLoading(episodeId)
+        try {
+            const res = await fetch(`/api/channels/${id}/episodes/${episodeId}`, {
+                method: 'DELETE'
+            })
+            const data = await res.json()
+            if (data.success) {
+                toast.success('Đã xóa episode')
+                setExpandedEpisode(null)
+                fetchChannel()
+            } else {
+                toast.error(data.error || 'Lỗi xóa')
+            }
+        } catch {
+            toast.error('Lỗi xóa episode')
+        } finally {
+            setActionLoading(null)
         }
     }
 
@@ -357,13 +426,45 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
                                     )}
 
                                     {/* Actions */}
-                                    <div className="px-4 py-2 flex gap-2 border-b border-[var(--border-subtle)]">
+                                    <div className="px-4 py-2 flex gap-2 flex-wrap border-b border-[var(--border-subtle)]">
                                         <button
                                             onClick={() => handleCopyEpisode(episode)}
                                             className="btn-secondary text-sm flex items-center gap-1"
                                         >
                                             {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
                                             Copy All
+                                        </button>
+                                        <button
+                                            onClick={() => handleTranslateEpisode(episode.id, channel.dialogueLanguage === 'vi' ? 'en' : 'vi')}
+                                            disabled={actionLoading === episode.id}
+                                            className="btn-secondary text-sm flex items-center gap-1"
+                                        >
+                                            {actionLoading === episode.id ? (
+                                                <Loader2 className="w-3 h-3 animate-spin" />
+                                            ) : (
+                                                <Globe className="w-3 h-3" />
+                                            )}
+                                            Dịch sang {channel.dialogueLanguage === 'vi' ? 'EN' : 'VI'}
+                                        </button>
+                                        <button
+                                            onClick={() => handleRegenerateEpisode(episode.id)}
+                                            disabled={actionLoading === episode.id}
+                                            className="btn-secondary text-sm flex items-center gap-1"
+                                        >
+                                            {actionLoading === episode.id ? (
+                                                <Loader2 className="w-3 h-3 animate-spin" />
+                                            ) : (
+                                                <RefreshCw className="w-3 h-3" />
+                                            )}
+                                            Tạo lại
+                                        </button>
+                                        <button
+                                            onClick={() => handleDeleteEpisode(episode.id)}
+                                            disabled={actionLoading === episode.id}
+                                            className="btn-secondary text-sm flex items-center gap-1 text-red-400 hover:bg-red-500/20"
+                                        >
+                                            <Trash2 className="w-3 h-3" />
+                                            Xóa
                                         </button>
                                     </div>
 
