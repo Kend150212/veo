@@ -22,7 +22,9 @@ export async function GET(
                 characters: true,
                 episodes: {
                     include: {
-                        _count: { select: { scenes: true } }
+                        scenes: {
+                            orderBy: { order: 'asc' }
+                        }
                     },
                     orderBy: { episodeNumber: 'asc' }
                 }
