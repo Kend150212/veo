@@ -89,13 +89,18 @@ export async function POST(request: Request) {
             where: { userId: session.user.id },
             update: updateData,
             create: {
-                ...updateData,
                 userId: session.user.id,
                 geminiKey: body.geminiKey || null,
                 openaiKey: body.openaiKey || null,
                 deepseekKey: body.deepseekKey || null,
                 anthropicKey: body.anthropicKey || null,
-            } as Record<string, unknown>
+                geminiModel: body.geminiModel || 'gemini-2.0-flash',
+                openaiModel: body.openaiModel || 'gpt-4o-mini',
+                deepseekModel: body.deepseekModel || 'deepseek-chat',
+                anthropicModel: body.anthropicModel || 'claude-3-haiku-20240307',
+                preferredAI: body.preferredProvider || 'gemini',
+                defaultSceneLength: body.defaultSceneLength || 8,
+            }
         })
 
         return NextResponse.json({ success: true, settings })
