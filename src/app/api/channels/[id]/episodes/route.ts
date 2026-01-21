@@ -119,65 +119,94 @@ CRITICAL RULES:
 
 Return ONLY valid JSON, no markdown.`
 
+        console.log('Generating episode for channel:', channel.name, 'scenes:', totalScenes)
         const result = await generateText(config, episodePrompt)
+        console.log('AI response length:', result?.length || 0)
 
         // Parse response
         let episodeData
         try {
+            // Try to find JSON in response
             const jsonMatch = result.match(/\{[\s\S]*\}/)
             if (jsonMatch) {
                 episodeData = JSON.parse(jsonMatch[0])
+                console.log('Parsed episode:', episodeData.title, 'scenes:', episodeData.scenes?.length)
             } else {
-                throw new Error('No JSON found')
+                console.error('No JSON found in response:', result?.substring(0, 200))
+                throw new Error('No JSON found in AI response')
             }
         } catch (parseError) {
             console.error('Parse error:', parseError)
-            return NextResponse.json({ error: 'AI không thể tạo episode. Thử lại.' }, { status: 400 })
+            console.error('Raw response:', result?.substring(0, 500))
+            return NextResponse.json({
+                error: 'AI không thể tạo episode. Vui lòng thử lại.',
+                details: 'JSON parse failed'
+            }, { status: 400 })
+        }
+
+        // Validate scenes
+        if (!episodeData.scenes || episodeData.scenes.length === 0) {
+            console.error('No scenes in response:', episodeData)
+            return NextResponse.json({
+                error: 'AI đã tạo nhưng không có scenes. Vui lòng thử lại.',
+                details: 'Empty scenes array'
+            }, { status: 400 })
         }
 
         // Create episode in database
-        const episode = await prisma.episode.create({
-            data: {
-                episodeNumber: nextEpisodeNumber,
-                title: episodeData.title || `Episode ${nextEpisodeNumber}`,
-                synopsis: episodeData.synopsis,
-                storyOutline: episodeData.storyOutline,
-                topicIdea: episodeData.topicIdea,
-                totalScenes: totalScenes,
-                generatedScenes: episodeData.scenes?.length || 0,
-                status: episodeData.scenes?.length > 0 ? 'completed' : 'draft',
-                channelId: id,
-                scenes: {
-                    create: (episodeData.scenes || []).map((scene: {
-                        order: number;
-                        title?: string;
-                        promptText: string;
-                        duration?: number;
-                        hookType?: string;
-                    }) => ({
-                        order: scene.order,
-                        title: scene.title,
-                        promptText: scene.promptText,
-                        duration: scene.duration || 8,
-                        hookType: scene.hookType
-                    }))
+        try {
+            const episode = await prisma.episode.create({
+                data: {
+                    episodeNumber: nextEpisodeNumber,
+                    title: episodeData.title || `Episode ${nextEpisodeNumber}`,
+                    synopsis: episodeData.synopsis || '',
+                    storyOutline: episodeData.storyOutline || '',
+                    topicIdea: episodeData.topicIdea || '',
+                    totalScenes: totalScenes,
+                    generatedScenes: episodeData.scenes.length,
+                    status: 'completed',
+                    channelId: id,
+                    scenes: {
+                        create: episodeData.scenes.map((scene: {
+                            order: number;
+                            title?: string;
+                            promptText?: string;
+                            dialogue?: string;
+                            duration?: number;
+                            hookType?: string;
+                        }, index: number) => ({
+                            order: scene.order || index + 1,
+                            title: scene.title || `Scene ${index + 1}`,
+                            promptText: scene.promptText || scene.dialogue || 'Scene prompt',
+                            duration: scene.duration || 8,
+                            hookType: scene.hookType || null
+                        }))
+                    }
+                },
+                include: {
+                    scenes: {
+                        orderBy: { order: 'asc' }
+                    }
                 }
-            },
-            include: {
-                scenes: {
-                    orderBy: { order: 'asc' }
-                }
-            }
-        })
+            })
 
-        return NextResponse.json({
-            success: true,
-            episode
-        })
+            console.log('Episode created:', episode.id, 'with', episode.scenes.length, 'scenes')
+
+            return NextResponse.json({
+                success: true,
+                episode
+            })
+        } catch (dbError) {
+            console.error('Database error:', dbError)
+            return NextResponse.json({
+                error: 'Lỗi lưu episode vào database',
+                details: String(dbError)
+            }, { status: 500 })
+        }
 
     } catch (error) {
         console.error('Generate episode error:', error)
-        return NextResponse.json({ error: 'Failed to generate episode' }, { status: 500 })
+        return NextResponse.json({ error: 'Failed to generate episode', details: String(error) }, { status: 500 })
     }
 }
 
