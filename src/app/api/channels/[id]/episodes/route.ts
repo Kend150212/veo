@@ -98,10 +98,24 @@ ${knowledgeBase.episodeIdeas && knowledgeBase.episodeIdeas.length > 0
 
 IMPORTANT REQUIREMENTS:
 1. STORY CONTINUITY: Create a coherent, flowing narrative where each scene logically follows the previous
-2. ENVIRONMENT CONTINUITY: Maintain consistent setting/location descriptions across scenes. If scene moves to new location, describe the transition
-3. DIALOGUE: Each scene MUST include natural dialogue (what characters say) that advances the story
-4. CHARACTER ACTIONS: Describe what characters are doing, their expressions, body language
+2. ENVIRONMENT CONTINUITY: Maintain consistent setting/location descriptions across scenes
+3. DIALOGUE QUALITY: Write smooth, natural, engaging dialogue that draws viewers in
+4. CHARACTER ACTIONS: Describe expressions, body language, and actions vividly
 5. LANGUAGE CONSISTENCY: ${langInstruction}
+
+🎬 DIALOGUE GUIDELINES:
+- Each scene dialogue should be 18-22 words (flexible based on pacing needs)
+- Fast-paced scenes: shorter punchy dialogue (15-18 words)
+- Emotional/dramatic scenes: longer dialogue (20-25 words)  
+- Use hooks, cliffhangers, and curiosity gaps to keep viewers engaged
+- Dialogue must be conversational, emotional, and relatable
+
+🎯 HOOK STRATEGY (CRITICAL FOR RETENTION):
+- Scene 1: STRONG OPENING HOOK - shocking statement, question, or teaser
+- Every 3-4 scenes: Mini hook or curiosity gap ("But what happened next shocked everyone...")
+- Middle scenes: Build tension and anticipation
+- Before climax: Major hook/twist
+- Ending: Satisfying conclusion OR cliffhanger for next episode
 
 Generate a complete episode in JSON format:
 {
@@ -113,26 +127,26 @@ Generate a complete episode in JSON format:
     "scenes": [
         {
             "order": 1,
-            "title": "Scene 1: Opening",
-            "dialogue": "Character dialogue in ${dialogueLangLabel} for this scene (what they say)",
-            "promptText": "[CHARACTER DESCRIPTION VERBATIM] [specific action and expression] in [detailed environment matching mainLocation]. Speaking: [key dialogue phrase in ${dialogueLangLabel}]. Style: ${styleKeywords}. Camera: [camera movement]. Lighting: [lighting]. Mood: [emotional tone]. Negative: flickering, blurry, distorted",
+            "title": "Scene 1: Opening Hook",
+            "dialogue": "18-22 word engaging dialogue in ${dialogueLangLabel} - must hook the viewer immediately",
+            "promptText": "[CHARACTER DESCRIPTION VERBATIM] [specific action and expression] in [detailed environment]. Speaking: [the dialogue]. Style: ${styleKeywords}. Camera: [movement]. Lighting: [details]. Mood: [tone]. Negative: flickering, blurry, distorted",
             "duration": 8,
-            "hookType": "opening",
-            "environmentDetails": "Detailed description of the scene's environment/setting"
+            "hookType": "opening_hook",
+            "environmentDetails": "Description of the scene's environment"
         }
     ]
 }
 
 CRITICAL RULES:
-1. Generate EXACTLY ${totalScenes} scenes that form a COMPLETE STORY with beginning, middle, and end
-2. If channel has characters, include their FULL DESCRIPTION VERBATIM at the start of each promptText
+1. Generate EXACTLY ${totalScenes} scenes that form a COMPLETE STORY
+2. Include CHARACTER DESCRIPTIONS VERBATIM at the start of each promptText
 3. Every promptText MUST include the visual style keywords: "${styleKeywords}"
-4. DIALOGUE is MANDATORY - each scene must have meaningful dialogue that fits the story
-5. ENVIRONMENT must be consistent - describe the same location consistently or clearly show transitions
-6. Scene flow must be SEAMLESS - each scene should naturally connect to the next
-7. promptText should describe character actions, expressions, and speaking the dialogue
-8. **LANGUAGE RULE (CRITICAL)**: ${langInstruction} ALL scenes MUST use the SAME language consistently.
-9. Create engaging content appropriate for YouTube
+4. DIALOGUE: 18-22 words per scene (flexible for pacing), smooth and engaging
+5. HOOKS: Include strong hooks at opening, every 3-4 scenes, and before climax
+6. ENVIRONMENT: Consistent descriptions across scenes
+7. FLOW: Each scene naturally connects to the next
+8. **LANGUAGE RULE**: ${langInstruction} ALL scenes use SAME language.
+9. Create viral-worthy, engaging content for YouTube
 
 Return ONLY valid JSON, no markdown.`
 
