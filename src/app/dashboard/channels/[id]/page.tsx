@@ -102,6 +102,11 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
     const [ctaMode, setCtaMode] = useState<'random' | 'select'>('random')
     const [selectedCTAs, setSelectedCTAs] = useState<string[]>([])
 
+    // Custom content input
+    const [customContent, setCustomContent] = useState('')
+    const [contentUrl, setContentUrl] = useState('')
+    const [isLoadingUrl, setIsLoadingUrl] = useState(false)
+
     const CTA_OPTIONS = [
         { id: 'subscribe', label: '🔔 Subscribe', text: 'Đăng ký kênh' },
         { id: 'like', label: '👍 Like', text: 'Thích video' },
@@ -137,6 +142,36 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
         }
     }
 
+    // Parse URL to extract content
+    const handleParseUrl = async () => {
+        if (!contentUrl.trim()) {
+            toast.error('Vui lòng nhập URL')
+            return
+        }
+
+        setIsLoadingUrl(true)
+        try {
+            const res = await fetch('/api/story/parse-url', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ url: contentUrl })
+            })
+
+            const data = await res.json()
+            if (data.content) {
+                setCustomContent(data.content)
+                toast.success('Đã lấy nội dung từ URL!')
+                setContentUrl('')
+            } else {
+                toast.error(data.error || 'Không thể lấy nội dung từ URL')
+            }
+        } catch {
+            toast.error('Lỗi kết nối')
+        } finally {
+            setIsLoadingUrl(false)
+        }
+    }
+
     const handleGenerateEpisode = async () => {
         setIsGenerating(true)
         try {
@@ -150,7 +185,8 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
                     selectedStyleId: selectedStyleId || null,
                     mentionChannel,
                     ctaMode,
-                    selectedCTAs: ctaMode === 'select' ? selectedCTAs : []
+                    selectedCTAs: ctaMode === 'select' ? selectedCTAs : [],
+                    customContent: customContent.trim() || null
                 })
             })
 
@@ -159,6 +195,7 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
                 toast.success(`Đã tạo Episode ${data.episode.episodeNumber}!`)
                 fetchChannel()
                 setExpandedEpisode(data.episode.id)
+                setCustomContent('') // Clear after success
             } else {
                 toast.error(data.error || 'Không thể tạo episode')
             }
@@ -590,6 +627,61 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
             {/* Generate New Episode */}
             <div className="glass-card p-6 mb-6">
                 <h3 className="font-semibold mb-4">Tạo Episode Mới</h3>
+
+                {/* Content Input Section */}
+                <div className="mb-4 p-4 bg-[var(--bg-tertiary)] rounded-lg">
+                    <div className="flex items-center justify-between mb-2">
+                        <label className="text-sm font-medium">📝 Nội dung / Mô tả (tùy chọn)</label>
+                        <span className="text-xs text-[var(--text-muted)]">
+                            Để AI tạo script dựa trên nội dung này
+                        </span>
+                    </div>
+
+                    {/* URL Import */}
+                    <div className="flex gap-2 mb-3">
+                        <input
+                            type="url"
+                            placeholder="Nhập URL bài viết để lấy nội dung..."
+                            value={contentUrl}
+                            onChange={(e) => setContentUrl(e.target.value)}
+                            className="input-field flex-1 text-sm"
+                        />
+                        <button
+                            onClick={handleParseUrl}
+                            disabled={isLoadingUrl || !contentUrl.trim()}
+                            className="btn-secondary px-4 text-sm flex items-center gap-1"
+                        >
+                            {isLoadingUrl ? (
+                                <Loader2 className="w-4 h-4 animate-spin" />
+                            ) : (
+                                <Globe className="w-4 h-4" />
+                            )}
+                            Lấy nội dung
+                        </button>
+                    </div>
+
+                    {/* Custom Content Textarea */}
+                    <textarea
+                        placeholder="Hoặc nhập mô tả/nội dung bạn muốn tạo script...&#10;&#10;Ví dụ: Tạo video về 5 mẹo tiết kiệm tiền cho sinh viên..."
+                        value={customContent}
+                        onChange={(e) => setCustomContent(e.target.value)}
+                        rows={4}
+                        className="input-field w-full text-sm resize-none"
+                    />
+                    {customContent && (
+                        <div className="flex items-center justify-between mt-2">
+                            <span className="text-xs text-[var(--accent-primary)]">
+                                ✓ AI sẽ tạo script dựa trên nội dung này
+                            </span>
+                            <button
+                                onClick={() => setCustomContent('')}
+                                className="text-xs text-[var(--text-muted)] hover:text-red-400"
+                            >
+                                Xóa nội dung
+                            </button>
+                        </div>
+                    )}
+                </div>
 
                 {/* Row 1: Scene count, Language */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">

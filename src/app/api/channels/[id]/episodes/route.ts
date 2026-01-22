@@ -47,7 +47,8 @@ export async function POST(
             selectedStyleId = null,
             mentionChannel = false,
             ctaMode = 'random',
-            selectedCTAs = []
+            selectedCTAs = [],
+            customContent = null
         } = await req.json()
 
         // CTA options
@@ -148,6 +149,11 @@ export async function POST(
             ctaInstruction = 'No CTA needed in this episode.'
         }
 
+        // Build custom content instruction
+        const customContentInstr = customContent
+            ? `\n\n📋 USER PROVIDED CONTENT - CREATE SCRIPT BASED ON THIS:\n"""\n${customContent.substring(0, 3000)}\n"""\nIMPORTANT: The script MUST be based on the above content. Extract key points and create engaging scenes from it.`
+            : ''
+
         // Generate episode with YouTube content
         const fullPrompt = `Create Episode ${nextEpisodeNumber} with ${totalScenes} scenes for channel "${channel.name}"
 NICHE: ${channel.niche}
@@ -155,6 +161,7 @@ STYLE: ${styleKeywords}
 DIALOGUE: ${dialogueLangLabel.toUpperCase()} ONLY
 ${characterBible || '(No host/characters for this episode)'}
 ${existingEpisodesSummary}
+${customContentInstr}
 
 📢 CHANNEL MENTION: ${channelMentionInstr}
 📣 CTA: ${ctaInstruction}
