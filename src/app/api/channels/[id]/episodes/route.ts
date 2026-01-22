@@ -172,7 +172,13 @@ export async function POST(
         // Build voice over mode instruction
         let voiceOverInstr = ''
         if (voiceOverMode === 'with_host') {
-            voiceOverInstr = 'CONTENT TYPE: With host/character on screen speaking dialogue. Use the character\'s gender for voice.'
+            voiceOverInstr = `CONTENT TYPE: With host/character on screen speaking dialogue.
+CRITICAL - VOICE GENDER CONSISTENCY:
+- Determine host gender from character description (woman/man, female/male, nữ/nam)
+- Include "VOICE: Female voice (giọng nữ)" or "VOICE: Male voice (giọng nam)" at the END of EVERY promptText
+- ALL scenes MUST use the SAME voice gender matching the host
+- If host is female (woman, female, phụ nữ, cô gái): ALWAYS use "VOICE: Female voice (giọng nữ)"
+- If host is male (man, male, nam, anh): ALWAYS use "VOICE: Male voice (giọng nam)"`
         } else if (voiceOverMode === 'voice_over') {
             voiceOverInstr = `CONTENT TYPE: VOICE OVER NARRATION (no character on screen).
 - Generate narration/script text in the "voiceover" field 
