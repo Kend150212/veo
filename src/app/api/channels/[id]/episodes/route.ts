@@ -50,7 +50,9 @@ export async function POST(
             ctaMode = 'random',
             selectedCTAs = [],
             customContent = null,
-            voiceOverMode = 'with_host'
+            voiceOverMode = 'with_host',
+            voiceGender = 'auto',
+            voiceTone = 'warm'
         } = await req.json()
 
         // CTA options
@@ -156,69 +158,111 @@ export async function POST(
             ? `\n\n📋 USER PROVIDED CONTENT - CREATE SCRIPT BASED ON THIS:\n"""\n${customContent.substring(0, 3000)}\n"""\nIMPORTANT: The script MUST be based on the above content. Extract key points and create engaging scenes from it.`
             : ''
 
+        // Voice settings mapping
+        const voiceGenderLabel = voiceGender === 'male' ? 'Male voice (giọng nam)' : voiceGender === 'female' ? 'Female voice (giọng nữ)' : 'any gender voice'
+        const toneMap: Record<string, string> = {
+            'warm': 'warm and friendly',
+            'professional': 'professional and authoritative',
+            'energetic': 'energetic and enthusiastic',
+            'calm': 'calm and soothing',
+            'serious': 'serious and news-like'
+        }
+        const voiceToneLabel = toneMap[voiceTone] || 'warm and friendly'
+
         // Build voice over mode instruction
         let voiceOverInstr = ''
         if (voiceOverMode === 'with_host') {
-            voiceOverInstr = 'CONTENT TYPE: With host/character on screen speaking dialogue.'
+            voiceOverInstr = 'CONTENT TYPE: With host/character on screen speaking dialogue. Use the character\'s gender for voice.'
         } else if (voiceOverMode === 'voice_over') {
             voiceOverInstr = `CONTENT TYPE: VOICE OVER NARRATION (no character on screen).
-- Generate narration/script text in the "dialogue" field 
+- Generate narration/script text in the "voiceover" field 
 - The "promptText" should describe B-Roll visuals that match the narration
-- NO character on screen, only visuals with voice over`
+- NO character on screen, only visuals with voice over
+- VOICE SETTINGS: ${voiceGenderLabel}, ${voiceToneLabel} tone
+- Include "VOICE: ${voiceGenderLabel}, ${voiceToneLabel}" at the end of each promptText`
         } else {
             voiceOverInstr = `CONTENT TYPE: B-ROLL ONLY (pure visuals, no dialogue).
-- The "dialogue" field should be empty or minimal ambient text
+- The "voiceover" field should be empty or minimal ambient text
 - Focus entirely on visual storytelling in "promptText"
 - This is silent/music-only video`
         }
 
         // Generate episode with YouTube content
-        const fullPrompt = `Create Episode ${nextEpisodeNumber} with ${totalScenes} scenes for channel "${channel.name}"
-NICHE: ${channel.niche}
-VISUAL STYLE: ${styleKeywords}
-DIALOGUE LANGUAGE: ${dialogueLangLabel.toUpperCase()}
+        const fullPrompt = `Create Episode ${nextEpisodeNumber} with EXACTLY ${totalScenes} scenes for channel "${channel.name}"
+
+CHANNEL INFO:
+- Niche: ${channel.niche}
+- Visual Style: ${styleKeywords}
+- Language: ${dialogueLangLabel.toUpperCase()} ONLY
+
 ${characterBible || '(No host/characters for this episode)'}
 ${existingEpisodesSummary}
 ${customContentInstr}
 
 🎬 ${voiceOverInstr}
-
 📢 CHANNEL MENTION: ${channelMentionInstr}
 📣 CTA: ${ctaInstruction}
 
-IMPORTANT - EACH SCENE MUST HAVE DETAILED PROMPT:
-Return JSON with this EXACT structure:
+═══════════════════════════════════════
+EPISODE STRUCTURE (MUST FOLLOW):
+═══════════════════════════════════════
+• Opening (Scene 1-3): Host introduction + Hook question + Preview what viewers will learn
+• Content Blocks (60% of scenes): Main content divided into clear sections with B-Roll
+• Mid-video CTA (after 40%): Subscribe/Like reminder
+• Tips/Insights (20% of scenes): Practical advice with specific examples
+• Summary + Closing (Last 3-5 scenes): Key takeaways + Engage (comment question) + Goodbye
+
+═══════════════════════════════════════
+SCENE FORMAT (EVERY SCENE MUST HAVE):
+═══════════════════════════════════════
+{
+    "order": number,
+    "title": "Scene title",
+    "duration": 8,
+    "voiceover": "18-25 words narration in ${dialogueLangLabel}. Natural, conversational tone.",
+    "promptText": "See format below"
+}
+
+PROMPTTEXT FORMAT (EXACT):
+[VOICEOVER in ${dialogueLangLabel}: {voiceover text here}]. [${characterBible ? 'Character name: Full appearance description with clothing, expression, gesture' : 'Subject description'}]. ENVIRONMENT: {detailed location, set pieces, props}. CAMERA: {shot type}, {lens: 35mm/50mm/85mm}, {angle: eye-level/low/high}. LIGHTING: {type: soft/dramatic/natural}, {direction}, {color temperature}. STYLE: ${styleKeywords}. MOOD: {emotional tone}. AUDIO: {background sounds, music type}. LANGUAGE: Speak ${dialogueLangLabel} only.
+
+═══════════════════════════════════════
+EXAMPLE OF PERFECT SCENE:
+═══════════════════════════════════════
+{
+    "order": 7,
+    "title": "Thu nhập ngành nail",
+    "duration": 8,
+    "voiceover": "Thu nhập đa dạng. Thợ mới có lương cơ bản và tiền boa. Thợ lành nghề có thể kiếm từ 40,000 đến 70,000 đô la một năm.",
+    "promptText": "[VOICEOVER in Vietnamese: Thu nhập đa dạng. Thợ mới có lương cơ bản và tiền boa. Thợ lành nghề có thể kiếm từ 40,000 đến 70,000 đô la một năm.]. [Visual representation of money, with a subtle graphic illustrating the income range: $40,000 - $70,000.]. ENVIRONMENT: Clean graphic design, easily readable. CAMERA: Static shot, clear and concise. LIGHTING: Bright, well-lit graphic. STYLE: ${styleKeywords}. MOOD: Informative and appealing. AUDIO: Upbeat, positive sound effect. LANGUAGE: Speak Vietnamese only."
+}
+
+═══════════════════════════════════════
+CRITICAL RULES:
+═══════════════════════════════════════
+1. VOICEOVER = What host SAYS (natural, conversational)
+2. PROMPTTEXT = Visual description for video AI (MUST include voiceover at start)
+3. ${characterBible ? 'Include FULL character description (age, hair, clothing, expression) in EVERY host scene' : 'Use detailed visual subjects'}
+4. Mix Host scenes (60%) and B-Roll scenes (40%) for visual variety
+5. Include SPECIFIC facts/numbers when discussing income, statistics
+6. Smooth transitions between scenes
+7. CTA scenes should feel natural, not forced
+8. ALL text/voiceover in ${dialogueLangLabel.toUpperCase()} ONLY
+
+Return JSON:
 {
     "title": "Episode title in ${dialogueLangLabel}",
     "synopsis": "Brief summary",
     "storyOutline": "Story arc",
     "topicIdea": "Theme",
-    "scenes": [
-        {
-            "order": 1,
-            "title": "Scene title",
-            "duration": 8,
-            "voiceover": "REQUIRED: 18-25 words narration/dialogue in ${dialogueLangLabel}. This is what the host SAYS.",
-            "promptText": "DETAILED VISUAL DESCRIPTION - Must include ALL of these elements:\\n- SUBJECT: ${characterBible ? 'Full character description (appearance, clothing, expression, pose)' : 'Main subject with full visual details'}\\n- ACTION: What is happening, gestures, movements\\n- ENVIRONMENT: Location details, set pieces, props\\n- CAMERA: Movement type (dolly/pan/static/tracking), lens (24mm/35mm/50mm/85mm), angle (eye-level/high/low)\\n- LIGHTING: Type (natural/studio/cinematic), direction, shadows, color temperature\\n- STYLE: ${styleKeywords}\\n- MOOD: Emotional tone\\n- AUDIO: Background sounds, SFX"
-        }
-    ],
-    "youtubeTitle": "SEO-optimized title with hook (60 chars max) in ${dialogueLangLabel}",
-    "youtubeDescription": "Engaging description with keywords (300-500 chars) in ${dialogueLangLabel}",
+    "scenes": [... ${totalScenes} scenes ...],
+    "youtubeTitle": "SEO title with hook (60 chars) in ${dialogueLangLabel}",
+    "youtubeDescription": "Description with keywords (300-500 chars) in ${dialogueLangLabel}",
     "youtubeTags": ["tag1", "tag2", "...up to 15 tags"],
-    "thumbnailPrompt": "Thumbnail description with 3-8 HOOK WORDS as text overlay"
+    "thumbnailPrompt": "Thumbnail with 3-8 HOOK WORDS overlay"
 }
 
-EXAMPLE OF GOOD SCENE promptText:
-"${characterBible ? '[Full host description: Vietnamese woman, 28 years old, long black hair, wearing professional blue blazer, warm smile, confident posture]' : 'Close-up of'} standing at modern news desk, gesturing towards floating graphics showing energy bills. CAMERA: Slow dolly in, 35mm lens, eye-level. LIGHTING: Soft studio key light from left, fill light, warm 5600K. ENVIRONMENT: Professional studio with LED screens, minimal decoration. STYLE: ${styleKeywords}. MOOD: Informative yet warm. AUDIO: Soft ambient office sounds, subtle news music."
-
-CRITICAL RULES:
-1. voiceover field = WHAT HOST SAYS (dialogue/narration script)
-2. promptText field = VISUAL DESCRIPTION for AI video generation
-3. ${characterBible ? 'Include FULL character appearance in EVERY scene promptText' : 'Use descriptive visual subjects'}
-4. Include camera, lighting, environment details in EVERY promptText
-5. ALL dialogue/voiceover must be in ${dialogueLangLabel.toUpperCase()}
-
-Generate ALL ${totalScenes} scenes with RICH DETAILED prompts. Return ONLY valid JSON.`
+Generate ALL ${totalScenes} scenes. Return ONLY valid JSON.`
 
         let episodeData: EpisodeData = { title: '', synopsis: '', storyOutline: '', topicIdea: '', scenes: [] }
         let allScenes: SceneData[] = []

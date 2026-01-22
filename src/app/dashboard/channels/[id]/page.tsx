@@ -103,6 +103,10 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
     const [selectedCTAs, setSelectedCTAs] = useState<string[]>([])
     const [voiceOverMode, setVoiceOverMode] = useState<'with_host' | 'voice_over' | 'broll_only'>('with_host')
 
+    // Voice settings (for voice_over mode)
+    const [voiceGender, setVoiceGender] = useState<'male' | 'female' | 'auto'>('auto')
+    const [voiceTone, setVoiceTone] = useState<'warm' | 'professional' | 'energetic' | 'calm' | 'serious'>('warm')
+
     // Custom content input
     const [customContent, setCustomContent] = useState('')
     const [contentUrl, setContentUrl] = useState('')
@@ -190,7 +194,9 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
                     ctaMode,
                     selectedCTAs: ctaMode === 'select' ? selectedCTAs : [],
                     customContent: customContent.trim() || null,
-                    voiceOverMode
+                    voiceOverMode,
+                    voiceGender: voiceOverMode === 'voice_over' ? voiceGender : 'auto',
+                    voiceTone: voiceOverMode === 'voice_over' ? voiceTone : 'warm'
                 })
             })
 
@@ -762,6 +768,38 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
                         </select>
                     </div>
                 </div>
+
+                {/* Voice Settings (for Voice Over mode) */}
+                {voiceOverMode === 'voice_over' && (
+                    <div className="grid grid-cols-2 gap-4 mb-4 p-3 bg-[var(--bg-tertiary)] rounded-lg">
+                        <div>
+                            <label className="block text-sm font-medium mb-2">🎙️ Giọng đọc</label>
+                            <select
+                                value={voiceGender}
+                                onChange={(e) => setVoiceGender(e.target.value as 'male' | 'female' | 'auto')}
+                                className="input-field w-full"
+                            >
+                                <option value="auto">🔄 Tự động</option>
+                                <option value="female">👩 Giọng Nữ</option>
+                                <option value="male">👨 Giọng Nam</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium mb-2">🎭 Tone giọng</label>
+                            <select
+                                value={voiceTone}
+                                onChange={(e) => setVoiceTone(e.target.value as 'warm' | 'professional' | 'energetic' | 'calm' | 'serious')}
+                                className="input-field w-full"
+                            >
+                                <option value="warm">🌸 Ấm áp, thân thiện</option>
+                                <option value="professional">💼 Chuyên nghiệp</option>
+                                <option value="energetic">⚡ Năng động, sôi nổi</option>
+                                <option value="calm">🧘 Điềm tĩnh, nhẹ nhàng</option>
+                                <option value="serious">📰 Nghiêm túc (tin tức)</option>
+                            </select>
+                        </div>
+                    </div>
+                )}
 
                 {/* Row 2: Character selection (if useCharacters) */}
                 {useCharacters && channel.characters.length > 0 && (
