@@ -21,7 +21,8 @@ const AI_PROVIDERS = [
         name: 'Google Gemini',
         placeholder: 'AIzaSy...',
         models: [
-            { id: 'gemini-2.0-flash', name: 'Gemini 2.0 Flash (Mới nhất)' },
+            { id: 'gemini-2.5-flash-preview-05-20', name: 'Gemini 2.5 Flash (Mới nhất - Preview)' },
+            { id: 'gemini-2.0-flash', name: 'Gemini 2.0 Flash' },
             { id: 'gemini-1.5-pro', name: 'Gemini 1.5 Pro' },
             { id: 'gemini-1.5-flash', name: 'Gemini 1.5 Flash' },
         ]
