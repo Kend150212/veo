@@ -11,7 +11,9 @@ import {
     ChevronRight,
     Film,
     Users,
-    Loader2
+    Loader2,
+    ChevronDown,
+    ChevronUp
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 
@@ -33,6 +35,7 @@ export default function ChannelsPage() {
     const router = useRouter()
     const [channels, setChannels] = useState<Channel[]>([])
     const [isLoading, setIsLoading] = useState(true)
+    const [expandedNiche, setExpandedNiche] = useState<string | null>(null)
 
     useEffect(() => {
         fetchChannels()
@@ -50,6 +53,11 @@ export default function ChannelsPage() {
         } finally {
             setIsLoading(false)
         }
+    }
+
+    const truncateText = (text: string, maxLength: number = 80) => {
+        if (text.length <= maxLength) return text
+        return text.substring(0, maxLength).trim() + '...'
     }
 
     if (isLoading) {
@@ -110,39 +118,76 @@ export default function ChannelsPage() {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: index * 0.05 }}
-                            onClick={() => router.push(`/dashboard/channels/${channel.id}`)}
-                            className="glass-card p-5 cursor-pointer hover:border-[var(--accent-primary)] transition-all group"
+                            className="glass-card p-5 hover:border-[var(--accent-primary)] transition-all group"
                         >
-                            <div className="flex items-start justify-between mb-3">
-                                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
-                                    <Tv className="w-6 h-6 text-white" />
+                            <div
+                                onClick={() => router.push(`/dashboard/channels/${channel.id}`)}
+                                className="cursor-pointer"
+                            >
+                                <div className="flex items-start justify-between mb-3">
+                                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                                        <Tv className="w-6 h-6 text-white" />
+                                    </div>
+                                    <ChevronRight className="w-5 h-5 text-[var(--text-muted)] group-hover:text-[var(--accent-primary)] transition-colors" />
                                 </div>
-                                <ChevronRight className="w-5 h-5 text-[var(--text-muted)] group-hover:text-[var(--accent-primary)] transition-colors" />
+
+                                <h3 className="font-semibold text-lg mb-1">{channel.name}</h3>
                             </div>
 
-                            <h3 className="font-semibold text-lg mb-1">{channel.name}</h3>
-                            <p className="text-sm text-[var(--text-secondary)] mb-3">
-                                {channel.niche}
-                            </p>
-
-                            <div className="flex items-center gap-4 text-xs text-[var(--text-muted)]">
-                                <span className="flex items-center gap-1">
-                                    <Film className="w-3.5 h-3.5" />
-                                    {channel._count.episodes} Episodes
-                                </span>
-                                {channel.hasCharacters && (
-                                    <span className="flex items-center gap-1">
-                                        <Users className="w-3.5 h-3.5" />
-                                        {channel._count.characters} Nhân vật
-                                    </span>
+                            {/* Niche Description with See More */}
+                            <div className="mb-3">
+                                <p className="text-sm text-[var(--text-secondary)]">
+                                    {expandedNiche === channel.id
+                                        ? channel.niche
+                                        : truncateText(channel.niche, 80)
+                                    }
+                                </p>
+                                {channel.niche.length > 80 && (
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation()
+                                            setExpandedNiche(expandedNiche === channel.id ? null : channel.id)
+                                        }}
+                                        className="text-xs text-[var(--accent-primary)] hover:underline mt-1 flex items-center gap-1"
+                                    >
+                                        {expandedNiche === channel.id ? (
+                                            <>
+                                                <ChevronUp className="w-3 h-3" />
+                                                Thu gọn
+                                            </>
+                                        ) : (
+                                            <>
+                                                <ChevronDown className="w-3 h-3" />
+                                                Xem thêm
+                                            </>
+                                        )}
+                                    </button>
                                 )}
                             </div>
 
-                            {channel.visualStyleId && (
-                                <div className="mt-3 pt-3 border-t border-[var(--border-subtle)]">
-                                    <span className="tag text-xs">{channel.visualStyleId}</span>
+                            <div
+                                onClick={() => router.push(`/dashboard/channels/${channel.id}`)}
+                                className="cursor-pointer"
+                            >
+                                <div className="flex items-center gap-4 text-xs text-[var(--text-muted)]">
+                                    <span className="flex items-center gap-1">
+                                        <Film className="w-3.5 h-3.5" />
+                                        {channel._count.episodes} Episodes
+                                    </span>
+                                    {channel.hasCharacters && (
+                                        <span className="flex items-center gap-1">
+                                            <Users className="w-3.5 h-3.5" />
+                                            {channel._count.characters} Nhân vật
+                                        </span>
+                                    )}
                                 </div>
-                            )}
+
+                                {channel.visualStyleId && (
+                                    <div className="mt-3 pt-3 border-t border-[var(--border-subtle)]">
+                                        <span className="tag text-xs">{channel.visualStyleId}</span>
+                                    </div>
+                                )}
+                            </div>
                         </motion.div>
                     ))}
                 </div>

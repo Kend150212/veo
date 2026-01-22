@@ -14,6 +14,7 @@ import {
     Loader2,
     ChevronRight,
     ChevronDown,
+    ChevronUp,
     Copy,
     Download,
     Edit2,
@@ -90,6 +91,12 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
         isMain: false
     })
     const [showKnowledge, setShowKnowledge] = useState(false)
+    const [expandedNiche, setExpandedNiche] = useState(false)
+
+    const truncateText = (text: string, maxLength: number = 100) => {
+        if (text.length <= maxLength) return text
+        return text.substring(0, maxLength).trim() + '...'
+    }
 
     useEffect(() => {
         fetchChannel()
@@ -323,10 +330,30 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
                             <Tv className="w-6 h-6 text-[var(--accent-primary)]" />
                             {channel.name}
                         </h1>
-                        <div className="flex items-center gap-3 mt-1 text-sm text-[var(--text-secondary)]">
-                            <span className="tag">{channel.niche}</span>
+                        <div className="mt-2">
+                            <p className="text-sm text-[var(--text-secondary)]">
+                                {expandedNiche ? channel.niche : truncateText(channel.niche, 100)}
+                            </p>
+                            {channel.niche.length > 100 && (
+                                <button
+                                    onClick={() => setExpandedNiche(!expandedNiche)}
+                                    className="text-xs text-[var(--accent-primary)] hover:underline mt-1 flex items-center gap-1"
+                                >
+                                    {expandedNiche ? (
+                                        <>
+                                            <ChevronUp className="w-3 h-3" />
+                                            Thu gọn
+                                        </>
+                                    ) : (
+                                        <>
+                                            <ChevronDown className="w-3 h-3" />
+                                            Xem thêm
+                                        </>
+                                    )}
+                                </button>
+                            )}
                             {channel.visualStyleId && (
-                                <span className="tag tag-accent">{channel.visualStyleId}</span>
+                                <span className="tag tag-accent text-xs mt-2 inline-block">{channel.visualStyleId}</span>
                             )}
                         </div>
                     </div>
@@ -544,7 +571,11 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
                             type="number"
                             min="1"
                             value={sceneCount}
-                            onChange={(e) => setSceneCount(Math.max(1, parseInt(e.target.value) || 10))}
+                            onChange={(e) => setSceneCount(parseInt(e.target.value) || 0)}
+                            onBlur={(e) => {
+                                const val = parseInt(e.target.value) || 10
+                                setSceneCount(Math.max(1, val))
+                            }}
                             className="input-field w-32"
                         />
                         <p className="text-xs text-[var(--text-muted)] mt-1">
