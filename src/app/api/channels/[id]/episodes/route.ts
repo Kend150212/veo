@@ -220,7 +220,7 @@ CRITICAL RULES:
 
 Generate ALL ${totalScenes} scenes with RICH DETAILED prompts. Return ONLY valid JSON.`
 
-        let episodeData: EpisodeData
+        let episodeData: EpisodeData = { title: '', synopsis: '', storyOutline: '', topicIdea: '', scenes: [] }
         let allScenes: SceneData[] = []
 
         try {
@@ -236,26 +236,71 @@ Generate ALL ${totalScenes} scenes with RICH DETAILED prompts. Return ONLY valid
             let jsonStr = jsonMatch[0]
             // Remove control characters
             jsonStr = jsonStr.replace(/[\x00-\x1F\x7F]/g, ' ')
-            // Fix unescaped quotes in strings (common AI issue)
-            jsonStr = jsonStr.replace(/:\s*"([^"]*?)(?<!\\)"(?=[^:}\],]*[,}\]])/g, (match, content) => {
-                // Escape internal quotes
-                const escaped = content.replace(/(?<!\\)"/g, '\\"')
-                return `: "${escaped}"`
-            })
             // Remove trailing commas before } or ]
             jsonStr = jsonStr.replace(/,(\s*[}\]])/g, '$1')
 
+            let parseSuccess = false
+
+            // Try 1: Direct parse
             try {
                 episodeData = JSON.parse(jsonStr)
-            } catch (parseError) {
-                console.error('[Gen] JSON parse failed, trying simpler fix...')
-                // Try more aggressive cleaning
-                jsonStr = jsonMatch[0]
-                    .replace(/[\x00-\x1F\x7F]/g, ' ')
-                    .replace(/\n/g, ' ')
-                    .replace(/\r/g, ' ')
-                    .replace(/\t/g, ' ')
-                episodeData = JSON.parse(jsonStr)
+                parseSuccess = true
+            } catch {
+                console.log('[Gen] First parse failed, trying cleanup...')
+            }
+
+            // Try 2: More aggressive cleanup
+            if (!parseSuccess) {
+                try {
+                    jsonStr = jsonMatch[0]
+                        .replace(/[\x00-\x1F\x7F]/g, ' ')
+                        .replace(/\n/g, ' ')
+                        .replace(/\r/g, ' ')
+                        .replace(/\t/g, ' ')
+                        .replace(/,(\s*[}\]])/g, '$1')
+                    episodeData = JSON.parse(jsonStr)
+                    parseSuccess = true
+                } catch {
+                    console.log('[Gen] Second parse failed, trying scene extraction...')
+                }
+            }
+
+            // Try 3: Extract scenes individually (last resort for long responses)
+            if (!parseSuccess) {
+                console.log('[Gen] Attempting individual scene extraction...')
+                // Match individual scene objects
+                const sceneMatches = result.matchAll(/\{[^{}]*"order"\s*:\s*\d+[^{}]*\}/g)
+                const extractedScenes: SceneData[] = []
+
+                for (const match of sceneMatches) {
+                    try {
+                        const sceneStr = match[0].replace(/[\x00-\x1F\x7F]/g, ' ')
+                        const scene = JSON.parse(sceneStr) as SceneData
+                        if (scene.order) {
+                            extractedScenes.push(scene)
+                        }
+                    } catch {
+                        // Skip invalid scenes
+                    }
+                }
+
+                if (extractedScenes.length > 0) {
+                    console.log('[Gen] Extracted', extractedScenes.length, 'scenes individually')
+                    // Extract title and other metadata with regex
+                    const titleMatch = result.match(/"title"\s*:\s*"([^"]+)"/)
+                    episodeData = {
+                        title: titleMatch?.[1] || `Episode ${nextEpisodeNumber}`,
+                        synopsis: '',
+                        storyOutline: '',
+                        topicIdea: '',
+                        scenes: extractedScenes.sort((a, b) => a.order - b.order)
+                    }
+                    parseSuccess = true
+                }
+            }
+
+            if (!parseSuccess) {
+                throw new Error('Could not parse JSON response after all attempts')
             }
 
             allScenes = episodeData.scenes || []
@@ -264,7 +309,7 @@ Generate ALL ${totalScenes} scenes with RICH DETAILED prompts. Return ONLY valid
         } catch (error) {
             console.error('[Gen] Error:', error)
             return NextResponse.json({
-                error: 'Không thể tạo episode. AI trả về format không hợp lệ. Vui lòng thử lại với ít scenes hơn.',
+                error: 'Không thể tạo episode. AI trả về format không hợp lệ. Vui lòng thử với 20-30 scenes thay vì 50.',
                 details: String(error)
             }, { status: 400 })
         }
