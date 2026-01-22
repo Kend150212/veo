@@ -143,6 +143,131 @@ export const VISUAL_STYLES = [
         descriptionEn: 'Clean flat design',
         image: '/styles/minimalist_style_1768952170330.png',
         promptKeywords: 'Minimalist flat design, geometric shapes, limited color palette, 2D vector graphics, modern illustration'
+    },
+    // Historical & Period
+    {
+        id: 'historical',
+        name: 'Historical Film',
+        description: 'Phim lịch sử cổ trang',
+        descriptionEn: 'Historical period drama',
+        image: '/styles/historical.png',
+        promptKeywords: 'Historical period film, sepia tones, aged film grain, vintage costumes, epic wide shots, dramatic orchestral mood, all text in English'
+    },
+    {
+        id: 'action-movie',
+        name: 'Action Movie',
+        description: 'Phim hành động mạnh mẽ',
+        descriptionEn: 'High-octane action film',
+        image: '/styles/action_movie.png',
+        promptKeywords: 'Action movie style, dynamic camera angles, motion blur, explosions, intense lighting, blockbuster Hollywood aesthetic, all text in English'
+    },
+    // News & Business
+    {
+        id: 'news-broadcast',
+        name: 'News Broadcast',
+        description: 'Tin tức truyền hình',
+        descriptionEn: 'Professional news broadcast',
+        image: '/styles/news_broadcast.png',
+        promptKeywords: 'News broadcast style, clean studio lighting, professional anchor desk, lower thirds graphics, breaking news aesthetic, all text in English'
+    },
+    {
+        id: 'finance-market',
+        name: 'Finance & Market',
+        description: 'Tài chính thị trường',
+        descriptionEn: 'Stock market and finance',
+        image: '/styles/finance_market.png',
+        promptKeywords: 'Finance and stock market visuals, trading charts, business graphs, modern corporate aesthetic, blue-green color scheme, all text and numbers in English'
+    },
+    {
+        id: 'business-corporate',
+        name: 'Business Corporate',
+        description: 'Doanh nghiệp chuyên nghiệp',
+        descriptionEn: 'Professional corporate style',
+        image: '/styles/business_corporate.png',
+        promptKeywords: 'Corporate business style, modern office environment, professional attire, clean minimal design, blue color scheme, all text in English'
+    },
+    // Illustration Styles
+    {
+        id: 'illustration',
+        name: 'Digital Illustration',
+        description: 'Minh họa kỹ thuật số',
+        descriptionEn: 'Modern digital illustration',
+        image: '/styles/digital_illustration.png',
+        promptKeywords: 'Digital illustration, vibrant colors, clean lines, modern art style, Procreate aesthetic, editorial illustration'
+    },
+    {
+        id: 'caricature',
+        name: 'Caricature',
+        description: 'Biếm họa phóng đại',
+        descriptionEn: 'Exaggerated cartoon caricature',
+        image: '/styles/caricature.png',
+        promptKeywords: 'Caricature cartoon style, exaggerated features, humorous distortions, editorial satire, bold outlines, expressive faces'
+    },
+    {
+        id: 'whiteboard',
+        name: 'Whiteboard Animation',
+        description: 'Bàn tay vẽ trên bảng trắng',
+        descriptionEn: 'Hand-drawn whiteboard explainer',
+        image: '/styles/whiteboard.png',
+        promptKeywords: 'Whiteboard animation style, hand drawing on white background, black marker sketch, real hand visible drawing, explainer video aesthetic, all text in English'
+    },
+    {
+        id: 'vector-flat',
+        name: 'Vector Flat Design',
+        description: 'Thiết kế vector phẳng',
+        descriptionEn: 'Clean flat vector graphics',
+        image: '/styles/vector_flat.png',
+        promptKeywords: 'Flat vector design, geometric shapes, clean lines, solid colors, modern infographic style, 2D illustration, all text in English'
+    },
+    {
+        id: 'infographic',
+        name: 'Infographic',
+        description: 'Đồ họa thông tin',
+        descriptionEn: 'Data visualization infographic',
+        image: '/styles/infographic.png',
+        promptKeywords: 'Infographic design, data visualization, charts and graphs, icons and symbols, clean layout, educational visual, all text in English'
+    },
+    {
+        id: 'sketch-drawing',
+        name: 'Sketch & Drawing',
+        description: 'Phong cách phác họa',
+        descriptionEn: 'Pencil sketch illustration',
+        image: '/styles/sketch_drawing.png',
+        promptKeywords: 'Pencil sketch style, hand-drawn illustration, crosshatching, rough lines, paper texture, artistic concept drawing'
+    },
+    // Documentary & Educational
+    {
+        id: 'documentary',
+        name: 'Documentary',
+        description: 'Phim tài liệu',
+        descriptionEn: 'Documentary filmmaking style',
+        image: '/styles/documentary.png',
+        promptKeywords: 'Documentary film style, authentic footage feel, interview framing, natural lighting, Ken Burns effect, all text in English'
+    },
+    {
+        id: 'educational',
+        name: 'Educational',
+        description: 'Giáo dục hấp dẫn',
+        descriptionEn: 'Engaging educational content',
+        image: '/styles/educational.png',
+        promptKeywords: 'Educational content style, clear explanations, animated diagrams, friendly approachable aesthetic, bright colors, all text in English'
+    },
+    // Sci-Fi & Fantasy
+    {
+        id: 'scifi',
+        name: 'Sci-Fi Futuristic',
+        description: 'Khoa học viễn tưởng',
+        descriptionEn: 'Futuristic science fiction',
+        image: '/styles/scifi.png',
+        promptKeywords: 'Science fiction aesthetic, futuristic technology, neon lights, cyberpunk elements, space visuals, holographic displays, all text in English'
+    },
+    {
+        id: 'fantasy-epic',
+        name: 'Fantasy Epic',
+        description: 'Giả tưởng hùng tráng',
+        descriptionEn: 'Epic fantasy adventure',
+        image: '/styles/fantasy_epic.png',
+        promptKeywords: 'Fantasy epic style, magical elements, medieval settings, dramatic landscapes, mystical lighting, Lord of the Rings aesthetic'
     }
 ]
 
