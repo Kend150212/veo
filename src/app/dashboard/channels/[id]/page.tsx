@@ -159,12 +159,14 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
             })
 
             const data = await res.json()
-            if (data.content) {
-                setCustomContent(data.content)
+            if (data.extracted?.summary) {
+                setCustomContent(data.extracted.summary)
                 toast.success('Đã lấy nội dung từ URL!')
                 setContentUrl('')
+            } else if (data.error) {
+                toast.error(data.error)
             } else {
-                toast.error(data.error || 'Không thể lấy nội dung từ URL')
+                toast.error('Không thể lấy nội dung từ URL')
             }
         } catch {
             toast.error('Lỗi kết nối')
