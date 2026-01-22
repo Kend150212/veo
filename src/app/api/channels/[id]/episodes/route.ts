@@ -6,8 +6,6 @@ import { generateText } from '@/lib/ai-story'
 import { prisma } from '@/lib/prisma'
 import { getStyleById } from '@/lib/channel-styles'
 
-const MAX_SCENES_PER_BATCH = 15
-
 interface SceneData {
     order: number
     title?: string
@@ -15,7 +13,6 @@ interface SceneData {
     dialogue?: string
     duration?: number
     hookType?: string
-    environmentDetails?: string
 }
 
 interface EpisodeData {
@@ -23,86 +20,7 @@ interface EpisodeData {
     synopsis: string
     storyOutline: string
     topicIdea: string
-    mainLocation?: string
     scenes: SceneData[]
-}
-
-// Generate a batch of scenes
-async function generateSceneBatch(
-    config: { provider: string; apiKey: string; model?: string },
-    channel: {
-        name: string
-        niche: string
-        targetAudience: string | null
-        dialogueLanguage: string | null
-    },
-    styleKeywords: string,
-    characterBible: string,
-    episodeInfo: { title: string; synopsis: string; storyOutline: string },
-    startScene: number,
-    endScene: number,
-    totalScenes: number,
-    dialogueLangLabel: string,
-    langInstruction: string
-): Promise<SceneData[]> {
-    const batchSize = endScene - startScene + 1
-
-    const batchPrompt = `You are continuing to write scenes for Episode "${episodeInfo.title}" of channel "${channel.name}"
-NICHE: ${channel.niche}
-VISUAL STYLE: ${styleKeywords}
-DIALOGUE LANGUAGE: ${dialogueLangLabel.toUpperCase()}
-${characterBible}
-
-EPISODE CONTEXT:
-- Title: ${episodeInfo.title}
-- Synopsis: ${episodeInfo.synopsis}
-- Story Arc: ${episodeInfo.storyOutline}
-
-Generate scenes ${startScene} to ${endScene} (${batchSize} scenes) out of ${totalScenes} total.
-${startScene === 1 ? 'This is the OPENING - start with a strong hook!' : ''}
-${endScene === totalScenes ? 'This is the ENDING - provide a satisfying conclusion or cliffhanger!' : ''}
-${startScene > 1 && endScene < totalScenes ? 'This is a MIDDLE section - maintain tension and build towards climax.' : ''}
-
-🎬 DIALOGUE GUIDELINES:
-- Each scene: 18-22 words dialogue (flexible for pacing)
-- ${langInstruction}
-
-Return JSON array ONLY:
-{
-    "scenes": [
-        {
-            "order": ${startScene},
-            "title": "Scene ${startScene}: [Title]",
-            "dialogue": "18-22 word dialogue in ${dialogueLangLabel}",
-            "promptText": "[CHARACTER DESCRIPTION VERBATIM] [action] in [environment]. Speaking: [dialogue]. Style: ${styleKeywords}. Camera: [movement]. Lighting: [details]. Mood: [tone]. Negative: flickering, blurry",
-            "duration": 8,
-            "hookType": "tension"
-        }
-    ]
-}
-
-RULES:
-1. Generate EXACTLY ${batchSize} scenes (scene ${startScene} to ${endScene})
-2. Include CHARACTER DESCRIPTIONS VERBATIM in promptText
-3. ALL dialogue in ${dialogueLangLabel.toUpperCase()} ONLY
-4. Return ONLY valid JSON, no markdown`
-
-    console.log(`[Batch] Generating scenes ${startScene}-${endScene} of ${totalScenes}`)
-
-    const result = await generateText(config as any, batchPrompt)
-
-    // Parse batch result
-    const jsonMatch = result.match(/\{[\s\S]*\}/)
-    if (!jsonMatch) {
-        throw new Error(`No JSON found for batch ${startScene}-${endScene}`)
-    }
-
-    const batchData = JSON.parse(jsonMatch[0])
-    const scenes = batchData.scenes || []
-
-    console.log(`[Batch] Got ${scenes.length} scenes for batch ${startScene}-${endScene}`)
-
-    return scenes
 }
 
 // POST: Generate a new episode with AI-created content
@@ -151,150 +69,119 @@ export async function POST(
         const visualStyle = channel.visualStyleId ? getStyleById(channel.visualStyleId) : null
         const styleKeywords = visualStyle?.promptKeywords || channel.visualStyleKeywords || 'cinematic, professional'
 
-        // Parse knowledge base for episode ideas
-        let knowledgeBase: { episodeIdeas?: { title: string; synopsis: string; hook: string }[] } = {}
+        // Parse knowledge base
+        let knowledgeBase: { episodeIdeas?: { title: string; synopsis: string }[] } = {}
         try {
             knowledgeBase = channel.knowledgeBase ? JSON.parse(channel.knowledgeBase) : {}
         } catch { }
 
-        // Episode number
         const nextEpisodeNumber = channel._count.episodes + 1
 
-        // Build character bible for prompts
+        // Character bible
         const characterBible = channel.characters.length > 0
-            ? `\n\nCHARACTER BIBLE (use VERBATIM in every scene):\n${channel.characters.map((c: { name: string; role: string; fullDescription: string }) =>
-                `[${c.name}] - ${c.role.toUpperCase()}:\n${c.fullDescription}`
-            ).join('\n\n')}`
-            : ''
-
-        // Build existing episodes summary to avoid duplication
-        const recentEpisodes = channel.episodes.slice(-10)
-        const existingEpisodesSummary = recentEpisodes.length > 0
-            ? `\n\n⚠️ EXISTING EPISODES (DO NOT DUPLICATE):\n${recentEpisodes.map((ep: { episodeNumber: number; title: string; topicIdea: string | null; synopsis: string | null }) =>
-                `Ep${ep.episodeNumber}: ${ep.title}`
+            ? `\nCHARACTER BIBLE:\n${channel.characters.map((c: { name: string; role: string; fullDescription: string }) =>
+                `[${c.name}] - ${c.role}: ${c.fullDescription}`
             ).join('\n')}`
             : ''
 
-        // Dialogue language
+        // Existing episodes (avoid duplication)
+        const recentEpisodes = channel.episodes.slice(-5)
+        const existingEpisodesSummary = recentEpisodes.length > 0
+            ? `\n⚠️ DO NOT DUPLICATE: ${recentEpisodes.map((ep: { title: string }) => ep.title).join(', ')}`
+            : ''
+
+        // Language
         const dialogueLang = channel.dialogueLanguage || 'vi'
-        const langInstruction = dialogueLang === 'en'
-            ? 'ALL dialogue MUST be in ENGLISH only.'
-            : 'ALL dialogue MUST be in VIETNAMESE (tiếng Việt) only.'
         const dialogueLangLabel = dialogueLang === 'en' ? 'English' : 'Vietnamese'
 
-        console.log('=== EPISODE GENERATION START ===')
-        console.log('Channel:', channel.name)
-        console.log('Episode number:', nextEpisodeNumber)
-        console.log('Total scenes:', totalScenes)
+        console.log('=== EPISODE START ===')
+        console.log('Channel:', channel.name, '| Scenes:', totalScenes)
 
-        // STEP 1: Generate episode metadata first (title, synopsis, outline)
-        const metaPrompt = `You are a professional YouTube content creator for channel: "${channel.name}"
+        // Generate ALL at once - let AI decide how much it can handle
+        const fullPrompt = `Create Episode ${nextEpisodeNumber} with ${totalScenes} scenes for channel "${channel.name}"
 NICHE: ${channel.niche}
-${channel.targetAudience ? `TARGET AUDIENCE: ${channel.targetAudience}` : ''}
+STYLE: ${styleKeywords}
+DIALOGUE: ${dialogueLangLabel.toUpperCase()} ONLY
 ${characterBible}
 ${existingEpisodesSummary}
 
-Create Episode ${nextEpisodeNumber} metadata for a ${totalScenes}-scene episode.
-${knowledgeBase.episodeIdeas && knowledgeBase.episodeIdeas.length > 0
-                ? `\nInspired by: ${knowledgeBase.episodeIdeas[0]?.title || 'original idea'}`
-                : ''}
-
 Return JSON:
 {
-    "title": "Catchy episode title in ${dialogueLangLabel}",
-    "synopsis": "2-3 sentence episode summary",
-    "storyOutline": "Story arc: beginning -> development -> climax -> resolution",
-    "topicIdea": "Main topic/theme"
+    "title": "Episode title",
+    "synopsis": "Brief summary",
+    "storyOutline": "Story arc",
+    "topicIdea": "Theme",
+    "scenes": [
+        {"order": 1, "title": "Scene 1", "dialogue": "18-22 words in ${dialogueLangLabel}", "promptText": "[character] [action] in [place]. Style: ${styleKeywords}", "duration": 8}
+    ]
 }
 
-Return ONLY valid JSON, no markdown.`
+Generate ALL ${totalScenes} scenes. Return ONLY JSON.`
 
         let episodeData: EpisodeData
+        let allScenes: SceneData[] = []
 
         try {
-            console.log('[Meta] Generating episode metadata...')
-            const metaResult = await generateText(config, metaPrompt)
-            const metaMatch = metaResult.match(/\{[\s\S]*\}/)
-            if (!metaMatch) {
-                throw new Error('No JSON in metadata response')
+            // First attempt - try to get everything
+            console.log('[Gen] Attempting full generation...')
+            const result = await generateText(config, fullPrompt)
+
+            const jsonMatch = result.match(/\{[\s\S]*\}/)
+            if (!jsonMatch) {
+                throw new Error('No JSON in response')
             }
-            episodeData = JSON.parse(metaMatch[0])
-            episodeData.scenes = []
-            console.log('[Meta] Episode:', episodeData.title)
-        } catch (metaError) {
-            console.error('[Meta] Error:', metaError)
+
+            episodeData = JSON.parse(jsonMatch[0])
+            allScenes = episodeData.scenes || []
+            console.log('[Gen] Got', allScenes.length, 'scenes')
+
+        } catch (error) {
+            console.error('[Gen] Initial error:', error)
             return NextResponse.json({
-                error: 'Không thể tạo metadata episode. Vui lòng thử lại.',
-                details: String(metaError)
+                error: 'Không thể tạo episode. Vui lòng thử lại.',
+                details: String(error)
             }, { status: 400 })
         }
 
-        // STEP 2: Generate scenes in batches
-        const allScenes: SceneData[] = []
+        // Continue generating if we got fewer scenes than requested
+        let attempts = 0
+        const maxAttempts = 5
 
-        if (totalScenes <= MAX_SCENES_PER_BATCH) {
-            // Single batch for small episodes
+        while (allScenes.length < totalScenes && attempts < maxAttempts) {
+            attempts++
+            const startFrom = allScenes.length + 1
+            const remaining = totalScenes - allScenes.length
+
+            console.log(`[Continue] Attempt ${attempts}: Need ${remaining} more scenes from ${startFrom}`)
+
+            const continuePrompt = `Continue Episode "${episodeData.title}" - generate scenes ${startFrom} to ${totalScenes}
+CONTEXT: ${episodeData.synopsis}
+STYLE: ${styleKeywords}
+DIALOGUE: ${dialogueLangLabel.toUpperCase()} ONLY
+${characterBible}
+
+Generate ${remaining} more scenes continuing the story.
+Return JSON array ONLY:
+{"scenes": [{"order": ${startFrom}, "title": "Scene ${startFrom}", "dialogue": "...", "promptText": "...", "duration": 8}]}
+Return ONLY JSON.`
+
             try {
-                const scenes = await generateSceneBatch(
-                    config,
-                    { name: channel.name, niche: channel.niche, targetAudience: channel.targetAudience, dialogueLanguage: channel.dialogueLanguage },
-                    styleKeywords,
-                    characterBible,
-                    episodeData,
-                    1,
-                    totalScenes,
-                    totalScenes,
-                    dialogueLangLabel,
-                    langInstruction
-                )
-                allScenes.push(...scenes)
-            } catch (sceneError) {
-                console.error('[Scenes] Error:', sceneError)
-                return NextResponse.json({
-                    error: 'Không thể tạo scenes. Vui lòng thử lại.',
-                    details: String(sceneError)
-                }, { status: 400 })
-            }
-        } else {
-            // Multiple batches for large episodes
-            const numBatches = Math.ceil(totalScenes / MAX_SCENES_PER_BATCH)
-            console.log(`[Batch] Will generate ${numBatches} batches for ${totalScenes} scenes`)
+                const continueResult = await generateText(config, continuePrompt)
+                const contMatch = continueResult.match(/\{[\s\S]*\}/)
 
-            for (let batch = 0; batch < numBatches; batch++) {
-                const startScene = batch * MAX_SCENES_PER_BATCH + 1
-                const endScene = Math.min((batch + 1) * MAX_SCENES_PER_BATCH, totalScenes)
-
-                try {
-                    const scenes = await generateSceneBatch(
-                        config,
-                        { name: channel.name, niche: channel.niche, targetAudience: channel.targetAudience, dialogueLanguage: channel.dialogueLanguage },
-                        styleKeywords,
-                        characterBible,
-                        episodeData,
-                        startScene,
-                        endScene,
-                        totalScenes,
-                        dialogueLangLabel,
-                        langInstruction
-                    )
-                    allScenes.push(...scenes)
-                    console.log(`[Batch] Completed batch ${batch + 1}/${numBatches}, total scenes: ${allScenes.length}`)
-                } catch (batchError) {
-                    console.error(`[Batch] Error in batch ${batch + 1}:`, batchError)
-                    // Continue with partial results if we have some scenes
-                    if (allScenes.length > 0) {
-                        console.log(`[Batch] Continuing with ${allScenes.length} scenes already generated`)
-                        break
-                    }
-                    return NextResponse.json({
-                        error: `Lỗi tạo scenes batch ${batch + 1}. Vui lòng thử lại.`,
-                        details: String(batchError)
-                    }, { status: 400 })
+                if (contMatch) {
+                    const contData = JSON.parse(contMatch[0])
+                    const newScenes = contData.scenes || []
+                    console.log('[Continue] Got', newScenes.length, 'more scenes')
+                    allScenes.push(...newScenes)
                 }
+            } catch (contError) {
+                console.error('[Continue] Error:', contError)
+                break // Stop trying, use what we have
             }
         }
 
-        // Validate scenes
+        // Check if we have any scenes
         if (allScenes.length === 0) {
             return NextResponse.json({
                 error: 'Không thể tạo scenes. Vui lòng thử lại.',
@@ -302,9 +189,9 @@ Return ONLY valid JSON, no markdown.`
             }, { status: 400 })
         }
 
-        console.log(`[Result] Total scenes generated: ${allScenes.length}`)
+        console.log('[Final] Total scenes:', allScenes.length, 'of', totalScenes, 'requested')
 
-        // Create episode in database
+        // Save to database
         try {
             const episode = await prisma.episode.create({
                 data: {
@@ -328,35 +215,28 @@ Return ONLY valid JSON, no markdown.`
                     }
                 },
                 include: {
-                    scenes: {
-                        orderBy: { order: 'asc' }
-                    }
+                    scenes: { orderBy: { order: 'asc' } }
                 }
             })
 
-            console.log('=== EPISODE CREATED ===')
-            console.log('ID:', episode.id)
-            console.log('Scenes:', episode.scenes.length)
+            console.log('=== EPISODE CREATED ===', episode.id, '|', episode.scenes.length, 'scenes')
 
-            return NextResponse.json({
-                success: true,
-                episode
-            })
+            return NextResponse.json({ success: true, episode })
         } catch (dbError) {
-            console.error('Database error:', dbError)
+            console.error('DB Error:', dbError)
             return NextResponse.json({
-                error: 'Lỗi lưu episode vào database',
+                error: 'Lỗi lưu vào database',
                 details: String(dbError)
             }, { status: 500 })
         }
 
     } catch (error) {
-        console.error('Generate episode error:', error)
-        return NextResponse.json({ error: 'Failed to generate episode', details: String(error) }, { status: 500 })
+        console.error('Error:', error)
+        return NextResponse.json({ error: 'Lỗi tạo episode', details: String(error) }, { status: 500 })
     }
 }
 
-// GET: List episodes for channel
+// GET: List episodes
 export async function GET(
     req: Request,
     { params }: { params: Promise<{ id: string }> }
@@ -368,18 +248,15 @@ export async function GET(
         }
 
         const { id } = await params
-
         const episodes = await prisma.episode.findMany({
             where: { channelId: id },
-            include: {
-                _count: { select: { scenes: true } }
-            },
+            include: { _count: { select: { scenes: true } } },
             orderBy: { episodeNumber: 'asc' }
         })
 
         return NextResponse.json({ episodes })
     } catch (error) {
-        console.error('List episodes error:', error)
+        console.error('List error:', error)
         return NextResponse.json({ error: 'Failed to load episodes' }, { status: 500 })
     }
 }
