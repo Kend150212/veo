@@ -101,6 +101,7 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
     const [mentionChannel, setMentionChannel] = useState(false)
     const [ctaMode, setCtaMode] = useState<'random' | 'select'>('random')
     const [selectedCTAs, setSelectedCTAs] = useState<string[]>([])
+    const [voiceOverMode, setVoiceOverMode] = useState<'with_host' | 'voice_over' | 'broll_only'>('with_host')
 
     // Custom content input
     const [customContent, setCustomContent] = useState('')
@@ -186,7 +187,8 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
                     mentionChannel,
                     ctaMode,
                     selectedCTAs: ctaMode === 'select' ? selectedCTAs : [],
-                    customContent: customContent.trim() || null
+                    customContent: customContent.trim() || null,
+                    voiceOverMode
                 })
             })
 
@@ -742,16 +744,20 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium mb-2">Sử dụng Host</label>
-                        <button
-                            onClick={() => setUseCharacters(!useCharacters)}
-                            className={`w-full px-3 py-2 rounded-lg text-sm font-medium transition ${useCharacters
-                                ? 'bg-[var(--accent-primary)] text-white'
-                                : 'bg-[var(--bg-tertiary)] text-[var(--text-secondary)]'
-                                }`}
+                        <label className="block text-sm font-medium mb-2">Loại nội dung</label>
+                        <select
+                            value={voiceOverMode}
+                            onChange={(e) => {
+                                const mode = e.target.value as 'with_host' | 'voice_over' | 'broll_only'
+                                setVoiceOverMode(mode)
+                                setUseCharacters(mode === 'with_host')
+                            }}
+                            className="input-field w-full"
                         >
-                            {useCharacters ? '✓ Có Host' : '✗ Không Host'}
-                        </button>
+                            <option value="with_host">👤 Có Host/Nhân vật</option>
+                            <option value="voice_over">🎙️ Voice Over (Thuyết minh)</option>
+                            <option value="broll_only">🎬 B-Roll only (không lời)</option>
+                        </select>
                     </div>
                 </div>
 

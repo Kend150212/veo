@@ -48,7 +48,8 @@ export async function POST(
             mentionChannel = false,
             ctaMode = 'random',
             selectedCTAs = [],
-            customContent = null
+            customContent = null,
+            voiceOverMode = 'with_host'
         } = await req.json()
 
         // CTA options
@@ -154,14 +155,32 @@ export async function POST(
             ? `\n\n📋 USER PROVIDED CONTENT - CREATE SCRIPT BASED ON THIS:\n"""\n${customContent.substring(0, 3000)}\n"""\nIMPORTANT: The script MUST be based on the above content. Extract key points and create engaging scenes from it.`
             : ''
 
+        // Build voice over mode instruction
+        let voiceOverInstr = ''
+        if (voiceOverMode === 'with_host') {
+            voiceOverInstr = 'CONTENT TYPE: With host/character on screen speaking dialogue.'
+        } else if (voiceOverMode === 'voice_over') {
+            voiceOverInstr = `CONTENT TYPE: VOICE OVER NARRATION (no character on screen).
+- Generate narration/script text in the "dialogue" field 
+- The "promptText" should describe B-Roll visuals that match the narration
+- NO character on screen, only visuals with voice over`
+        } else {
+            voiceOverInstr = `CONTENT TYPE: B-ROLL ONLY (pure visuals, no dialogue).
+- The "dialogue" field should be empty or minimal ambient text
+- Focus entirely on visual storytelling in "promptText"
+- This is silent/music-only video`
+        }
+
         // Generate episode with YouTube content
         const fullPrompt = `Create Episode ${nextEpisodeNumber} with ${totalScenes} scenes for channel "${channel.name}"
 NICHE: ${channel.niche}
 STYLE: ${styleKeywords}
-DIALOGUE: ${dialogueLangLabel.toUpperCase()} ONLY
+DIALOGUE LANGUAGE: ${dialogueLangLabel.toUpperCase()}
 ${characterBible || '(No host/characters for this episode)'}
 ${existingEpisodesSummary}
 ${customContentInstr}
+
+🎬 ${voiceOverInstr}
 
 📢 CHANNEL MENTION: ${channelMentionInstr}
 📣 CTA: ${ctaInstruction}
