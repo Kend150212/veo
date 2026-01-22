@@ -317,8 +317,10 @@ Return ONLY JSON.`
                             // Combine voiceover/dialogue into promptText for complete scene info
                             const voiceContent = scene.voiceover || scene.dialogue || ''
                             const visualPrompt = scene.promptText || 'Scene visual description'
+                            // Add language specification for voiceover
+                            const langTag = dialogueLang === 'en' ? 'English' : 'Vietnamese'
                             const fullPrompt = voiceContent
-                                ? `[VOICEOVER: ${voiceContent}]. ${visualPrompt}`
+                                ? `[VOICEOVER in ${langTag}: ${voiceContent}]. ${visualPrompt}. LANGUAGE: Speak ${langTag} only.`
                                 : visualPrompt
 
                             return {
