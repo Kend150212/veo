@@ -318,7 +318,7 @@ Return ONLY JSON.`
                             const voiceContent = scene.voiceover || scene.dialogue || ''
                             const visualPrompt = scene.promptText || 'Scene visual description'
                             const fullPrompt = voiceContent
-                                ? `[VOICEOVER: ${voiceContent}]\n\n${visualPrompt}`
+                                ? `[VOICEOVER: ${voiceContent}]. ${visualPrompt}`
                                 : visualPrompt
 
                             return {
