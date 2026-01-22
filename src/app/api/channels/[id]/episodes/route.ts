@@ -11,6 +11,7 @@ interface SceneData {
     title?: string
     promptText?: string
     dialogue?: string
+    voiceover?: string
     duration?: number
     hookType?: string
 }
@@ -174,7 +175,7 @@ export async function POST(
         // Generate episode with YouTube content
         const fullPrompt = `Create Episode ${nextEpisodeNumber} with ${totalScenes} scenes for channel "${channel.name}"
 NICHE: ${channel.niche}
-STYLE: ${styleKeywords}
+VISUAL STYLE: ${styleKeywords}
 DIALOGUE LANGUAGE: ${dialogueLangLabel.toUpperCase()}
 ${characterBible || '(No host/characters for this episode)'}
 ${existingEpisodesSummary}
@@ -185,22 +186,39 @@ ${customContentInstr}
 📢 CHANNEL MENTION: ${channelMentionInstr}
 📣 CTA: ${ctaInstruction}
 
-Return JSON with episode content AND YouTube metadata:
+IMPORTANT - EACH SCENE MUST HAVE DETAILED PROMPT:
+Return JSON with this EXACT structure:
 {
     "title": "Episode title in ${dialogueLangLabel}",
     "synopsis": "Brief summary",
     "storyOutline": "Story arc",
     "topicIdea": "Theme",
     "scenes": [
-        {"order": 1, "title": "Scene 1", "dialogue": "18-22 words in ${dialogueLangLabel}", "promptText": "${characterBible ? '[character description verbatim] ' : ''}[subject/action] in [place]. Style: ${styleKeywords}. Mood: [tone]", "duration": 8}
+        {
+            "order": 1,
+            "title": "Scene title",
+            "duration": 8,
+            "voiceover": "REQUIRED: 18-25 words narration/dialogue in ${dialogueLangLabel}. This is what the host SAYS.",
+            "promptText": "DETAILED VISUAL DESCRIPTION - Must include ALL of these elements:\\n- SUBJECT: ${characterBible ? 'Full character description (appearance, clothing, expression, pose)' : 'Main subject with full visual details'}\\n- ACTION: What is happening, gestures, movements\\n- ENVIRONMENT: Location details, set pieces, props\\n- CAMERA: Movement type (dolly/pan/static/tracking), lens (24mm/35mm/50mm/85mm), angle (eye-level/high/low)\\n- LIGHTING: Type (natural/studio/cinematic), direction, shadows, color temperature\\n- STYLE: ${styleKeywords}\\n- MOOD: Emotional tone\\n- AUDIO: Background sounds, SFX"
+        }
     ],
     "youtubeTitle": "SEO-optimized title with hook (60 chars max) in ${dialogueLangLabel}",
     "youtubeDescription": "Engaging description with keywords (300-500 chars) in ${dialogueLangLabel}",
-    "youtubeTags": ["tag1", "tag2", "tag3", "...up to 15 relevant tags"],
-    "thumbnailPrompt": "Thumbnail image description with 3-8 HOOK WORDS visible as text overlay. Style: eye-catching, vibrant, clickbait-worthy"
+    "youtubeTags": ["tag1", "tag2", "...up to 15 tags"],
+    "thumbnailPrompt": "Thumbnail description with 3-8 HOOK WORDS as text overlay"
 }
 
-Generate ALL ${totalScenes} scenes. Return ONLY JSON.`
+EXAMPLE OF GOOD SCENE promptText:
+"${characterBible ? '[Full host description: Vietnamese woman, 28 years old, long black hair, wearing professional blue blazer, warm smile, confident posture]' : 'Close-up of'} standing at modern news desk, gesturing towards floating graphics showing energy bills. CAMERA: Slow dolly in, 35mm lens, eye-level. LIGHTING: Soft studio key light from left, fill light, warm 5600K. ENVIRONMENT: Professional studio with LED screens, minimal decoration. STYLE: ${styleKeywords}. MOOD: Informative yet warm. AUDIO: Soft ambient office sounds, subtle news music."
+
+CRITICAL RULES:
+1. voiceover field = WHAT HOST SAYS (dialogue/narration script)
+2. promptText field = VISUAL DESCRIPTION for AI video generation
+3. ${characterBible ? 'Include FULL character appearance in EVERY scene promptText' : 'Use descriptive visual subjects'}
+4. Include camera, lighting, environment details in EVERY promptText
+5. ALL dialogue/voiceover must be in ${dialogueLangLabel.toUpperCase()}
+
+Generate ALL ${totalScenes} scenes with RICH DETAILED prompts. Return ONLY valid JSON.`
 
         let episodeData: EpisodeData
         let allScenes: SceneData[] = []
@@ -295,13 +313,22 @@ Return ONLY JSON.`
                         charactersUsed: useCharacters ? (selectedCharacterIds.length || 'all') : 'none'
                     }),
                     scenes: {
-                        create: allScenes.map((scene, index) => ({
-                            order: scene.order || index + 1,
-                            title: scene.title || `Scene ${index + 1}`,
-                            promptText: scene.promptText || scene.dialogue || 'Scene prompt',
-                            duration: scene.duration || 8,
-                            hookType: scene.hookType || null
-                        }))
+                        create: allScenes.map((scene, index) => {
+                            // Combine voiceover/dialogue into promptText for complete scene info
+                            const voiceContent = scene.voiceover || scene.dialogue || ''
+                            const visualPrompt = scene.promptText || 'Scene visual description'
+                            const fullPrompt = voiceContent
+                                ? `[VOICEOVER: ${voiceContent}]\n\n${visualPrompt}`
+                                : visualPrompt
+
+                            return {
+                                order: scene.order || index + 1,
+                                title: scene.title || `Scene ${index + 1}`,
+                                promptText: fullPrompt,
+                                duration: scene.duration || 8,
+                                hookType: scene.hookType || null
+                            }
+                        })
                     }
                 },
                 include: {
