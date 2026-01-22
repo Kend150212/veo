@@ -21,6 +21,11 @@ interface EpisodeData {
     storyOutline: string
     topicIdea: string
     scenes: SceneData[]
+    // YouTube content
+    youtubeTitle?: string
+    youtubeDescription?: string
+    youtubeTags?: string[]
+    thumbnailPrompt?: string
 }
 
 // POST: Generate a new episode with AI-created content
@@ -35,7 +40,12 @@ export async function POST(
         }
 
         const { id } = await params
-        const { totalScenes = 10 } = await req.json()
+        const {
+            totalScenes = 10,
+            useCharacters = true,
+            selectedCharacterIds = [],
+            selectedStyleId = null
+        } = await req.json()
 
         // Get channel with characters AND existing episodes
         const channel = await prisma.channel.findFirst({
@@ -65,8 +75,9 @@ export async function POST(
             return NextResponse.json({ error: 'Chưa cấu hình API key' }, { status: 400 })
         }
 
-        // Get visual style
-        const visualStyle = channel.visualStyleId ? getStyleById(channel.visualStyleId) : null
+        // Get visual style - use selected or channel default
+        const styleId = selectedStyleId || channel.visualStyleId
+        const visualStyle = styleId ? getStyleById(styleId) : null
         const styleKeywords = visualStyle?.promptKeywords || channel.visualStyleKeywords || 'cinematic, professional'
 
         // Parse knowledge base
@@ -77,12 +88,20 @@ export async function POST(
 
         const nextEpisodeNumber = channel._count.episodes + 1
 
-        // Character bible
-        const characterBible = channel.characters.length > 0
-            ? `\nCHARACTER BIBLE:\n${channel.characters.map((c: { name: string; role: string; fullDescription: string }) =>
-                `[${c.name}] - ${c.role}: ${c.fullDescription}`
-            ).join('\n')}`
-            : ''
+        // Build character bible based on selection
+        let characterBible = ''
+        if (useCharacters && channel.characters.length > 0) {
+            // Filter characters if specific ones selected
+            const charsToUse = selectedCharacterIds.length > 0
+                ? channel.characters.filter((c: { id: string }) => selectedCharacterIds.includes(c.id))
+                : channel.characters
+
+            if (charsToUse.length > 0) {
+                characterBible = `\nCHARACTER BIBLE:\n${charsToUse.map((c: { name: string; role: string; fullDescription: string }) =>
+                    `[${c.name}] - ${c.role}: ${c.fullDescription}`
+                ).join('\n')}`
+            }
+        }
 
         // Existing episodes (avoid duplication)
         const recentEpisodes = channel.episodes.slice(-5)
@@ -96,24 +115,30 @@ export async function POST(
 
         console.log('=== EPISODE START ===')
         console.log('Channel:', channel.name, '| Scenes:', totalScenes)
+        console.log('Use Characters:', useCharacters, '| Selected:', selectedCharacterIds.length || 'all')
+        console.log('Style:', styleId || 'default')
 
-        // Generate ALL at once - let AI decide how much it can handle
+        // Generate episode with YouTube content
         const fullPrompt = `Create Episode ${nextEpisodeNumber} with ${totalScenes} scenes for channel "${channel.name}"
 NICHE: ${channel.niche}
 STYLE: ${styleKeywords}
 DIALOGUE: ${dialogueLangLabel.toUpperCase()} ONLY
-${characterBible}
+${characterBible || '(No host/characters for this episode)'}
 ${existingEpisodesSummary}
 
-Return JSON:
+Return JSON with episode content AND YouTube metadata:
 {
-    "title": "Episode title",
+    "title": "Episode title in ${dialogueLangLabel}",
     "synopsis": "Brief summary",
     "storyOutline": "Story arc",
     "topicIdea": "Theme",
     "scenes": [
-        {"order": 1, "title": "Scene 1", "dialogue": "18-22 words in ${dialogueLangLabel}", "promptText": "[character] [action] in [place]. Style: ${styleKeywords}", "duration": 8}
-    ]
+        {"order": 1, "title": "Scene 1", "dialogue": "18-22 words in ${dialogueLangLabel}", "promptText": "${characterBible ? '[character description verbatim] ' : ''}[subject/action] in [place]. Style: ${styleKeywords}. Mood: [tone]", "duration": 8}
+    ],
+    "youtubeTitle": "SEO-optimized title with hook (60 chars max) in ${dialogueLangLabel}",
+    "youtubeDescription": "Engaging description with keywords (300-500 chars) in ${dialogueLangLabel}",
+    "youtubeTags": ["tag1", "tag2", "tag3", "...up to 15 relevant tags"],
+    "thumbnailPrompt": "Thumbnail image description with 3-8 HOOK WORDS visible as text overlay. Style: eye-catching, vibrant, clickbait-worthy"
 }
 
 Generate ALL ${totalScenes} scenes. Return ONLY JSON.`
@@ -122,8 +147,7 @@ Generate ALL ${totalScenes} scenes. Return ONLY JSON.`
         let allScenes: SceneData[] = []
 
         try {
-            // First attempt - try to get everything
-            console.log('[Gen] Attempting full generation...')
+            console.log('[Gen] Generating episode...')
             const result = await generateText(config, fullPrompt)
 
             const jsonMatch = result.match(/\{[\s\S]*\}/)
@@ -136,7 +160,7 @@ Generate ALL ${totalScenes} scenes. Return ONLY JSON.`
             console.log('[Gen] Got', allScenes.length, 'scenes')
 
         } catch (error) {
-            console.error('[Gen] Initial error:', error)
+            console.error('[Gen] Error:', error)
             return NextResponse.json({
                 error: 'Không thể tạo episode. Vui lòng thử lại.',
                 details: String(error)
@@ -152,7 +176,7 @@ Generate ALL ${totalScenes} scenes. Return ONLY JSON.`
             const startFrom = allScenes.length + 1
             const remaining = totalScenes - allScenes.length
 
-            console.log(`[Continue] Attempt ${attempts}: Need ${remaining} more scenes from ${startFrom}`)
+            console.log(`[Continue] Need ${remaining} more scenes from ${startFrom}`)
 
             const continuePrompt = `Continue Episode "${episodeData.title}" - generate scenes ${startFrom} to ${totalScenes}
 CONTEXT: ${episodeData.synopsis}
@@ -160,9 +184,8 @@ STYLE: ${styleKeywords}
 DIALOGUE: ${dialogueLangLabel.toUpperCase()} ONLY
 ${characterBible}
 
-Generate ${remaining} more scenes continuing the story.
-Return JSON array ONLY:
-{"scenes": [{"order": ${startFrom}, "title": "Scene ${startFrom}", "dialogue": "...", "promptText": "...", "duration": 8}]}
+Generate ${remaining} more scenes.
+Return JSON: {"scenes": [{"order": ${startFrom}, "title": "Scene ${startFrom}", "dialogue": "...", "promptText": "...", "duration": 8}]}
 Return ONLY JSON.`
 
             try {
@@ -177,11 +200,10 @@ Return ONLY JSON.`
                 }
             } catch (contError) {
                 console.error('[Continue] Error:', contError)
-                break // Stop trying, use what we have
+                break
             }
         }
 
-        // Check if we have any scenes
         if (allScenes.length === 0) {
             return NextResponse.json({
                 error: 'Không thể tạo scenes. Vui lòng thử lại.',
@@ -189,7 +211,7 @@ Return ONLY JSON.`
             }, { status: 400 })
         }
 
-        console.log('[Final] Total scenes:', allScenes.length, 'of', totalScenes, 'requested')
+        console.log('[Final] Total scenes:', allScenes.length)
 
         // Save to database
         try {
@@ -204,6 +226,15 @@ Return ONLY JSON.`
                     generatedScenes: allScenes.length,
                     status: 'completed',
                     channelId: id,
+                    // Store YouTube content in metadata field (as JSON)
+                    metadata: JSON.stringify({
+                        youtubeTitle: episodeData.youtubeTitle || '',
+                        youtubeDescription: episodeData.youtubeDescription || '',
+                        youtubeTags: episodeData.youtubeTags || [],
+                        thumbnailPrompt: episodeData.thumbnailPrompt || '',
+                        styleUsed: styleId || channel.visualStyleId || 'default',
+                        charactersUsed: useCharacters ? (selectedCharacterIds.length || 'all') : 'none'
+                    }),
                     scenes: {
                         create: allScenes.map((scene, index) => ({
                             order: scene.order || index + 1,
@@ -219,9 +250,21 @@ Return ONLY JSON.`
                 }
             })
 
-            console.log('=== EPISODE CREATED ===', episode.id, '|', episode.scenes.length, 'scenes')
+            console.log('=== EPISODE CREATED ===', episode.id)
 
-            return NextResponse.json({ success: true, episode })
+            // Parse metadata back for response
+            const metadata = episode.metadata ? JSON.parse(episode.metadata as string) : {}
+
+            return NextResponse.json({
+                success: true,
+                episode: {
+                    ...episode,
+                    youtubeTitle: metadata.youtubeTitle,
+                    youtubeDescription: metadata.youtubeDescription,
+                    youtubeTags: metadata.youtubeTags,
+                    thumbnailPrompt: metadata.thumbnailPrompt
+                }
+            })
         } catch (dbError) {
             console.error('DB Error:', dbError)
             return NextResponse.json({

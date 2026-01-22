@@ -214,6 +214,7 @@ model Episode {
   
   channelId       String
   channel         Channel   @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  metadata        String?   // JSON: youtubeTitle, youtubeDescription, youtubeTags, thumbnailPrompt
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 }

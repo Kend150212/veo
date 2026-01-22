@@ -26,6 +26,7 @@ import {
     Trash2
 } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { VISUAL_STYLES } from '@/lib/ai-story'
 
 interface EpisodeScene {
     id: string
@@ -93,6 +94,11 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
     const [showKnowledge, setShowKnowledge] = useState(false)
     const [expandedNiche, setExpandedNiche] = useState(false)
 
+    // Episode creation options
+    const [useCharacters, setUseCharacters] = useState(true)
+    const [selectedCharacterIds, setSelectedCharacterIds] = useState<string[]>([])
+    const [selectedStyleId, setSelectedStyleId] = useState<string>('')
+
     const truncateText = (text: string, maxLength: number = 100) => {
         if (text.length <= maxLength) return text
         return text.substring(0, maxLength).trim() + '...'
@@ -125,7 +131,12 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
             const res = await fetch(`/api/channels/${id}/episodes`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ totalScenes: sceneCount })
+                body: JSON.stringify({
+                    totalScenes: sceneCount,
+                    useCharacters,
+                    selectedCharacterIds: useCharacters ? selectedCharacterIds : [],
+                    selectedStyleId: selectedStyleId || null
+                })
             })
 
             const data = await res.json()
@@ -564,7 +575,9 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
             {/* Generate New Episode */}
             <div className="glass-card p-6 mb-6">
                 <h3 className="font-semibold mb-4">Tạo Episode Mới</h3>
-                <div className="flex items-end gap-4 flex-wrap">
+
+                {/* Row 1: Scene count, Language */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
                     <div>
                         <label className="block text-sm font-medium mb-2">Số cảnh</label>
                         <input
@@ -576,53 +589,115 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
                                 const val = parseInt(e.target.value) || 10
                                 setSceneCount(Math.max(1, val))
                             }}
-                            className="input-field w-32"
+                            className="input-field w-full"
                         />
                         <p className="text-xs text-[var(--text-muted)] mt-1">
-                            ~{Math.round(sceneCount * 8 / 60)} phút video
+                            ~{Math.round(sceneCount * 8 / 60)} phút
                         </p>
                     </div>
+
                     <div>
-                        <label className="block text-sm font-medium mb-2">Ngôn ngữ lời thoại</label>
-                        <div className="flex gap-2">
+                        <label className="block text-sm font-medium mb-2">Ngôn ngữ</label>
+                        <div className="flex gap-1">
                             <button
                                 onClick={() => handleUpdateLanguage('vi')}
-                                className={`px-4 py-2 rounded-lg text-sm font-medium transition ${channel.dialogueLanguage === 'vi'
+                                className={`px-3 py-2 rounded-lg text-sm font-medium transition flex-1 ${channel.dialogueLanguage === 'vi'
                                     ? 'bg-[var(--accent-primary)] text-white'
                                     : 'bg-[var(--bg-tertiary)] text-[var(--text-secondary)]'
                                     }`}
                             >
-                                🇻🇳 Tiếng Việt
+                                🇻🇳 VI
                             </button>
                             <button
                                 onClick={() => handleUpdateLanguage('en')}
-                                className={`px-4 py-2 rounded-lg text-sm font-medium transition ${channel.dialogueLanguage === 'en'
+                                className={`px-3 py-2 rounded-lg text-sm font-medium transition flex-1 ${channel.dialogueLanguage === 'en'
                                     ? 'bg-[var(--accent-primary)] text-white'
                                     : 'bg-[var(--bg-tertiary)] text-[var(--text-secondary)]'
                                     }`}
                             >
-                                🇺🇸 English
+                                🇺🇸 EN
                             </button>
                         </div>
                     </div>
-                    <button
-                        onClick={handleGenerateEpisode}
-                        disabled={isGenerating}
-                        className="btn-primary flex items-center gap-2"
-                    >
-                        {isGenerating ? (
-                            <>
-                                <Loader2 className="w-4 h-4 animate-spin" />
-                                AI đang tạo...
-                            </>
-                        ) : (
-                            <>
-                                <Sparkles className="w-4 h-4" />
-                                Tạo Episode {channel.episodes.length + 1}
-                            </>
-                        )}
-                    </button>
+
+                    <div>
+                        <label className="block text-sm font-medium mb-2">Visual Style</label>
+                        <select
+                            value={selectedStyleId}
+                            onChange={(e) => setSelectedStyleId(e.target.value)}
+                            className="input-field w-full"
+                        >
+                            <option value="">Mặc định kênh</option>
+                            {VISUAL_STYLES.map(style => (
+                                <option key={style.id} value={style.id}>{style.name}</option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium mb-2">Sử dụng Host</label>
+                        <button
+                            onClick={() => setUseCharacters(!useCharacters)}
+                            className={`w-full px-3 py-2 rounded-lg text-sm font-medium transition ${useCharacters
+                                ? 'bg-[var(--accent-primary)] text-white'
+                                : 'bg-[var(--bg-tertiary)] text-[var(--text-secondary)]'
+                                }`}
+                        >
+                            {useCharacters ? '✓ Có Host' : '✗ Không Host'}
+                        </button>
+                    </div>
                 </div>
+
+                {/* Row 2: Character selection (if useCharacters) */}
+                {useCharacters && channel.characters.length > 0 && (
+                    <div className="mb-4 p-3 bg-[var(--bg-tertiary)] rounded-lg">
+                        <label className="block text-sm font-medium mb-2">Chọn nhân vật xuất hiện</label>
+                        <div className="flex flex-wrap gap-2">
+                            {channel.characters.map(char => (
+                                <button
+                                    key={char.id}
+                                    onClick={() => {
+                                        setSelectedCharacterIds(prev =>
+                                            prev.includes(char.id)
+                                                ? prev.filter(id => id !== char.id)
+                                                : [...prev, char.id]
+                                        )
+                                    }}
+                                    className={`px-3 py-1.5 rounded-full text-sm transition ${selectedCharacterIds.includes(char.id) || selectedCharacterIds.length === 0
+                                            ? 'bg-[var(--accent-primary)] text-white'
+                                            : 'bg-[var(--bg-secondary)] text-[var(--text-secondary)]'
+                                        }`}
+                                >
+                                    {char.isMain && '⭐ '}{char.name} ({char.role})
+                                </button>
+                            ))}
+                        </div>
+                        <p className="text-xs text-[var(--text-muted)] mt-2">
+                            {selectedCharacterIds.length === 0
+                                ? 'Sử dụng tất cả nhân vật'
+                                : `Đã chọn ${selectedCharacterIds.length} nhân vật`}
+                        </p>
+                    </div>
+                )}
+
+                {/* Generate button */}
+                <button
+                    onClick={handleGenerateEpisode}
+                    disabled={isGenerating}
+                    className="btn-primary flex items-center gap-2 w-full md:w-auto"
+                >
+                    {isGenerating ? (
+                        <>
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                            AI đang tạo Episode...
+                        </>
+                    ) : (
+                        <>
+                            <Sparkles className="w-4 h-4" />
+                            Tạo Episode {channel.episodes.length + 1}
+                        </>
+                    )}
+                </button>
             </div>
 
             {/* Episodes List */}
