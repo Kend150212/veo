@@ -44,8 +44,21 @@ export async function POST(
             totalScenes = 10,
             useCharacters = true,
             selectedCharacterIds = [],
-            selectedStyleId = null
+            selectedStyleId = null,
+            mentionChannel = false,
+            ctaMode = 'random',
+            selectedCTAs = []
         } = await req.json()
+
+        // CTA options
+        const CTA_MAP: Record<string, string> = {
+            subscribe: 'Subscribe to the channel',
+            like: 'Like this video',
+            comment: 'Leave a comment',
+            share: 'Share with friends',
+            bell: 'Turn on notifications',
+            watch_more: 'Watch more videos'
+        }
 
         // Get channel with characters AND existing episodes
         const channel = await prisma.channel.findFirst({
@@ -117,6 +130,23 @@ export async function POST(
         console.log('Channel:', channel.name, '| Scenes:', totalScenes)
         console.log('Use Characters:', useCharacters, '| Selected:', selectedCharacterIds.length || 'all')
         console.log('Style:', styleId || 'default')
+        console.log('Mention Channel:', mentionChannel, '| CTA Mode:', ctaMode)
+
+        // Build channel mention instruction
+        const channelMentionInstr = mentionChannel
+            ? `IMPORTANT: Naturally mention the channel name "${channel.name}" 1-2 times in the script dialogue (opening or ending).`
+            : 'Do NOT mention any channel name in the dialogue.'
+
+        // Build CTA instruction
+        let ctaInstruction = ''
+        if (ctaMode === 'random') {
+            ctaInstruction = 'Include 1-2 natural CTAs (subscribe, like, comment, share) at appropriate moments in the script.'
+        } else if (selectedCTAs.length > 0) {
+            const ctaTexts = selectedCTAs.map((id: string) => CTA_MAP[id] || id).join(', ')
+            ctaInstruction = `Include these specific CTAs naturally in the script: ${ctaTexts}`
+        } else {
+            ctaInstruction = 'No CTA needed in this episode.'
+        }
 
         // Generate episode with YouTube content
         const fullPrompt = `Create Episode ${nextEpisodeNumber} with ${totalScenes} scenes for channel "${channel.name}"
@@ -125,6 +155,9 @@ STYLE: ${styleKeywords}
 DIALOGUE: ${dialogueLangLabel.toUpperCase()} ONLY
 ${characterBible || '(No host/characters for this episode)'}
 ${existingEpisodesSummary}
+
+📢 CHANNEL MENTION: ${channelMentionInstr}
+📣 CTA: ${ctaInstruction}
 
 Return JSON with episode content AND YouTube metadata:
 {

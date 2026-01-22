@@ -98,6 +98,18 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
     const [useCharacters, setUseCharacters] = useState(true)
     const [selectedCharacterIds, setSelectedCharacterIds] = useState<string[]>([])
     const [selectedStyleId, setSelectedStyleId] = useState<string>('')
+    const [mentionChannel, setMentionChannel] = useState(false)
+    const [ctaMode, setCtaMode] = useState<'random' | 'select'>('random')
+    const [selectedCTAs, setSelectedCTAs] = useState<string[]>([])
+
+    const CTA_OPTIONS = [
+        { id: 'subscribe', label: '🔔 Subscribe', text: 'Đăng ký kênh' },
+        { id: 'like', label: '👍 Like', text: 'Thích video' },
+        { id: 'comment', label: '💬 Comment', text: 'Bình luận' },
+        { id: 'share', label: '📤 Share', text: 'Chia sẻ' },
+        { id: 'bell', label: '🔔 Bell', text: 'Bật chuông thông báo' },
+        { id: 'watch_more', label: '▶️ Xem thêm', text: 'Xem video khác' },
+    ]
 
     const truncateText = (text: string, maxLength: number = 100) => {
         if (text.length <= maxLength) return text
@@ -135,7 +147,10 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
                     totalScenes: sceneCount,
                     useCharacters,
                     selectedCharacterIds: useCharacters ? selectedCharacterIds : [],
-                    selectedStyleId: selectedStyleId || null
+                    selectedStyleId: selectedStyleId || null,
+                    mentionChannel,
+                    ctaMode,
+                    selectedCTAs: ctaMode === 'select' ? selectedCTAs : []
                 })
             })
 
@@ -664,8 +679,8 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
                                         )
                                     }}
                                     className={`px-3 py-1.5 rounded-full text-sm transition ${selectedCharacterIds.includes(char.id) || selectedCharacterIds.length === 0
-                                            ? 'bg-[var(--accent-primary)] text-white'
-                                            : 'bg-[var(--bg-secondary)] text-[var(--text-secondary)]'
+                                        ? 'bg-[var(--accent-primary)] text-white'
+                                        : 'bg-[var(--bg-secondary)] text-[var(--text-secondary)]'
                                         }`}
                                 >
                                     {char.isMain && '⭐ '}{char.name} ({char.role})
@@ -679,6 +694,71 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
                         </p>
                     </div>
                 )}
+
+                {/* Row 3: Channel Mention & CTA */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div className="p-3 bg-[var(--bg-tertiary)] rounded-lg">
+                        <label className="block text-sm font-medium mb-2">Nhắc tên kênh trong script</label>
+                        <button
+                            onClick={() => setMentionChannel(!mentionChannel)}
+                            className={`w-full px-3 py-2 rounded-lg text-sm font-medium transition ${mentionChannel
+                                ? 'bg-[var(--accent-primary)] text-white'
+                                : 'bg-[var(--bg-secondary)] text-[var(--text-secondary)]'
+                                }`}
+                        >
+                            {mentionChannel ? '✓ Có nhắc kênh' : '✗ Không nhắc kênh'}
+                        </button>
+                        <p className="text-xs text-[var(--text-muted)] mt-1">
+                            {mentionChannel ? `AI sẽ nhắc đến "${channel.name}" trong lời thoại` : 'Không nhắc tên kênh'}
+                        </p>
+                    </div>
+
+                    <div className="p-3 bg-[var(--bg-tertiary)] rounded-lg">
+                        <label className="block text-sm font-medium mb-2">Call to Action (CTA)</label>
+                        <div className="flex gap-2 mb-2">
+                            <button
+                                onClick={() => setCtaMode('random')}
+                                className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition ${ctaMode === 'random'
+                                    ? 'bg-[var(--accent-primary)] text-white'
+                                    : 'bg-[var(--bg-secondary)] text-[var(--text-secondary)]'
+                                    }`}
+                            >
+                                🎲 Random
+                            </button>
+                            <button
+                                onClick={() => setCtaMode('select')}
+                                className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition ${ctaMode === 'select'
+                                    ? 'bg-[var(--accent-primary)] text-white'
+                                    : 'bg-[var(--bg-secondary)] text-[var(--text-secondary)]'
+                                    }`}
+                            >
+                                ✓ Chọn CTA
+                            </button>
+                        </div>
+                        {ctaMode === 'select' && (
+                            <div className="flex flex-wrap gap-1.5">
+                                {CTA_OPTIONS.map(cta => (
+                                    <button
+                                        key={cta.id}
+                                        onClick={() => {
+                                            setSelectedCTAs(prev =>
+                                                prev.includes(cta.id)
+                                                    ? prev.filter(id => id !== cta.id)
+                                                    : [...prev, cta.id]
+                                            )
+                                        }}
+                                        className={`px-2 py-1 rounded text-xs transition ${selectedCTAs.includes(cta.id)
+                                            ? 'bg-[var(--accent-primary)] text-white'
+                                            : 'bg-[var(--bg-primary)] text-[var(--text-secondary)]'
+                                            }`}
+                                    >
+                                        {cta.label}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                </div>
 
                 {/* Generate button */}
                 <button
