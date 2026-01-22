@@ -39,9 +39,13 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: 'Chưa đăng nhập' }, { status: 401 })
         }
 
-        const { url } = await req.json()
+        const body = await req.json()
+        const { url } = body
+
+        console.log('[Parse URL] Request for:', url)
 
         if (!url) {
+            console.log('[Parse URL] No URL provided')
             return NextResponse.json({ error: 'Vui lòng nhập URL' }, { status: 400 })
         }
 
@@ -52,36 +56,49 @@ export async function POST(req: Request) {
             if (!['http:', 'https:'].includes(parsedUrl.protocol)) {
                 throw new Error('Invalid protocol')
             }
-        } catch {
-            return NextResponse.json({ error: 'URL không hợp lệ' }, { status: 400 })
+        } catch (e) {
+            console.log('[Parse URL] Invalid URL:', url, e)
+            return NextResponse.json({ error: 'URL không hợp lệ. Hãy đảm bảo URL bắt đầu bằng http:// hoặc https://' }, { status: 400 })
         }
 
         // Fetch the URL content
         let htmlContent: string
         try {
-            const response = await fetch(url, {
+            console.log('[Parse URL] Fetching:', parsedUrl.href)
+            const response = await fetch(parsedUrl.href, {
                 headers: {
-                    'User-Agent': 'Mozilla/5.0 (compatible; VeoPromptBot/1.0)',
-                    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                    'Accept-Language': 'en-US,en;q=0.9,vi;q=0.8'
                 },
-                signal: AbortSignal.timeout(10000) // 10 second timeout
+                signal: AbortSignal.timeout(15000) // 15 second timeout
             })
+
+            console.log('[Parse URL] Response status:', response.status)
 
             if (!response.ok) {
                 throw new Error(`HTTP ${response.status}`)
             }
 
             htmlContent = await response.text()
+            console.log('[Parse URL] Content length:', htmlContent.length)
         } catch (error) {
-            console.error('URL fetch error:', error)
-            return NextResponse.json({ error: 'Không thể tải nội dung từ URL. Vui lòng kiểm tra URL hoặc copy-paste nội dung trực tiếp.' }, { status: 400 })
+            console.error('[Parse URL] Fetch error:', error)
+            return NextResponse.json({
+                error: 'Không thể tải trang web. Website có thể chặn bot hoặc không truy cập được. Hãy copy-paste nội dung trực tiếp.',
+                details: String(error)
+            }, { status: 400 })
         }
 
         // Convert HTML to text
         const textContent = htmlToText(htmlContent)
+        console.log('[Parse URL] Text content length:', textContent.length)
 
-        if (textContent.length < 100) {
-            return NextResponse.json({ error: 'Nội dung trang web quá ngắn hoặc không thể đọc được' }, { status: 400 })
+        if (textContent.length < 50) {
+            return NextResponse.json({
+                error: 'Nội dung trang web quá ngắn hoặc không đọc được. Hãy copy-paste nội dung trực tiếp.',
+                contentLength: textContent.length
+            }, { status: 400 })
         }
 
         // Limit content length for AI processing
