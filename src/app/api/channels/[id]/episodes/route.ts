@@ -232,14 +232,39 @@ Generate ALL ${totalScenes} scenes with RICH DETAILED prompts. Return ONLY valid
                 throw new Error('No JSON in response')
             }
 
-            episodeData = JSON.parse(jsonMatch[0])
+            // Sanitize JSON string to fix common issues
+            let jsonStr = jsonMatch[0]
+            // Remove control characters
+            jsonStr = jsonStr.replace(/[\x00-\x1F\x7F]/g, ' ')
+            // Fix unescaped quotes in strings (common AI issue)
+            jsonStr = jsonStr.replace(/:\s*"([^"]*?)(?<!\\)"(?=[^:}\],]*[,}\]])/g, (match, content) => {
+                // Escape internal quotes
+                const escaped = content.replace(/(?<!\\)"/g, '\\"')
+                return `: "${escaped}"`
+            })
+            // Remove trailing commas before } or ]
+            jsonStr = jsonStr.replace(/,(\s*[}\]])/g, '$1')
+
+            try {
+                episodeData = JSON.parse(jsonStr)
+            } catch (parseError) {
+                console.error('[Gen] JSON parse failed, trying simpler fix...')
+                // Try more aggressive cleaning
+                jsonStr = jsonMatch[0]
+                    .replace(/[\x00-\x1F\x7F]/g, ' ')
+                    .replace(/\n/g, ' ')
+                    .replace(/\r/g, ' ')
+                    .replace(/\t/g, ' ')
+                episodeData = JSON.parse(jsonStr)
+            }
+
             allScenes = episodeData.scenes || []
             console.log('[Gen] Got', allScenes.length, 'scenes')
 
         } catch (error) {
             console.error('[Gen] Error:', error)
             return NextResponse.json({
-                error: 'Không thể tạo episode. Vui lòng thử lại.',
+                error: 'Không thể tạo episode. AI trả về format không hợp lệ. Vui lòng thử lại với ít scenes hơn.',
                 details: String(error)
             }, { status: 400 })
         }
