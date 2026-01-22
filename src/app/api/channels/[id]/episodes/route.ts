@@ -151,9 +151,23 @@ CRITICAL RULES:
 
 Return ONLY valid JSON, no markdown.`
 
-        console.log('Generating episode for channel:', channel.name, 'scenes:', totalScenes)
-        const result = await generateText(config, episodePrompt)
-        console.log('AI response length:', result?.length || 0)
+        console.log('=== EPISODE GENERATION START ===')
+        console.log('Channel:', channel.name)
+        console.log('Episode number:', nextEpisodeNumber)
+        console.log('Total scenes:', totalScenes)
+        console.log('Prompt length:', episodePrompt.length, 'chars')
+
+        let result: string
+        try {
+            result = await generateText(config, episodePrompt)
+            console.log('AI response length:', result?.length || 0)
+        } catch (aiError) {
+            console.error('AI Generation Error:', aiError)
+            return NextResponse.json({
+                error: 'Lỗi từ AI. Vui lòng thử lại sau.',
+                details: String(aiError)
+            }, { status: 400 })
+        }
 
         // Parse response
         let episodeData
