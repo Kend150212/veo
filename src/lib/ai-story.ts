@@ -207,73 +207,93 @@ const DEFAULT_MODELS = {
 // Generate text using the configured AI
 export async function generateText(config: AIConfig, prompt: string): Promise<string> {
     const model = config.model || DEFAULT_MODELS[config.provider]
+    console.log(`[AI] Generating with ${config.provider}/${model}, prompt length: ${prompt.length}`)
 
-    if (config.provider === 'gemini') {
-        const genAI = new GoogleGenerativeAI(config.apiKey)
-        const genModel = genAI.getGenerativeModel({ model })
-        const result = await genModel.generateContent(prompt)
-        return result.response.text()
-    }
+    try {
+        if (config.provider === 'gemini') {
+            const genAI = new GoogleGenerativeAI(config.apiKey)
+            const genModel = genAI.getGenerativeModel({ model })
+            const result = await genModel.generateContent(prompt)
+            const text = result.response.text()
+            console.log(`[AI] Gemini response length: ${text.length}`)
+            return text
+        }
 
-    // OpenAI implementation
-    if (config.provider === 'openai') {
-        const response = await fetch('https://api.openai.com/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${config.apiKey}`
-            },
-            body: JSON.stringify({
-                model,
-                messages: [{ role: 'user', content: prompt }],
-                max_tokens: 4000
+        // OpenAI implementation
+        if (config.provider === 'openai') {
+            const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${config.apiKey}`
+                },
+                body: JSON.stringify({
+                    model,
+                    messages: [{ role: 'user', content: prompt }],
+                    max_tokens: 8000
+                })
             })
-        })
-        const data = await response.json()
-        if (data.error) throw new Error(data.error.message)
-        return data.choices[0].message.content
-    }
+            const data = await response.json()
+            if (data.error) {
+                console.error('[AI] OpenAI error:', data.error)
+                throw new Error(data.error.message)
+            }
+            console.log(`[AI] OpenAI response received`)
+            return data.choices[0].message.content
+        }
 
-    // Deepseek implementation
-    if (config.provider === 'deepseek') {
-        const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${config.apiKey}`
-            },
-            body: JSON.stringify({
-                model,
-                messages: [{ role: 'user', content: prompt }],
-                max_tokens: 4000
+        // Deepseek implementation
+        if (config.provider === 'deepseek') {
+            const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${config.apiKey}`
+                },
+                body: JSON.stringify({
+                    model,
+                    messages: [{ role: 'user', content: prompt }],
+                    max_tokens: 8000
+                })
             })
-        })
-        const data = await response.json()
-        if (data.error) throw new Error(data.error.message)
-        return data.choices[0].message.content
-    }
+            const data = await response.json()
+            if (data.error) {
+                console.error('[AI] Deepseek error:', data.error)
+                throw new Error(data.error.message)
+            }
+            console.log(`[AI] Deepseek response received`)
+            return data.choices[0].message.content
+        }
 
-    // Anthropic implementation
-    if (config.provider === 'anthropic') {
-        const response = await fetch('https://api.anthropic.com/v1/messages', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'x-api-key': config.apiKey,
-                'anthropic-version': '2023-06-01'
-            },
-            body: JSON.stringify({
-                model,
-                max_tokens: 4000,
-                messages: [{ role: 'user', content: prompt }]
+        // Anthropic implementation
+        if (config.provider === 'anthropic') {
+            const response = await fetch('https://api.anthropic.com/v1/messages', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-api-key': config.apiKey,
+                    'anthropic-version': '2023-06-01'
+                },
+                body: JSON.stringify({
+                    model,
+                    max_tokens: 8000,
+                    messages: [{ role: 'user', content: prompt }]
+                })
             })
-        })
-        const data = await response.json()
-        if (data.error) throw new Error(data.error.message)
-        return data.content[0].text
-    }
+            const data = await response.json()
+            if (data.error) {
+                console.error('[AI] Anthropic error:', data.error)
+                throw new Error(data.error.message)
+            }
+            console.log(`[AI] Anthropic response received`)
+            return data.content[0].text
+        }
 
-    throw new Error(`Unsupported AI provider: ${config.provider}`)
+        throw new Error(`Unsupported AI provider: ${config.provider}`)
+    } catch (error) {
+        console.error(`[AI] Error with ${config.provider}:`, error)
+        throw error
+    }
 }
 
 // Analyze input and suggest genres

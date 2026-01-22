@@ -68,10 +68,11 @@ export async function POST(
             ).join('\n\n')}`
             : ''
 
-        // Build existing episodes summary to avoid duplication
-        const existingEpisodesSummary = channel.episodes.length > 0
-            ? `\n\n⚠️ EXISTING EPISODES (DO NOT DUPLICATE THESE TOPICS/CONTENT):\n${channel.episodes.map((ep: { episodeNumber: number; title: string; topicIdea: string | null; synopsis: string | null }) =>
-                `Episode ${ep.episodeNumber}: "${ep.title}" - ${ep.topicIdea || ep.synopsis || 'No summary'}`
+        // Build existing episodes summary to avoid duplication (limit to last 10 episodes to prevent prompt overflow)
+        const recentEpisodes = channel.episodes.slice(-10) // Only last 10 episodes
+        const existingEpisodesSummary = recentEpisodes.length > 0
+            ? `\n\n⚠️ EXISTING EPISODES (DO NOT DUPLICATE THESE TOPICS - showing ${recentEpisodes.length} of ${channel.episodes.length}):\n${recentEpisodes.map((ep: { episodeNumber: number; title: string; topicIdea: string | null; synopsis: string | null }) =>
+                `Ep${ep.episodeNumber}: ${ep.title} - ${(ep.topicIdea || ep.synopsis || 'No summary').substring(0, 80)}`
             ).join('\n')}`
             : ''
 
