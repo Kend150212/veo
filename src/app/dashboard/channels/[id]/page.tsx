@@ -46,6 +46,16 @@ interface Episode {
     totalScenes: number
     generatedScenes: number
     scenes: EpisodeScene[]
+    categoryId: string | null
+}
+
+interface EpisodeCategory {
+    id: string
+    name: string
+    description: string | null
+    color: string
+    order: number
+    _count?: { episodes: number }
 }
 
 interface ChannelCharacter {
@@ -67,6 +77,7 @@ interface Channel {
     dialogueLanguage: string
     characters: ChannelCharacter[]
     episodes: Episode[]
+    categories?: EpisodeCategory[]
 }
 
 export default function ChannelDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -107,6 +118,15 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
     const [voiceGender, setVoiceGender] = useState<'male' | 'female' | 'auto'>('auto')
     const [voiceTone, setVoiceTone] = useState<'warm' | 'professional' | 'energetic' | 'calm' | 'serious'>('warm')
 
+    // Category management
+    const [categories, setCategories] = useState<EpisodeCategory[]>([])
+    const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null)  // For episode creation
+    const [filterCategoryId, setFilterCategoryId] = useState<string | null>(null)  // For filtering episodes
+    const [showCategoryModal, setShowCategoryModal] = useState(false)
+    const [editingCategory, setEditingCategory] = useState<EpisodeCategory | null>(null)
+    const [newCategoryName, setNewCategoryName] = useState('')
+    const [newCategoryColor, setNewCategoryColor] = useState('#6366f1')
+
     // Custom content input
     const [customContent, setCustomContent] = useState('')
     const [contentUrl, setContentUrl] = useState('')
@@ -136,6 +156,8 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
             const data = await res.json()
             if (data.channel) {
                 setChannel(data.channel)
+                // Fetch categories after channel loads
+                fetchCategories()
             } else {
                 toast.error('Không tìm thấy kênh')
                 router.push('/dashboard/channels')
@@ -144,6 +166,70 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
             toast.error('Lỗi tải kênh')
         } finally {
             setIsLoading(false)
+        }
+    }
+
+    // Category management functions
+    const fetchCategories = async () => {
+        try {
+            const res = await fetch(`/api/channels/${id}/categories`)
+            const data = await res.json()
+            if (data.categories) {
+                setCategories(data.categories)
+            }
+        } catch (error) {
+            console.error('Error fetching categories:', error)
+        }
+    }
+
+    const handleCreateCategory = async () => {
+        if (!newCategoryName.trim()) {
+            toast.error('Vui lòng nhập tên danh mục')
+            return
+        }
+
+        try {
+            const res = await fetch(`/api/channels/${id}/categories`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: newCategoryName.trim(),
+                    color: newCategoryColor
+                })
+            })
+
+            if (res.ok) {
+                toast.success('Đã tạo danh mục')
+                setNewCategoryName('')
+                setNewCategoryColor('#6366f1')
+                setShowCategoryModal(false)
+                fetchCategories()
+            } else {
+                const data = await res.json()
+                toast.error(data.error || 'Không thể tạo danh mục')
+            }
+        } catch (error) {
+            toast.error('Lỗi tạo danh mục')
+        }
+    }
+
+    const handleDeleteCategory = async (categoryId: string) => {
+        if (!confirm('Xóa danh mục này? Các episode sẽ được chuyển về "Chưa phân loại"')) return
+
+        try {
+            const res = await fetch(`/api/channels/${id}/categories?categoryId=${categoryId}`, {
+                method: 'DELETE'
+            })
+
+            if (res.ok) {
+                toast.success('Đã xóa danh mục')
+                fetchCategories()
+                fetchChannel()
+            } else {
+                toast.error('Không thể xóa danh mục')
+            }
+        } catch (error) {
+            toast.error('Lỗi xóa danh mục')
         }
     }
 
@@ -196,7 +282,8 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
                     customContent: customContent.trim() || null,
                     voiceOverMode,
                     voiceGender: voiceOverMode === 'voice_over' ? voiceGender : 'auto',
-                    voiceTone: voiceOverMode === 'voice_over' ? voiceTone : 'warm'
+                    voiceTone: voiceOverMode === 'voice_over' ? voiceTone : 'warm',
+                    categoryId: selectedCategoryId
                 })
             })
 
@@ -925,6 +1012,115 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
                     Episodes ({channel.episodes.length})
                 </h3>
 
+                {/* Category Filter Tabs */}
+                {categories.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mb-4">
+                        <button
+                            onClick={() => setFilterCategoryId(null)}
+                            className={`px-3 py-1.5 rounded-full text-sm transition ${filterCategoryId === null
+                                    ? 'bg-[var(--accent-primary)] text-white'
+                                    : 'bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]'
+                                }`}
+                        >
+                            📁 Tất cả ({channel.episodes.length})
+                        </button>
+                        {categories.map(cat => {
+                            const count = channel.episodes.filter(e => e.categoryId === cat.id).length
+                            return (
+                                <button
+                                    key={cat.id}
+                                    onClick={() => setFilterCategoryId(cat.id)}
+                                    className={`px-3 py-1.5 rounded-full text-sm transition flex items-center gap-1 ${filterCategoryId === cat.id
+                                            ? 'text-white'
+                                            : 'bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]'
+                                        }`}
+                                    style={filterCategoryId === cat.id ? { backgroundColor: cat.color } : {}}
+                                >
+                                    <span className="w-2 h-2 rounded-full" style={{ backgroundColor: cat.color }} />
+                                    {cat.name} ({count})
+                                </button>
+                            )
+                        })}
+                        <button
+                            onClick={() => setFilterCategoryId('uncategorized')}
+                            className={`px-3 py-1.5 rounded-full text-sm transition ${filterCategoryId === 'uncategorized'
+                                    ? 'bg-gray-500 text-white'
+                                    : 'bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]'
+                                }`}
+                        >
+                            📂 Chưa phân loại ({channel.episodes.filter(e => !e.categoryId).length})
+                        </button>
+                        <button
+                            onClick={() => setShowCategoryModal(true)}
+                            className="px-3 py-1.5 rounded-full text-sm bg-[var(--bg-tertiary)] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] flex items-center gap-1"
+                        >
+                            <Plus className="w-3 h-3" /> Danh mục
+                        </button>
+                    </div>
+                )}
+
+                {/* Category Management Modal */}
+                {showCategoryModal && (
+                    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                        <div className="glass-card p-6 max-w-md w-full mx-4">
+                            <h3 className="text-lg font-semibold mb-4">📁 Quản lý Danh mục</h3>
+
+                            {/* Create new category */}
+                            <div className="flex gap-2 mb-4">
+                                <input
+                                    type="text"
+                                    value={newCategoryName}
+                                    onChange={(e) => setNewCategoryName(e.target.value)}
+                                    placeholder="Tên danh mục mới..."
+                                    className="input-field flex-1"
+                                />
+                                <input
+                                    type="color"
+                                    value={newCategoryColor}
+                                    onChange={(e) => setNewCategoryColor(e.target.value)}
+                                    className="w-10 h-10 rounded cursor-pointer"
+                                />
+                                <button onClick={handleCreateCategory} className="btn-primary px-4">
+                                    <Plus className="w-4 h-4" />
+                                </button>
+                            </div>
+
+                            {/* List categories */}
+                            <div className="space-y-2 max-h-60 overflow-y-auto">
+                                {categories.map(cat => (
+                                    <div key={cat.id} className="flex items-center justify-between p-2 bg-[var(--bg-secondary)] rounded">
+                                        <div className="flex items-center gap-2">
+                                            <span className="w-4 h-4 rounded" style={{ backgroundColor: cat.color }} />
+                                            <span>{cat.name}</span>
+                                            <span className="text-xs text-[var(--text-muted)]">
+                                                ({cat._count?.episodes || 0} episodes)
+                                            </span>
+                                        </div>
+                                        <button
+                                            onClick={() => handleDeleteCategory(cat.id)}
+                                            className="text-red-400 hover:text-red-300 p-1"
+                                        >
+                                            <Trash2 className="w-4 h-4" />
+                                        </button>
+                                    </div>
+                                ))}
+                                {categories.length === 0 && (
+                                    <p className="text-[var(--text-muted)] text-center py-4">
+                                        Chưa có danh mục nào
+                                    </p>
+                                )}
+                            </div>
+
+                            <button
+                                onClick={() => setShowCategoryModal(false)}
+                                className="btn-secondary w-full mt-4"
+                            >
+                                Đóng
+                            </button>
+                        </div>
+                    </div>
+                )}
+
                 {channel.episodes.length === 0 ? (
                     <div className="glass-card p-8 text-center">
                         <Film className="w-12 h-12 text-[var(--text-muted)] mx-auto mb-3" />
@@ -933,7 +1129,12 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
                         </p>
                     </div>
                 ) : (
-                    channel.episodes.map((episode, index) => (
+                    (filterCategoryId === null
+                        ? channel.episodes
+                        : filterCategoryId === 'uncategorized'
+                            ? channel.episodes.filter(e => !e.categoryId)
+                            : channel.episodes.filter(e => e.categoryId === filterCategoryId)
+                    ).map((episode, index) => (
                         <motion.div
                             key={episode.id}
                             initial={{ opacity: 0, y: 10 }}
