@@ -39,6 +39,51 @@ export async function DELETE(
     }
 }
 
+// PUT: Update episode (categoryId, title, etc.)
+export async function PUT(
+    req: Request,
+    { params }: { params: Promise<{ id: string; episodeId: string }> }
+) {
+    try {
+        const session = await getServerSession(authOptions)
+        if (!session?.user?.id) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+        }
+
+        const { id, episodeId } = await params
+        const { categoryId, title } = await req.json()
+
+        // Verify channel ownership
+        const channel = await prisma.channel.findFirst({
+            where: { id, userId: session.user.id }
+        })
+
+        if (!channel) {
+            return NextResponse.json({ error: 'Channel not found' }, { status: 404 })
+        }
+
+        // Build update data
+        const updateData: { categoryId?: string | null; title?: string } = {}
+        if (categoryId !== undefined) {
+            updateData.categoryId = categoryId
+        }
+        if (title !== undefined) {
+            updateData.title = title
+        }
+
+        // Update episode
+        const episode = await prisma.episode.update({
+            where: { id: episodeId },
+            data: updateData
+        })
+
+        return NextResponse.json({ success: true, episode })
+    } catch (error) {
+        console.error('Update episode error:', error)
+        return NextResponse.json({ error: 'Failed to update episode' }, { status: 500 })
+    }
+}
+
 // POST: Translate episode dialogue to another language
 export async function POST(
     req: Request,
