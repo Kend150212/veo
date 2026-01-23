@@ -249,12 +249,19 @@ CRITICAL RULES:
 ═══════════════════════════════════════
 1. VOICEOVER = What host SAYS (natural, conversational)
 2. PROMPTTEXT = Visual description for video AI (MUST include voiceover at start)
-3. ${characterBible ? 'Include FULL character description (age, hair, clothing, expression) in EVERY host scene' : 'Use detailed visual subjects'}
+3. ${characterBible ? `⚠️ CHARACTER DESCRIPTION MANDATORY:
+   - NEVER write "A character" or generic descriptions
+   - EVERY scene with a person MUST use the EXACT character format:
+   - [CHARACTER_NAME: Full description with age, ethnicity, hair, outfit, accessories, expression, action]
+   - Example: [LEO_REAL: 25yo Hispanic male, wearing a mustard yellow hoodie with 'LEO' on it, silver glasses, short curly hair. He is gesturing enthusiastically]
+   - Copy character descriptions EXACTLY from the CHARACTER BIBLE above
+   - If scene needs a person doing something, USE THE DEFINED CHARACTER` : 'Use detailed visual subjects'}
 4. Mix Host scenes (60%) and B-Roll scenes (40%) for visual variety
-5. Include SPECIFIC facts/numbers when discussing income, statistics
-6. Smooth transitions between scenes
-7. CTA scenes should feel natural, not forced
-8. ALL text/voiceover in ${dialogueLangLabel.toUpperCase()} ONLY
+5. B-Roll scenes = NO character, pure visual/animation/graphics only
+6. Include SPECIFIC facts/numbers when discussing income, statistics
+7. Smooth transitions between scenes
+8. CTA scenes should feel natural, not forced
+9. ALL text/voiceover in ${dialogueLangLabel.toUpperCase()} ONLY
 
 Return JSON:
 {
