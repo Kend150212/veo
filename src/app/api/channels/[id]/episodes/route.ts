@@ -213,19 +213,24 @@ ${customContentInstr}
 ═══════════════════════════════════════
 EPISODE STRUCTURE (MUST FOLLOW EXACTLY):
 ═══════════════════════════════════════
-📋 CONTENT PLANNING - BEFORE GENERATING:
-1. List all UNIQUE topics/points to cover (no duplicates)
-2. Assign each topic to a specific scene range
-3. CTA scenes ONLY at: scene ~40% AND final 2 scenes
-4. Each topic should appear ONCE - never repeat information
+📋 CONTENT PLANNING - CRITICAL STEP:
+1. FIRST: Identify ALL major topics/sections from the user's input content
+2. COUNT how many distinct topics exist (e.g., if input has 6 sections, you have 6 topics)
+3. DISTRIBUTE scenes PROPORTIONALLY across ALL topics - NO topic should be skipped!
+4. Calculate: (Total scenes - 5 intro/outro scenes) ÷ Number of topics = Scenes per topic
+5. Each topic should appear ONCE - never repeat information
+
+⚠️⚠️⚠️ COMPLETE COVERAGE RULE:
+- If user input has sections about A, B, C, D, E, F → script MUST cover A, B, C, D, E, F
+- DO NOT deeply cover only 2 topics and skip the rest
+- If input has 6 topics and 45 scenes → each topic gets ~6-7 scenes
+- EVERY numbered section from user input MUST appear in the script
 
 📌 SCENE BREAKDOWN FOR ${totalScenes} SCENES:
-• Opening (Scene 1-3): Host intro + Hook + Preview
-• Section 1 (Next 25% scenes): First topic group with B-Roll
+• Opening (Scene 1-3): Host intro + Hook + Preview ALL topics
+• Topic Sections (Remaining scenes minus 5): Distribute EVENLY across ALL topics from input
 • Mid-CTA (1 scene at ~40%): "Subscribe if learning!" 
-• Section 2 (Next 25% scenes): Second topic group with B-Roll  
-• Section 3 (Next 20% scenes): Third topic group/Tips with B-Roll
-• Summary (2-3 scenes): Quick recap key points
+• Summary (2-3 scenes): Quick recap KEY POINTS from EACH topic
 • Closing CTA (Final 2 scenes): Comment question + Goodbye
 
 ⚠️ ANTI-DUPLICATION RULES:
