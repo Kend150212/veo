@@ -791,6 +791,34 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
             <div className="glass-card p-6 mb-6">
                 <h3 className="font-semibold mb-4">Tạo Episode Mới</h3>
 
+                {/* Category Selector for new episode */}
+                {categories.length > 0 && (
+                    <div className="mb-4 p-3 bg-[var(--bg-tertiary)] rounded-lg">
+                        <label className="block text-sm font-medium mb-2">📁 Chọn Danh mục</label>
+                        <select
+                            value={selectedCategoryId || ''}
+                            onChange={(e) => setSelectedCategoryId(e.target.value || null)}
+                            className="input-field w-full"
+                        >
+                            <option value="">Chưa phân loại</option>
+                            {categories.map(cat => {
+                                const catCount = channel.episodes.filter(e => e.categoryId === cat.id).length
+                                return (
+                                    <option key={cat.id} value={cat.id}>
+                                        {cat.name} ({catCount} episodes)
+                                    </option>
+                                )
+                            })}
+                        </select>
+                        <p className="text-xs text-[var(--text-muted)] mt-1">
+                            {selectedCategoryId
+                                ? `Episode tiếp theo: #${(channel.episodes.filter(e => e.categoryId === selectedCategoryId).length) + 1} trong danh mục này`
+                                : `Episode tiếp theo: #${(channel.episodes.filter(e => !e.categoryId).length) + 1} (chưa phân loại)`
+                            }
+                        </p>
+                    </div>
+                )}
+
                 {/* Content Input Section */}
                 <div className="mb-4 p-4 bg-[var(--bg-tertiary)] rounded-lg">
                     <div className="flex items-center justify-between mb-2">
@@ -1065,7 +1093,15 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
                     ) : (
                         <>
                             <Sparkles className="w-4 h-4" />
-                            Tạo Episode {channel.episodes.length + 1}
+                            Tạo Episode {selectedCategoryId
+                                ? (channel.episodes.filter(e => e.categoryId === selectedCategoryId).length + 1)
+                                : (channel.episodes.filter(e => !e.categoryId).length + 1)
+                            }
+                            {selectedCategoryId && categories.find(c => c.id === selectedCategoryId) && (
+                                <span className="text-xs opacity-70">
+                                    ({categories.find(c => c.id === selectedCategoryId)?.name})
+                                </span>
+                            )}
                         </>
                     )}
                 </button>
