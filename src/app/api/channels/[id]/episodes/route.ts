@@ -386,14 +386,23 @@ Generate ALL ${totalScenes} scenes. Return ONLY valid JSON.`
             console.log(`[Continue] Need ${remaining} more scenes from ${startFrom}`)
 
             const continuePrompt = `Continue Episode "${episodeData.title}" - generate scenes ${startFrom} to ${totalScenes}
+
 CONTEXT: ${episodeData.synopsis}
 STYLE: ${styleKeywords}
 DIALOGUE: ${dialogueLangLabel.toUpperCase()} ONLY
+
 ${characterBible}
 
-Generate ${remaining} more scenes.
-Return JSON: {"scenes": [{"order": ${startFrom}, "title": "Scene ${startFrom}", "dialogue": "...", "promptText": "...", "duration": 8}]}
-Return ONLY JSON.`
+⚠️⚠️⚠️ CRITICAL FORMAT RULES:
+1. NEVER write just "[LEO_REAL]" or "[CHARACTER_NAME]" alone - ALWAYS include FULL description
+2. ✅ CORRECT: [LEO_REAL: 25yo Hispanic male, short curly black hair, wearing mustard yellow hoodie with 'LEO' on it, silver glasses. He is doing something]
+3. ❌ WRONG: [LEO_REAL] doing something
+4. ❌ WRONG: INT. LOCATION screenplay format
+5. Each scene must have: [VOICEOVER in ${dialogueLangLabel}: text]. [Character with FULL description OR B-Roll visual]. ENVIRONMENT: X. CAMERA: X. LIGHTING: X. STYLE: X. MOOD: X. AUDIO: X.
+
+Generate ${remaining} more scenes (scene ${startFrom} to ${totalScenes}).
+Return JSON: {"scenes": [{"order": ${startFrom}, "title": "Scene Title", "voiceover": "what is said", "promptText": "FULL formatted prompt with character descriptions", "duration": 8}]}
+Return ONLY valid JSON.`
 
             try {
                 const continueResult = await generateText(config, continuePrompt)
