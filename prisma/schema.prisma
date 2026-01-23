@@ -173,6 +173,7 @@ model Channel {
   // Relations
   characters        ChannelCharacter[]
   episodes          Episode[]
+  categories        EpisodeCategory[]
   
   userId            String
   user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -214,9 +215,28 @@ model Episode {
   
   channelId       String
   channel         Channel   @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  
+  categoryId      String?   // Danh mục episode (tùy chọn)
+  category        EpisodeCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  
   metadata        String?   // JSON: youtubeTitle, youtubeDescription, youtubeTags, thumbnailPrompt
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
+}
+
+// Danh mục để quản lý Episodes theo thư mục
+model EpisodeCategory {
+  id          String    @id @default(cuid())
+  name        String    // Tên danh mục
+  description String?   // Mô tả danh mục
+  color       String    @default("#6366f1") // Màu tag hiển thị
+  order       Int       @default(0) // Thứ tự sắp xếp
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  channelId   String
+  channel     Channel   @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  episodes    Episode[]
 }
 
 model EpisodeScene {

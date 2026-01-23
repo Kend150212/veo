@@ -52,7 +52,8 @@ export async function POST(
             customContent = null,
             voiceOverMode = 'with_host',
             voiceGender = 'auto',
-            voiceTone = 'warm'
+            voiceTone = 'warm',
+            categoryId = null  // Danh mục episode (tùy chọn)
         } = await req.json()
 
         // CTA options
@@ -423,6 +424,7 @@ Return ONLY JSON.`
                     generatedScenes: allScenes.length,
                     status: 'completed',
                     channelId: id,
+                    categoryId: categoryId || null,  // Danh mục episode
                     // Store YouTube content in metadata field (as JSON)
                     metadata: JSON.stringify({
                         youtubeTitle: episodeData.youtubeTitle || '',
