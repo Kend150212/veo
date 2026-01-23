@@ -1010,6 +1010,12 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
                 <h3 className="font-semibold flex items-center gap-2">
                     <Film className="w-5 h-5" />
                     Episodes ({channel.episodes.length})
+                    <button
+                        onClick={() => setShowCategoryModal(true)}
+                        className="ml-auto px-3 py-1 text-xs rounded-full bg-[var(--bg-tertiary)] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] flex items-center gap-1"
+                    >
+                        <Plus className="w-3 h-3" /> Danh mục
+                    </button>
                 </h3>
 
                 {/* Category Filter Tabs */}
@@ -1018,8 +1024,8 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
                         <button
                             onClick={() => setFilterCategoryId(null)}
                             className={`px-3 py-1.5 rounded-full text-sm transition ${filterCategoryId === null
-                                    ? 'bg-[var(--accent-primary)] text-white'
-                                    : 'bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]'
+                                ? 'bg-[var(--accent-primary)] text-white'
+                                : 'bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]'
                                 }`}
                         >
                             📁 Tất cả ({channel.episodes.length})
@@ -1031,8 +1037,8 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
                                     key={cat.id}
                                     onClick={() => setFilterCategoryId(cat.id)}
                                     className={`px-3 py-1.5 rounded-full text-sm transition flex items-center gap-1 ${filterCategoryId === cat.id
-                                            ? 'text-white'
-                                            : 'bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]'
+                                        ? 'text-white'
+                                        : 'bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]'
                                         }`}
                                     style={filterCategoryId === cat.id ? { backgroundColor: cat.color } : {}}
                                 >
@@ -1044,8 +1050,8 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
                         <button
                             onClick={() => setFilterCategoryId('uncategorized')}
                             className={`px-3 py-1.5 rounded-full text-sm transition ${filterCategoryId === 'uncategorized'
-                                    ? 'bg-gray-500 text-white'
-                                    : 'bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]'
+                                ? 'bg-gray-500 text-white'
+                                : 'bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]'
                                 }`}
                         >
                             📂 Chưa phân loại ({channel.episodes.filter(e => !e.categoryId).length})
