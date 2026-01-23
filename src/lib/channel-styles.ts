@@ -11,7 +11,7 @@ export interface ChannelStyle {
     hasCharacters: boolean  // Style có hỗ trợ nhân vật không
     suggestedCharCount: number  // Số nhân vật AI đề xuất
     previewImage?: string  // Path to preview image
-    category: 'illustration' | 'cartoon' | 'realistic' | 'artistic' | 'minimalist'
+    category: 'illustration' | 'cartoon' | 'realistic' | 'artistic' | 'minimalist' | 'edutainment'
 }
 
 // Comprehensive list of styles - AI determined variety
@@ -321,6 +321,52 @@ export const CHANNEL_STYLES: ChannelStyle[] = [
         hasCharacters: true,
         suggestedCharCount: 1,
         category: 'minimalist'
+    },
+
+    // === EDUTAINMENT CATEGORY (Educational + Entertainment) ===
+    {
+        id: 'edutainment-hybrid',
+        name: 'Edutainment Hybrid',
+        nameVi: 'Giáo Dục Giải Trí',
+        description: 'Live-action host combined with 3D animated bio-world (like Kurzgesagt + TED-Ed)',
+        descriptionVi: 'Kết hợp host thực tế với thế giới 3D hoạt hình (như Kurzgesagt + TED-Ed)',
+        promptKeywords: 'edutainment hybrid style, live-action human host combined with 3D animated characters, biological visualization, educational science animation, cinematic lighting for live footage, colorful 3D bio-world, medical animation, stylized 3D internal body scenes, Kurzgesagt style',
+        hasCharacters: true,
+        suggestedCharCount: 2,
+        category: 'edutainment'
+    },
+    {
+        id: 'kurzgesagt',
+        name: 'Kurzgesagt Style',
+        nameVi: 'Phong Cách Kurzgesagt',
+        description: 'Flat colorful geometric animation for science/education',
+        descriptionVi: 'Hoạt hình hình học phẳng đầy màu sắc cho khoa học/giáo dục',
+        promptKeywords: 'kurzgesagt style, flat design animation, colorful geometric shapes, educational science visualization, bright saturated colors, simple but detailed, consistent character design, cosmic backgrounds',
+        hasCharacters: true,
+        suggestedCharCount: 2,
+        category: 'edutainment'
+    },
+    {
+        id: 'ted-ed',
+        name: 'TED-Ed Animation',
+        nameVi: 'Hoạt Hình TED-Ed',
+        description: 'Educational animation with mixed media approach',
+        descriptionVi: 'Hoạt hình giáo dục kết hợp nhiều phương tiện',
+        promptKeywords: 'TED-Ed animation style, educational illustration, mixed media, animated infographics, storytelling visuals, conceptual visualization, engaging lecture style',
+        hasCharacters: true,
+        suggestedCharCount: 1,
+        category: 'edutainment'
+    },
+    {
+        id: 'medical-3d',
+        name: 'Medical 3D Animation',
+        nameVi: 'Hoạt Hình Y Khoa 3D',
+        description: '3D visualization of biological/medical processes',
+        descriptionVi: 'Hình ảnh 3D về các quá trình sinh học/y khoa',
+        promptKeywords: 'medical 3D animation, biological visualization, cellular animation, anatomical illustration, internal body journey, microscopic world, organ systems, stylized medical graphics, educational anatomy',
+        hasCharacters: false,
+        suggestedCharCount: 0,
+        category: 'edutainment'
     }
 ]
 
