@@ -211,13 +211,29 @@ ${customContentInstr}
 📣 CTA: ${ctaInstruction}
 
 ═══════════════════════════════════════
-EPISODE STRUCTURE (MUST FOLLOW):
+EPISODE STRUCTURE (MUST FOLLOW EXACTLY):
 ═══════════════════════════════════════
-• Opening (Scene 1-3): Host introduction + Hook question + Preview what viewers will learn
-• Content Blocks (60% of scenes): Main content divided into clear sections with B-Roll
-• Mid-video CTA (after 40%): Subscribe/Like reminder
-• Tips/Insights (20% of scenes): Practical advice with specific examples
-• Summary + Closing (Last 3-5 scenes): Key takeaways + Engage (comment question) + Goodbye
+📋 CONTENT PLANNING - BEFORE GENERATING:
+1. List all UNIQUE topics/points to cover (no duplicates)
+2. Assign each topic to a specific scene range
+3. CTA scenes ONLY at: scene ~40% AND final 2 scenes
+4. Each topic should appear ONCE - never repeat information
+
+📌 SCENE BREAKDOWN FOR ${totalScenes} SCENES:
+• Opening (Scene 1-3): Host intro + Hook + Preview
+• Section 1 (Next 25% scenes): First topic group with B-Roll
+• Mid-CTA (1 scene at ~40%): "Subscribe if learning!" 
+• Section 2 (Next 25% scenes): Second topic group with B-Roll  
+• Section 3 (Next 20% scenes): Third topic group/Tips with B-Roll
+• Summary (2-3 scenes): Quick recap key points
+• Closing CTA (Final 2 scenes): Comment question + Goodbye
+
+⚠️ ANTI-DUPLICATION RULES:
+1. NEVER repeat the same tip/advice twice in different scenes
+2. Each scene must provide NEW information
+3. If you mentioned "water" in scene 10, do NOT mention it again
+4. Group related topics together, don't scatter them
+5. Scene numbers MUST be sequential (1, 2, 3... no gaps, no duplicates)
 
 ═══════════════════════════════════════
 SCENE FORMAT (EVERY SCENE MUST HAVE):
