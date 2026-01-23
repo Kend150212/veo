@@ -127,6 +127,10 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
     const [newCategoryName, setNewCategoryName] = useState('')
     const [newCategoryColor, setNewCategoryColor] = useState('#6366f1')
 
+    // Bulk selection for episodes
+    const [selectedEpisodeIds, setSelectedEpisodeIds] = useState<string[]>([])
+    const [showBulkMoveModal, setShowBulkMoveModal] = useState(false)
+
     // Custom content input
     const [customContent, setCustomContent] = useState('')
     const [contentUrl, setContentUrl] = useState('')
@@ -231,6 +235,68 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
         } catch (error) {
             toast.error('Lỗi xóa danh mục')
         }
+    }
+
+    // Bulk episode actions
+    const handleBulkMove = async (toCategoryId: string | null) => {
+        if (selectedEpisodeIds.length === 0) return
+
+        try {
+            // Update each selected episode's category
+            const promises = selectedEpisodeIds.map(episodeId =>
+                fetch(`/api/channels/${id}/episodes/${episodeId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ categoryId: toCategoryId })
+                })
+            )
+
+            await Promise.all(promises)
+            toast.success(`Đã di chuyển ${selectedEpisodeIds.length} episode`)
+            setSelectedEpisodeIds([])
+            setShowBulkMoveModal(false)
+            fetchChannel()
+        } catch (error) {
+            toast.error('Lỗi di chuyển episodes')
+        }
+    }
+
+    const handleBulkDelete = async () => {
+        if (selectedEpisodeIds.length === 0) return
+        if (!confirm(`Xóa ${selectedEpisodeIds.length} episode đã chọn? Không thể hoàn tác!`)) return
+
+        try {
+            const promises = selectedEpisodeIds.map(episodeId =>
+                fetch(`/api/channels/${id}/episodes/${episodeId}`, {
+                    method: 'DELETE'
+                })
+            )
+
+            await Promise.all(promises)
+            toast.success(`Đã xóa ${selectedEpisodeIds.length} episode`)
+            setSelectedEpisodeIds([])
+            fetchChannel()
+        } catch (error) {
+            toast.error('Lỗi xóa episodes')
+        }
+    }
+
+    const toggleEpisodeSelection = (episodeId: string) => {
+        setSelectedEpisodeIds(prev =>
+            prev.includes(episodeId)
+                ? prev.filter(id => id !== episodeId)
+                : [...prev, episodeId]
+        )
+    }
+
+    const selectAllEpisodes = () => {
+        const visibleEpisodes = filterCategoryId === null
+            ? channel?.episodes || []
+            : filterCategoryId === 'uncategorized'
+                ? (channel?.episodes || []).filter(e => !e.categoryId)
+                : (channel?.episodes || []).filter(e => e.categoryId === filterCategoryId)
+
+        setSelectedEpisodeIds(visibleEpisodes.map(e => e.id))
     }
 
     // Parse URL to extract content
@@ -1127,6 +1193,80 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
                     </div>
                 )}
 
+                {/* Bulk Move Modal */}
+                {showBulkMoveModal && (
+                    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                        <div className="glass-card p-6 max-w-md w-full mx-4">
+                            <h3 className="text-lg font-semibold mb-4">📁 Di chuyển {selectedEpisodeIds.length} episode</h3>
+
+                            <div className="space-y-2">
+                                <button
+                                    onClick={() => handleBulkMove(null)}
+                                    className="w-full p-3 text-left bg-[var(--bg-secondary)] hover:bg-[var(--bg-hover)] rounded flex items-center gap-2"
+                                >
+                                    📂 Chưa phân loại
+                                </button>
+                                {categories.map(cat => (
+                                    <button
+                                        key={cat.id}
+                                        onClick={() => handleBulkMove(cat.id)}
+                                        className="w-full p-3 text-left bg-[var(--bg-secondary)] hover:bg-[var(--bg-hover)] rounded flex items-center gap-2"
+                                    >
+                                        <span className="w-4 h-4 rounded" style={{ backgroundColor: cat.color }} />
+                                        {cat.name}
+                                    </button>
+                                ))}
+                            </div>
+
+                            <button
+                                onClick={() => setShowBulkMoveModal(false)}
+                                className="btn-secondary w-full mt-4"
+                            >
+                                Hủy
+                            </button>
+                        </div>
+                    </div>
+                )}
+
+                {/* Bulk Action Bar */}
+                {selectedEpisodeIds.length > 0 && (
+                    <div className="flex items-center gap-3 p-3 mb-4 bg-[var(--accent-primary)]/20 border border-[var(--accent-primary)]/30 rounded-lg">
+                        <span className="text-sm font-medium">
+                            Đã chọn {selectedEpisodeIds.length} episode
+                        </span>
+                        <button
+                            onClick={() => setShowBulkMoveModal(true)}
+                            className="px-3 py-1.5 text-sm bg-[var(--accent-primary)] text-white rounded hover:opacity-90 flex items-center gap-1"
+                        >
+                            📁 Di chuyển
+                        </button>
+                        <button
+                            onClick={handleBulkDelete}
+                            className="px-3 py-1.5 text-sm bg-red-500 text-white rounded hover:opacity-90 flex items-center gap-1"
+                        >
+                            <Trash2 className="w-3 h-3" /> Xóa
+                        </button>
+                        <button
+                            onClick={() => setSelectedEpisodeIds([])}
+                            className="px-3 py-1.5 text-sm bg-[var(--bg-secondary)] text-[var(--text-secondary)] rounded hover:bg-[var(--bg-hover)]"
+                        >
+                            Bỏ chọn
+                        </button>
+                    </div>
+                )}
+
+                {/* Select All Button */}
+                {channel.episodes.length > 0 && selectedEpisodeIds.length === 0 && (
+                    <div className="mb-4">
+                        <button
+                            onClick={selectAllEpisodes}
+                            className="text-sm text-[var(--text-secondary)] hover:text-white flex items-center gap-1"
+                        >
+                            ☑️ Chọn tất cả
+                        </button>
+                    </div>
+                )}
+
                 {channel.episodes.length === 0 ? (
                     <div className="glass-card p-8 text-center">
                         <Film className="w-12 h-12 text-[var(--text-muted)] mx-auto mb-3" />
@@ -1149,103 +1289,124 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
                             className="glass-card overflow-hidden"
                         >
                             {/* Episode Header */}
-                            <button
-                                onClick={() => setExpandedEpisode(
-                                    expandedEpisode === episode.id ? null : episode.id
-                                )}
-                                className="w-full flex items-center justify-between p-4 hover:bg-[var(--bg-hover)] transition-colors text-left"
-                            >
-                                <div className="flex items-center gap-3">
-                                    <span className="w-10 h-10 rounded-lg bg-gradient-to-br from-[var(--accent-primary)] to-purple-500 flex items-center justify-center text-white font-bold">
-                                        {episode.episodeNumber}
-                                    </span>
-                                    <div>
-                                        <p className="font-medium">{episode.title}</p>
-                                        <p className="text-xs text-[var(--text-muted)]">
-                                            {episode.scenes.length} scenes • {episode.status}
-                                        </p>
-                                    </div>
-                                </div>
-                                {expandedEpisode === episode.id
-                                    ? <ChevronDown className="w-5 h-5" />
-                                    : <ChevronRight className="w-5 h-5" />
-                                }
-                            </button>
-
-                            {/* Episode Content */}
-                            {expandedEpisode === episode.id && (
-                                <div className="border-t border-[var(--border-subtle)]">
-                                    {episode.synopsis && (
-                                        <div className="px-4 py-3 bg-[var(--bg-tertiary)]">
-                                            <p className="text-sm text-[var(--text-secondary)]">
-                                                {episode.synopsis}
+                            <div className="w-full flex items-center p-4 hover:bg-[var(--bg-hover)] transition-colors text-left gap-3">
+                                {/* Checkbox for bulk selection */}
+                                <input
+                                    type="checkbox"
+                                    checked={selectedEpisodeIds.includes(episode.id)}
+                                    onChange={() => toggleEpisodeSelection(episode.id)}
+                                    className="w-5 h-5 rounded accent-[var(--accent-primary)] cursor-pointer"
+                                    onClick={(e) => e.stopPropagation()}
+                                />
+                                <button
+                                    onClick={() => setExpandedEpisode(
+                                        expandedEpisode === episode.id ? null : episode.id
+                                    )}
+                                    className="flex-1 flex items-center justify-between text-left"
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <span className="w-10 h-10 rounded-lg bg-gradient-to-br from-[var(--accent-primary)] to-purple-500 flex items-center justify-center text-white font-bold">
+                                            {episode.episodeNumber}
+                                        </span>
+                                        <div>
+                                            <p className="font-medium">{episode.title}</p>
+                                            <p className="text-xs text-[var(--text-muted)]">
+                                                {episode.scenes.length} scenes • {episode.status}
+                                                {episode.categoryId && categories.find(c => c.id === episode.categoryId) && (
+                                                    <span
+                                                        className="ml-2 px-2 py-0.5 rounded text-[10px]"
+                                                        style={{
+                                                            backgroundColor: categories.find(c => c.id === episode.categoryId)?.color + '30',
+                                                            color: categories.find(c => c.id === episode.categoryId)?.color
+                                                        }}
+                                                    >
+                                                        {categories.find(c => c.id === episode.categoryId)?.name}
+                                                    </span>
+                                                )}
                                             </p>
                                         </div>
-                                    )}
-
-                                    {/* Actions */}
-                                    <div className="px-4 py-2 flex gap-2 flex-wrap border-b border-[var(--border-subtle)]">
-                                        <button
-                                            onClick={() => handleCopyEpisode(episode)}
-                                            className="btn-secondary text-sm flex items-center gap-1"
-                                        >
-                                            {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
-                                            Copy All
-                                        </button>
-                                        <button
-                                            onClick={() => handleTranslateEpisode(episode.id, channel.dialogueLanguage === 'vi' ? 'en' : 'vi')}
-                                            disabled={actionLoading === episode.id}
-                                            className="btn-secondary text-sm flex items-center gap-1"
-                                        >
-                                            {actionLoading === episode.id ? (
-                                                <Loader2 className="w-3 h-3 animate-spin" />
-                                            ) : (
-                                                <Globe className="w-3 h-3" />
-                                            )}
-                                            Dịch sang {channel.dialogueLanguage === 'vi' ? 'EN' : 'VI'}
-                                        </button>
-                                        <button
-                                            onClick={() => handleRegenerateEpisode(episode.id)}
-                                            disabled={actionLoading === episode.id}
-                                            className="btn-secondary text-sm flex items-center gap-1"
-                                        >
-                                            {actionLoading === episode.id ? (
-                                                <Loader2 className="w-3 h-3 animate-spin" />
-                                            ) : (
-                                                <RefreshCw className="w-3 h-3" />
-                                            )}
-                                            Tạo lại
-                                        </button>
-                                        <button
-                                            onClick={() => handleDeleteEpisode(episode.id)}
-                                            disabled={actionLoading === episode.id}
-                                            className="btn-secondary text-sm flex items-center gap-1 text-red-400 hover:bg-red-500/20"
-                                        >
-                                            <Trash2 className="w-3 h-3" />
-                                            Xóa
-                                        </button>
                                     </div>
+                                    {expandedEpisode === episode.id
+                                        ? <ChevronDown className="w-5 h-5" />
+                                        : <ChevronRight className="w-5 h-5" />
+                                    }
+                                </button>
 
-                                    {/* Scenes */}
-                                    <div className="max-h-[400px] overflow-y-auto">
-                                        {episode.scenes.map(scene => (
-                                            <div key={scene.id} className="px-4 py-3 border-b border-[var(--border-subtle)] last:border-0">
-                                                <div className="flex items-center justify-between mb-2">
-                                                    <span className="font-medium text-sm">
-                                                        Scene {scene.order}: {scene.title}
-                                                    </span>
-                                                    <span className="text-xs text-[var(--text-muted)]">
-                                                        {scene.duration}s
-                                                    </span>
-                                                </div>
-                                                <pre className="text-xs text-[var(--text-secondary)] whitespace-pre-wrap bg-[var(--bg-primary)] rounded p-2 mono">
-                                                    {scene.promptText}
-                                                </pre>
+                                {/* Episode Content */}
+                                {expandedEpisode === episode.id && (
+                                    <div className="border-t border-[var(--border-subtle)]">
+                                        {episode.synopsis && (
+                                            <div className="px-4 py-3 bg-[var(--bg-tertiary)]">
+                                                <p className="text-sm text-[var(--text-secondary)]">
+                                                    {episode.synopsis}
+                                                </p>
                                             </div>
-                                        ))}
+                                        )}
+
+                                        {/* Actions */}
+                                        <div className="px-4 py-2 flex gap-2 flex-wrap border-b border-[var(--border-subtle)]">
+                                            <button
+                                                onClick={() => handleCopyEpisode(episode)}
+                                                className="btn-secondary text-sm flex items-center gap-1"
+                                            >
+                                                {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+                                                Copy All
+                                            </button>
+                                            <button
+                                                onClick={() => handleTranslateEpisode(episode.id, channel.dialogueLanguage === 'vi' ? 'en' : 'vi')}
+                                                disabled={actionLoading === episode.id}
+                                                className="btn-secondary text-sm flex items-center gap-1"
+                                            >
+                                                {actionLoading === episode.id ? (
+                                                    <Loader2 className="w-3 h-3 animate-spin" />
+                                                ) : (
+                                                    <Globe className="w-3 h-3" />
+                                                )}
+                                                Dịch sang {channel.dialogueLanguage === 'vi' ? 'EN' : 'VI'}
+                                            </button>
+                                            <button
+                                                onClick={() => handleRegenerateEpisode(episode.id)}
+                                                disabled={actionLoading === episode.id}
+                                                className="btn-secondary text-sm flex items-center gap-1"
+                                            >
+                                                {actionLoading === episode.id ? (
+                                                    <Loader2 className="w-3 h-3 animate-spin" />
+                                                ) : (
+                                                    <RefreshCw className="w-3 h-3" />
+                                                )}
+                                                Tạo lại
+                                            </button>
+                                            <button
+                                                onClick={() => handleDeleteEpisode(episode.id)}
+                                                disabled={actionLoading === episode.id}
+                                                className="btn-secondary text-sm flex items-center gap-1 text-red-400 hover:bg-red-500/20"
+                                            >
+                                                <Trash2 className="w-3 h-3" />
+                                                Xóa
+                                            </button>
+                                        </div>
+
+                                        {/* Scenes */}
+                                        <div className="max-h-[400px] overflow-y-auto">
+                                            {episode.scenes.map(scene => (
+                                                <div key={scene.id} className="px-4 py-3 border-b border-[var(--border-subtle)] last:border-0">
+                                                    <div className="flex items-center justify-between mb-2">
+                                                        <span className="font-medium text-sm">
+                                                            Scene {scene.order}: {scene.title}
+                                                        </span>
+                                                        <span className="text-xs text-[var(--text-muted)]">
+                                                            {scene.duration}s
+                                                        </span>
+                                                    </div>
+                                                    <pre className="text-xs text-[var(--text-secondary)] whitespace-pre-wrap bg-[var(--bg-primary)] rounded p-2 mono">
+                                                        {scene.promptText}
+                                                    </pre>
+                                                </div>
+                                            ))}
+                                        </div>
                                     </div>
-                                </div>
-                            )}
+                                )}
+                            </div>
                         </motion.div>
                     ))
                 )}
