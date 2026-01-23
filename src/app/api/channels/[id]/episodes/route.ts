@@ -249,13 +249,15 @@ CRITICAL RULES:
 ═══════════════════════════════════════
 1. VOICEOVER = What host SAYS (natural, conversational)
 2. PROMPTTEXT = Visual description for video AI (MUST include voiceover at start)
-3. ${characterBible ? `⚠️ CHARACTER DESCRIPTION MANDATORY:
-   - NEVER write "A character" or generic descriptions
-   - EVERY scene with a person MUST use the EXACT character format:
-   - [CHARACTER_NAME: Full description with age, ethnicity, hair, outfit, accessories, expression, action]
-   - Example: [LEO_REAL: 25yo Hispanic male, wearing a mustard yellow hoodie with 'LEO' on it, silver glasses, short curly hair. He is gesturing enthusiastically]
-   - Copy character descriptions EXACTLY from the CHARACTER BIBLE above
-   - If scene needs a person doing something, USE THE DEFINED CHARACTER` : 'Use detailed visual subjects'}
+3. ${characterBible ? `⚠️⚠️⚠️ CHARACTER DESCRIPTION - ABSOLUTELY MANDATORY:
+   - NEVER write just "[LEO_REAL]" or "[CHARACTER_NAME]" alone - this is WRONG!
+   - NEVER write "A character" or any generic descriptions
+   - ALWAYS include FULL DESCRIPTION every single time: [NAME: age, ethnicity, hair, outfit, accessories, expression, action]
+   - ✅ CORRECT: [LEO_REAL: 25yo Hispanic male, short curly black hair, wearing mustard yellow hoodie with 'LEO' on it, silver glasses. He is sitting on the couch reading a book]
+   - ❌ WRONG: [LEO_REAL] sitting on the couch
+   - ❌ WRONG: [LEO_REAL] standing in his apartment
+   - Copy the FULL character details from CHARACTER BIBLE into EVERY scene with that person
+   - The video AI cannot see previous scenes, so REPEAT full description EVERY time` : 'Use detailed visual subjects'}
 4. Mix Host scenes (60%) and B-Roll scenes (40%) for visual variety
 5. B-Roll scenes = NO character, pure visual/animation/graphics only
 6. Include SPECIFIC facts/numbers when discussing income, statistics
