@@ -201,6 +201,67 @@ CRITICAL - VOICE GENDER CONSISTENCY:
 - NO character on screen, only visuals with voice over
 - VOICE SETTINGS: ${voiceGenderLabel}, ${voiceToneLabel} tone
 - Include "VOICE: ${voiceGenderLabel}, ${voiceToneLabel}" at the end of each promptText`
+        } else if (voiceOverMode === 'host_dynamic_env') {
+            voiceOverInstr = `CONTENT TYPE: HOST 100% WITH DYNAMIC ENVIRONMENT (Môi trường thay đổi theo nội dung)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🌍 CRITICAL RULES FOR THIS MODE:
+- Host appears in 100% of scenes, ALWAYS visible on screen
+- Host is the primary visual focus, speaking directly to camera
+- ENVIRONMENT CHANGES dynamically based on what host is talking about
+- As host mentions topics, the background/environment transforms to match
+
+🎬 DYNAMIC ENVIRONMENT EXAMPLES:
+- Host talks about ocean → Background transforms to underwater scene
+- Host mentions history → Environment becomes ancient temple/museum
+- Host discusses technology → Room fills with holographic displays, futuristic elements
+- Host explains cooking → Kitchen appears around them with ingredients floating
+
+📹 CAMERA & VISUAL STYLE:
+- Medium to close-up shots of host throughout
+- Smooth transitions as environment morphs behind/around host
+- Use particles, light rays, and ambient effects during transitions
+- Host remains grounded while world changes around them
+
+🎭 PROMPTTEXT FORMAT:
+[Host speaking: "dialogue here"]. Host stands/sits in frame while ENVIRONMENT TRANSFORMS to [describe new environment matching topic]. [Camera movement]. [Transition effects: particle dissolve, light sweep, morphing elements].
+Include "VOICE: [matching host gender]" at the end of each promptText`
+        } else if (voiceOverMode === 'host_storyteller') {
+            voiceOverInstr = `CONTENT TYPE: HOST STORYTELLER MODE (Kể chuyện kinh dị/Ma/Căng thẳng)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+👻 CRITICAL RULES FOR STORYTELLER MODE:
+- Host sits in a SINGLE ROOM throughout entire episode
+- Host is the STORYTELLER, narrating directly to camera
+- Room atmosphere CHANGES based on story tension (not environment, but MOOD)
+- Camera MOVES cinematically to build suspense
+
+🏠 THE STORYTELLER ROOM:
+- Dimly lit room with single light source (lamp, candle, fireplace)
+- Vintage/cozy elements: old books, antique furniture, shadows
+- Room stays the same but ATMOSPHERE changes (lighting, shadows, fog)
+
+🎭 ATMOSPHERE CHANGES BY STORY MOMENT:
+- Calm intro → Warm lamp light, cozy feeling
+- Building tension → Light flickers, shadows deepen
+- Horror peak → Near darkness, only face illuminated, fog creeps in
+- Jump scare moment → Brief flash, dramatic shadows
+- Resolution → Light returns gradually
+
+📹 CINEMATIC CAMERA MOVEMENTS:
+- Slow zoom in during tense moments
+- Slow orbit around host during revelation
+- Quick cuts during scary moments
+- Dutch angle for unsettling atmosphere
+- Pull back to reveal shadows/darkness behind host
+
+🔊 AUDIO ATMOSPHERE (describe in promptText):
+- Creaking sounds, wind, distant whispers
+- Heartbeat sounds during tension
+- Sudden silence before scares
+- Thunder, rain for dramatic moments
+
+🎬 PROMPTTEXT FORMAT:
+[Host speaks: "story dialogue"]. [Camera: slow zoom/orbit/pan]. ATMOSPHERE: [describe lighting change - flickering, dimming, shadows growing]. Room fills with [fog/shadows/eerie glow]. [Sound cues: creaking, whispers, heartbeat]. MOOD: [tense/terrifying/relieving].
+Include "VOICE: [matching host gender]" at the end of each promptText`
         } else {
             voiceOverInstr = `CONTENT TYPE: B-ROLL ONLY (pure visuals, no dialogue).
 - The "voiceover" field should be empty or minimal ambient text
