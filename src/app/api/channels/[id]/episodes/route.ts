@@ -53,7 +53,13 @@ export async function POST(
             voiceOverMode = 'with_host',
             voiceGender = 'auto',
             voiceTone = 'warm',
-            categoryId = null  // Danh mục episode (tùy chọn)
+            categoryId = null,
+            // Advanced Episode Features
+            visualHookEnabled = true,
+            emotionalCurveEnabled = true,
+            spatialAudioEnabled = true,
+            dialogueDensityMin = 12,
+            dialogueDensityMax = 18
         } = await req.json()
 
         // CTA options
@@ -194,6 +200,56 @@ CRITICAL - VOICE GENDER CONSISTENCY:
 - This is silent/music-only video`
         }
 
+        // ============ ADVANCED EPISODE FEATURES ============
+
+        // Visual Hook Layering (15 giây đầu)
+        const visualHookInstr = visualHookEnabled ? `
+🔥 VISUAL HOOK LAYERING (FIRST 2 SCENES - CRITICAL):
+Scene 1-2 MUST be ultra-impressive CGI/Macro visuals to HOOK viewers in first 15 seconds:
+- Use CGI-quality visuals: macro shots, slow-motion, cinematic reveals, dramatic close-ups
+- Include attention-grabbing HOOK DIALOGUE that makes viewers STAY
+- Fast or slow pacing depending on content, but ALWAYS dramatic and captivating
+- Examples: Extreme macro of droplets, CGI transformation, time-lapse, dramatic reveal
+- Hook dialogue examples: "Điều bạn sắp xem sẽ thay đổi mọi thứ..." / "99% người không biết điều này..." / "What you're about to see will change everything..."
+- Scene 1: VISUAL SHOCK - The most stunning visual possible
+- Scene 2: HOOK QUESTION/STATEMENT - Create curiosity with compelling dialogue
+` : ''
+
+        // Emotional Curve Control
+        const emotionalCurveInstr = emotionalCurveEnabled ? `
+🎭 EMOTIONAL CURVE CONTROL (AUTO-APPLY TO ALL SCENES):
+Alternate between these rhythm patterns throughout the episode for maximum engagement:
+- FAST-CUT scenes (~30%): Rapid editing energy, quick transitions, dynamic camera, upbeat music. Mark with "PACING: fast-cut"
+- SLOW-BURN scenes (~25%): Slow motion, contemplative, minimal or no dialogue, ambient music only, let viewers absorb. Mark with "PACING: slow-burn"
+- NORMAL pace (~45%): Standard pacing with dialogue, balanced rhythm. Mark with "PACING: normal"
+DISTRIBUTION: Start strong (fast), middle varies (mix), emotional peaks (slow), conclusion (normal to fast)
+Include PACING marker in every scene's promptText: PACING: fast-cut | slow-burn | normal
+` : ''
+
+        // Spatial Audio Cues
+        const spatialAudioInstr = spatialAudioEnabled ? `
+🔊 SPATIAL AUDIO CUES (ADD TO EVERY SCENE):
+Add 3D directional audio cues based on scene content for immersive cinema experience:
+- Format: [SPATIAL_AUDIO: description with direction]
+- Examples:
+  • "[SPATIAL_AUDIO: Spacecraft whooshing from left to right across speaker field]"
+  • "[SPATIAL_AUDIO: Footsteps approaching from behind, growing louder]"
+  • "[SPATIAL_AUDIO: Rain pattering overhead, thunder rumbling from distance to close]"
+  • "[SPATIAL_AUDIO: Birds chirping from above left, wind rustling from right]"
+  • "[SPATIAL_AUDIO: Heartbeat pulsing from center, expanding outward]"
+REQUIREMENT: Include at least one [SPATIAL_AUDIO: ...] cue in each scene's promptText
+` : ''
+
+        // Dialogue Density
+        const dialogueDensityInstr = `
+💬 DIALOGUE DENSITY REQUIREMENT (STRICT):
+Each voiceover/dialogue line MUST be between ${dialogueDensityMin}-${dialogueDensityMax} words.
+- Under ${dialogueDensityMin} words = Too short, lacks substance
+- Over ${dialogueDensityMax} words = Too long, overwhelming for viewers
+- COUNT your words before finalizing each voiceover line
+- Natural, conversational rhythm at ${dialogueDensityMin}-${dialogueDensityMax} words per scene
+`
+
         // Generate episode with YouTube content
         const fullPrompt = `Create Episode ${nextEpisodeNumber} with EXACTLY ${totalScenes} scenes for channel "${channel.name}"
 
@@ -209,6 +265,10 @@ ${customContentInstr}
 🎬 ${voiceOverInstr}
 📢 CHANNEL MENTION: ${channelMentionInstr}
 📣 CTA: ${ctaInstruction}
+${visualHookInstr}
+${emotionalCurveInstr}
+${spatialAudioInstr}
+${dialogueDensityInstr}
 
 ═══════════════════════════════════════
 EPISODE STRUCTURE (MUST FOLLOW EXACTLY):

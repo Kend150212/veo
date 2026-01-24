@@ -118,6 +118,13 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
     const [voiceGender, setVoiceGender] = useState<'male' | 'female' | 'auto'>('auto')
     const [voiceTone, setVoiceTone] = useState<'warm' | 'professional' | 'energetic' | 'calm' | 'serious'>('warm')
 
+    // Advanced Episode Features
+    const [visualHookEnabled, setVisualHookEnabled] = useState(true)
+    const [emotionalCurveEnabled, setEmotionalCurveEnabled] = useState(true)
+    const [spatialAudioEnabled, setSpatialAudioEnabled] = useState(true)
+    const [dialogueDensityMin, setDialogueDensityMin] = useState(12)
+    const [dialogueDensityMax, setDialogueDensityMax] = useState(18)
+
     // Category management
     const [categories, setCategories] = useState<EpisodeCategory[]>([])
     const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null)  // For episode creation
@@ -349,7 +356,13 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
                     voiceOverMode,
                     voiceGender: voiceOverMode === 'voice_over' ? voiceGender : 'auto',
                     voiceTone: voiceOverMode === 'voice_over' ? voiceTone : 'warm',
-                    categoryId: selectedCategoryId
+                    categoryId: selectedCategoryId,
+                    // Advanced Episode Features
+                    visualHookEnabled,
+                    emotionalCurveEnabled,
+                    spatialAudioEnabled,
+                    dialogueDensityMin,
+                    dialogueDensityMax
                 })
             })
 
@@ -1076,6 +1089,91 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
                                 ))}
                             </div>
                         )}
+                    </div>
+                </div>
+
+                {/* Advanced Episode Features */}
+                <div className="mb-4 p-4 bg-gradient-to-r from-purple-900/20 to-indigo-900/20 rounded-lg border border-purple-500/30">
+                    <h4 className="text-sm font-semibold mb-3 flex items-center gap-2 text-purple-300">
+                        ⚡ Tính năng nâng cao
+                    </h4>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        {/* Visual Hook Layering */}
+                        <div className="flex items-center justify-between p-3 bg-[var(--bg-tertiary)] rounded-lg">
+                            <div>
+                                <p className="text-sm font-medium">🎬 Visual Hook (15 giây đầu)</p>
+                                <p className="text-xs text-[var(--text-muted)]">2 cảnh CGI/Macro ấn tượng mở đầu</p>
+                            </div>
+                            <button
+                                onClick={() => setVisualHookEnabled(!visualHookEnabled)}
+                                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition ${visualHookEnabled
+                                        ? 'bg-[var(--accent-primary)] text-white'
+                                        : 'bg-[var(--bg-secondary)] text-[var(--text-muted)]'
+                                    }`}
+                            >
+                                {visualHookEnabled ? 'ON' : 'OFF'}
+                            </button>
+                        </div>
+
+                        {/* Emotional Curve */}
+                        <div className="flex items-center justify-between p-3 bg-[var(--bg-tertiary)] rounded-lg">
+                            <div>
+                                <p className="text-sm font-medium">🎭 Emotional Curve</p>
+                                <p className="text-xs text-[var(--text-muted)]">Xen kẽ fast-cuts & slow-burn</p>
+                            </div>
+                            <button
+                                onClick={() => setEmotionalCurveEnabled(!emotionalCurveEnabled)}
+                                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition ${emotionalCurveEnabled
+                                        ? 'bg-[var(--accent-primary)] text-white'
+                                        : 'bg-[var(--bg-secondary)] text-[var(--text-muted)]'
+                                    }`}
+                            >
+                                {emotionalCurveEnabled ? 'ON' : 'OFF'}
+                            </button>
+                        </div>
+
+                        {/* Spatial Audio */}
+                        <div className="flex items-center justify-between p-3 bg-[var(--bg-tertiary)] rounded-lg">
+                            <div>
+                                <p className="text-sm font-medium">🔊 Spatial Audio 3D</p>
+                                <p className="text-xs text-[var(--text-muted)]">Âm thanh định hướng tự động</p>
+                            </div>
+                            <button
+                                onClick={() => setSpatialAudioEnabled(!spatialAudioEnabled)}
+                                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition ${spatialAudioEnabled
+                                        ? 'bg-[var(--accent-primary)] text-white'
+                                        : 'bg-[var(--bg-secondary)] text-[var(--text-muted)]'
+                                    }`}
+                            >
+                                {spatialAudioEnabled ? 'ON' : 'OFF'}
+                            </button>
+                        </div>
+
+                        {/* Dialogue Density */}
+                        <div className="p-3 bg-[var(--bg-tertiary)] rounded-lg">
+                            <p className="text-sm font-medium mb-2">💬 Mật độ lời thoại (từ/câu)</p>
+                            <div className="flex items-center gap-2">
+                                <input
+                                    type="number"
+                                    min="5"
+                                    max="30"
+                                    value={dialogueDensityMin}
+                                    onChange={(e) => setDialogueDensityMin(Math.max(5, parseInt(e.target.value) || 12))}
+                                    className="input-field w-16 text-center text-sm"
+                                />
+                                <span className="text-[var(--text-muted)]">–</span>
+                                <input
+                                    type="number"
+                                    min="10"
+                                    max="50"
+                                    value={dialogueDensityMax}
+                                    onChange={(e) => setDialogueDensityMax(Math.max(dialogueDensityMin + 1, parseInt(e.target.value) || 18))}
+                                    className="input-field w-16 text-center text-sm"
+                                />
+                                <span className="text-xs text-[var(--text-muted)]">từ</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
