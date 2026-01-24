@@ -125,6 +125,19 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
     const [dialogueDensityMin, setDialogueDensityMin] = useState(12)
     const [dialogueDensityMax, setDialogueDensityMax] = useState(18)
 
+    // Native Ad Insertion
+    const [adEnabled, setAdEnabled] = useState(false)
+    const [productInfo, setProductInfo] = useState('')
+    const [productImageUrl, setProductImageUrl] = useState('')
+    const [productLink, setProductLink] = useState('')
+    const [isAnalyzingProduct, setIsAnalyzingProduct] = useState(false)
+    const [analyzedProduct, setAnalyzedProduct] = useState<{
+        name: string
+        description: string
+        features: string[]
+        targetAudience: string
+    } | null>(null)
+
     // Category management
     const [categories, setCategories] = useState<EpisodeCategory[]>([])
     const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null)  // For episode creation
@@ -338,6 +351,37 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
         }
     }
 
+    // Analyze product for Native Ad
+    const handleAnalyzeProduct = async () => {
+        if (!productImageUrl && !productInfo) {
+            toast.error('Vui lòng nhập thông tin sản phẩm hoặc URL hình ảnh')
+            return
+        }
+        setIsAnalyzingProduct(true)
+        try {
+            const res = await fetch('/api/channels/analyze-product', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    imageUrl: productImageUrl,
+                    productInfo,
+                    productLink
+                })
+            })
+            const data = await res.json()
+            if (data.product) {
+                setAnalyzedProduct(data.product)
+                toast.success('Đã phân tích sản phẩm thành công!')
+            } else {
+                toast.error(data.error || 'Không thể phân tích sản phẩm')
+            }
+        } catch {
+            toast.error('Lỗi phân tích sản phẩm')
+        } finally {
+            setIsAnalyzingProduct(false)
+        }
+    }
+
     const handleGenerateEpisode = async () => {
         setIsGenerating(true)
         try {
@@ -362,7 +406,13 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
                     emotionalCurveEnabled,
                     spatialAudioEnabled,
                     dialogueDensityMin,
-                    dialogueDensityMax
+                    dialogueDensityMax,
+                    // Native Ad Insertion
+                    adEnabled,
+                    productInfo: adEnabled ? productInfo : null,
+                    productImageUrl: adEnabled ? productImageUrl : null,
+                    productLink: adEnabled ? productLink : null,
+                    analyzedProduct: adEnabled ? analyzedProduct : null
                 })
             })
 
@@ -1108,8 +1158,8 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
                             <button
                                 onClick={() => setVisualHookEnabled(!visualHookEnabled)}
                                 className={`px-3 py-1.5 rounded-lg text-sm font-medium transition ${visualHookEnabled
-                                        ? 'bg-[var(--accent-primary)] text-white'
-                                        : 'bg-[var(--bg-secondary)] text-[var(--text-muted)]'
+                                    ? 'bg-[var(--accent-primary)] text-white'
+                                    : 'bg-[var(--bg-secondary)] text-[var(--text-muted)]'
                                     }`}
                             >
                                 {visualHookEnabled ? 'ON' : 'OFF'}
@@ -1125,8 +1175,8 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
                             <button
                                 onClick={() => setEmotionalCurveEnabled(!emotionalCurveEnabled)}
                                 className={`px-3 py-1.5 rounded-lg text-sm font-medium transition ${emotionalCurveEnabled
-                                        ? 'bg-[var(--accent-primary)] text-white'
-                                        : 'bg-[var(--bg-secondary)] text-[var(--text-muted)]'
+                                    ? 'bg-[var(--accent-primary)] text-white'
+                                    : 'bg-[var(--bg-secondary)] text-[var(--text-muted)]'
                                     }`}
                             >
                                 {emotionalCurveEnabled ? 'ON' : 'OFF'}
@@ -1142,8 +1192,8 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
                             <button
                                 onClick={() => setSpatialAudioEnabled(!spatialAudioEnabled)}
                                 className={`px-3 py-1.5 rounded-lg text-sm font-medium transition ${spatialAudioEnabled
-                                        ? 'bg-[var(--accent-primary)] text-white'
-                                        : 'bg-[var(--bg-secondary)] text-[var(--text-muted)]'
+                                    ? 'bg-[var(--accent-primary)] text-white'
+                                    : 'bg-[var(--bg-secondary)] text-[var(--text-muted)]'
                                     }`}
                             >
                                 {spatialAudioEnabled ? 'ON' : 'OFF'}
@@ -1175,6 +1225,118 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
                             </div>
                         </div>
                     </div>
+                </div>
+
+                {/* Native Ad Insertion */}
+                <div className="mb-4 p-4 bg-gradient-to-r from-amber-900/20 to-orange-900/20 rounded-lg border border-amber-500/30">
+                    <div className="flex items-center justify-between mb-3">
+                        <h4 className="text-sm font-semibold flex items-center gap-2 text-amber-300">
+                            💰 Quảng cáo tự nhiên (Native Ads)
+                        </h4>
+                        <button
+                            onClick={() => setAdEnabled(!adEnabled)}
+                            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition ${adEnabled
+                                ? 'bg-amber-500 text-white'
+                                : 'bg-[var(--bg-secondary)] text-[var(--text-muted)]'
+                                }`}
+                        >
+                            {adEnabled ? 'ON' : 'OFF'}
+                        </button>
+                    </div>
+
+                    {adEnabled && (
+                        <div className="space-y-3">
+                            {/* Product Info Text */}
+                            <div>
+                                <label className="block text-xs text-[var(--text-muted)] mb-1">
+                                    📝 Mô tả sản phẩm/dịch vụ
+                                </label>
+                                <textarea
+                                    placeholder="Nhập mô tả sản phẩm muốn quảng cáo trong video..."
+                                    value={productInfo}
+                                    onChange={(e) => setProductInfo(e.target.value)}
+                                    rows={3}
+                                    className="input-field w-full text-sm resize-none"
+                                />
+                            </div>
+
+                            {/* Product Image URL + Analyze */}
+                            <div>
+                                <label className="block text-xs text-[var(--text-muted)] mb-1">
+                                    🖼️ URL hình ảnh sản phẩm (AI sẽ phân tích)
+                                </label>
+                                <div className="flex gap-2">
+                                    <input
+                                        type="url"
+                                        placeholder="https://example.com/product-image.jpg"
+                                        value={productImageUrl}
+                                        onChange={(e) => setProductImageUrl(e.target.value)}
+                                        className="input-field flex-1 text-sm"
+                                    />
+                                    <button
+                                        onClick={handleAnalyzeProduct}
+                                        disabled={isAnalyzingProduct || (!productImageUrl && !productInfo)}
+                                        className="btn-secondary px-3 flex items-center gap-1 text-sm"
+                                    >
+                                        {isAnalyzingProduct ? (
+                                            <Loader2 className="w-4 h-4 animate-spin" />
+                                        ) : (
+                                            <>🔍 Phân tích</>
+                                        )}
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* Product Link */}
+                            <div>
+                                <label className="block text-xs text-[var(--text-muted)] mb-1">
+                                    🔗 Link sản phẩm (URL mua hàng)
+                                </label>
+                                <input
+                                    type="url"
+                                    placeholder="https://shopee.vn/product-link"
+                                    value={productLink}
+                                    onChange={(e) => setProductLink(e.target.value)}
+                                    className="input-field w-full text-sm"
+                                />
+                            </div>
+
+                            {/* Analyzed Result */}
+                            {analyzedProduct && (
+                                <div className="p-3 bg-[var(--bg-primary)] rounded-lg border border-amber-500/20">
+                                    <div className="flex items-start justify-between">
+                                        <div>
+                                            <p className="font-medium text-amber-300 flex items-center gap-1">
+                                                ✓ {analyzedProduct.name}
+                                            </p>
+                                            <p className="text-sm text-[var(--text-secondary)] mt-1">
+                                                {analyzedProduct.description}
+                                            </p>
+                                            {analyzedProduct.features.length > 0 && (
+                                                <div className="flex flex-wrap gap-1 mt-2">
+                                                    {analyzedProduct.features.slice(0, 3).map((f, i) => (
+                                                        <span key={i} className="text-xs bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded">
+                                                            {f}
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </div>
+                                        <button
+                                            onClick={() => setAnalyzedProduct(null)}
+                                            className="text-xs text-[var(--text-muted)] hover:text-red-400"
+                                        >
+                                            ✕
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+
+                            <p className="text-xs text-[var(--text-muted)]">
+                                💡 AI sẽ chèn 2-3 đoạn quảng cáo tự nhiên với các style đa dạng (testimonial, story, educational...)
+                            </p>
+                        </div>
+                    )}
                 </div>
 
                 {/* Generate button */}

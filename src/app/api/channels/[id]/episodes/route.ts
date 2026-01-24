@@ -59,7 +59,13 @@ export async function POST(
             emotionalCurveEnabled = true,
             spatialAudioEnabled = true,
             dialogueDensityMin = 12,
-            dialogueDensityMax = 18
+            dialogueDensityMax = 18,
+            // Native Ad Insertion
+            adEnabled = false,
+            productInfo = null,
+            productImageUrl = null,
+            productLink = null,
+            analyzedProduct = null
         } = await req.json()
 
         // CTA options
@@ -250,6 +256,65 @@ Each voiceover/dialogue line MUST be between ${dialogueDensityMin}-${dialogueDen
 - Natural, conversational rhythm at ${dialogueDensityMin}-${dialogueDensityMax} words per scene
 `
 
+        // Native Ad Insertion
+        const adInsertionInstr = adEnabled && (productInfo || analyzedProduct) ? `
+💰 NATIVE AD INSERTION (MANDATORY - INCLUDE IN EPISODE):
+═══════════════════════════════════════════════════════
+PRODUCT TO ADVERTISE:
+- Name: ${analyzedProduct?.name || 'Sponsored Product'}
+- Description: ${analyzedProduct?.description || productInfo || 'See product details'}
+- Features: ${analyzedProduct?.features?.join(', ') || 'Various benefits'}
+- Purchase Link: ${productLink || 'Link in description'}
+
+AD PLACEMENT RULES:
+1. Insert 2-3 natural ad mentions throughout the episode (not consecutive scenes)
+2. Place first ad around scene 30-40% mark
+3. Place second ad around scene 60-70% mark  
+4. Optional third mention in closing/summary
+
+TRANSITION MUST BE SMOOTH - Use these approaches:
+• "Nói đến [related topic], tôi muốn chia sẻ về..."
+• "Đây cũng là lý do tôi thường dùng..."
+• "Speaking of which, this reminds me of..."
+• "Một điều liên quan mà nhiều bạn hỏi..."
+• "By the way, many of you asked about..."
+
+AD STYLE VARIETY (USE DIFFERENT STYLES - NEVER REPEAT):
+🎭 TESTIMONIAL: Host personally uses and recommends
+   "Tôi đã dùng [product] được 3 tháng và thấy [benefit]..."
+   
+📖 STORY INTEGRATION: Product naturally solves a problem in the narrative
+   "Đúng lúc cần nhất, [product] đã giúp tôi..."
+   
+🔍 EDUCATIONAL: Teach something related, then naturally mention product
+   "Một mẹo hay là [tip]... và [product] làm điều này tuyệt vời vì [reason]"
+   
+🤔 PROBLEM-SOLUTION: Present common problem, product is the solution
+   "Nhiều người gặp vấn đề [X]... [product] giải quyết bằng cách [how]..."
+   
+⭐ FEATURE HIGHLIGHT: Focus on one amazing feature
+   "Điều tôi thích nhất ở [product] là [specific feature]..."
+   
+🎁 SOFT CTA: Gentle call-to-action
+   "Link [product] ở description, bạn có thể dùng code để được giảm giá..."
+   
+🎬 B-ROLL SHOWCASE: Visual product showcase with voiceover
+   [Show product in use, lifestyle shots, close-up details while narrating benefits]
+   
+💬 CASUAL MENTION: Brief natural mention mid-content
+   "À nhân tiện, [product] cũng hỗ trợ tính năng này nên rất tiện..."
+
+AD SCENE FORMAT:
+Mark ad scenes with: [AD_INTEGRATION: style_name]
+Example: "[AD_INTEGRATION: testimonial] Host showing product with genuine smile..."
+
+⚠️ CRITICAL AD RULES:
+- Ads MUST feel NATIVE - like host genuinely loves the product
+- NO hard-selling, NO aggressive pitches, NO "BUY NOW" energy
+- Blend naturally with content - viewers shouldn't feel interrupted
+- Keep ad segments SHORT (1 scene each, not long pitches)
+` : ''
+
         // Generate episode with YouTube content
         const fullPrompt = `Create Episode ${nextEpisodeNumber} with EXACTLY ${totalScenes} scenes for channel "${channel.name}"
 
@@ -269,6 +334,7 @@ ${visualHookInstr}
 ${emotionalCurveInstr}
 ${spatialAudioInstr}
 ${dialogueDensityInstr}
+${adInsertionInstr}
 
 ═══════════════════════════════════════
 EPISODE STRUCTURE (MUST FOLLOW EXACTLY):
