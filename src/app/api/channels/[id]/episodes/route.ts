@@ -226,42 +226,63 @@ CRITICAL - VOICE GENDER CONSISTENCY:
 [Host speaking: "dialogue here"]. Host stands/sits in frame while ENVIRONMENT TRANSFORMS to [describe new environment matching topic]. [Camera movement]. [Transition effects: particle dissolve, light sweep, morphing elements].
 Include "VOICE: [matching host gender]" at the end of each promptText`
         } else if (voiceOverMode === 'host_storyteller') {
-            voiceOverInstr = `CONTENT TYPE: HOST STORYTELLER MODE (Kể chuyện kinh dị/Ma/Căng thẳng)
+            voiceOverInstr = `CONTENT TYPE: HOST STORYTELLER MODE (Kể chuyện sinh động với Elements tương tác)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-👻 CRITICAL RULES FOR STORYTELLER MODE:
-- Host sits in a SINGLE ROOM throughout entire episode
-- Host is the STORYTELLER, narrating directly to camera
-- Room atmosphere CHANGES based on story tension (not environment, but MOOD)
-- Camera MOVES cinematically to build suspense
+🎭 CRITICAL RULES FOR STORYTELLER MODE:
+- Host sits/stands in a ROOM telling story directly to camera
+- Host is ALWAYS the primary focus - face NEVER covered by elements
+- STORY ELEMENTS APPEAR in the room based on narration
+- Elements CAN INTERACT with host (scare, surprise, touch...)
+- Host REACTS naturally to elements (fear, shock, pain, joy...)
 
-🏠 THE STORYTELLER ROOM:
-- Dimly lit room with single light source (lamp, candle, fireplace)
-- Vintage/cozy elements: old books, antique furniture, shadows
-- Room stays the same but ATMOSPHERE changes (lighting, shadows, fog)
+🌟 STORY ELEMENTS VISUALIZATION:
+When host mentions something in story, it APPEARS in the room:
+- 🚀 "Chiếc phi thuyền bay qua..." → Spaceship flies BEHIND host (never covering face)
+- 👻 "Con ma xuất hiện..." → Ghost materializes behind/beside host
+- 🐉 "Con rồng khổng lồ..." → Dragon head appears from shadows
+- 💀 "Xương người rơi xuống..." → Bones scatter around host
+- 🔥 "Lửa bùng cháy..." → Flames erupt around room (not on host)
+- 🌊 "Sóng dữ ập đến..." → Water rushes past (host stays dry but reacts)
 
-🎭 ATMOSPHERE CHANGES BY STORY MOMENT:
-- Calm intro → Warm lamp light, cozy feeling
-- Building tension → Light flickers, shadows deepen
-- Horror peak → Near darkness, only face illuminated, fog creeps in
-- Jump scare moment → Brief flash, dramatic shadows
-- Resolution → Light returns gradually
+⚠️ CRITICAL: Elements appear BESIDE/BEHIND host, NEVER blocking host's face
 
-📹 CINEMATIC CAMERA MOVEMENTS:
-- Slow zoom in during tense moments
-- Slow orbit around host during revelation
-- Quick cuts during scary moments
-- Dutch angle for unsettling atmosphere
-- Pull back to reveal shadows/darkness behind host
+🎬 HOST-ELEMENT INTERACTIONS (MUST INCLUDE):
+- 😱 SCARE: Ghost suddenly appears behind host → Host JUMPS, screams, looks terrified
+- 😰 STARTLE: Loud noise/sudden movement → Host gasps, hand to chest, wide eyes
+- 🤕 HURT: Something touches/hits host → Host winces, rubs area, looks pained
+- 😨 CHASE: Element moves toward host → Host leans back, tries to escape
+- 😮 SURPRISE: Unexpected element appears → Host does double-take, shocked expression
+- 🤝 FRIENDLY: Nice element appears → Host smiles, reaches out, interacts warmly
+- 😢 SAD: Emotional story moment → Host tears up, voice cracks, looks down
 
-🔊 AUDIO ATMOSPHERE (describe in promptText):
-- Creaking sounds, wind, distant whispers
-- Heartbeat sounds during tension
-- Sudden silence before scares
-- Thunder, rain for dramatic moments
+🎭 HOST REACTIONS BY GENRE:
+HORROR: Terrified expressions, jumps, screams, covers face, trembles
+SCI-FI: Wonder, amazement, reaches toward holograms/ships
+COMEDY: Laughs, playful interactions with silly elements
+DRAMA: Tears, emotional outbursts, passionate gestures
+ACTION: Ducks from explosions, shields face, dramatic reactions
+
+📹 CAMERA & VISUAL STYLE:
+- Medium shot: Host centered, room for elements around them
+- Quick zoom when element startles host
+- Slow orbit during emotional moments
+- Dutch angle for unsettling scenes
+- Pull back to reveal massive elements behind host
+
+🌈 ATMOSPHERE CHANGES:
+- Match lighting to story mood (warm/cold/eerie/bright)
+- Fog, particles, light rays enhance elements
+- Room colors shift with emotion (red=danger, blue=sad, gold=happy)
+
+🔊 SOUND DESIGN (describe in promptText):
+- Element sounds (whoosh, roar, whisper, crash)
+- Host reaction sounds (gasp, scream, laugh, cry)
+- Ambient mood sounds (wind, heartbeat, music)
 
 🎬 PROMPTTEXT FORMAT:
-[Host speaks: "story dialogue"]. [Camera: slow zoom/orbit/pan]. ATMOSPHERE: [describe lighting change - flickering, dimming, shadows growing]. Room fills with [fog/shadows/eerie glow]. [Sound cues: creaking, whispers, heartbeat]. MOOD: [tense/terrifying/relieving].
-Include "VOICE: [matching host gender]" at the end of each promptText`
+[Host speaks: "story dialogue"]. [STORY ELEMENT: describe what appears - position relative to host]. [HOST REACTION: physical and emotional response]. [Camera: movement]. [Atmosphere: lighting/fog/color]. [Sound: element + reaction sounds]. 
+CRITICAL: Element appears [behind/beside/above] host, face always visible.
+Include "VOICE: [matching host gender]" at the end.`
         } else {
             voiceOverInstr = `CONTENT TYPE: B-ROLL ONLY (pure visuals, no dialogue).
 - The "voiceover" field should be empty or minimal ambient text

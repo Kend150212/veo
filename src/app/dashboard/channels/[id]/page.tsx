@@ -1025,7 +1025,7 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
                             <option value="voice_over">🎙️ Voice Over (Thuyết minh)</option>
                             <option value="broll_only">🎬 B-Roll only (không lời)</option>
                             <option value="host_dynamic_env">🌍 Host 100% + Môi trường động</option>
-                            <option value="host_storyteller">👻 Host Kể Chuyện (Ma/Kinh dị)</option>
+                            <option value="host_storyteller">🎭 Host Kể Chuyện (Elements sinh động)</option>
                         </select>
                     </div>
                 </div>
