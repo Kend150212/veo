@@ -65,7 +65,9 @@ export async function POST(
             productInfo = null,
             productImageUrl = null,
             productLink = null,
-            analyzedProduct = null
+            analyzedProduct = null,
+            selectedAdStyles = [],
+            adSceneCount = 2
         } = await req.json()
 
         // CTA options
@@ -257,6 +259,10 @@ Each voiceover/dialogue line MUST be between ${dialogueDensityMin}-${dialogueDen
 `
 
         // Native Ad Insertion
+        const adStylesDesc = selectedAdStyles.length > 0
+            ? `USE ONLY THESE STYLES: ${selectedAdStyles.join(', ')}`
+            : 'USE DIFFERENT STYLES - CHOOSE FROM ALL AVAILABLE'
+
         const adInsertionInstr = adEnabled && (productInfo || analyzedProduct) ? `
 💰 NATIVE AD INSERTION (MANDATORY - INCLUDE IN EPISODE):
 ═══════════════════════════════════════════════════════
@@ -267,10 +273,11 @@ PRODUCT TO ADVERTISE:
 - Purchase Link: ${productLink || 'Link in description'}
 
 AD PLACEMENT RULES:
-1. Insert 2-3 natural ad mentions throughout the episode (not consecutive scenes)
-2. Place first ad around scene 30-40% mark
-3. Place second ad around scene 60-70% mark  
-4. Optional third mention in closing/summary
+1. Insert EXACTLY ${adSceneCount} ad scenes throughout the episode (not consecutive)
+2. Distribute evenly: ${adSceneCount === 1 ? 'Place at ~50% mark' : adSceneCount === 2 ? 'Place at ~35% and ~70%' : `Distribute across ${adSceneCount} points: 25%, 50%, 75%${adSceneCount > 3 ? ', etc.' : ''}`}
+3. Each ad scene should feel natural and integrated
+
+STYLE INSTRUCTION: ${adStylesDesc}
 
 TRANSITION MUST BE SMOOTH - Use these approaches:
 • "Nói đến [related topic], tôi muốn chia sẻ về..."

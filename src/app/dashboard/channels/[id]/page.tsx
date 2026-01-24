@@ -137,6 +137,19 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
         features: string[]
         targetAudience: string
     } | null>(null)
+    const [selectedAdStyles, setSelectedAdStyles] = useState<string[]>([])
+    const [adSceneCount, setAdSceneCount] = useState(2)
+
+    const AD_STYLES = [
+        { id: 'testimonial', label: '🎭 Testimonial', desc: 'Host dùng & recommend' },
+        { id: 'story', label: '📖 Story', desc: 'Lồng ghép câu chuyện' },
+        { id: 'educational', label: '🔍 Educational', desc: 'Dạy + mention' },
+        { id: 'problem_solution', label: '🤔 Problem-Solution', desc: 'Vấn đề → Giải pháp' },
+        { id: 'feature', label: '⭐ Feature', desc: 'Highlight tính năng' },
+        { id: 'soft_cta', label: '🎁 Soft CTA', desc: 'CTA nhẹ nhàng' },
+        { id: 'broll', label: '🎬 B-Roll', desc: 'Visual showcase' },
+        { id: 'casual', label: '💬 Casual', desc: 'Mention tự nhiên' },
+    ]
 
     // Category management
     const [categories, setCategories] = useState<EpisodeCategory[]>([])
@@ -412,7 +425,9 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
                     productInfo: adEnabled ? productInfo : null,
                     productImageUrl: adEnabled ? productImageUrl : null,
                     productLink: adEnabled ? productLink : null,
-                    analyzedProduct: adEnabled ? analyzedProduct : null
+                    analyzedProduct: adEnabled ? analyzedProduct : null,
+                    selectedAdStyles: adEnabled ? selectedAdStyles : [],
+                    adSceneCount: adEnabled ? adSceneCount : 2
                 })
             })
 
@@ -1332,8 +1347,62 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
                                 </div>
                             )}
 
+                            {/* Ad Styles Selection */}
+                            <div>
+                                <label className="block text-xs text-[var(--text-muted)] mb-2">
+                                    🎨 Chọn style quảng cáo (để trống = AI tự chọn đa dạng)
+                                </label>
+                                <div className="flex flex-wrap gap-1.5">
+                                    {AD_STYLES.map(style => (
+                                        <button
+                                            key={style.id}
+                                            onClick={() => {
+                                                setSelectedAdStyles(prev =>
+                                                    prev.includes(style.id)
+                                                        ? prev.filter(s => s !== style.id)
+                                                        : [...prev, style.id]
+                                                )
+                                            }}
+                                            className={`px-2 py-1 rounded text-xs transition ${selectedAdStyles.includes(style.id)
+                                                    ? 'bg-amber-500 text-white'
+                                                    : 'bg-[var(--bg-primary)] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]'
+                                                }`}
+                                            title={style.desc}
+                                        >
+                                            {style.label}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Ad Scene Count */}
+                            <div className="flex items-center gap-3">
+                                <label className="text-xs text-[var(--text-muted)]">
+                                    📊 Số cảnh quảng cáo:
+                                </label>
+                                <div className="flex items-center gap-2">
+                                    <button
+                                        onClick={() => setAdSceneCount(Math.max(1, adSceneCount - 1))}
+                                        className="w-7 h-7 rounded bg-[var(--bg-primary)] hover:bg-[var(--bg-hover)] flex items-center justify-center"
+                                    >
+                                        -
+                                    </button>
+                                    <span className="w-8 text-center font-medium">{adSceneCount}</span>
+                                    <button
+                                        onClick={() => setAdSceneCount(Math.min(5, adSceneCount + 1))}
+                                        className="w-7 h-7 rounded bg-[var(--bg-primary)] hover:bg-[var(--bg-hover)] flex items-center justify-center"
+                                    >
+                                        +
+                                    </button>
+                                    <span className="text-xs text-[var(--text-muted)]">cảnh</span>
+                                </div>
+                            </div>
+
                             <p className="text-xs text-[var(--text-muted)]">
-                                💡 AI sẽ chèn 2-3 đoạn quảng cáo tự nhiên với các style đa dạng (testimonial, story, educational...)
+                                💡 {selectedAdStyles.length > 0
+                                    ? `Sẽ dùng ${selectedAdStyles.length} style đã chọn cho ${adSceneCount} cảnh quảng cáo`
+                                    : `AI sẽ tự chọn style đa dạng cho ${adSceneCount} cảnh quảng cáo`
+                                }
                             </p>
                         </div>
                     )}
