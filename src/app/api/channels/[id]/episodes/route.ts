@@ -204,6 +204,13 @@ CRITICAL - VOICE GENDER CONSISTENCY:
         } else if (voiceOverMode === 'host_dynamic_env') {
             voiceOverInstr = `CONTENT TYPE: HOST 100% WITH DYNAMIC ENVIRONMENT (Môi trường thay đổi theo nội dung)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎙️ VOICE GENDER CONSISTENCY (CRITICAL):
+- Determine host gender from character description
+- Include "VOICE: Female voice (giọng nữ)" or "VOICE: Male voice (giọng nam)" at END of EVERY promptText
+- ALL scenes MUST use the SAME voice matching the host character
+- If host is female: ALWAYS "VOICE: Female voice (giọng nữ)"
+- If host is male: ALWAYS "VOICE: Male voice (giọng nam)"
+
 🌍 CRITICAL RULES FOR THIS MODE:
 - Host appears in 100% of scenes, ALWAYS visible on screen
 - Host is the primary visual focus, speaking directly to camera
@@ -228,6 +235,13 @@ Include "VOICE: [matching host gender]" at the end of each promptText`
         } else if (voiceOverMode === 'host_storyteller') {
             voiceOverInstr = `CONTENT TYPE: HOST STORYTELLER MODE (Kể chuyện sinh động với Elements tương tác)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎙️ VOICE GENDER CONSISTENCY (CRITICAL):
+- Determine host gender from character description
+- Include "VOICE: Female voice (giọng nữ)" or "VOICE: Male voice (giọng nam)" at END of EVERY promptText
+- ALL scenes MUST use the SAME voice matching the host character
+- If host is female: ALWAYS "VOICE: Female voice (giọng nữ)"
+- If host is male: ALWAYS "VOICE: Male voice (giọng nam)"
+
 🎭 CRITICAL RULES FOR STORYTELLER MODE:
 - Host sits/stands in a ROOM telling story directly to camera
 - Host is ALWAYS the primary focus - face NEVER covered by elements
