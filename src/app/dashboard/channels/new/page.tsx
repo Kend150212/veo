@@ -17,7 +17,9 @@ import {
     Palette,
     Eye,
     Plus,
-    Trash2
+    Trash2,
+    Wand2,
+    FileText
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { CHANNEL_STYLES, STYLE_CATEGORIES, getStylesByCategory } from '@/lib/channel-styles'
@@ -48,6 +50,8 @@ export default function NewChannelPage() {
     // Basic info
     const [channelName, setChannelName] = useState('')
     const [niche, setNiche] = useState('')
+    const [description, setDescription] = useState('')
+    const [isGeneratingDescription, setIsGeneratingDescription] = useState(false)
 
     // YouTube API
     const [youtubeApiKey, setYoutubeApiKey] = useState('')
@@ -81,6 +85,36 @@ export default function NewChannelPage() {
     const [channelId, setChannelId] = useState<string | null>(null)
     const [isSaving, setIsSaving] = useState(false)
 
+    // Generate channel description with AI
+    const handleGenerateDescription = async () => {
+        if (!channelName || !niche) {
+            toast.error('Vui lòng nhập tên kênh và chủ đề trước')
+            return
+        }
+
+        setIsGeneratingDescription(true)
+        try {
+            const res = await fetch('/api/channels/generate-description', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: channelName, niche })
+            })
+            const data = await res.json()
+
+            if (data.description) {
+                setDescription(data.description)
+                toast.success('Đã tạo mô tả kênh thành công!')
+            } else {
+                toast.error(data.error || 'Không thể tạo mô tả')
+            }
+        } catch (error) {
+            console.error('Generate description error:', error)
+            toast.error('Lỗi khi tạo mô tả')
+        } finally {
+            setIsGeneratingDescription(false)
+        }
+    }
+
     // Step 1: Create channel and analyze
     const handleCreateAndAnalyze = async () => {
         if (!channelName || !niche) {
@@ -94,7 +128,7 @@ export default function NewChannelPage() {
             const createRes = await fetch('/api/channels', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name: channelName, niche })
+                body: JSON.stringify({ name: channelName, niche, description })
             })
             const createData = await createRes.json()
 
@@ -296,6 +330,44 @@ export default function NewChannelPage() {
                                 />
                                 <p className="text-xs text-[var(--text-muted)] mt-1">
                                     Mô tả chi tiết giúp AI phân tích tốt hơn
+                                </p>
+                            </div>
+
+                            {/* AI-Generated Description */}
+                            <div className="p-4 bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/20 rounded-lg">
+                                <div className="flex items-center justify-between mb-3">
+                                    <label className="flex items-center gap-2 text-sm font-medium">
+                                        <FileText className="w-4 h-4 text-purple-400" />
+                                        Mô tả kênh
+                                        <span className="text-xs text-[var(--text-muted)]">(AI tự động tạo)</span>
+                                    </label>
+                                    <button
+                                        type="button"
+                                        onClick={handleGenerateDescription}
+                                        disabled={isGeneratingDescription || !channelName || !niche}
+                                        className="flex items-center gap-2 px-3 py-1.5 text-sm bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        {isGeneratingDescription ? (
+                                            <>
+                                                <Loader2 className="w-4 h-4 animate-spin" />
+                                                Đang tạo...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Wand2 className="w-4 h-4" />
+                                                AI Tạo mô tả
+                                            </>
+                                        )}
+                                    </button>
+                                </div>
+                                <textarea
+                                    value={description}
+                                    onChange={(e) => setDescription(e.target.value)}
+                                    placeholder="Nhấn 'AI Tạo mô tả' để AI tự động tạo mô tả chi tiết cho kênh của bạn dựa trên tên và chủ đề..."
+                                    className="input-field min-h-[200px] text-sm"
+                                />
+                                <p className="text-xs text-[var(--text-muted)] mt-2">
+                                    💡 AI sẽ tạo mô tả bao gồm: giới thiệu kênh, nội dung chính, đối tượng khán giả, lịch đăng và call-to-action
                                 </p>
                             </div>
 

@@ -36,7 +36,7 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
         }
 
-        const { name, niche } = await req.json()
+        const { name, niche, description } = await req.json()
 
         if (!name || !niche) {
             return NextResponse.json({ error: 'Vui lòng nhập tên kênh và ngách' }, { status: 400 })
@@ -46,6 +46,7 @@ export async function POST(req: Request) {
             data: {
                 name,
                 niche,
+                description: description || null,
                 userId: session.user.id
             }
         })

@@ -159,6 +159,7 @@ model Channel {
   id                String    @id @default(cuid())
   name              String    // Tên kênh YouTube
   niche             String    // Chủ đề/Ngách (VD: "Tâm lý học", "Khoa học vui")
+  description       String?   // Mô tả kênh chi tiết (AI-generated)
   nicheKeywords     String?   // Keywords phân tích từ niche
   knowledgeBase     String?   // JSON: thông tin từ YouTube trends, có thể edit
   trendingChannels  String?   // JSON: các kênh trending đã tìm được
