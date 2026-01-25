@@ -109,128 +109,165 @@ const CINEMATIC_STYLES = [
         useCase: 'So sánh thực phẩm, battle giữa các món, drama ẩm thực viral',
         icon: '⚔️',
         promptKeywords: 'food battle drama, anthropomorphic ingredients fighting, dramatic showdown, energy effects around food, arena-style kitchen, intense expressions, action camera angles, epic food confrontation, winner loser dynamics'
-    },
-    {
-        id: 'roast_comedy',
-        name: 'Roast / Provocative Comedy',
-        nameVi: 'Hài roast / Chọc tức khán giả',
-        description: 'Nhân vật ROAST, chọc tức, thách thức khán giả - CỰC KỲ VIRAL vì gây tranh cãi',
-        visualLanguage: 'Close-up mặt đểu, ánh mắt khinh thường, cử chỉ provocative',
-        useCase: 'Content gây tranh cãi, engagement cao, viral qua comments',
-        icon: '🔥',
-        promptKeywords: 'roast comedy, provocative expressions, smug face, looking down at camera, breaking fourth wall, mocking gestures, sarcastic smile, challenging the viewer, controversial statements'
-    },
-    {
-        id: 'reaction_commentary',
-        name: 'Reaction / Commentary',
-        nameVi: 'Phản ứng & Bình luận',
-        description: 'Nhân vật xem và phản ứng với nội dung, bình luận sắc sảo',
-        visualLanguage: 'Split screen, picture-in-picture, biểu cảm reaction exaggerated',
-        useCase: 'React video, bình luận trend, phân tích drama',
-        icon: '😱',
-        promptKeywords: 'reaction faces, split screen layout, picture-in-picture, exaggerated expressions, shocked face, laughing hard, cringing, judging expression, commentary style'
-    },
-    {
-        id: 'asmr_satisfying',
-        name: 'ASMR / Satisfying',
-        nameVi: 'ASMR / Thỏa mãn thị giác',
-        description: 'Âm thanh êm dịu, hình ảnh thỏa mãn, cảm giác relax',
-        visualLanguage: 'Extreme close-up, slow motion, focus sounds, soft lighting',
-        useCase: 'ASMR cooking, satisfying cuts, relaxing content',
-        icon: '🎧',
-        promptKeywords: 'ASMR sounds, extreme macro close-up, satisfying visuals, slow motion textures, soft ambient lighting, crisp sound effects, relaxing atmosphere, tingles inducing, whisper narration'
-    },
-    {
-        id: 'horror_survival',
-        name: 'Horror Survival / Escape',
-        nameVi: 'Kinh dị sinh tồn',
-        description: 'Thực phẩm/nhân vật cố gắng THOÁT KHỎI việc bị ăn/tiêu diệt - Tension cao!',
-        visualLanguage: 'Low-key lighting, POV victim, jump scares, running scenes',
-        useCase: 'Horror comedy, survival drama, tension content',
-        icon: '😱',
-        promptKeywords: 'horror survival, running away, being chased, scared expressions, dark kitchen at night, knife shadows, pot of boiling water threat, escape attempts, near-death experiences, relief and terror'
-    },
-    {
-        id: 'romance_drama',
-        name: 'Romance / Love Story',
-        nameVi: 'Tình cảm lãng mạn',
-        description: 'Câu chuyện tình yêu giữa các nhân vật - Cảm động, hài hước hoặc bi kịch',
-        visualLanguage: 'Warm lighting, bokeh backgrounds, eye contact moments, slow motion',
-        useCase: 'Love stories, couple content, emotional drama',
-        icon: '💕',
-        promptKeywords: 'romantic atmosphere, loving gazes, warm golden lighting, bokeh hearts, slow motion embraces, emotional tears, relationship drama, first meeting, confession scenes, happy or tragic ending'
-    },
-    {
-        id: 'gen_z_meme',
-        name: 'Gen Z Meme Culture',
-        nameVi: 'Văn hóa meme Gen Z',
-        description: 'Humor Gen Z, meme references, ironic, absurd, chaotic energy',
-        visualLanguage: 'Glitch effects, random zooms, deep fried, bass boosted, chaotic edits',
-        useCase: 'Meme content, TikTok trends, ironic humor, viral shorts',
-        icon: '💀',
-        promptKeywords: 'gen z humor, ironic expressions, random zoom effects, chaotic energy, absurdist comedy, meme references, bruh moment face, skull emoji energy, unhinged behavior, cursed images aesthetic'
-    },
-    {
-        id: 'educational_sassy',
-        name: 'Educational with Attitude',
-        nameVi: 'Giáo dục với thái độ',
-        description: 'Dạy kiến thức nhưng với thái độ sassy, "bạn ngu quá" energy',
-        visualLanguage: 'Raised eyebrow, disappointed face, slow clap, "really?" expression',
-        useCase: 'Debunk myths, correct misinformation, sassy teaching',
-        icon: '🙄',
-        promptKeywords: 'sassy teaching, raised eyebrow, disappointed expression, slow condescending clap, eye roll, you should know this face, lecturing pose, pointing at facts, proving idiots wrong'
-    },
-    {
-        id: 'mystery_detective',
-        name: 'Mystery / Detective',
-        nameVi: 'Bí ẩn / Thám tử',
-        description: 'Điều tra, khám phá bí mật, twist endings, suspense',
-        visualLanguage: 'Noir lighting, magnifying glass, clue reveals, dramatic reveals',
-        useCase: 'True crime style, mystery reveals, conspiracy theories',
-        icon: '🔍',
-        promptKeywords: 'detective noir style, magnifying glass, mysterious shadows, clue discovery, evidence board with strings, dramatic reveal lighting, suspenseful atmosphere, twist ending setup, investigation scenes'
-    },
-    {
-        id: 'breaking_4th_wall',
-        name: 'Breaking the 4th Wall',
-        nameVi: 'Phá vỡ bức tường thứ 4',
-        description: 'Nhân vật BIẾT họ đang trong video, nói chuyện trực tiếp với khán giả',
-        visualLanguage: 'Direct eye contact with camera, winking, aside glances, addressing viewer',
-        useCase: 'Meta humor, direct engagement, personal connection',
-        icon: '👀',
-        promptKeywords: 'breaking fourth wall, looking directly at camera, winking at viewer, aside glance, talking to audience, meta awareness, acknowledging being in a video, conspiratorial whisper to viewer'
-    },
-    {
-        id: 'villain_origin',
-        name: 'Villain Origin Story',
-        nameVi: 'Nguồn gốc phản diện',
-        description: 'Kể câu chuyện tại sao nhân vật trở thành "ác" - Đồng cảm với villain',
-        visualLanguage: 'Dark backstory flashbacks, sympathetic angles, transformation sequence',
-        useCase: 'Character depth, sympathy content, dark backstories',
-        icon: '😈',
-        promptKeywords: 'villain origin, tragic backstory, dark transformation, sympathetic villain lighting, before and after contrast, corrupting moment, justified anger, becoming the villain, dark side embrace'
-    },
-    {
-        id: 'underdog_triumph',
-        name: 'Underdog Triumph',
-        nameVi: 'Kẻ yếu vươn lên',
-        description: 'Câu chuyện từ bị coi thường → chứng minh giá trị - Inspirational!',
-        visualLanguage: 'Training montage, doubt faces → amazed faces, spotlight moment',
-        useCase: 'Motivational content, comeback stories, proving doubters wrong',
-        icon: '🏆',
-        promptKeywords: 'underdog story, being mocked initially, training montage, moment of doubt, final triumph, shocked faces of doubters, spotlight on winner, crowd cheering, proving them wrong'
-    },
-    {
-        id: 'chaos_unhinged',
-        name: 'Chaotic / Unhinged Energy',
-        nameVi: 'Hỗn loạn / Năng lượng điên',
-        description: 'Nhân vật mất kiểm soát, chaos escalates, "everything is fine" while burning',
-        visualLanguage: 'Increasingly chaotic scenes, fire in background, forced smile, screaming',
-        useCase: 'Relatable chaos, overwhelmed humor, escalating situations',
-        icon: '🤪',
-        promptKeywords: 'chaotic energy, things going wrong, forced smile while panicking, fire in background, screaming internally, everything is fine meme, escalating disaster, unhinged laughter, mental breakdown comedy'
     }
 ]
+
+// Content type configurations (for non-cinematic modes)
+const CONTENT_TYPE_INFO: Record<string, { name: string; description: string; icon: string; tips: string[] }> = {
+    'roast_comedy': {
+        name: 'Roast Comedy',
+        description: 'Nhân vật ROAST, chọc tức, thách thức khán giả - Gây tranh cãi = VIRAL!',
+        icon: '🔥',
+        tips: [
+            '"Bạn còn đang xem video này à? Chắc rảnh lắm nhỉ?"',
+            '"Tôi cá là bạn đang nằm trên giường lướt video"',
+            '"Comment đi, tôi biết bạn muốn cãi rồi đấy"',
+            '"Share cho đứa bạn ngu ngu của bạn xem đi"'
+        ]
+    },
+    'breaking_4th_wall': {
+        name: 'Phá vỡ bức tường thứ 4',
+        description: 'Nhân vật BIẾT họ đang trong video, nói chuyện trực tiếp với khán giả',
+        icon: '👀',
+        tips: [
+            'Nhìn thẳng vào camera và wink',
+            '"Đừng nói với ai nhé" *thì thầm*',
+            '"Tôi thấy bạn chưa subscribe đấy"',
+            '*something happens* *nhìn camera như trong The Office*'
+        ]
+    },
+    'reaction_commentary': {
+        name: 'Reaction / Commentary',
+        description: 'Xem và phản ứng với nội dung, bình luận sắc sảo',
+        icon: '😱',
+        tips: [
+            'Split screen hoặc Picture-in-Picture',
+            'Biểu cảm exaggerated: shocked, cringing',
+            'Opinions mạnh, không ngại controversial'
+        ]
+    },
+    'educational_sassy': {
+        name: 'Giáo dục với thái độ',
+        description: '"Bạn không biết điều này thật à?" - Dạy với thái độ sassy',
+        icon: '🙄',
+        tips: [
+            '"Wow, still believing that myth?"',
+            'Slow, condescending clap',
+            'Eye roll cực dramatic',
+            '"Let me educate you real quick"'
+        ]
+    },
+    'gen_z_meme': {
+        name: 'Gen Z Meme Culture',
+        description: 'Absurd, ironic, chaotic energy - "Bruh" moment',
+        icon: '💀',
+        tips: [
+            'Random zoom bất ngờ',
+            '"No cap", "Fr fr", "Slay", "It\'s giving..."',
+            'Anti-humor (not funny = funny)',
+            'Skull emoji energy 💀'
+        ]
+    },
+    'chaos_unhinged': {
+        name: 'Chaotic / Năng lượng điên',
+        description: '"This is fine" 🔥 while everything burns',
+        icon: '🤪',
+        tips: [
+            'Situation escalates out of control',
+            'Forced smile while panicking',
+            '"I\'m fine" while clearly not fine',
+            'Fire in background, keep smiling'
+        ]
+    },
+    'horror_survival': {
+        name: 'Kinh dị sinh tồn',
+        description: 'Nhân vật cố THOÁT KHỎI nguy hiểm - Tension cao!',
+        icon: '😱',
+        tips: [
+            'Dark, low-key lighting',
+            'POV từ góc nạn nhân',
+            'Running/chasing scenes',
+            'Jump scare moments'
+        ]
+    },
+    'romance_drama': {
+        name: 'Tình cảm lãng mạn',
+        description: 'Câu chuyện tình yêu - Cảm động hoặc bi kịch',
+        icon: '💕',
+        tips: [
+            'Warm, golden hour lighting',
+            'Eye contact moments, slow motion',
+            'Love confession scenes',
+            'Can be sweet OR tragic ending'
+        ]
+    },
+    'mystery_detective': {
+        name: 'Bí ẩn / Thám tử',
+        description: 'Điều tra, khám phá bí mật, twist endings',
+        icon: '🔍',
+        tips: [
+            'Noir lighting, shadows',
+            'Clue reveals, "aha!" moments',
+            'Evidence boards with red strings',
+            'Dramatic twist endings'
+        ]
+    },
+    'villain_origin': {
+        name: 'Nguồn gốc phản diện',
+        description: 'Tại sao nhân vật trở thành "ác" - Đồng cảm với villain',
+        icon: '😈',
+        tips: [
+            'Tragic backstory reveals',
+            '"They made me this way"',
+            'Before (innocent) vs After (villain)',
+            'Transformation sequence'
+        ]
+    },
+    'underdog_triumph': {
+        name: 'Kẻ yếu vươn lên',
+        description: 'Từ bị coi thường → chứng minh giá trị!',
+        icon: '🏆',
+        tips: [
+            'Start: bị coi thường',
+            'Training montage, struggling',
+            'PROVE THEM WRONG moment',
+            'Shocked faces of doubters'
+        ]
+    },
+    'food_animation': {
+        name: 'Thực phẩm nhân hóa',
+        description: 'Rau củ, trái cây có cảm xúc và tính cách - SIÊU VIRAL!',
+        icon: '🍔',
+        tips: [
+            '3D Pixar-style animation',
+            'Vegetables/fruits with human faces',
+            'Kitchen environment',
+            'Comedic reactions'
+        ]
+    },
+    'food_drama': {
+        name: 'Food Wars / Kịch tính ẩm thực',
+        description: 'Thực phẩm battle, đối đầu, cạnh tranh',
+        icon: '⚔️',
+        tips: [
+            '"Thực phẩm nào tốt hơn?"',
+            'Energy auras xung quanh',
+            'Arena/Sân đấu trong nhà bếp',
+            'Victory celebration'
+        ]
+    },
+    'asmr_satisfying': {
+        name: 'ASMR / Satisfying',
+        description: 'Âm thanh êm dịu, hình ảnh thỏa mãn, relax',
+        icon: '🎧',
+        tips: [
+            'Extreme close-up, macro shots',
+            'Slow motion textures',
+            'Focus on SOUNDS: crisp, crunchy, sizzling',
+            'Relaxing, meditative atmosphere'
+        ]
+    }
+}
 
 interface EpisodeScene {
     id: string
@@ -321,7 +358,12 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
     const [mentionChannel, setMentionChannel] = useState(false)
     const [ctaMode, setCtaMode] = useState<'random' | 'select'>('random')
     const [selectedCTAs, setSelectedCTAs] = useState<string[]>([])
-    const [voiceOverMode, setVoiceOverMode] = useState<'with_host' | 'voice_over' | 'broll_only' | 'host_dynamic_env' | 'host_storyteller' | 'cinematic_film'>('with_host')
+    const [voiceOverMode, setVoiceOverMode] = useState<
+        'with_host' | 'voice_over' | 'broll_only' | 'host_dynamic_env' | 'host_storyteller' | 'cinematic_film' |
+        'roast_comedy' | 'reaction_commentary' | 'asmr_satisfying' | 'horror_survival' | 'romance_drama' |
+        'gen_z_meme' | 'educational_sassy' | 'mystery_detective' | 'breaking_4th_wall' | 'villain_origin' |
+        'underdog_triumph' | 'chaos_unhinged' | 'food_animation' | 'food_drama'
+    >('with_host')
     const [cinematicStyle, setCinematicStyle] = useState<string>('cinematic_documentary') // Style cho mode điện ảnh
 
     // Voice settings (for voice_over mode)
@@ -1456,21 +1498,80 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
                         <select
                             value={voiceOverMode}
                             onChange={(e) => {
-                                const mode = e.target.value as 'with_host' | 'voice_over' | 'broll_only' | 'host_dynamic_env' | 'host_storyteller' | 'cinematic_film'
+                                const mode = e.target.value as typeof voiceOverMode
                                 setVoiceOverMode(mode)
-                                setUseCharacters(['with_host', 'host_dynamic_env', 'host_storyteller', 'cinematic_film'].includes(mode))
+                                // Modes that use characters
+                                const characterModes = [
+                                    'with_host', 'host_dynamic_env', 'host_storyteller', 'cinematic_film',
+                                    'roast_comedy', 'reaction_commentary', 'horror_survival', 'romance_drama',
+                                    'gen_z_meme', 'educational_sassy', 'mystery_detective', 'breaking_4th_wall',
+                                    'villain_origin', 'underdog_triumph', 'chaos_unhinged', 'food_animation', 'food_drama'
+                                ]
+                                setUseCharacters(characterModes.includes(mode))
                             }}
                             className="input-field w-full"
                         >
-                            <option value="with_host">👤 Có Host/Nhân vật</option>
-                            <option value="voice_over">🎙️ Voice Over (Thuyết minh)</option>
-                            <option value="broll_only">🎬 B-Roll only (không lời)</option>
-                            <option value="host_dynamic_env">🌍 Host 100% + Môi trường động</option>
-                            <option value="host_storyteller">🎭 Host Kể Chuyện (Elements sinh động)</option>
-                            <option value="cinematic_film">🎬 Điện Ảnh (Kịch bản phim)</option>
+                            <optgroup label="📹 Cơ bản">
+                                <option value="with_host">👤 Có Host/Nhân vật</option>
+                                <option value="voice_over">🎙️ Voice Over (Thuyết minh)</option>
+                                <option value="broll_only">🎬 B-Roll only (không lời)</option>
+                                <option value="host_dynamic_env">🌍 Host 100% + Môi trường động</option>
+                                <option value="host_storyteller">🎭 Host Kể Chuyện (Elements sinh động)</option>
+                            </optgroup>
+                            <optgroup label="🎬 Điện ảnh">
+                                <option value="cinematic_film">🎬 Điện Ảnh Hollywood</option>
+                            </optgroup>
+                            <optgroup label="🔥 VIRAL - Tương tác mạnh">
+                                <option value="roast_comedy">🔥 Roast Comedy (Chọc tức khán giả)</option>
+                                <option value="breaking_4th_wall">👀 Phá vỡ bức tường thứ 4</option>
+                                <option value="reaction_commentary">😱 Reaction / Commentary</option>
+                                <option value="educational_sassy">🙄 Giáo dục với thái độ (Sassy)</option>
+                                <option value="gen_z_meme">💀 Gen Z Meme Culture</option>
+                                <option value="chaos_unhinged">🤪 Chaotic / Năng lượng điên</option>
+                            </optgroup>
+                            <optgroup label="🎭 Kịch tính / Drama">
+                                <option value="horror_survival">😱 Kinh dị sinh tồn</option>
+                                <option value="romance_drama">💕 Tình cảm lãng mạn</option>
+                                <option value="mystery_detective">🔍 Bí ẩn / Thám tử</option>
+                                <option value="villain_origin">😈 Nguồn gốc phản diện</option>
+                                <option value="underdog_triumph">🏆 Kẻ yếu vươn lên</option>
+                            </optgroup>
+                            <optgroup label="🍕 Thực phẩm nhân hóa (VIRAL)">
+                                <option value="food_animation">🍔 Thực phẩm nhân hóa</option>
+                                <option value="food_drama">⚔️ Food Wars / Kịch tính ẩm thực</option>
+                            </optgroup>
+                            <optgroup label="🎧 Đặc biệt">
+                                <option value="asmr_satisfying">🎧 ASMR / Satisfying</option>
+                            </optgroup>
                         </select>
                     </div>
                 </div>
+
+                {/* Content Type Tips (for viral content types) */}
+                {CONTENT_TYPE_INFO[voiceOverMode] && (
+                    <div className="mb-4 p-4 bg-gradient-to-r from-red-500/10 to-orange-500/10 border border-red-500/20 rounded-lg">
+                        <div className="flex items-start gap-3">
+                            <span className="text-3xl">{CONTENT_TYPE_INFO[voiceOverMode].icon}</span>
+                            <div className="flex-1">
+                                <h4 className="font-medium text-lg">{CONTENT_TYPE_INFO[voiceOverMode].name}</h4>
+                                <p className="text-sm text-[var(--text-secondary)] mt-1">
+                                    {CONTENT_TYPE_INFO[voiceOverMode].description}
+                                </p>
+                                <div className="mt-3">
+                                    <p className="text-xs font-medium text-amber-400 mb-2">💡 Ví dụ / Tips:</p>
+                                    <ul className="space-y-1">
+                                        {CONTENT_TYPE_INFO[voiceOverMode].tips.map((tip, i) => (
+                                            <li key={i} className="text-xs text-[var(--text-muted)] flex items-start gap-2">
+                                                <span className="text-green-400">•</span>
+                                                <span>{tip}</span>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
 
                 {/* Cinematic Style Selection (when cinematic_film mode) */}
                 {voiceOverMode === 'cinematic_film' && (

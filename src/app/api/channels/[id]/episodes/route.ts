@@ -930,6 +930,473 @@ ${selectedCinematicStyle.keywords}
 - All dialogue in ${dialogueLang === 'en' ? 'English' : 'Vietnamese'}
 - Voice tags: "VOICE: Male voice" or "VOICE: Female voice" for dialogue scenes
 - For silent scenes: voiceover field = "(Không có lời)" or description of music/sound only`
+        } else if (voiceOverMode === 'roast_comedy') {
+            voiceOverInstr = `CONTENT TYPE: ROAST COMEDY - PROVOCATIVE (Chọc tức khán giả - CỰC KỲ VIRAL!)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+⚠️ TẠI SAO VIRAL: Gây TRANH CÃI → Comments tăng vọt → Khán giả muốn "cãi lại"
+
+🔥 ROAST THE AUDIENCE - VÍ DỤ DIALOGUE:
+- "Bạn còn đang xem video này à? Chắc rảnh lắm nhỉ?"
+- "Tôi cá là bạn đang nằm trên giường, lười biếng như mọi khi"
+- "Đừng giả vờ như bạn hiểu, tôi biết bạn không hiểu đâu"
+- "Bạn nghĩ bạn giỏi hơn tôi? Haha, dễ thương ghê"
+- "Comment đi, tôi biết bạn muốn cãi rồi đấy"
+- "Share cho đứa bạn ngu ngu của bạn xem đi"
+- "Ở đây có ai thực sự hiểu không hay toàn người không biết gì?"
+- "Xem xong đừng quên unsubscribe nhé... đùa thôi, nhưng seriously"
+
+📸 CAMERA & BIỂU CẢM (CRITICAL):
+- Close-up mặt với ánh mắt KHINH THƯỜNG
+- Nhướng mày, cười đểu, liếc xéo
+- Looking DOWN at camera (như nhìn xuống khán giả)
+- Slow clap (vỗ tay chậm mỉa mai)
+- Eye roll cực kỳ dramatic
+- Smug, superior expression
+
+💬 DIALOGUE TECHNIQUES:
+- Sarcastic AF - giọng mỉa mai
+- Backhanded compliments ("Giỏi đấy... cho một người mới")
+- Rhetorical questions ("Bạn không biết thật à?")
+- Fake concern ("Ôi tội nghiệp, bạn không hiểu à?")
+- Direct challenges ("Cãi đi, tôi đợi")
+
+🎬 SCENE PATTERNS:
+1. Bắt đầu nice → slowly reveal attitude
+2. Fake helpful → then roast
+3. Compliment → take it back
+4. "No offense but..." → maximum offense
+
+⚠️ QUAN TRỌNG:
+- Roast phải HÀI, không thật sự toxic
+- Có thể self-deprecating để balance
+- End với wink hoặc "đùa thôi mà"
+- Breaking 4th wall constantly - talk TO the viewer`
+        } else if (voiceOverMode === 'breaking_4th_wall') {
+            voiceOverInstr = `CONTENT TYPE: BREAKING THE 4TH WALL (Phá vỡ bức tường thứ 4)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎭 CONCEPT: Nhân vật BIẾT họ đang trong video, NÓI CHUYỆN TRỰC TIẾP với khán giả
+
+👀 TECHNIQUES:
+- Direct eye contact với camera
+- Winking at viewer (chia sẻ bí mật)
+- Aside glances ("you seeing this?")
+- Addressing viewer directly
+- Meta comments về video/channel
+- Pause mid-action to talk to audience
+
+💬 DIALOGUE EXAMPLES:
+- "Bạn có thấy cái đó không?" *nhìn thẳng camera*
+- "Đừng nói với ai nhé" *thì thầm với khán giả*
+- "Tôi biết bạn đang nghĩ gì đấy"
+- "Subscribe đi, tôi thấy bạn chưa subscribe"
+- *something happens* *nhìn camera như trong The Office*
+- "Okay, tạm dừng. Các bạn hiểu chứ?"
+- "Tôi cá 90% các bạn không làm theo đâu, đúng không?"
+- "Video này được tài trợ bởi... haha đùa, không có ai tài trợ"
+
+📸 CAMERA STYLE:
+- Direct address shots
+- Conspiratorial whispers (camera zooms in)
+- "The Office" style deadpan looks
+- Sudden breaks from narrative to address viewer
+
+🎬 SCENE STRUCTURE:
+- Normal scene → pause → address camera → resume
+- Share "secrets" with viewer that other characters don't know
+- React to what viewer might be thinking`
+        } else if (voiceOverMode === 'reaction_commentary') {
+            voiceOverInstr = `CONTENT TYPE: REACTION / COMMENTARY (Phản ứng & Bình luận)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📺 FORMAT:
+- Split screen hoặc Picture-in-Picture layout
+- Nhân vật XEM và PHẢN ỨNG với nội dung
+- Bình luận sắc sảo, opinions mạnh
+
+😱 REACTION EXPRESSIONS:
+- Shocked face (miệng há hốc)
+- Laughing hard (ngửa cổ cười)
+- Cringing (nhăn mặt ghê tởm)
+- Judging expression (liếc xéo)
+- Confused (nhíu mày)
+- Mind blown (tay lên đầu)
+
+💬 COMMENTARY STYLE:
+- "Cái gì đây?!"
+- "No way... no freaking way!"
+- "Đây là cái hay nhất tôi từng thấy"
+- "Cringe quá trời"
+- "Tôi không thể..."
+- Strong opinions, không ngại controversial
+- Đồng ý hoặc phản đối mạnh mẽ
+
+📸 PROMPTTEXT FORMAT:
+[Split screen layout. MAIN SCREEN: (describe content being reacted to). REACTOR CORNER: (Character) with (expression) reacting to the content. (Commentary dialogue)]. STYLE: reaction video, picture-in-picture.`
+        } else if (voiceOverMode === 'educational_sassy') {
+            voiceOverInstr = `CONTENT TYPE: EDUCATIONAL WITH ATTITUDE (Giáo dục với thái độ - Sassy Teaching)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🙄 ATTITUDE: "Bạn không biết điều này thật à?"
+
+💅 SASSY TEACHING STYLE:
+- "Wow, still believing that myth in ${new Date().getFullYear()}?"
+- "Let me educate you real quick"
+- "Bạn không biết thật à? Okay fine..."
+- "Tôi không tin là phải giải thích cái này"
+- Disappointed parent energy
+- Superior knowledge flex
+
+📸 EXPRESSIONS (CRITICAL):
+- Raised eyebrow (ngạc nhiên mỉa mai)
+- Slow, condescending clap
+- Eye roll cực dramatic
+- "I can't believe I have to explain this" face
+- Sighing heavily trước khi giải thích
+- Smug satisfaction sau khi prove point
+
+🎬 SCENE STRUCTURE:
+1. Present common misconception/myth
+2. "Ờ thật à?" expression
+3. Drop the FACTS with attitude
+4. Smug satisfaction khi prove point
+
+💬 DIALOGUE PATTERNS:
+- "Oh bạn nghĩ... đáng yêu ghê"
+- "Wrong. Completely wrong. Here's why..."
+- "Để tôi nói cho bạn biết sự thật nhé"
+- "Đây là kiến thức cơ bản mà..."
+- End with: "Giờ bạn biết rồi đó. Đừng sai nữa nhé."`
+        } else if (voiceOverMode === 'gen_z_meme') {
+            voiceOverInstr = `CONTENT TYPE: GEN Z MEME CULTURE (Văn hóa meme Gen Z - Chaotic Energy)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+💀 CONCEPT: Absurd, ironic, chaotic energy - "Bruh" moment
+
+🎨 VISUAL CHAOS:
+- Random zooms bất ngờ vào mặt
+- Glitch effects, deep fried aesthetic
+- Bass boosted moments
+- Cursed image energy
+- Distorted visuals khi punchline
+- Unexpected cuts và transitions
+
+💬 GEN Z LANGUAGE:
+- "Bruh", "No cap", "Fr fr", "Slay"
+- Skull emoji energy 💀
+- "It's giving..." statements
+- "That's lowkey/highkey..."
+- "Tell me why..."
+- "The way I..."
+- Unserious about EVERYTHING
+
+🎭 HUMOR TYPES:
+- Anti-humor (not funny = funny)
+- Absurdist (makes no sense = hilarious)
+- Self-deprecating
+- Referencing other memes
+- Ironic overreactions
+- "Anyway..."
+
+🎬 PROMPTTEXT STYLE:
+- Describe chaotic energy trong visual
+- Include "random zoom effect", "glitch moment"
+- Character expressions: confused, dead inside, unhinged
+- Sudden mood switches`
+        } else if (voiceOverMode === 'chaos_unhinged') {
+            voiceOverInstr = `CONTENT TYPE: CHAOTIC / UNHINGED ENERGY ("This is fine" 🔥 while everything burns)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🤪 CONCEPT: Situation escalates out of control, nhân vật pretends everything is okay
+
+🔥 ESCALATION PATTERN:
+1. Small problem appears
+2. "No big deal" reaction
+3. Problem gets worse
+4. Forced smile intensifies
+5. MORE problems pile up
+6. COMPLETE CHAOS
+7. "Haha anyway..." 
+
+🎭 EXPRESSIONS (CRITICAL):
+- Forced smile with twitching eye
+- Nervous laughter
+- "I'm fine" while clearly not fine
+- Thousand-yard stare
+- Snapping into unhinged joy
+- Manic energy
+- Internal screaming, external smiling
+
+💬 DIALOGUE:
+- "Không sao, không sao hết..."
+- *something breaks* "Okay that's fine"
+- "Mọi thứ đều ổn!" *fire in background*
+- *laughing that turns into crying*
+- "HAHA...haha...ha..."
+- "Anyway, như tôi đã nói..."
+
+📸 VISUAL COMEDY:
+- Fire/smoke in background while character talks normally
+- Things falling/breaking behind character
+- Increasing chaos in environment
+- Character ignores obvious disasters`
+        } else if (voiceOverMode === 'horror_survival') {
+            voiceOverInstr = `CONTENT TYPE: HORROR SURVIVAL / ESCAPE (Kinh dị sinh tồn - Tension cao!)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+😱 CONCEPT: Nhân vật cố gắng SỐNG SÓT, THOÁT KHỎI nguy hiểm
+
+📸 VISUAL STYLE:
+- Dark, low-key lighting
+- POV từ góc nạn nhân
+- Shadows of threats
+- Running/chasing scenes
+- Jump scare moments
+- Handheld camera shake
+
+🎬 STORYLINES:
+- Thực phẩm sắp bị NẤU → cố gắng trốn
+- Nhân vật bị "kẻ xấu" đuổi
+- Trapped in dangerous situation
+- Survival challenges
+
+😰 EMOTIONAL ARC:
+- Terror, panic, desperation
+- Brief hope → crushed
+- Near misses
+- Relief when escape (or tragedy when caught)
+
+💬 DIALOGUE:
+- Heavy breathing
+- Whispered fears
+- Internal monologue of panic
+- "Không... không..." 
+- Gasps, screams`
+        } else if (voiceOverMode === 'romance_drama') {
+            voiceOverInstr = `CONTENT TYPE: ROMANCE / LOVE STORY (Tình cảm lãng mạn)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+💕 CONCEPT: Câu chuyện tình yêu - Cảm động, hài hước hoặc bi kịch
+
+📸 VISUAL STYLE:
+- Warm, golden hour lighting
+- Bokeh backgrounds, soft focus
+- Eye contact moments
+- Slow motion embraces
+- Beautiful locations
+
+💕 ROMANTIC ELEMENTS:
+- First meeting (cute or dramatic)
+- Misunderstandings và reconciliation
+- Love confession scenes
+- Jealousy moments
+- Supporting each other
+- Happy OR tragic ending
+
+💬 DIALOGUE:
+- Tender, emotional exchanges
+- Confessions of feelings
+- Arguments and make-ups
+- "Tôi yêu em/anh"
+- Sweet compliments hoặc painful goodbyes
+
+🎬 SCENE TYPES:
+- Meet cute
+- Growing closer montage
+- Conflict scene
+- Big romantic gesture
+- Resolution (happy/sad)`
+        } else if (voiceOverMode === 'mystery_detective') {
+            voiceOverInstr = `CONTENT TYPE: MYSTERY / DETECTIVE (Bí ẩn / Thám tử)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔍 CONCEPT: Điều tra, khám phá bí mật, twist endings
+
+📸 VISUAL STYLE:
+- Noir lighting, shadows
+- Magnifying glass shots
+- Evidence close-ups
+- Dramatic reveal lighting
+- Suspenseful atmosphere
+
+🕵️ INVESTIGATION ELEMENTS:
+- Discovering clues
+- Piecing together evidence
+- Red herrings (false leads)
+- Interrogation scenes
+- "Aha!" revelation moments
+
+💬 DIALOGUE:
+- "Có gì đó không đúng ở đây..."
+- "Wait... nếu đây là thật thì..."
+- Building suspense
+- Dramatic reveal: "CHÍNH LÀ..."
+- Plot twist reveals
+
+🎬 SCENE STRUCTURE:
+- Present mystery/problem
+- Investigation scenes
+- False leads
+- Building tension
+- BIG REVEAL / TWIST`
+        } else if (voiceOverMode === 'villain_origin') {
+            voiceOverInstr = `CONTENT TYPE: VILLAIN ORIGIN STORY (Nguồn gốc phản diện - Đồng cảm với villain)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+😈 CONCEPT: Tại sao nhân vật trở thành "ác" - Đồng cảm với villain
+
+🎬 NARRATIVE ARC:
+- Before: Innocent, hopeful, good intentions
+- Betrayal/Trauma moment
+- Breaking point
+- Transformation
+- After: The villain we know
+
+📸 VISUAL CONTRAST:
+- Before: Bright, warm lighting
+- During trauma: Harsh, cold
+- After: Dark, dramatic, powerful
+
+💬 DIALOGUE:
+- "Tôi từng tin vào..."
+- "They made me this way"
+- "Tôi không còn lựa chọn"
+- Justified anger
+- "Now they'll see..."
+
+🎭 EMOTIONAL BEATS:
+- Show pain that led to darkness
+- Make audience UNDERSTAND (not excuse)
+- Humanize the villain
+- "I am not the monster, they created me"`
+        } else if (voiceOverMode === 'underdog_triumph') {
+            voiceOverInstr = `CONTENT TYPE: UNDERDOG TRIUMPH (Kẻ yếu vươn lên - Inspirational!)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🏆 CONCEPT: Từ bị coi thường → chứng minh giá trị
+
+🎬 STORY ARC:
+1. START: Được/bị coi thường, laugh at
+2. STRUGGLE: Training, failing, doubting
+3. LOW POINT: Almost give up
+4. BREAKTHROUGH: Moment of growth
+5. TRIUMPH: PROVE THEM WRONG
+6. REACTION: Shocked faces of doubters
+
+📸 VISUAL MOMENTS:
+- Training montages
+- Failure scenes
+- Moment of doubt (rain, alone)
+- Breakthrough moment (dramatic lighting)
+- Victory spotlight
+- Doubters' shocked faces
+
+💬 DIALOGUE:
+- "Bạn không thể làm được đâu"
+- "Tại sao tôi còn cố?"
+- "Một lần nữa..."
+- Victory: Silence is powerful
+- Or: "Tôi nói rồi mà"
+
+🎭 EMOTIONAL PAYOFF:
+- Build frustration with doubters
+- Make victory CATHARTIC
+- Audience cheers for underdog`
+        } else if (voiceOverMode === 'food_animation') {
+            voiceOverInstr = `CONTENT TYPE: ANTHROPOMORPHIC FOOD ANIMATION (Thực phẩm nhân hóa - SIÊU VIRAL!)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🍔 CONCEPT: Rau củ, trái cây, thực phẩm trở thành NHÂN VẬT với cảm xúc và tính cách
+
+🎨 VISUAL STYLE:
+- 3D Pixar-style animation
+- Bright, colorful lighting
+- Kitchen/refrigerator environments
+- Exaggerated expressions
+- Cute, appealing character designs
+
+🥕 CHARACTER TYPES:
+- Vegetables với human faces and limbs
+- Fruits với personality
+- Food items with emotions
+- Kitchen tools as side characters
+
+💬 STORYLINES:
+- "Day in the life" of a vegetable
+- Food about to be cooked (horror-comedy)
+- Food making friends in the fridge
+- Healthy vs Junk food dynamics
+- Educational about nutrition
+
+📸 PROMPTTEXT FORMAT:
+[Kitchen/Fridge environment. 3D Pixar-style. (Food character) with anthropomorphic features - (face expression), (action). Bright colorful lighting. Cute animation style.]`
+        } else if (voiceOverMode === 'food_drama') {
+            voiceOverInstr = `CONTENT TYPE: FOOD DRAMA / FOOD WARS (Kịch tính ẩm thực - Battle giữa thực phẩm!)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+⚔️ CONCEPT: Thực phẩm nhân hóa trong các tình huống KỊCH TÍNH, ĐỐI ĐẦU!
+
+🥊 BATTLE TYPES:
+- "Thực phẩm nào tốt hơn?" - So sánh dinh dưỡng
+- "Cuộc chiến bữa sáng" - Bánh mì vs Phở vs Xôi
+- "Healthy vs Junk Food" - Rau củ vs Fast food
+- "Ai được chọn?" - Cạnh tranh để được nấu/ăn
+
+🎨 VISUAL STYLE:
+- Dramatic lighting với shadows mạnh
+- Energy auras xung quanh thực phẩm
+- Slow motion khi đối đầu
+- Arena/Sân đấu trong nhà bếp
+- Power-up effects
+
+📸 CAMERA:
+- Low angle: Thực phẩm trông mạnh mẽ
+- Quick cuts: Tăng tension
+- Zoom dramatic: Khi reveal winner
+- Orbit shot: Xoay quanh cuộc đối đầu
+
+💥 HIỆU ỨNG:
+- Lửa, điện, năng lượng xung quanh
+- Impact frames khi va chạm
+- Victory celebration (confetti, spotlight)
+- Defeat animation (rơi xuống)`
+        } else if (voiceOverMode === 'asmr_satisfying') {
+            voiceOverInstr = `CONTENT TYPE: ASMR / SATISFYING (Thỏa mãn thị giác và thính giác)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎧 CONCEPT: Âm thanh êm dịu, hình ảnh thỏa mãn, cảm giác relax
+
+📸 VISUAL STYLE:
+- EXTREME close-up, macro shots
+- Slow motion textures
+- Soft, ambient lighting
+- Clean, minimal backgrounds
+- Satisfying movements
+
+🔊 SOUND FOCUS (CRITICAL):
+- Crisp sounds (cắt rau, đập trứng)
+- Crunchy sounds (nhai, bẻ)
+- Sizzling (chiên, nướng)
+- Pouring liquids
+- Tapping, scratching
+- Whisper narration (if any)
+
+🎬 CONTENT TYPES:
+- ASMR cooking/baking
+- Satisfying cuts and slices
+- Oddly satisfying compilation
+- Relaxing, meditative process
+- Textural close-ups
+
+💬 VOICEOVER STYLE:
+- Whisper or very soft voice
+- Minimal talking
+- Focus on ambient sounds
+- "(Tiếng [describe sound])" for sound emphasis
+
+📸 PROMPTTEXT FORMAT:
+[ASMR/SATISFYING. Extreme macro close-up of (subject). Slow motion. Soft ambient lighting. Focus on (sound type) sounds. Relaxing, meditative atmosphere. Crisp audio detail.]`
         } else {
             voiceOverInstr = `CONTENT TYPE: B-ROLL ONLY (pure visuals, no dialogue).
 - The "voiceover" field should be empty or minimal ambient text
