@@ -113,6 +113,18 @@ const CINEMATIC_STYLES = [
     }
 ]
 
+// Fashion Background Options
+const FASHION_BACKGROUNDS = [
+    { id: 'fitting_room', name: 'Phòng thử đồ', icon: '👗', keywords: 'clothing store fitting room, multiple mirrors, warm lighting, hanging clothes rack visible, retail boutique interior' },
+    { id: 'bedroom_lifestyle', name: 'Phòng ngủ lifestyle', icon: '🛏️', keywords: 'cozy bedroom interior, aesthetic room decor, natural window light, minimal furniture, lifestyle photography backdrop' },
+    { id: 'closet_wardrobe', name: 'Tủ quần áo', icon: '🚪', keywords: 'walk-in closet, organized wardrobe, hanging clothes, shoe shelves, fashion influencer aesthetic' },
+    { id: 'studio_white', name: 'Studio trắng', icon: '⬜', keywords: 'white photo studio background, professional lighting, clean minimalist backdrop, fashion photography studio' },
+    { id: 'studio_ring_light', name: 'Studio ring light', icon: '💡', keywords: 'ring light studio setup, beauty influencer lighting, soft even illumination, content creator room' },
+    { id: 'cafe_outdoor', name: 'Quán café / Outdoor', icon: '☕', keywords: 'aesthetic cafe interior, outdoor street style, urban background, lifestyle location, natural daylight' },
+    { id: 'mirror_selfie', name: 'Gương selfie', icon: '🪞', keywords: 'full body mirror, mirror selfie style, smartphone visible in reflection, bathroom or bedroom mirror, OOTD photo' },
+    { id: 'custom', name: 'Tùy chỉnh', icon: '✏️', keywords: '' }
+]
+
 // Content type configurations (for non-cinematic modes)
 const CONTENT_TYPE_INFO: Record<string, { name: string; description: string; icon: string; tips: string[] }> = {
     'roast_comedy': {
@@ -415,6 +427,10 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
     
     // Image generation state
     const [generatingImageForScene, setGeneratingImageForScene] = useState<string | null>(null)
+    
+    // Fashion background state
+    const [fashionBackground, setFashionBackground] = useState('fitting_room')
+    const [customBackground, setCustomBackground] = useState('')
     const [cinematicStyle, setCinematicStyle] = useState<string>('cinematic_documentary') // Style cho mode điện ảnh
 
     // Voice settings (for voice_over mode)
@@ -720,11 +736,28 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
     const buildFashionContent = () => {
         const parts = []
         
+        // Product info
         if (productInfo.name) parts.push(`🏷️ Tên sản phẩm: ${productInfo.name}`)
         if (productInfo.price) parts.push(`💰 Giá gốc: ${productInfo.price}`)
         if (productInfo.salePrice) parts.push(`🔥 Giá sale: ${productInfo.salePrice}`)
         if (productInfo.promotion) parts.push(`🎁 Khuyến mãi: ${productInfo.promotion}`)
         
+        // Background info - CRITICAL for consistency
+        const selectedBg = FASHION_BACKGROUNDS.find(bg => bg.id === fashionBackground)
+        if (selectedBg) {
+            parts.push('')
+            parts.push('🏠 BACKGROUND CỐ ĐỊNH (BẮT BUỘC DÙNG TRONG MỌI SCENE):')
+            parts.push(`- Loại: ${selectedBg.name}`)
+            if (fashionBackground === 'custom' && customBackground) {
+                parts.push(`- Mô tả: ${customBackground}`)
+                parts.push(`- Keywords: ${customBackground}`)
+            } else {
+                parts.push(`- Keywords: ${selectedBg.keywords}`)
+            }
+            parts.push('⚠️ QUAN TRỌNG: Tất cả scene PHẢI có cùng background này!')
+        }
+        
+        // AI Analysis
         if (productAnalysis) {
             parts.push('')
             parts.push('🤖 AI PHÂN TÍCH SẢN PHẨM:')
@@ -744,6 +777,10 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
                 })
             }
         }
+        
+        // Visual style for fashion
+        parts.push('')
+        parts.push('📸 VISUAL STYLE: iPhone camera quality, smartphone selfie, vertical 9:16 format, natural handheld feel, TikTok/Reels style, realistic lighting')
         
         return parts.length > 0 ? parts.join('\n') : null
     }
@@ -1977,6 +2014,41 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
                                     className="input-field text-sm"
                                 />
                             </div>
+                        </div>
+
+                        {/* Background Selection */}
+                        <div className="mb-4">
+                            <label className="block text-sm font-medium mb-2">🏠 Background cố định (dùng cho TẤT CẢ scenes)</label>
+                            <div className="grid grid-cols-4 gap-2 mb-2">
+                                {FASHION_BACKGROUNDS.map(bg => (
+                                    <button
+                                        key={bg.id}
+                                        onClick={() => setFashionBackground(bg.id)}
+                                        className={`p-2 rounded-lg border-2 text-center transition ${
+                                            fashionBackground === bg.id
+                                                ? 'border-pink-500 bg-pink-500/20'
+                                                : 'border-[var(--border-color)] hover:border-pink-500/50'
+                                        }`}
+                                    >
+                                        <span className="text-xl">{bg.icon}</span>
+                                        <p className="text-xs mt-1">{bg.name}</p>
+                                    </button>
+                                ))}
+                            </div>
+                            
+                            {fashionBackground === 'custom' && (
+                                <input
+                                    type="text"
+                                    value={customBackground}
+                                    onChange={(e) => setCustomBackground(e.target.value)}
+                                    placeholder="Mô tả background của bạn (VD: Cửa hàng thời trang cao cấp, đèn vàng ấm áp)"
+                                    className="input-field text-sm w-full mt-2"
+                                />
+                            )}
+                            
+                            <p className="text-xs text-[var(--text-muted)] mt-2">
+                                📌 Background này sẽ được sử dụng NHẤT QUÁN trong tất cả các scene của video
+                            </p>
                         </div>
 
                         <p className="text-xs text-[var(--text-muted)]">

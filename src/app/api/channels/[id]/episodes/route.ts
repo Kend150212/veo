@@ -1444,12 +1444,22 @@ ${productInfo}
    - "Link ở bio/comment"
    - "Inbox để order nha"
 
-📸 VISUAL STYLE:
-- Bright, clean lighting (studio hoặc phòng thử đồ)
+📸 VISUAL STYLE (CRITICAL):
+- iPhone/smartphone camera quality - phong cách TikTok/Reels thực tế
+- Vertical format (9:16) BẮT BUỘC
+- Quay bằng điện thoại, tự nhiên như influencer thật
+
+🏠 BACKGROUND CỐ ĐỊNH (RẤT QUAN TRỌNG):
+- Sử dụng CÙNG MỘT BACKGROUND cho TẤT CẢ các scene
+- Background được mô tả trong phần THÔNG TIN SẢN PHẨM
+- KHÔNG đổi background giữa các scene
+- Điều này tạo sự nhất quán như video thật
+
+📱 CAMERA STYLE:
+- iPhone camera quality, selfie front camera
+- Natural handheld feel, slight movement
+- Ring light hoặc natural window light
 - Mirror selfie style hoặc tripod shot
-- Vertical format (9:16) cho TikTok/Reels
-- Closet/wardrobe background
-- Ring light aesthetic
 
 🎭 MODEL EXPRESSIONS & POSES:
 - Confident, happy, natural

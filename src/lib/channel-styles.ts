@@ -11,7 +11,7 @@ export interface ChannelStyle {
     hasCharacters: boolean  // Style có hỗ trợ nhân vật không
     suggestedCharCount: number  // Số nhân vật AI đề xuất
     previewImage?: string  // Path to preview image
-    category: 'illustration' | 'cartoon' | 'realistic' | 'artistic' | 'minimalist' | 'edutainment'
+    category: 'illustration' | 'cartoon' | 'realistic' | 'artistic' | 'minimalist' | 'edutainment' | 'fashion'
 }
 
 // Comprehensive list of styles - AI determined variety
@@ -367,6 +367,96 @@ export const CHANNEL_STYLES: ChannelStyle[] = [
         hasCharacters: false,
         suggestedCharCount: 0,
         category: 'edutainment'
+    },
+
+    // === FASHION / SOCIAL MEDIA CATEGORY ===
+    {
+        id: 'iphone-realistic',
+        name: 'iPhone Camera Realistic',
+        nameVi: 'Quay bằng iPhone thực tế',
+        description: 'Realistic smartphone camera look like real TikTok/Reels',
+        descriptionVi: 'Phong cách quay điện thoại thực tế như TikTok/Reels thật',
+        promptKeywords: 'iPhone camera quality, smartphone selfie, vertical 9:16 format, natural handheld feel, TikTok style, realistic lighting, front camera look, casual authentic feel, social media content',
+        hasCharacters: true,
+        suggestedCharCount: 1,
+        category: 'fashion'
+    },
+    {
+        id: 'fashion-influencer',
+        name: 'Fashion Influencer',
+        nameVi: 'Influencer Thời Trang',
+        description: 'Polished influencer aesthetic with ring light',
+        descriptionVi: 'Phong cách influencer chỉn chu với ring light',
+        promptKeywords: 'fashion influencer aesthetic, ring light illumination, perfect selfie lighting, beauty influencer style, polished social media content, high quality smartphone camera, vertical format',
+        hasCharacters: true,
+        suggestedCharCount: 1,
+        category: 'fashion'
+    },
+    {
+        id: 'mirror-selfie',
+        name: 'Mirror Selfie OOTD',
+        nameVi: 'Gương Selfie OOTD',
+        description: 'Classic mirror selfie outfit-of-the-day style',
+        descriptionVi: 'Phong cách selfie gương show outfit cổ điển',
+        promptKeywords: 'mirror selfie, full body mirror, OOTD style, smartphone visible in reflection, outfit of the day, fashion blogger, casual authentic, vertical format 9:16',
+        hasCharacters: true,
+        suggestedCharCount: 1,
+        category: 'fashion'
+    },
+    {
+        id: 'aesthetic-lifestyle',
+        name: 'Aesthetic Lifestyle',
+        nameVi: 'Lifestyle Thẩm Mỹ',
+        description: 'Soft aesthetic with natural light and muted tones',
+        descriptionVi: 'Phong cách thẩm mỹ mềm mại với ánh sáng tự nhiên',
+        promptKeywords: 'aesthetic lifestyle, soft natural lighting, muted color palette, cozy bedroom vibes, lifestyle photography, warm tones, instagram aesthetic, vertical 9:16',
+        hasCharacters: true,
+        suggestedCharCount: 1,
+        category: 'fashion'
+    },
+    {
+        id: 'streetwear-urban',
+        name: 'Streetwear Urban',
+        nameVi: 'Streetwear Đường Phố',
+        description: 'Urban street style with city backdrop',
+        descriptionVi: 'Phong cách đường phố với backdrop thành phố',
+        promptKeywords: 'streetwear fashion, urban backdrop, city street, graffiti walls, street style photography, edgy fashion, outdoor natural light, vertical format',
+        hasCharacters: true,
+        suggestedCharCount: 1,
+        category: 'fashion'
+    },
+    {
+        id: 'studio-ecommerce',
+        name: 'Studio E-commerce',
+        nameVi: 'Studio Bán Hàng',
+        description: 'Clean professional product showcase',
+        descriptionVi: 'Trình bày sản phẩm chuyên nghiệp sạch sẽ',
+        promptKeywords: 'e-commerce photography, clean white background, professional product shot, studio lighting, commercial fashion photography, clear product focus, vertical format',
+        hasCharacters: true,
+        suggestedCharCount: 1,
+        category: 'fashion'
+    },
+    {
+        id: 'korean-soft',
+        name: 'Korean Soft Aesthetic',
+        nameVi: 'Thẩm Mỹ Hàn Quốc',
+        description: 'Soft Korean beauty/fashion aesthetic',
+        descriptionVi: 'Phong cách thẩm mỹ Hàn Quốc mềm mại',
+        promptKeywords: 'korean aesthetic, soft lighting, minimal background, clean beauty style, kbeauty fashion, pastel tones, gentle feminine look, vertical 9:16',
+        hasCharacters: true,
+        suggestedCharCount: 1,
+        category: 'fashion'
+    },
+    {
+        id: 'tiktok-viral',
+        name: 'TikTok Viral Style',
+        nameVi: 'Style TikTok Viral',
+        description: 'High energy TikTok viral content style',
+        descriptionVi: 'Phong cách TikTok viral năng lượng cao',
+        promptKeywords: 'TikTok viral style, dynamic camera angles, trendy transitions, gen-z aesthetic, smartphone vertical video, energetic poses, outfit reveal, fast-paced content',
+        hasCharacters: true,
+        suggestedCharCount: 1,
+        category: 'fashion'
     }
 ]
 
@@ -398,5 +488,58 @@ export const STYLE_CATEGORIES = [
     { id: 'cartoon', name: 'Hoạt hình', nameEn: 'Cartoon' },
     { id: 'realistic', name: 'Thực tế', nameEn: 'Realistic' },
     { id: 'artistic', name: 'Nghệ thuật', nameEn: 'Artistic' },
-    { id: 'minimalist', name: 'Tối giản', nameEn: 'Minimalist' }
+    { id: 'minimalist', name: 'Tối giản', nameEn: 'Minimalist' },
+    { id: 'fashion', name: 'Thời trang / Social', nameEn: 'Fashion / Social' }
+]
+
+// Fashion Background Options
+export const FASHION_BACKGROUNDS = [
+    {
+        id: 'fitting_room',
+        name: 'Phòng thử đồ',
+        nameEn: 'Fitting Room',
+        promptKeywords: 'clothing store fitting room, multiple mirrors, warm lighting, hanging clothes rack visible, retail boutique interior'
+    },
+    {
+        id: 'bedroom_lifestyle',
+        name: 'Phòng ngủ lifestyle',
+        nameEn: 'Bedroom Lifestyle',
+        promptKeywords: 'cozy bedroom interior, aesthetic room decor, natural window light, minimal furniture, lifestyle photography backdrop'
+    },
+    {
+        id: 'closet_wardrobe',
+        name: 'Tủ quần áo',
+        nameEn: 'Walk-in Closet',
+        promptKeywords: 'walk-in closet, organized wardrobe, hanging clothes, shoe shelves, fashion influencer aesthetic'
+    },
+    {
+        id: 'studio_white',
+        name: 'Studio trắng',
+        nameEn: 'White Studio',
+        promptKeywords: 'white photo studio background, professional lighting, clean minimalist backdrop, fashion photography studio'
+    },
+    {
+        id: 'studio_ring_light',
+        name: 'Studio ring light',
+        nameEn: 'Ring Light Studio',
+        promptKeywords: 'ring light studio setup, beauty influencer lighting, soft even illumination, content creator room'
+    },
+    {
+        id: 'cafe_outdoor',
+        name: 'Quán café / Outdoor',
+        nameEn: 'Cafe / Outdoor',
+        promptKeywords: 'aesthetic cafe interior, outdoor street style, urban background, lifestyle location, natural daylight'
+    },
+    {
+        id: 'mirror_selfie',
+        name: 'Gương selfie',
+        nameEn: 'Mirror Selfie',
+        promptKeywords: 'full body mirror, mirror selfie style, smartphone visible in reflection, bathroom or bedroom mirror, OOTD photo'
+    },
+    {
+        id: 'custom',
+        name: 'Tùy chỉnh (nhập text)',
+        nameEn: 'Custom',
+        promptKeywords: ''
+    }
 ]
