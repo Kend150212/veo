@@ -457,6 +457,9 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
     const [isGeneratingPreview, setIsGeneratingPreview] = useState(false)
     const [fashionSceneCount, setFashionSceneCount] = useState(6)
     
+    // Fashion mode: Use own images (don't generate, just create script)
+    const [useOwnImages, setUseOwnImages] = useState(true) // Default: user has their own images
+    
     // Download image helper function
     const downloadImage = (dataUrl: string, filename: string) => {
         // Convert data URL to blob
@@ -937,55 +940,54 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
     const buildFashionContent = () => {
         const parts = []
         
+        // MODE indicator
+        if (useOwnImages) {
+            parts.push('⚠️ CHẾ ĐỘ: NGƯỜI DÙNG TỰ CÓ ẢNH/VIDEO')
+            parts.push('→ KHÔNG mô tả nhân vật/ngoại hình trong promptText')
+            parts.push('→ KHÔNG mô tả background/môi trường trong promptText')
+            parts.push('→ CHỈ tập trung vào: hành động, lời thoại, thông tin sản phẩm')
+            parts.push('')
+        }
+        
         // Product info
         if (productInfo.name) parts.push(`🏷️ Tên sản phẩm: ${productInfo.name}`)
         if (productInfo.price) parts.push(`💰 Giá gốc: ${productInfo.price}`)
         if (productInfo.salePrice) parts.push(`🔥 Giá sale: ${productInfo.salePrice}`)
         if (productInfo.promotion) parts.push(`🎁 Khuyến mãi: ${productInfo.promotion}`)
         
-        // Background info - CRITICAL for consistency
-        const selectedBg = FASHION_BACKGROUNDS.find(bg => bg.id === fashionBackground)
-        if (selectedBg) {
-            parts.push('')
-            parts.push('🏠 BACKGROUND CỐ ĐỊNH (BẮT BUỘC DÙNG TRONG MỌI SCENE):')
-            parts.push(`- Loại: ${selectedBg.name}`)
-            if (fashionBackground === 'custom' && customBackground) {
-                parts.push(`- Mô tả: ${customBackground}`)
-                parts.push(`- Keywords: ${customBackground}`)
-            } else {
-                parts.push(`- Keywords: ${selectedBg.keywords}`)
+        // Background info - ONLY when NOT using own images
+        if (!useOwnImages) {
+            const selectedBg = FASHION_BACKGROUNDS.find(bg => bg.id === fashionBackground)
+            if (selectedBg) {
+                parts.push('')
+                parts.push('🏠 BACKGROUND CỐ ĐỊNH (BẮT BUỘC DÙNG TRONG MỌI SCENE):')
+                parts.push(`- Loại: ${selectedBg.name}`)
+                if (fashionBackground === 'custom' && customBackground) {
+                    parts.push(`- Mô tả: ${customBackground}`)
+                    parts.push(`- Keywords: ${customBackground}`)
+                } else {
+                    parts.push(`- Keywords: ${selectedBg.keywords}`)
+                }
+                parts.push('⚠️ QUAN TRỌNG: Tất cả scene PHẢI có cùng background này!')
             }
-            parts.push('⚠️ QUAN TRỌNG: Tất cả scene PHẢI có cùng background này!')
         }
         
-        // AI Analysis - DETAILED
+        // AI Analysis - Product details
         if (productAnalysis) {
             parts.push('')
-            parts.push('🤖 AI PHÂN TÍCH SẢN PHẨM (QUAN TRỌNG - PHẢI MÔ TẢ CHÍNH XÁC):')
+            parts.push('🤖 AI PHÂN TÍCH SẢN PHẨM:')
             
-            // Exact description FIRST - most important
+            // Exact description
             if (productAnalysis.exactDescription) {
-                parts.push('')
-                parts.push(`👗 MÔ TẢ CHÍNH XÁC SẢN PHẨM: ${productAnalysis.exactDescription}`)
+                parts.push(`👗 Mô tả: ${productAnalysis.exactDescription}`)
             }
             
-            parts.push('')
             if (productAnalysis.productType) parts.push(`- Loại: ${productAnalysis.productType} ${productAnalysis.productSubtype ? `(${productAnalysis.productSubtype})` : ''}`)
-            if (productAnalysis.color) parts.push(`- Màu chính xác: ${productAnalysis.color}`)
+            if (productAnalysis.color) parts.push(`- Màu: ${productAnalysis.color}`)
             if (productAnalysis.material) parts.push(`- Chất liệu: ${productAnalysis.material}`)
-            if (productAnalysis.texture) parts.push(`- Bề mặt: ${productAnalysis.texture}`)
             if (productAnalysis.pattern) parts.push(`- Họa tiết: ${productAnalysis.pattern}`)
-            if (productAnalysis.neckline) parts.push(`- Cổ áo: ${productAnalysis.neckline}`)
-            if (productAnalysis.sleeveType) parts.push(`- Tay áo: ${productAnalysis.sleeveType}`)
             if (productAnalysis.fit) parts.push(`- Form dáng: ${productAnalysis.fit}`)
-            if (productAnalysis.length) parts.push(`- Độ dài: ${productAnalysis.length}`)
             if (productAnalysis.style) parts.push(`- Style: ${productAnalysis.style}`)
-            
-            if (productAnalysis.promptKeywords) {
-                parts.push('')
-                parts.push(`🏷️ ENGLISH KEYWORDS FOR IMAGE GENERATION (CRITICAL - USE THESE EXACT WORDS):`)
-                parts.push(productAnalysis.promptKeywords)
-            }
             
             if (productAnalysis.stylingTips?.length) {
                 parts.push('')
@@ -996,9 +998,11 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
             }
         }
         
-        // Visual style for fashion
-        parts.push('')
-        parts.push('📸 VISUAL STYLE: iPhone camera quality, smartphone selfie, vertical 9:16 format, natural handheld feel, TikTok/Reels style, realistic lighting')
+        // Visual style - ONLY when AI generates images
+        if (!useOwnImages) {
+            parts.push('')
+            parts.push('📸 VISUAL STYLE: iPhone camera quality, vertical 9:16, TikTok/Reels style')
+        }
         
         return parts.length > 0 ? parts.join('\n') : null
     }
@@ -2157,12 +2161,34 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                     <div className="mb-4 p-4 bg-gradient-to-r from-pink-500/10 to-purple-500/10 border border-pink-500/20 rounded-lg">
                         <h4 className="font-medium mb-3 flex items-center gap-2">
                             <span className="text-xl">👗</span>
-                            Fashion Showcase - Upload Sản Phẩm
+                            Fashion Showcase
                         </h4>
+                        
+                        {/* Mode Toggle */}
+                        <div className="mb-4 p-3 bg-[var(--bg-tertiary)] rounded-lg flex items-center justify-between">
+                            <div>
+                                <p className="font-medium text-sm">📷 Bạn đã có sẵn ảnh/video?</p>
+                                <p className="text-xs text-[var(--text-muted)]">
+                                    {useOwnImages 
+                                        ? 'Chỉ tạo kịch bản, không mô tả nhân vật/background' 
+                                        : 'AI sẽ tạo ảnh preview cho bạn'}
+                                </p>
+                            </div>
+                            <button
+                                onClick={() => setUseOwnImages(!useOwnImages)}
+                                className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
+                                    useOwnImages 
+                                        ? 'bg-green-500 text-white' 
+                                        : 'bg-purple-500 text-white'
+                                }`}
+                            >
+                                {useOwnImages ? '✅ Có, tôi tự có ảnh' : '🎨 AI tạo ảnh'}
+                            </button>
+                        </div>
                         
                         {/* Product Image Upload */}
                         <div className="mb-4">
-                            <label className="block text-sm font-medium mb-2">📸 Hình ảnh sản phẩm</label>
+                            <label className="block text-sm font-medium mb-2">📸 Hình ảnh sản phẩm (để AI phân tích)</label>
                             <div className="flex gap-4">
                                 <div className="flex-1">
                                     <input
@@ -2180,12 +2206,12 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                                             <img 
                                                 src={productImage} 
                                                 alt="Product" 
-                                                className="max-h-40 mx-auto rounded"
+                                                className="max-h-32 mx-auto rounded"
                                             />
                                         ) : (
                                             <div className="text-[var(--text-muted)]">
                                                 <p className="text-2xl mb-2">📷</p>
-                                                <p>Kéo thả hoặc click để upload</p>
+                                                <p className="text-sm">Upload ảnh sản phẩm</p>
                                             </div>
                                         )}
                                     </label>
@@ -2195,18 +2221,17 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                                 {isAnalyzingProduct && (
                                     <div className="flex-1 flex items-center justify-center">
                                         <Loader2 className="w-6 h-6 animate-spin text-pink-500" />
-                                        <span className="ml-2">Đang phân tích...</span>
+                                        <span className="ml-2 text-sm">Đang phân tích...</span>
                                     </div>
                                 )}
                                 
                                 {productAnalysis && !isAnalyzingProduct && (
                                     <div className="flex-1 p-3 bg-[var(--bg-tertiary)] rounded-lg text-sm">
-                                        <p className="font-medium text-pink-400 mb-2">🤖 AI Phân tích sản phẩm:</p>
+                                        <p className="font-medium text-pink-400 mb-2">🤖 AI Phân tích:</p>
                                         
                                         {/* Exact Description - Most Important */}
                                         {productAnalysis.exactDescription && (
-                                            <div className="mb-3 p-2 bg-green-500/10 border border-green-500/30 rounded">
-                                                <p className="text-xs text-green-400 font-medium mb-1">👗 Mô tả chính xác (dùng cho AI):</p>
+                                            <div className="mb-2 p-2 bg-green-500/10 border border-green-500/30 rounded">
                                                 <p className="text-xs text-white">{productAnalysis.exactDescription}</p>
                                             </div>
                                         )}
@@ -2275,9 +2300,10 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                             </div>
                         </div>
 
-                        {/* Background Selection */}
+                        {/* Background Selection - Only needed when AI generates images */}
+                        {!useOwnImages && (
                         <div className="mb-4">
-                            <label className="block text-sm font-medium mb-2">🏠 Background cố định (dùng cho TẤT CẢ scenes)</label>
+                            <label className="block text-sm font-medium mb-2">🏠 Background cố định (cho AI tạo ảnh)</label>
                             
                             {/* Upload Background Option */}
                             <div className="mb-3 p-3 bg-[var(--bg-tertiary)] rounded-lg">
@@ -2335,7 +2361,7 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                             </p>
                         </div>
                         
-                        {/* Multiple Product Images (Different Angles) */}
+                        {/* Multiple Product Images (Different Angles) - For AI image generation */}
                         <div className="mb-4 p-3 bg-[var(--bg-tertiary)] rounded-lg">
                             <label className="block text-sm font-medium mb-2 text-pink-400">📐 Ảnh sản phẩm nhiều góc (để AI tạo chính xác hơn)</label>
                             <input
@@ -2372,12 +2398,14 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                                 </div>
                             )}
                         </div>
+                        )}
 
-                        {/* Step 3: Generate Preview Images */}
+                        {/* Step 3: Generate Preview Images - ONLY when NOT using own images */}
+                        {!useOwnImages && (
                         <div className="mb-4 p-4 bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/30 rounded-lg">
                             <h5 className="font-medium text-green-400 mb-3 flex items-center gap-2">
                                 <span>🎨</span>
-                                Bước 3: Tạo ảnh Preview (TRƯỚC khi tạo kịch bản)
+                                Tạo ảnh Preview (AI tạo ảnh model mặc sản phẩm)
                             </h5>
                             
                             <div className="flex items-center gap-4 mb-3">
@@ -2454,13 +2482,28 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                                 </div>
                                 
                                 <p className="text-xs text-green-400 mt-3">
-                                    ✅ Ảnh đã tạo xong! Bây giờ bạn có thể tạo kịch bản bên dưới. AI sẽ mô tả dựa trên các ảnh này.
+                                    ✅ Ảnh đã tạo xong! Bây giờ bạn có thể tạo kịch bản bên dưới.
+                                </p>
+                            </div>
+                        )}
+                        </div>
+                        )}
+                        
+                        {/* Simple mode: Just script creation */}
+                        {useOwnImages && (
+                            <div className="mb-4 p-3 bg-green-500/10 border border-green-500/30 rounded-lg">
+                                <p className="text-sm text-green-400">
+                                    ✅ <strong>Chế độ đơn giản:</strong> AI sẽ tạo kịch bản dựa trên thông tin sản phẩm.
+                                </p>
+                                <p className="text-xs text-[var(--text-muted)] mt-1">
+                                    Kịch bản sẽ chỉ bao gồm: lời thoại, hành động/pose, thông tin sản phẩm. 
+                                    KHÔNG mô tả nhân vật/background (vì bạn tự có ảnh).
                                 </p>
                             </div>
                         )}
                         
                         <p className="text-xs text-[var(--text-muted)]">
-                            💡 Quy trình: Upload sản phẩm → Chọn background → Tạo ảnh preview → Tạo kịch bản
+                            💡 {useOwnImages ? 'Upload sản phẩm → Nhập thông tin → Tạo kịch bản' : 'Upload sản phẩm → Chọn background → Tạo ảnh → Tạo kịch bản'}
                         </p>
                     </div>
                 )}

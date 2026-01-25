@@ -1398,13 +1398,57 @@ ${selectedCinematicStyle.keywords}
 📸 PROMPTTEXT FORMAT:
 [ASMR/SATISFYING. Extreme macro close-up of (subject). Slow motion. Soft ambient lighting. Focus on (sound type) sounds. Relaxing, meditative atmosphere. Crisp audio detail.]`
         } else if (voiceOverMode === 'fashion_showcase') {
+            // Check if user is using their own images (simple mode)
+            const isUserOwnImages = customContent?.includes('CHẾ ĐỘ: NGƯỜI DÙNG TỰ CÓ ẢNH')
+            
             // Get product info from request if available
             const productInfo = customContent ? `
 📦 THÔNG TIN SẢN PHẨM:
 ${customContent}
 ` : ''
 
-            voiceOverInstr = `CONTENT TYPE: FASHION SHOWCASE / OUTFIT TRY-ON (Thử đồ / Quảng cáo thời trang)
+            if (isUserOwnImages) {
+                // SIMPLE MODE: User has their own images, just create script
+                voiceOverInstr = `CONTENT TYPE: FASHION SHOWCASE - CHẾ ĐỘ ĐƠN GIẢN
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+⚠️⚠️⚠️ QUAN TRỌNG - NGƯỜI DÙNG TỰ CÓ ẢNH/VIDEO ⚠️⚠️⚠️
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Người dùng đã có sẵn hình ảnh/video của riêng họ.
+CHỈ tạo kịch bản với:
+- Lời thoại (voiceover)
+- Hành động/Pose (mô tả hành động, KHÔNG mô tả ngoại hình)
+- Thông tin sản phẩm
+
+KHÔNG BAO GỒM trong promptText:
+❌ Mô tả nhân vật/ngoại hình (người dùng tự có model)
+❌ Mô tả background/môi trường (người dùng tự có bối cảnh)
+❌ Mô tả visual style/lighting
+❌ Mô tả camera angle
+
+${productInfo}
+
+🎬 CẤU TRÚC VIDEO:
+1. HOOK: Mở đầu gây chú ý - lời thoại hấp dẫn
+2. PRODUCT INTRO: Giới thiệu sản phẩm - tên, đặc điểm
+3. DETAILS: Chi tiết sản phẩm - chất liệu, màu sắc
+4. STYLING: Gợi ý phối đồ
+5. PRICE/CTA: Giá cả và kêu gọi hành động
+
+📱 PROMPTTEXT FORMAT (CHỈ HÀNH ĐỘNG VÀ LỜI THOẠI):
+[Action: (mô tả hành động đơn giản: vẫy tay, xoay người, chỉ vào sản phẩm...)
+Voice: (lời thoại tiếng Việt)]
+
+💬 DIALOGUE STYLE:
+- Casual, friendly, Gen Z
+- Tập trung vào sản phẩm
+- Include giá cả và khuyến mãi
+- Call to action rõ ràng
+
+⚠️ NHỚ: promptText CHỈ chứa hành động ngắn gọn, KHÔNG mô tả visual!`
+            } else {
+                // FULL MODE: AI generates images
+                voiceOverInstr = `CONTENT TYPE: FASHION SHOWCASE / OUTFIT TRY-ON (Thử đồ / Quảng cáo thời trang)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 👗 CONCEPT: Virtual Model thử đồ, showcase trang phục - Style TikTok/Reels Livestream
@@ -1416,87 +1460,29 @@ ${productInfo}
 - TẤT CẢ các scene PHẢI có CÙNG MỘT GÓC MÁY như đang livestream
 - Máy đặt cố định trên tripod, KHÔNG di chuyển, KHÔNG zoom, KHÔNG đổi góc
 - Framing: Full body shot, model đứng giữa khung hình
-- Camera angle: Ngang tầm mắt hoặc hơi thấp, giống selfie trên tripod
-- KHÔNG có close-up, KHÔNG có góc quay khác
 - Chỉ MODEL di chuyển (xoay người, đi lại, pose) - MÁY ĐỨNG YÊN
-- Như đang xem livestream bán hàng trên TikTok/Facebook
 
 🎬 CẤU TRÚC VIDEO (cùng góc máy):
-1. HOOK (Scene 1): Model xuất hiện trong frame
-   - "Xin chào! Outfit hôm nay xinh lắm nè!"
-   - Model vẫy tay chào camera
+1. HOOK: Model xuất hiện, vẫy tay chào
+2. PRODUCT REVEAL: Giới thiệu sản phẩm
+3. TRY-ON: Model xoay người, show outfit
+4. STYLING: Gợi ý phối đồ
+5. DETAILS: Chi tiết chất liệu
+6. PRICE CTA: Giá và kêu gọi
 
-2. PRODUCT REVEAL (Scene 2): Giới thiệu sản phẩm
-   - Model cầm/chỉ vào sản phẩm
-   - Nói tên, màu sắc, chất liệu
-   - VẪN CÙNG GÓC MÁY
-
-3. TRY-ON (Scene 3-4): Show outfit
-   - Model xoay người 360° (MÁY ĐỨNG YÊN)
-   - Đi lại trong frame
-   - Pose các kiểu
-
-4. STYLING TIPS (Scene 5): Gợi ý phối đồ
-   - Model chỉ vào từng chi tiết
-   - Giải thích cách phối
-
-5. DETAILS (Scene 6): Chi tiết sản phẩm
-   - Model kéo vải, chỉ đường may
-   - Đưa tay lên gần camera để show detail
-   - VẪN CÙNG GÓC MÁY, không zoom
-
-6. PRICE CTA (Scene 7-8): Giá và kêu gọi
-   - Model nói giá
-   - Vẫy tay, call to action
-
-📸 VISUAL STYLE (CRITICAL):
-- FIXED CAMERA ANGLE - như livestream
-- iPhone trên tripod, KHÔNG di chuyển
-- Vertical format 9:16 BẮT BUỘC
-- Full body frame, model ở giữa
-- Cùng lighting, cùng background, cùng góc máy XUYÊN SUỐT
-
-🏠 BACKGROUND + GÓC MÁY CỐ ĐỊNH:
-- CÙNG MỘT BACKGROUND cho TẤT CẢ scenes
-- CÙNG MỘT CAMERA ANGLE cho TẤT CẢ scenes
-- CÙNG MỘT FRAMING (full body, centered)
-- Background được mô tả trong THÔNG TIN SẢN PHẨM
-
-📱 CAMERA STYLE:
-- iPhone camera on TRIPOD (fixed position)
-- Static shot, NO camera movement
-- Ring light hoặc natural window light
-- Full body frame, model centered
-- Same exact angle for EVERY scene
-
-🎭 MODEL MOVEMENT (không phải camera):
-- Model xoay người trong frame
-- Model đi lại trước camera
-- Model pose các kiểu
-- Model cầm/chỉ sản phẩm
-- MÁY LUÔN ĐỨNG YÊN
-
-💬 DIALOGUE STYLE:
-- Casual, friendly, livestream style
-- "Ê mọi người xem nè!"
-- "Quá đẹp luôn á!"
-- "Chất vải mềm mịn lắm nha"
-- "Sale sập sàn luôn!"
-- Direct, engaging như đang live
+📸 VISUAL STYLE: Fixed camera, iPhone on tripod, vertical 9:16
 
 📱 PROMPTTEXT FORMAT FOR FASHION:
-[FIXED CAMERA SHOT, tripod mounted, full body frame. (Model description) wearing (EXACT product description). 
-Model (action: standing/posing/turning/walking in frame). 
-SAME background as all other scenes. 
-Static camera, NO zoom, NO angle change.
-iPhone quality, vertical 9:16, ring light.
+[FIXED CAMERA SHOT, full body frame. Model wearing (product description). 
+Model (action). SAME background all scenes. 
+iPhone quality, vertical 9:16.
 VOICE: (dialogue)]
 
 ⚠️ QUAN TRỌNG:
-- Mỗi scene PHẢI mô tả CHÍNH XÁC sản phẩm (dùng product keywords)
-- Include giá cả và khuyến mãi trong CTA scenes
-- Model phải NHẤT QUÁN xuyên suốt
-- Sản phẩm là FOCUS chính, không phải model`
+- Mô tả CHÍNH XÁC sản phẩm trong mỗi scene
+- Include giá cả và khuyến mãi trong CTA
+- Model phải NHẤT QUÁN xuyên suốt`
+            }
         } else {
             voiceOverInstr = `CONTENT TYPE: B-ROLL ONLY (pure visuals, no dialogue).
 - The "voiceover" field should be empty or minimal ambient text
