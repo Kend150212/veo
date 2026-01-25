@@ -14,7 +14,10 @@ import {
     Users,
     Globe,
     Settings,
-    AlertTriangle
+    AlertTriangle,
+    Youtube,
+    Link,
+    Image
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { CHANNEL_STYLES, getStyleById } from '@/lib/channel-styles'
@@ -47,11 +50,68 @@ export default function ChannelSettingsPage({ params }: { params: Promise<{ id: 
     const [niche, setNiche] = useState('')
     const [visualStyleId, setVisualStyleId] = useState('')
     const [hasCharacters, setHasCharacters] = useState(true)
+
+    // YouTube Defaults
+    const [socialLinks, setSocialLinks] = useState('')
+    const [affiliateLinks, setAffiliateLinks] = useState('')
+    const [channelTagline, setChannelTagline] = useState('')
+    const [defaultHashtags, setDefaultHashtags] = useState('')
+    const [thumbnailStyleId, setThumbnailStyleId] = useState('')
     const [dialogueLanguage, setDialogueLanguage] = useState('vi')
+
+    // Thumbnail Styles
+    const THUMBNAIL_STYLES = [
+        { id: 'bold_minimal', name: '🎯 Bold Minimal', desc: 'Nền solid màu đậm, text lớn bold' },
+        { id: 'face_focus', name: '😮 Face Focus', desc: 'Khuôn mặt host biểu cảm mạnh' },
+        { id: 'split_contrast', name: '⚡ Split Contrast', desc: 'Chia đôi before/after' },
+        { id: 'number_highlight', name: '🔢 Number Highlight', desc: 'Số lớn nổi bật (Top 10, 5 Tips)' },
+        { id: 'mystery_dark', name: '🌑 Mystery Dark', desc: 'Theme tối, bí ẩn' },
+        { id: 'bright_pop', name: '🌈 Bright Pop', desc: 'Màu sáng rực, vui tươi' },
+        { id: 'cinematic_movie', name: '🎬 Cinematic Movie', desc: 'Poster phim style' },
+        { id: 'arrows_circles', name: '👉 Arrows & Circles', desc: 'Mũi tên, vòng tròn highlight' },
+        { id: 'text_overlay', name: '📝 Text Overlay', desc: 'Text lớn phủ thumbnail' },
+        { id: 'reaction_style', name: '😱 Reaction Style', desc: 'Host shocked, emoji overlays' },
+        { id: 'clean_professional', name: '💼 Clean Professional', desc: 'Sạch sẽ, chuyên nghiệp' },
+        { id: 'gaming_neon', name: '🎮 Gaming Neon', desc: 'Neon glow, cyberpunk' },
+    ]
 
     useEffect(() => {
         fetchChannel()
+        fetchYoutubeDefaults()
     }, [id])
+
+    const fetchYoutubeDefaults = async () => {
+        try {
+            const res = await fetch(`/api/channels/${id}/youtube-defaults`)
+            const data = await res.json()
+            if (data.defaults) {
+                setSocialLinks(data.defaults.socialLinks || '')
+                setAffiliateLinks(data.defaults.affiliateLinks || '')
+                setChannelTagline(data.defaults.channelTagline || '')
+                setDefaultHashtags(data.defaults.defaultHashtags || '')
+            }
+            if (data.thumbnailStyleId) {
+                setThumbnailStyleId(data.thumbnailStyleId)
+            }
+        } catch {
+            console.error('Failed to fetch YouTube defaults')
+        }
+    }
+
+    const saveYoutubeDefaults = async () => {
+        try {
+            await fetch(`/api/channels/${id}/youtube-defaults`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    defaults: { socialLinks, affiliateLinks, channelTagline, defaultHashtags },
+                    thumbnailStyleId
+                })
+            })
+        } catch {
+            console.error('Failed to save YouTube defaults')
+        }
+    }
 
     const fetchChannel = async () => {
         try {
@@ -91,6 +151,8 @@ export default function ChannelSettingsPage({ params }: { params: Promise<{ id: 
                     dialogueLanguage
                 })
             })
+            // Also save YouTube defaults
+            await saveYoutubeDefaults()
             toast.success('Đã lưu cài đặt!')
         } catch {
             toast.error('Lỗi lưu cài đặt')
@@ -212,8 +274,8 @@ export default function ChannelSettingsPage({ params }: { params: Promise<{ id: 
                         <button
                             onClick={() => setDialogueLanguage('vi')}
                             className={`px-4 py-2 rounded-lg text-sm font-medium transition ${dialogueLanguage === 'vi'
-                                    ? 'bg-[var(--accent-primary)] text-white'
-                                    : 'bg-[var(--bg-tertiary)] text-[var(--text-secondary)]'
+                                ? 'bg-[var(--accent-primary)] text-white'
+                                : 'bg-[var(--bg-tertiary)] text-[var(--text-secondary)]'
                                 }`}
                         >
                             🇻🇳 Tiếng Việt
@@ -221,12 +283,102 @@ export default function ChannelSettingsPage({ params }: { params: Promise<{ id: 
                         <button
                             onClick={() => setDialogueLanguage('en')}
                             className={`px-4 py-2 rounded-lg text-sm font-medium transition ${dialogueLanguage === 'en'
-                                    ? 'bg-[var(--accent-primary)] text-white'
-                                    : 'bg-[var(--bg-tertiary)] text-[var(--text-secondary)]'
+                                ? 'bg-[var(--accent-primary)] text-white'
+                                : 'bg-[var(--bg-tertiary)] text-[var(--text-secondary)]'
                                 }`}
                         >
                             🇺🇸 English
                         </button>
+                    </div>
+                </div>
+
+                {/* YouTube Defaults */}
+                <div className="glass-card p-6">
+                    <h3 className="font-semibold mb-4 flex items-center gap-2">
+                        <Youtube className="w-4 h-4 text-red-500" />
+                        YouTube Defaults
+                    </h3>
+                    <p className="text-sm text-[var(--text-muted)] mb-4">
+                        Thông tin mặc định sẽ được thêm vào description của mỗi episode
+                    </p>
+                    <div className="space-y-4">
+                        {/* Channel Tagline */}
+                        <div>
+                            <label className="block text-sm font-medium mb-2">📝 Tagline kênh</label>
+                            <input
+                                type="text"
+                                value={channelTagline}
+                                onChange={(e) => setChannelTagline(e.target.value)}
+                                placeholder="VD: Kênh chia sẻ kiến thức tâm lý hàng đầu Việt Nam"
+                                className="input-field"
+                            />
+                        </div>
+
+                        {/* Social Links */}
+                        <div>
+                            <label className="block text-sm font-medium mb-2 flex items-center gap-2">
+                                <Link className="w-3 h-3" />
+                                Social Links
+                            </label>
+                            <textarea
+                                value={socialLinks}
+                                onChange={(e) => setSocialLinks(e.target.value)}
+                                placeholder="🔗 Facebook: https://facebook.com/...&#10;🔗 TikTok: https://tiktok.com/...&#10;🔗 Instagram: https://instagram.com/..."
+                                className="input-field min-h-[100px] text-sm"
+                            />
+                        </div>
+
+                        {/* Affiliate Links */}
+                        <div>
+                            <label className="block text-sm font-medium mb-2">💰 Affiliate Links</label>
+                            <textarea
+                                value={affiliateLinks}
+                                onChange={(e) => setAffiliateLinks(e.target.value)}
+                                placeholder="📦 Sản phẩm khuyên dùng: https://...&#10;🎁 Nhập mã CHANNEL20 giảm 20%"
+                                className="input-field min-h-[80px] text-sm"
+                            />
+                        </div>
+
+                        {/* Default Hashtags */}
+                        <div>
+                            <label className="block text-sm font-medium mb-2">#️⃣ Default Hashtags</label>
+                            <input
+                                type="text"
+                                value={defaultHashtags}
+                                onChange={(e) => setDefaultHashtags(e.target.value)}
+                                placeholder="#tâmlý #khoahọc #việtnam #knowledge"
+                                className="input-field"
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                {/* Thumbnail Style */}
+                <div className="glass-card p-6">
+                    <h3 className="font-semibold mb-4 flex items-center gap-2">
+                        <Image className="w-4 h-4" />
+                        Thumbnail Style (cho toàn kênh)
+                    </h3>
+                    <p className="text-sm text-[var(--text-muted)] mb-4">
+                        Chọn style thống nhất cho tất cả thumbnail của kênh
+                    </p>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                        {THUMBNAIL_STYLES.map(style => (
+                            <button
+                                key={style.id}
+                                onClick={() => setThumbnailStyleId(style.id)}
+                                className={`p-3 rounded-lg text-left text-sm transition ${thumbnailStyleId === style.id
+                                        ? 'bg-[var(--accent-primary)] text-white'
+                                        : 'bg-[var(--bg-tertiary)] hover:bg-[var(--bg-hover)]'
+                                    }`}
+                            >
+                                <div className="font-medium">{style.name}</div>
+                                <div className={`text-xs mt-1 ${thumbnailStyleId === style.id
+                                        ? 'text-white/80'
+                                        : 'text-[var(--text-muted)]'
+                                    }`}>{style.desc}</div>
+                            </button>
+                        ))}
                     </div>
                 </div>
 
