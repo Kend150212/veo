@@ -136,9 +136,10 @@ export async function POST(
                 : channel.characters
 
             if (charsToUse.length > 0) {
-                characterBible = `\nCHARACTER BIBLE:\n${charsToUse.map((c: { name: string; role: string; fullDescription: string }) =>
-                    `[${c.name}] - ${c.role}: ${c.fullDescription}`
-                ).join('\n')}`
+                characterBible = `\nCHARACTER BIBLE:\n${charsToUse.map((c: { name: string; role: string; fullDescription: string; personality: string | null }) => {
+                    const personalityInfo = c.personality ? ` | TÍNH CÁCH: ${c.personality}` : ''
+                    return `[${c.name}] - ${c.role}: ${c.fullDescription}${personalityInfo}`
+                }).join('\n')}`
             }
         }
 
@@ -162,6 +163,13 @@ AI được phép ĐIỀU CHỈNH nhân vật để phù hợp với từng cả
 - Giọng nói: Giữ nguyên voice tag
 - Tính cách cốt lõi: Tính cách cơ bản của nhân vật
 
+🎭 SỬ DỤNG TÍNH CÁCH (PERSONALITY):
+- Dialogue phải PHÙ HỢP với tính cách đã định nghĩa
+- Hành động, phản ứng, cử chỉ phản ánh tính cách
+- VD: Nhân vật "hài hước" → nói đùa, cười nhiều, phản ứng vui vẻ
+- VD: Nhân vật "trầm lặng" → ít nói, suy tư, quan sát nhiều
+- VD: Nhân vật "nóng tính" → nói nhanh, cử chỉ mạnh, dễ bực bội
+
 📝 FORMAT KHI ĐIỀU CHỈNH:
 [TÊN NHÂN VẬT: đặc điểm cố định + ĐIỀU CHỈNH CHO CẢNH NÀY: trang phục/biểu cảm/trạng thái mới]
 
@@ -176,6 +184,11 @@ VÍ DỤ:
 KHÔNG được thay đổi bất kỳ chi tiết nào của nhân vật.
 Copy NGUYÊN VĂN mô tả từ CHARACTER BIBLE vào MỌI cảnh.
 Trang phục, biểu cảm, phụ kiện phải GIỐNG HỆT nhau trong tất cả các scene.
+
+🎭 SỬ DỤNG TÍNH CÁCH (PERSONALITY):
+- Dialogue phải PHÙ HỢP với tính cách đã định nghĩa trong CHARACTER BIBLE
+- Hành động, phản ứng, cử chỉ phản ánh tính cách nhân vật
+- Giữ nhất quán cách nói, cách phản ứng xuyên suốt
 ` : '')
 
         // Existing episodes (avoid duplication)

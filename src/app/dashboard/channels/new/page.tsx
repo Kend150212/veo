@@ -37,6 +37,7 @@ interface CharacterInput {
     name: string
     role: string
     fullDescription: string
+    personality: string
     isMain: boolean
 }
 
@@ -158,10 +159,11 @@ export default function NewChannelPage() {
                     setHasCharacters(analyzeData.analysis.visualRecommendation.hasCharacters)
                 }
                 if (analyzeData.analysis.visualRecommendation?.characterSuggestions) {
-                    setCharacters(analyzeData.analysis.visualRecommendation.characterSuggestions.map((c: { name: string; role: string; description: string }) => ({
+                    setCharacters(analyzeData.analysis.visualRecommendation.characterSuggestions.map((c: { name: string; role: string; description: string; personality?: string }) => ({
                         name: c.name,
                         role: c.role,
                         fullDescription: c.description,
+                        personality: c.personality || '',
                         isMain: true
                     })))
                 }
@@ -234,7 +236,7 @@ export default function NewChannelPage() {
 
     // Add character
     const addCharacter = () => {
-        setCharacters([...characters, { name: '', role: 'host', fullDescription: '', isMain: false }])
+        setCharacters([...characters, { name: '', role: 'host', fullDescription: '', personality: '', isMain: false }])
     }
 
     const updateCharacter = (index: number, field: keyof CharacterInput, value: string | boolean) => {
@@ -650,6 +652,15 @@ export default function NewChannelPage() {
                                             placeholder="Mô tả chi tiết ngoại hình (AI sẽ dùng y nguyên trong mọi scene)"
                                             className="input-field min-h-[80px]"
                                         />
+                                        <div className="mt-2">
+                                            <label className="block text-xs text-[var(--text-muted)] mb-1">🎭 Tính cách</label>
+                                            <textarea
+                                                value={char.personality}
+                                                onChange={(e) => updateCharacter(index, 'personality', e.target.value)}
+                                                placeholder="VD: Vui vẻ, hài hước, hay đùa. Nói nhanh, thích dùng từ lóng..."
+                                                className="input-field min-h-[60px] text-sm"
+                                            />
+                                        </div>
                                     </div>
                                 </div>
                             ))}

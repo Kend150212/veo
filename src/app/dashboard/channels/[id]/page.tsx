@@ -128,6 +128,7 @@ interface ChannelCharacter {
     name: string
     role: string
     fullDescription: string
+    personality?: string // Tính cách nhân vật
     isMain: boolean
 }
 
@@ -166,6 +167,7 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
         name: '',
         role: 'host',
         fullDescription: '',
+        personality: '',
         isMain: false
     })
     const [showKnowledge, setShowKnowledge] = useState(false)
@@ -803,7 +805,7 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
             }
             setShowAddCharacter(false)
             setEditingCharacter(null)
-            setNewCharacter({ name: '', role: 'host', fullDescription: '', isMain: false })
+            setNewCharacter({ name: '', role: 'host', fullDescription: '', personality: '', isMain: false })
             fetchChannel()
         } catch {
             toast.error('Lỗi lưu nhân vật')
@@ -817,6 +819,7 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
             name: char.name,
             role: char.role,
             fullDescription: char.fullDescription,
+            personality: char.personality || '',
             isMain: char.isMain
         })
         setShowAddCharacter(true)
@@ -1111,6 +1114,18 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
                                     placeholder="Mô tả ngoại hình, trang phục, đặc điểm nhận dạng chi tiết..."
                                 />
                             </div>
+                            <div>
+                                <label className="block text-sm font-medium mb-1">🎭 Tính cách nhân vật</label>
+                                <textarea
+                                    value={newCharacter.personality}
+                                    onChange={(e) => setNewCharacter({ ...newCharacter, personality: e.target.value })}
+                                    className="input-field min-h-[80px]"
+                                    placeholder="VD: Vui vẻ, hài hước, hay đùa. Nói nhanh, thích dùng từ lóng Gen Z. Hay cười toe toét, thích trêu chọc người khác..."
+                                />
+                                <p className="text-xs text-[var(--text-muted)] mt-1">
+                                    AI sẽ dùng tính cách này để tạo dialogue và hành động phù hợp
+                                </p>
+                            </div>
                             <label className="flex items-center gap-2">
                                 <input
                                     type="checkbox"
@@ -1132,7 +1147,7 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
                                 onClick={() => {
                                     setShowAddCharacter(false)
                                     setEditingCharacter(null)
-                                    setNewCharacter({ name: '', role: 'host', fullDescription: '', isMain: false })
+                                    setNewCharacter({ name: '', role: 'host', fullDescription: '', personality: '', isMain: false })
                                 }}
                                 className="btn-secondary"
                             >
