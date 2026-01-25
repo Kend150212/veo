@@ -114,7 +114,7 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
     const [mentionChannel, setMentionChannel] = useState(false)
     const [ctaMode, setCtaMode] = useState<'random' | 'select'>('random')
     const [selectedCTAs, setSelectedCTAs] = useState<string[]>([])
-    const [voiceOverMode, setVoiceOverMode] = useState<'with_host' | 'voice_over' | 'broll_only' | 'host_dynamic_env' | 'host_storyteller'>('with_host')
+    const [voiceOverMode, setVoiceOverMode] = useState<'with_host' | 'voice_over' | 'broll_only' | 'host_dynamic_env' | 'host_storyteller' | 'cinematic_film'>('with_host')
 
     // Voice settings (for voice_over mode)
     const [voiceGender, setVoiceGender] = useState<'male' | 'female' | 'auto'>('auto')
@@ -1229,9 +1229,9 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
                         <select
                             value={voiceOverMode}
                             onChange={(e) => {
-                                const mode = e.target.value as 'with_host' | 'voice_over' | 'broll_only' | 'host_dynamic_env' | 'host_storyteller'
+                                const mode = e.target.value as 'with_host' | 'voice_over' | 'broll_only' | 'host_dynamic_env' | 'host_storyteller' | 'cinematic_film'
                                 setVoiceOverMode(mode)
-                                setUseCharacters(['with_host', 'host_dynamic_env', 'host_storyteller'].includes(mode))
+                                setUseCharacters(['with_host', 'host_dynamic_env', 'host_storyteller', 'cinematic_film'].includes(mode))
                             }}
                             className="input-field w-full"
                         >
@@ -1240,6 +1240,7 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
                             <option value="broll_only">🎬 B-Roll only (không lời)</option>
                             <option value="host_dynamic_env">🌍 Host 100% + Môi trường động</option>
                             <option value="host_storyteller">🎭 Host Kể Chuyện (Elements sinh động)</option>
+                            <option value="cinematic_film">🎬 Điện Ảnh (Kịch bản phim)</option>
                         </select>
                     </div>
                 </div>

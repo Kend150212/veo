@@ -54,6 +54,7 @@ export async function POST(req: Request) {
         return NextResponse.json({ channel })
     } catch (error) {
         console.error('Create channel error:', error)
-        return NextResponse.json({ error: 'Failed to create channel' }, { status: 500 })
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+        return NextResponse.json({ error: `Failed to create channel: ${errorMessage}` }, { status: 500 })
     }
 }

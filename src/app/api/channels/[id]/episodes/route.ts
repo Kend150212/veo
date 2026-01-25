@@ -316,6 +316,74 @@ ACTION: Ducks from explosions, shields face, dramatic reactions
 [Host speaks: "story dialogue"]. [STORY ELEMENT: describe what appears - position relative to host]. [HOST REACTION: physical and emotional response]. [Camera: movement]. [Atmosphere: lighting/fog/color]. [Sound: element + reaction sounds]. 
 CRITICAL: Element appears [behind/beside/above] host, face always visible.
 Include "VOICE: [matching host gender]" at the end.`
+        } else if (voiceOverMode === 'cinematic_film') {
+            voiceOverInstr = `CONTENT TYPE: CINEMATIC FILM (Kịch bản điện ảnh chuyên nghiệp)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎬 THIS IS A REAL FILM SCRIPT - NOT A YOUTUBE VIDEO WITH HOST!
+- NO host narrating to camera
+- NO educational explanation style
+- NO "chào các bạn" or "hôm nay chúng ta sẽ..."
+- Characters ACT OUT the story naturally
+
+🎭 CINEMATIC STORYTELLING RULES:
+1. Characters have conversations with each other (not to audience)
+2. Show emotions through actions, expressions, dialogue
+3. Use proper film scene structure: setup → conflict → resolution
+4. Environmental storytelling - let visuals tell the story
+5. Natural dialogue as if in a real movie
+
+📍 SCENE STRUCTURE (Use Film Format):
+- Location establishing shots
+- Character entrances and movements
+- Dialogue exchanges between characters
+- Reaction shots and emotional beats
+- Action sequences when appropriate
+
+🎥 CAMERA LANGUAGE (MANDATORY):
+- Wide shot: Establishing location and scale
+- Medium shot: Character interactions
+- Close-up: Emotional moments, important details
+- Over-the-shoulder: Conversations
+- POV shot: Character perspective
+- Tracking shot: Following action
+- Crane/drone: Epic reveals
+- Handheld: Tension, chaos
+
+💡 LIGHTING STYLES:
+- Golden hour: Romance, nostalgia
+- Blue hour: Mystery, melancholy
+- High-key: Happy, comedic
+- Low-key: Thriller, horror
+- Practical lighting: Realism
+- Chiaroscuro: Drama, noir
+
+🎭 DIALOGUE FORMAT:
+- Characters speak TO EACH OTHER, not to camera
+- Natural conversations with subtext
+- Show character personality through speech patterns
+- Include reactions, pauses, interruptions
+- Vietnamese dialogue should feel natural, not scripted
+
+📝 PROMPTTEXT FORMAT FOR EACH SCENE:
+[SCENE TYPE: INT/EXT - LOCATION - TIME]
+[CHARACTER ACTION: Full character description doing specific action]
+[DIALOGUE: "Character speaks naturally to another character" - Character reacts]
+[CAMERA: Shot type, movement, angle, lens]
+[LIGHTING: Type, direction, mood]
+[SOUND: Ambient sounds, music cue if any]
+[EMOTION: The feeling this scene should evoke]
+STYLE: ${styleKeywords}
+
+🎬 EXAMPLE CINEMATIC SCENE:
+"[EXT. ROOFTOP - NIGHT] [Linh (28, long black hair, red dress, teary eyes) stands at the edge, looking at the city lights below]. [Minh (30, white shirt, desperate expression) rushes through the door behind her]. DIALOGUE: Minh calls out 'Đừng làm vậy!' with trembling voice. Linh slowly turns, tears streaming down her face, whispers 'Anh đến làm gì?'. CAMERA: Wide establishing shot, then quick track-in to medium two-shot. LIGHTING: Neon city lights from below, moonlight from above creating rim light on hair. SOUND: Distant traffic, wind, melancholic piano begins softly. EMOTION: Desperation, regret, love."
+
+⚠️ CRITICAL RULES:
+- Each scene = one dramatic beat or story moment
+- Build tension across scenes
+- Include character reactions and emotional beats
+- Voice tags should match character speaking: "VOICE: Female voice" or "VOICE: Male voice"
+- All dialogue in ${dialogueLang === 'en' ? 'English' : 'Vietnamese'}`
         } else {
             voiceOverInstr = `CONTENT TYPE: B-ROLL ONLY (pure visuals, no dialogue).
 - The "voiceover" field should be empty or minimal ambient text
@@ -461,7 +529,38 @@ ${adInsertionInstr}
 ═══════════════════════════════════════
 EPISODE STRUCTURE (MUST FOLLOW EXACTLY):
 ═══════════════════════════════════════
-📋 CONTENT PLANNING - CRITICAL STEP:
+${voiceOverMode === 'cinematic_film' ? `
+🎬 CINEMATIC FILM STRUCTURE (3-ACT STRUCTURE):
+This is a FILM, not a YouTube video. Follow classic film storytelling:
+
+ACT 1 - SETUP (25% of scenes):
+• Scene 1-2: Opening shot - Establish world, mood, atmosphere
+• Scene 3-4: Introduce protagonist in their normal world
+• Scene 5-6: Inciting incident - Something disrupts the status quo
+• Scene 7-8: Character's initial reaction/decision
+
+ACT 2 - CONFRONTATION (50% of scenes):
+• Rising action - Protagonist faces obstacles
+• Character development through challenges
+• Subplots and relationships develop
+• Midpoint twist/revelation
+• Stakes escalate
+• All seems lost moment
+
+ACT 3 - RESOLUTION (25% of scenes):
+• Climax - Final confrontation/challenge
+• Resolution - Consequences unfold
+• New equilibrium - Character changed
+• Final image - Thematic closure
+
+⚠️ FILM STORYTELLING RULES:
+- NO host talking to camera
+- NO "subscribe", "like", "comment" CTAs
+- Characters interact with EACH OTHER
+- Show, don't tell - visual storytelling
+- Dialogue reveals character and advances plot
+- Each scene has a PURPOSE in the story arc
+` : `📋 CONTENT PLANNING - CRITICAL STEP:
 1. FIRST: Identify ALL major topics/sections from the user's input content
 2. COUNT how many distinct topics exist (e.g., if input has 6 sections, you have 6 topics)
 3. DISTRIBUTE scenes PROPORTIONALLY across ALL topics - NO topic should be skipped!
@@ -479,7 +578,7 @@ EPISODE STRUCTURE (MUST FOLLOW EXACTLY):
 • Topic Sections (Remaining scenes minus 5): Distribute EVENLY across ALL topics from input
 • Mid-CTA (1 scene at ~40%): "Subscribe if learning!" 
 • Summary (2-3 scenes): Quick recap KEY POINTS from EACH topic
-• Closing CTA (Final 2 scenes): Comment question + Goodbye
+• Closing CTA (Final 2 scenes): Comment question + Goodbye`}
 
 ⚠️ ANTI-DUPLICATION RULES:
 1. NEVER repeat the same tip/advice twice in different scenes
@@ -491,7 +590,27 @@ EPISODE STRUCTURE (MUST FOLLOW EXACTLY):
 ═══════════════════════════════════════
 SCENE FORMAT (EVERY SCENE MUST HAVE):
 ═══════════════════════════════════════
+${voiceOverMode === 'cinematic_film' ? `
+🎬 CINEMATIC SCENE FORMAT:
 {
+    "order": number,
+    "title": "Scene title (dramatic/descriptive)",
+    "duration": 8,
+    "voiceover": "Character dialogue or action description. Format: 'Character Name: Dialogue' or '(Action description)'",
+    "promptText": "Cinematic scene description - see format below"
+}
+
+CINEMATIC PROMPTTEXT FORMAT:
+[SCENE: INT/EXT - LOCATION - TIME OF DAY]. [CHARACTER: Full appearance description, emotional state, specific action]. DIALOGUE: "Character speaks to another character" - Reaction description. CAMERA: {Wide/Medium/Close-up/Over-shoulder}, {movement: static/pan/track/crane}, lens {24mm/35mm/50mm/85mm}. LIGHTING: {natural/dramatic/soft/hard}, {direction}, {color: warm/cool/neutral}. SOUND: {ambient sounds}, {music mood}. EMOTION: {what audience should feel}. STYLE: ${styleKeywords}.
+
+EXAMPLE CINEMATIC SCENE:
+{
+    "order": 5,
+    "title": "Cuộc đối đầu trong mưa",
+    "duration": 8,
+    "voiceover": "Minh: 'Anh biết em đang giấu điều gì.' - Linh quay mặt đi, mắt ngấn lệ.",
+    "promptText": "[SCENE: EXT - ROOFTOP - NIGHT, RAIN]. [MINH: 32-year-old Vietnamese man, short black hair, soaked white shirt clinging to body, intense determined eyes, standing 2 meters from Linh]. [LINH: 28-year-old Vietnamese woman, long wet black hair, red dress, tears mixing with rain on cheeks, half-turned away]. DIALOGUE: Minh steps forward, voice firm but breaking - 'Anh biết em đang giấu điều gì.' Linh's shoulders tremble, she whispers without turning - 'Có những thứ anh không nên biết.' CAMERA: Medium two-shot, slow dolly in, 50mm lens. LIGHTING: Blue moonlight from above, neon city glow from below, rim light on wet surfaces. SOUND: Heavy rain, distant thunder, melancholic piano. EMOTION: Heartbreak, desperation, unspoken love. STYLE: ${styleKeywords}. VOICE: Male voice for Minh, Female voice for Linh."
+}` : `{
     "order": number,
     "title": "Scene title",
     "duration": 8,
@@ -511,12 +630,28 @@ EXAMPLE OF PERFECT SCENE:
     "duration": 8,
     "voiceover": "Thu nhập đa dạng. Thợ mới có lương cơ bản và tiền boa. Thợ lành nghề có thể kiếm từ 40,000 đến 70,000 đô la một năm.",
     "promptText": "[VOICEOVER in Vietnamese: Thu nhập đa dạng. Thợ mới có lương cơ bản và tiền boa. Thợ lành nghề có thể kiếm từ 40,000 đến 70,000 đô la một năm.]. [Visual representation of money, with a subtle graphic illustrating the income range: $40,000 - $70,000.]. ENVIRONMENT: Clean graphic design, easily readable. CAMERA: Static shot, clear and concise. LIGHTING: Bright, well-lit graphic. STYLE: ${styleKeywords}. MOOD: Informative and appealing. AUDIO: Upbeat, positive sound effect. LANGUAGE: Speak Vietnamese only."
-}
+}`}
 
 ═══════════════════════════════════════
 CRITICAL RULES:
 ═══════════════════════════════════════
-1. VOICEOVER = What host SAYS (natural, conversational)
+${voiceOverMode === 'cinematic_film' ? `
+🎬 CINEMATIC FILM RULES:
+1. VOICEOVER = Character dialogue OR action description (NOT host narration)
+2. PROMPTTEXT = Full cinematic scene description with location, characters, actions, camera, lighting
+3. ${characterBible ? `⚠️ CHARACTER CONSISTENCY - MANDATORY:
+   - Include FULL character description in EVERY scene they appear
+   - Match character's established appearance, clothing, mannerisms
+   - Characters have personalities - show through actions and dialogue
+   - Copy EXACT details from CHARACTER BIBLE each time` : 'Create vivid, consistent characters'}
+4. NEVER use host/narrator talking to camera - characters talk to EACH OTHER
+5. Use proper film scene structure - setup, conflict, payoff
+6. Include emotional beats and character reactions
+7. Camera work should enhance storytelling (close-up for emotion, wide for scope)
+8. Each scene advances the PLOT or develops CHARACTER
+9. NO YouTube CTAs (subscribe, like, comment) - this is a FILM
+10. ALL dialogue in ${dialogueLangLabel.toUpperCase()}
+11. Include VOICE tags: "VOICE: Male voice" or "VOICE: Female voice" matching character` : `1. VOICEOVER = What host SAYS (natural, conversational)
 2. PROMPTTEXT = Visual description for video AI (MUST include voiceover at start)
 3. ${characterBible ? `⚠️⚠️⚠️ CHARACTER DESCRIPTION - ABSOLUTELY MANDATORY:
    - NEVER write just "[LEO_REAL]" or "[CHARACTER_NAME]" alone - this is WRONG!
@@ -532,7 +667,7 @@ CRITICAL RULES:
 6. Include SPECIFIC facts/numbers when discussing income, statistics
 7. Smooth transitions between scenes
 8. CTA scenes should feel natural, not forced
-9. ALL text/voiceover in ${dialogueLangLabel.toUpperCase()} ONLY
+9. ALL text/voiceover in ${dialogueLangLabel.toUpperCase()} ONLY`}
 
 Return JSON:
 {
