@@ -23,7 +23,8 @@ import {
     Check,
     Globe,
     RefreshCw,
-    Trash2
+    Trash2,
+    Wand2
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { VISUAL_STYLES } from '@/lib/ai-story'
