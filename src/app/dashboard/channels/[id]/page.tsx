@@ -307,6 +307,15 @@ interface ChannelCharacter {
     fullDescription: string
     personality?: string // Tính cách nhân vật
     isMain: boolean
+    gender?: string
+    ageRange?: string
+    appearance?: string
+    faceDetails?: string
+    hairDetails?: string
+    clothing?: string
+    skinTone?: string
+    styleKeywords?: string
+    voiceStyle?: string
 }
 
 interface Channel {
@@ -345,8 +354,16 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
         role: 'host',
         fullDescription: '',
         personality: '',
-        isMain: false
+        isMain: false,
+        gender: 'female',
+        ageRange: '25-35',
+        faceDetails: '',
+        hairDetails: '',
+        clothing: '',
+        skinTone: '',
+        styleKeywords: ''
     })
+    const [isGeneratingCharacter, setIsGeneratingCharacter] = useState(false)
     const [showKnowledge, setShowKnowledge] = useState(false)
     const [expandedNiche, setExpandedNiche] = useState(false)
 
@@ -987,10 +1004,56 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
             }
             setShowAddCharacter(false)
             setEditingCharacter(null)
-            setNewCharacter({ name: '', role: 'host', fullDescription: '', personality: '', isMain: false })
+            setNewCharacter({ name: '', role: 'host', fullDescription: '', personality: '', isMain: false, gender: 'female', ageRange: '25-35', faceDetails: '', hairDetails: '', clothing: '', skinTone: '', styleKeywords: '' })
             fetchChannel()
         } catch {
             toast.error('Lỗi lưu nhân vật')
+        }
+    }
+
+    // Generate detailed character description using AI
+    const handleGenerateCharacterDetails = async () => {
+        if (!newCharacter.name) {
+            toast.error('Vui lòng nhập tên nhân vật trước')
+            return
+        }
+
+        setIsGeneratingCharacter(true)
+        try {
+            const res = await fetch(`/api/channels/${id}/characters/generate`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: newCharacter.name,
+                    role: newCharacter.role,
+                    personality: newCharacter.personality,
+                    gender: newCharacter.gender || 'female',
+                    ageRange: newCharacter.ageRange || '25-35',
+                    style: channel?.visualStyleId || 'pixar-3d'
+                })
+            })
+
+            if (!res.ok) {
+                const data = await res.json()
+                throw new Error(data.error || 'Lỗi tạo mô tả')
+            }
+
+            const data = await res.json()
+            setNewCharacter(prev => ({
+                ...prev,
+                fullDescription: data.character.fullDescription || '',
+                faceDetails: data.character.faceDetails || '',
+                hairDetails: data.character.hairDetails || '',
+                clothing: data.character.clothing || '',
+                skinTone: data.character.skinTone || '',
+                styleKeywords: data.character.styleKeywords || ''
+            }))
+            toast.success('Đã tạo mô tả chi tiết!')
+        } catch (error) {
+            console.error('Generate character error:', error)
+            toast.error(error instanceof Error ? error.message : 'Lỗi tạo mô tả nhân vật')
+        } finally {
+            setIsGeneratingCharacter(false)
         }
     }
 
@@ -1002,7 +1065,14 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
             role: char.role,
             fullDescription: char.fullDescription,
             personality: char.personality || '',
-            isMain: char.isMain
+            isMain: char.isMain,
+            gender: char.gender || 'female',
+            ageRange: char.ageRange || '25-35',
+            faceDetails: char.faceDetails || '',
+            hairDetails: char.hairDetails || '',
+            clothing: char.clothing || '',
+            skinTone: char.skinTone || '',
+            styleKeywords: char.styleKeywords || ''
         })
         setShowAddCharacter(true)
     }
@@ -1267,47 +1337,133 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
                             {editingCharacter ? 'Chỉnh sửa nhân vật' : 'Thêm nhân vật mới'}
                         </h3>
                         <div className="space-y-4">
-                            <div>
-                                <label className="block text-sm font-medium mb-1">Tên nhân vật *</label>
-                                <input
-                                    type="text"
-                                    value={newCharacter.name}
-                                    onChange={(e) => setNewCharacter({ ...newCharacter, name: e.target.value })}
-                                    className="input-field"
-                                    placeholder="VD: Minh"
-                                />
+                            {/* Name & Role Row */}
+                            <div className="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label className="block text-sm font-medium mb-1">Tên nhân vật *</label>
+                                    <input
+                                        type="text"
+                                        value={newCharacter.name}
+                                        onChange={(e) => setNewCharacter({ ...newCharacter, name: e.target.value })}
+                                        className="input-field"
+                                        placeholder="VD: Minh"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium mb-1">Vai trò *</label>
+                                    <input
+                                        type="text"
+                                        value={newCharacter.role}
+                                        onChange={(e) => setNewCharacter({ ...newCharacter, role: e.target.value })}
+                                        className="input-field"
+                                        placeholder="VD: Host chính..."
+                                    />
+                                </div>
                             </div>
-                            <div>
-                                <label className="block text-sm font-medium mb-1">Vai trò *</label>
-                                <input
-                                    type="text"
-                                    value={newCharacter.role}
-                                    onChange={(e) => setNewCharacter({ ...newCharacter, role: e.target.value })}
-                                    className="input-field"
-                                    placeholder="VD: Host chính, Khách mời..."
-                                />
+
+                            {/* Gender & Age Row */}
+                            <div className="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label className="block text-sm font-medium mb-1">Giới tính</label>
+                                    <select
+                                        value={newCharacter.gender || 'female'}
+                                        onChange={(e) => setNewCharacter({ ...newCharacter, gender: e.target.value })}
+                                        className="input-field"
+                                    >
+                                        <option value="female">👩 Nữ</option>
+                                        <option value="male">👨 Nam</option>
+                                        <option value="other">🧑 Khác</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium mb-1">Độ tuổi</label>
+                                    <select
+                                        value={newCharacter.ageRange || '25-35'}
+                                        onChange={(e) => setNewCharacter({ ...newCharacter, ageRange: e.target.value })}
+                                        className="input-field"
+                                    >
+                                        <option value="5-12">👶 Trẻ em (5-12)</option>
+                                        <option value="13-17">🧒 Thiếu niên (13-17)</option>
+                                        <option value="18-24">🧑 Trẻ (18-24)</option>
+                                        <option value="25-35">👤 Trưởng thành (25-35)</option>
+                                        <option value="36-50">👨 Trung niên (36-50)</option>
+                                        <option value="50+">👴 Lớn tuổi (50+)</option>
+                                    </select>
+                                </div>
                             </div>
-                            <div>
-                                <label className="block text-sm font-medium mb-1">Mô tả chi tiết *</label>
-                                <textarea
-                                    value={newCharacter.fullDescription}
-                                    onChange={(e) => setNewCharacter({ ...newCharacter, fullDescription: e.target.value })}
-                                    className="input-field min-h-[100px]"
-                                    placeholder="Mô tả ngoại hình, trang phục, đặc điểm nhận dạng chi tiết..."
-                                />
-                            </div>
+
+                            {/* Personality */}
                             <div>
                                 <label className="block text-sm font-medium mb-1">🎭 Tính cách nhân vật</label>
                                 <textarea
                                     value={newCharacter.personality}
                                     onChange={(e) => setNewCharacter({ ...newCharacter, personality: e.target.value })}
-                                    className="input-field min-h-[80px]"
-                                    placeholder="VD: Vui vẻ, hài hước, hay đùa. Nói nhanh, thích dùng từ lóng Gen Z. Hay cười toe toét, thích trêu chọc người khác..."
+                                    className="input-field min-h-[60px]"
+                                    placeholder="VD: Vui vẻ, hài hước, hay đùa. Nói nhanh, thích dùng từ lóng Gen Z..."
                                 />
-                                <p className="text-xs text-[var(--text-muted)] mt-1">
-                                    AI sẽ dùng tính cách này để tạo dialogue và hành động phù hợp
-                                </p>
                             </div>
+
+                            {/* AI Generate Button */}
+                            <button
+                                onClick={handleGenerateCharacterDetails}
+                                disabled={isGeneratingCharacter || !newCharacter.name}
+                                className="w-full py-3 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 disabled:opacity-50 rounded-lg text-white font-medium flex items-center justify-center gap-2 transition"
+                            >
+                                {isGeneratingCharacter ? (
+                                    <>
+                                        <Loader2 className="w-4 h-4 animate-spin" />
+                                        Đang tạo mô tả chi tiết...
+                                    </>
+                                ) : (
+                                    <>
+                                        <Wand2 className="w-4 h-4" />
+                                        ✨ AI Tạo mô tả chi tiết (tóc, mắt, trang phục...)
+                                    </>
+                                )}
+                            </button>
+
+                            {/* Full Description */}
+                            <div>
+                                <label className="block text-sm font-medium mb-1">
+                                    📝 Mô tả đầy đủ * {newCharacter.fullDescription && <span className="text-green-400 text-xs">(Đã có)</span>}
+                                </label>
+                                <textarea
+                                    value={newCharacter.fullDescription}
+                                    onChange={(e) => setNewCharacter({ ...newCharacter, fullDescription: e.target.value })}
+                                    className="input-field min-h-[120px]"
+                                    placeholder="Nhấn nút AI ở trên để tự động tạo mô tả chi tiết, hoặc nhập thủ công..."
+                                />
+                            </div>
+
+                            {/* Show additional details if generated */}
+                            {newCharacter.hairDetails && (
+                                <div className="grid grid-cols-2 gap-2 text-xs">
+                                    <div className="p-2 bg-[var(--bg-tertiary)] rounded">
+                                        <span className="text-[var(--text-muted)]">💇 Tóc: </span>
+                                        <span>{newCharacter.hairDetails}</span>
+                                    </div>
+                                    <div className="p-2 bg-[var(--bg-tertiary)] rounded">
+                                        <span className="text-[var(--text-muted)]">👤 Mặt: </span>
+                                        <span>{newCharacter.faceDetails}</span>
+                                    </div>
+                                    <div className="p-2 bg-[var(--bg-tertiary)] rounded">
+                                        <span className="text-[var(--text-muted)]">👕 Outfit: </span>
+                                        <span>{newCharacter.clothing}</span>
+                                    </div>
+                                    <div className="p-2 bg-[var(--bg-tertiary)] rounded">
+                                        <span className="text-[var(--text-muted)]">🎨 Da: </span>
+                                        <span>{newCharacter.skinTone}</span>
+                                    </div>
+                                </div>
+                            )}
+
+                            {newCharacter.styleKeywords && (
+                                <div className="p-2 bg-[var(--bg-tertiary)] rounded text-xs">
+                                    <span className="text-[var(--text-muted)]">🏷️ AI Keywords: </span>
+                                    <span className="text-purple-400">{newCharacter.styleKeywords}</span>
+                                </div>
+                            )}
+
                             <label className="flex items-center gap-2">
                                 <input
                                     type="checkbox"
@@ -1329,7 +1485,7 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
                                 onClick={() => {
                                     setShowAddCharacter(false)
                                     setEditingCharacter(null)
-                                    setNewCharacter({ name: '', role: 'host', fullDescription: '', personality: '', isMain: false })
+                                    setNewCharacter({ name: '', role: 'host', fullDescription: '', personality: '', isMain: false, gender: 'female', ageRange: '25-35', faceDetails: '', hairDetails: '', clothing: '', skinTone: '', styleKeywords: '' })
                                 }}
                                 className="btn-secondary"
                             >

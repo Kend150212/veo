@@ -39,6 +39,15 @@ interface CharacterInput {
     fullDescription: string
     personality: string
     isMain: boolean
+    gender?: string
+    ageRange?: string
+    appearance?: string
+    faceDetails?: string
+    hairDetails?: string
+    clothing?: string
+    skinTone?: string
+    styleKeywords?: string
+    voiceStyle?: string
 }
 
 export default function NewChannelPage() {
@@ -81,6 +90,7 @@ export default function NewChannelPage() {
     // Characters
     const [characters, setCharacters] = useState<CharacterInput[]>([])
     const [isGeneratingChars, setIsGeneratingChars] = useState(false)
+    const [generatingCharIndex, setGeneratingCharIndex] = useState<number | null>(null) // Track which character is being generated
 
     // Channel ID after creation
     const [channelId, setChannelId] = useState<string | null>(null)
@@ -236,7 +246,15 @@ export default function NewChannelPage() {
 
     // Add character
     const addCharacter = () => {
-        setCharacters([...characters, { name: '', role: 'host', fullDescription: '', personality: '', isMain: false }])
+        setCharacters([...characters, { 
+            name: '', 
+            role: 'host', 
+            fullDescription: '', 
+            personality: '', 
+            isMain: false,
+            gender: 'female',
+            ageRange: '25-35'
+        }])
     }
 
     const updateCharacter = (index: number, field: keyof CharacterInput, value: string | boolean) => {
@@ -247,6 +265,62 @@ export default function NewChannelPage() {
 
     const removeCharacter = (index: number) => {
         setCharacters(characters.filter((_, i) => i !== index))
+    }
+
+    // Generate detailed character description using AI
+    const generateCharacterDetails = async (index: number) => {
+        const char = characters[index]
+        if (!char.name) {
+            toast.error('Vui lòng nhập tên nhân vật trước')
+            return
+        }
+
+        if (!channelId) {
+            toast.error('Vui lòng tạo kênh trước')
+            return
+        }
+
+        setGeneratingCharIndex(index)
+        try {
+            const res = await fetch(`/api/channels/${channelId}/characters/generate`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: char.name,
+                    role: char.role,
+                    personality: char.personality,
+                    gender: char.gender || 'female',
+                    ageRange: char.ageRange || '25-35',
+                    style: selectedStyle || 'pixar-3d'
+                })
+            })
+
+            if (!res.ok) {
+                const data = await res.json()
+                throw new Error(data.error || 'Lỗi tạo mô tả')
+            }
+
+            const data = await res.json()
+            const updated = [...characters]
+            updated[index] = {
+                ...updated[index],
+                fullDescription: data.character.fullDescription || '',
+                appearance: data.character.appearance || '',
+                faceDetails: data.character.faceDetails || '',
+                hairDetails: data.character.hairDetails || '',
+                clothing: data.character.clothing || '',
+                skinTone: data.character.skinTone || '',
+                styleKeywords: data.character.styleKeywords || '',
+                voiceStyle: data.character.voiceStyle || ''
+            }
+            setCharacters(updated)
+            toast.success('Đã tạo mô tả chi tiết cho ' + char.name)
+        } catch (error) {
+            console.error('Generate character error:', error)
+            toast.error(error instanceof Error ? error.message : 'Lỗi tạo mô tả nhân vật')
+        } finally {
+            setGeneratingCharIndex(null)
+        }
     }
 
     const stepTitles: Record<WizardStep, string> = {
@@ -629,30 +703,54 @@ export default function NewChannelPage() {
                                         </button>
                                     </div>
                                     <div className="grid gap-3">
-                                        <input
-                                            type="text"
-                                            value={char.name}
-                                            onChange={(e) => updateCharacter(index, 'name', e.target.value)}
-                                            placeholder="Tên nhân vật"
-                                            className="input-field"
-                                        />
-                                        <select
-                                            value={char.role}
-                                            onChange={(e) => updateCharacter(index, 'role', e.target.value)}
-                                            className="input-field"
-                                        >
-                                            <option value="host">Host/Người dẫn</option>
-                                            <option value="sidekick">Sidekick/Phụ</option>
-                                            <option value="mascot">Mascot/Linh vật</option>
-                                            <option value="narrator">Narrator/Người kể</option>
-                                        </select>
-                                        <textarea
-                                            value={char.fullDescription}
-                                            onChange={(e) => updateCharacter(index, 'fullDescription', e.target.value)}
-                                            placeholder="Mô tả chi tiết ngoại hình (AI sẽ dùng y nguyên trong mọi scene)"
-                                            className="input-field min-h-[80px]"
-                                        />
-                                        <div className="mt-2">
+                                        {/* Basic Info Row */}
+                                        <div className="grid grid-cols-2 gap-3">
+                                            <input
+                                                type="text"
+                                                value={char.name}
+                                                onChange={(e) => updateCharacter(index, 'name', e.target.value)}
+                                                placeholder="Tên nhân vật"
+                                                className="input-field"
+                                            />
+                                            <select
+                                                value={char.role}
+                                                onChange={(e) => updateCharacter(index, 'role', e.target.value)}
+                                                className="input-field"
+                                            >
+                                                <option value="host">Host/Người dẫn</option>
+                                                <option value="sidekick">Sidekick/Phụ</option>
+                                                <option value="mascot">Mascot/Linh vật</option>
+                                                <option value="narrator">Narrator/Người kể</option>
+                                            </select>
+                                        </div>
+                                        
+                                        {/* Gender & Age Row */}
+                                        <div className="grid grid-cols-2 gap-3">
+                                            <select
+                                                value={char.gender || 'female'}
+                                                onChange={(e) => updateCharacter(index, 'gender', e.target.value)}
+                                                className="input-field"
+                                            >
+                                                <option value="female">👩 Nữ</option>
+                                                <option value="male">👨 Nam</option>
+                                                <option value="other">🧑 Khác</option>
+                                            </select>
+                                            <select
+                                                value={char.ageRange || '25-35'}
+                                                onChange={(e) => updateCharacter(index, 'ageRange', e.target.value)}
+                                                className="input-field"
+                                            >
+                                                <option value="5-12">👶 Trẻ em (5-12)</option>
+                                                <option value="13-17">🧒 Thiếu niên (13-17)</option>
+                                                <option value="18-24">🧑 Trẻ (18-24)</option>
+                                                <option value="25-35">👤 Trưởng thành (25-35)</option>
+                                                <option value="36-50">👨 Trung niên (36-50)</option>
+                                                <option value="50+">👴 Lớn tuổi (50+)</option>
+                                            </select>
+                                        </div>
+
+                                        {/* Personality */}
+                                        <div>
                                             <label className="block text-xs text-[var(--text-muted)] mb-1">🎭 Tính cách</label>
                                             <textarea
                                                 value={char.personality}
@@ -661,6 +759,67 @@ export default function NewChannelPage() {
                                                 className="input-field min-h-[60px] text-sm"
                                             />
                                         </div>
+
+                                        {/* AI Generate Button */}
+                                        <button
+                                            onClick={() => generateCharacterDetails(index)}
+                                            disabled={generatingCharIndex === index || !char.name}
+                                            className="w-full py-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 disabled:opacity-50 rounded-lg text-white font-medium flex items-center justify-center gap-2 transition"
+                                        >
+                                            {generatingCharIndex === index ? (
+                                                <>
+                                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                                    Đang tạo mô tả chi tiết...
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <Wand2 className="w-4 h-4" />
+                                                    ✨ AI Tạo mô tả chi tiết (tóc, mắt, trang phục...)
+                                                </>
+                                            )}
+                                        </button>
+
+                                        {/* Full Description (AI Generated or Manual) */}
+                                        <div>
+                                            <label className="block text-xs text-[var(--text-muted)] mb-1">
+                                                📝 Mô tả đầy đủ {char.fullDescription && <span className="text-green-400">(Đã có)</span>}
+                                            </label>
+                                            <textarea
+                                                value={char.fullDescription}
+                                                onChange={(e) => updateCharacter(index, 'fullDescription', e.target.value)}
+                                                placeholder="Nhấn nút AI ở trên để tự động tạo mô tả chi tiết, hoặc nhập thủ công..."
+                                                className="input-field min-h-[120px] text-sm"
+                                            />
+                                        </div>
+
+                                        {/* Show additional details if generated */}
+                                        {char.hairDetails && (
+                                            <div className="grid grid-cols-2 gap-2 text-xs">
+                                                <div className="p-2 bg-[var(--bg-secondary)] rounded">
+                                                    <span className="text-[var(--text-muted)]">💇 Tóc: </span>
+                                                    <span>{char.hairDetails}</span>
+                                                </div>
+                                                <div className="p-2 bg-[var(--bg-secondary)] rounded">
+                                                    <span className="text-[var(--text-muted)]">👤 Mặt: </span>
+                                                    <span>{char.faceDetails}</span>
+                                                </div>
+                                                <div className="p-2 bg-[var(--bg-secondary)] rounded">
+                                                    <span className="text-[var(--text-muted)]">👕 Outfit: </span>
+                                                    <span>{char.clothing}</span>
+                                                </div>
+                                                <div className="p-2 bg-[var(--bg-secondary)] rounded">
+                                                    <span className="text-[var(--text-muted)]">🎨 Da: </span>
+                                                    <span>{char.skinTone}</span>
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {char.styleKeywords && (
+                                            <div className="p-2 bg-[var(--bg-secondary)] rounded text-xs">
+                                                <span className="text-[var(--text-muted)]">🏷️ AI Keywords: </span>
+                                                <span className="text-purple-400">{char.styleKeywords}</span>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             ))}
