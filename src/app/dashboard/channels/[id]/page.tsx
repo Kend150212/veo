@@ -109,6 +109,126 @@ const CINEMATIC_STYLES = [
         useCase: 'So sánh thực phẩm, battle giữa các món, drama ẩm thực viral',
         icon: '⚔️',
         promptKeywords: 'food battle drama, anthropomorphic ingredients fighting, dramatic showdown, energy effects around food, arena-style kitchen, intense expressions, action camera angles, epic food confrontation, winner loser dynamics'
+    },
+    {
+        id: 'roast_comedy',
+        name: 'Roast / Provocative Comedy',
+        nameVi: 'Hài roast / Chọc tức khán giả',
+        description: 'Nhân vật ROAST, chọc tức, thách thức khán giả - CỰC KỲ VIRAL vì gây tranh cãi',
+        visualLanguage: 'Close-up mặt đểu, ánh mắt khinh thường, cử chỉ provocative',
+        useCase: 'Content gây tranh cãi, engagement cao, viral qua comments',
+        icon: '🔥',
+        promptKeywords: 'roast comedy, provocative expressions, smug face, looking down at camera, breaking fourth wall, mocking gestures, sarcastic smile, challenging the viewer, controversial statements'
+    },
+    {
+        id: 'reaction_commentary',
+        name: 'Reaction / Commentary',
+        nameVi: 'Phản ứng & Bình luận',
+        description: 'Nhân vật xem và phản ứng với nội dung, bình luận sắc sảo',
+        visualLanguage: 'Split screen, picture-in-picture, biểu cảm reaction exaggerated',
+        useCase: 'React video, bình luận trend, phân tích drama',
+        icon: '😱',
+        promptKeywords: 'reaction faces, split screen layout, picture-in-picture, exaggerated expressions, shocked face, laughing hard, cringing, judging expression, commentary style'
+    },
+    {
+        id: 'asmr_satisfying',
+        name: 'ASMR / Satisfying',
+        nameVi: 'ASMR / Thỏa mãn thị giác',
+        description: 'Âm thanh êm dịu, hình ảnh thỏa mãn, cảm giác relax',
+        visualLanguage: 'Extreme close-up, slow motion, focus sounds, soft lighting',
+        useCase: 'ASMR cooking, satisfying cuts, relaxing content',
+        icon: '🎧',
+        promptKeywords: 'ASMR sounds, extreme macro close-up, satisfying visuals, slow motion textures, soft ambient lighting, crisp sound effects, relaxing atmosphere, tingles inducing, whisper narration'
+    },
+    {
+        id: 'horror_survival',
+        name: 'Horror Survival / Escape',
+        nameVi: 'Kinh dị sinh tồn',
+        description: 'Thực phẩm/nhân vật cố gắng THOÁT KHỎI việc bị ăn/tiêu diệt - Tension cao!',
+        visualLanguage: 'Low-key lighting, POV victim, jump scares, running scenes',
+        useCase: 'Horror comedy, survival drama, tension content',
+        icon: '😱',
+        promptKeywords: 'horror survival, running away, being chased, scared expressions, dark kitchen at night, knife shadows, pot of boiling water threat, escape attempts, near-death experiences, relief and terror'
+    },
+    {
+        id: 'romance_drama',
+        name: 'Romance / Love Story',
+        nameVi: 'Tình cảm lãng mạn',
+        description: 'Câu chuyện tình yêu giữa các nhân vật - Cảm động, hài hước hoặc bi kịch',
+        visualLanguage: 'Warm lighting, bokeh backgrounds, eye contact moments, slow motion',
+        useCase: 'Love stories, couple content, emotional drama',
+        icon: '💕',
+        promptKeywords: 'romantic atmosphere, loving gazes, warm golden lighting, bokeh hearts, slow motion embraces, emotional tears, relationship drama, first meeting, confession scenes, happy or tragic ending'
+    },
+    {
+        id: 'gen_z_meme',
+        name: 'Gen Z Meme Culture',
+        nameVi: 'Văn hóa meme Gen Z',
+        description: 'Humor Gen Z, meme references, ironic, absurd, chaotic energy',
+        visualLanguage: 'Glitch effects, random zooms, deep fried, bass boosted, chaotic edits',
+        useCase: 'Meme content, TikTok trends, ironic humor, viral shorts',
+        icon: '💀',
+        promptKeywords: 'gen z humor, ironic expressions, random zoom effects, chaotic energy, absurdist comedy, meme references, bruh moment face, skull emoji energy, unhinged behavior, cursed images aesthetic'
+    },
+    {
+        id: 'educational_sassy',
+        name: 'Educational with Attitude',
+        nameVi: 'Giáo dục với thái độ',
+        description: 'Dạy kiến thức nhưng với thái độ sassy, "bạn ngu quá" energy',
+        visualLanguage: 'Raised eyebrow, disappointed face, slow clap, "really?" expression',
+        useCase: 'Debunk myths, correct misinformation, sassy teaching',
+        icon: '🙄',
+        promptKeywords: 'sassy teaching, raised eyebrow, disappointed expression, slow condescending clap, eye roll, you should know this face, lecturing pose, pointing at facts, proving idiots wrong'
+    },
+    {
+        id: 'mystery_detective',
+        name: 'Mystery / Detective',
+        nameVi: 'Bí ẩn / Thám tử',
+        description: 'Điều tra, khám phá bí mật, twist endings, suspense',
+        visualLanguage: 'Noir lighting, magnifying glass, clue reveals, dramatic reveals',
+        useCase: 'True crime style, mystery reveals, conspiracy theories',
+        icon: '🔍',
+        promptKeywords: 'detective noir style, magnifying glass, mysterious shadows, clue discovery, evidence board with strings, dramatic reveal lighting, suspenseful atmosphere, twist ending setup, investigation scenes'
+    },
+    {
+        id: 'breaking_4th_wall',
+        name: 'Breaking the 4th Wall',
+        nameVi: 'Phá vỡ bức tường thứ 4',
+        description: 'Nhân vật BIẾT họ đang trong video, nói chuyện trực tiếp với khán giả',
+        visualLanguage: 'Direct eye contact with camera, winking, aside glances, addressing viewer',
+        useCase: 'Meta humor, direct engagement, personal connection',
+        icon: '👀',
+        promptKeywords: 'breaking fourth wall, looking directly at camera, winking at viewer, aside glance, talking to audience, meta awareness, acknowledging being in a video, conspiratorial whisper to viewer'
+    },
+    {
+        id: 'villain_origin',
+        name: 'Villain Origin Story',
+        nameVi: 'Nguồn gốc phản diện',
+        description: 'Kể câu chuyện tại sao nhân vật trở thành "ác" - Đồng cảm với villain',
+        visualLanguage: 'Dark backstory flashbacks, sympathetic angles, transformation sequence',
+        useCase: 'Character depth, sympathy content, dark backstories',
+        icon: '😈',
+        promptKeywords: 'villain origin, tragic backstory, dark transformation, sympathetic villain lighting, before and after contrast, corrupting moment, justified anger, becoming the villain, dark side embrace'
+    },
+    {
+        id: 'underdog_triumph',
+        name: 'Underdog Triumph',
+        nameVi: 'Kẻ yếu vươn lên',
+        description: 'Câu chuyện từ bị coi thường → chứng minh giá trị - Inspirational!',
+        visualLanguage: 'Training montage, doubt faces → amazed faces, spotlight moment',
+        useCase: 'Motivational content, comeback stories, proving doubters wrong',
+        icon: '🏆',
+        promptKeywords: 'underdog story, being mocked initially, training montage, moment of doubt, final triumph, shocked faces of doubters, spotlight on winner, crowd cheering, proving them wrong'
+    },
+    {
+        id: 'chaos_unhinged',
+        name: 'Chaotic / Unhinged Energy',
+        nameVi: 'Hỗn loạn / Năng lượng điên',
+        description: 'Nhân vật mất kiểm soát, chaos escalates, "everything is fine" while burning',
+        visualLanguage: 'Increasingly chaotic scenes, fire in background, forced smile, screaming',
+        useCase: 'Relatable chaos, overwhelmed humor, escalating situations',
+        icon: '🤪',
+        promptKeywords: 'chaotic energy, things going wrong, forced smile while panicking, fire in background, screaming internally, everything is fine meme, escalating disaster, unhinged laughter, mental breakdown comedy'
     }
 ]
 

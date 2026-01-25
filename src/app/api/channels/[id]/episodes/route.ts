@@ -495,51 +495,240 @@ Include "VOICE: [matching host gender]" at the end.`
                     name: 'Food Drama / Food Wars (Kịch tính ẩm thực)',
                     keywords: 'food battle drama, anthropomorphic ingredients fighting, dramatic showdown, energy effects around food, arena-style kitchen, intense expressions, action camera angles, epic food confrontation, slow motion impacts',
                     guidance: `⚔️ FOOD DRAMA / FOOD WARS STYLE:
-═══════════════════════════════════════
 Thực phẩm nhân hóa trong các tình huống KỊCH TÍNH, ĐỐI ĐẦU!
+- Battle, đối đầu, cạnh tranh giữa các thực phẩm
+- Dramatic lighting, energy auras, slow motion
+- Winner/Loser dynamics rõ ràng`
+                },
+                'roast_comedy': {
+                    name: 'Roast / Provocative Comedy (Hài roast - SIÊU VIRAL)',
+                    keywords: 'roast comedy, provocative expressions, smug face, looking down at camera, breaking fourth wall, mocking gestures, sarcastic smile, challenging the viewer, controversial statements, judging expression',
+                    guidance: `🔥 ROAST / PROVOCATIVE COMEDY STYLE (CỰC KỲ VIRAL):
+═══════════════════════════════════════
+Nhân vật ROAST, CHỌC TỨC, THÁCH THỨC khán giả!
 
-🥊 CONCEPT:
-- Thực phẩm tham gia "battle", đối đầu, cạnh tranh
-- Ai là thực phẩm TỐT NHẤT? AI THẮNG?
-- Drama, tension, winner/loser dynamics
+⚠️ TẠI SAO VIRAL:
+- Gây TRANH CÃI → Comments tăng vọt
+- Khán giả muốn "cãi lại" → Engagement cao
+- Chia sẻ để tag bạn bè → Viral
 
-🎬 CÁC DẠNG BATTLE:
-1. "Thực phẩm nào tốt hơn?" - So sánh dinh dưỡng
-2. "Cuộc chiến bữa sáng" - Bánh mì vs Phở vs Xôi
-3. "Healthy vs Junk Food" - Rau củ vs Fast food
-4. "Ai được chọn?" - Cạnh tranh để được nấu
+🎭 CÁCH ROAST KHÁN GIẢ:
+1. "Bạn còn đang xem video này à? Chắc rảnh lắm nhỉ?"
+2. "Tôi cá là bạn đang nằm trên giường, lười biếng như mọi khi"
+3. "Đừng giả vờ như bạn hiểu, tôi biết bạn không hiểu đâu"
+4. "Bạn nghĩ bạn giỏi hơn tôi? Haha, dễ thương ghê"
+5. "Comment đi, tôi biết bạn muốn cãi rồi đấy"
+6. "Share cho đứa bạn ngu ngu của bạn xem đi"
 
-🎨 VISUAL STYLE:
-- Dramatic lighting với shadows mạnh
-- Energy auras xung quanh thực phẩm
-- Slow motion khi đối đầu
-- Arena/Sân đấu trong nhà bếp
-- Split screen so sánh
-- Power-up effects
+📸 CAMERA & BIỂU CẢM:
+- Close-up mặt với ánh mắt KHINH THƯỜNG
+- Nhướng mày, cười đểu, liếc xéo
+- Looking DOWN at camera (như nhìn xuống khán giả)
+- Slow clap (vỗ tay chậm mỉa mai)
+- Eye roll cực kỳ dramatic
 
-📸 CAMERA:
-- Low angle: Thực phẩm trông mạnh mẽ
-- Quick cuts: Tăng tension
-- Zoom dramatic: Khi reveal winner
-- Orbit shot: Xoay quanh cuộc đối đầu
+💬 DIALOGUE STYLE:
+- Sarcastic AF
+- Backhanded compliments ("Giỏi đấy... cho một người mới")
+- Rhetorical questions ("Bạn không biết thật à?")
+- Fake concern ("Ôi tội nghiệp, bạn không hiểu à?")
+- Direct challenges ("Cãi đi, tôi đợi")
 
-🎭 BIỂU CẢM:
-- Giận dữ, quyết tâm (khi battle)
-- Kiêu ngạo, tự tin (thực phẩm mạnh)
-- Sợ hãi, lo lắng (thực phẩm yếu)
-- Chiến thắng, thất bại rõ ràng
+🎬 SCENES PATTERNS:
+1. Bắt đầu nice → slowly reveal attitude
+2. Fake helpful → then roast
+3. Compliment → take it back
+4. "No offense but..." → offense
 
-💥 HIỆU ỨNG:
-- Lửa, điện, năng lượng xung quanh
-- Impact frames khi va chạm
-- Victory celebration (confetti, spotlight)
-- Defeat animation (tan rã, rơi xuống)
+⚠️ QUAN TRỌNG:
+- Roast phải HÀI, không thật sự toxic
+- Có thể self-deprecating để balance
+- End với wink hoặc "đùa thôi mà"`
+                },
+                'reaction_commentary': {
+                    name: 'Reaction / Commentary (Phản ứng & Bình luận)',
+                    keywords: 'reaction faces, split screen layout, picture-in-picture, exaggerated expressions, shocked face, laughing hard, cringing, judging expression, commentary style, watching content',
+                    guidance: `😱 REACTION / COMMENTARY STYLE:
+- Nhân vật XEM và PHẢN ỨNG với nội dung
+- Split screen hoặc Picture-in-Picture layout
+- Biểu cảm exaggerated: shocked, laughing, cringing
+- Bình luận sắc sảo, opinions mạnh`
+                },
+                'asmr_satisfying': {
+                    name: 'ASMR / Satisfying (Thỏa mãn thị giác)',
+                    keywords: 'ASMR sounds, extreme macro close-up, satisfying visuals, slow motion textures, soft ambient lighting, crisp sound effects, relaxing atmosphere, tingles inducing',
+                    guidance: `🎧 ASMR / SATISFYING STYLE:
+- Extreme close-up, macro shots
+- Slow motion textures và movements
+- Soft, ambient lighting
+- Focus on SOUNDS: crisp, crunchy, sizzling
+- Relaxing, meditative atmosphere`
+                },
+                'horror_survival': {
+                    name: 'Horror Survival / Escape (Kinh dị sinh tồn)',
+                    keywords: 'horror survival, running away, being chased, scared expressions, dark kitchen at night, knife shadows, escape attempts, near-death experiences, relief and terror, POV victim',
+                    guidance: `😱 HORROR SURVIVAL STYLE:
+═══════════════════════════════════════
+Nhân vật/Thực phẩm cố gắng SỐNG SÓT, THOÁT KHỎI nguy hiểm!
 
-🔊 SOUND:
-- Epic orchestral music
-- Dramatic bass drops
-- Crowd cheering (tưởng tượng)
-- Impact sounds`
+🎬 STORYLINES:
+- Thực phẩm sắp bị NẤU → cố gắng trốn
+- Nhân vật bị "kẻ xấu" đuổi
+- Survival challenges
+
+📸 VISUAL:
+- Dark, low-key lighting
+- POV từ góc nạn nhân
+- Shadows of threats (dao, nồi nước sôi)
+- Running/chasing scenes
+- Jump scare moments
+
+🎭 EMOTIONS:
+- Terror, panic, desperation
+- Brief hope → crushed
+- Near misses
+- Relief when escape (or tragedy when caught)`
+                },
+                'romance_drama': {
+                    name: 'Romance / Love Story (Tình cảm lãng mạn)',
+                    keywords: 'romantic atmosphere, loving gazes, warm golden lighting, bokeh hearts, slow motion embraces, emotional tears, relationship drama, confession scenes',
+                    guidance: `💕 ROMANCE / LOVE STORY STYLE:
+- Warm, golden hour lighting
+- Bokeh backgrounds, soft focus
+- Eye contact moments, slow motion
+- Love confessions, heartbreak, reunion
+- Can be sweet OR tragic`
+                },
+                'gen_z_meme': {
+                    name: 'Gen Z Meme Culture (Văn hóa meme Gen Z)',
+                    keywords: 'gen z humor, ironic expressions, random zoom effects, chaotic energy, absurdist comedy, meme references, bruh moment face, unhinged behavior, cursed images aesthetic, glitch effects',
+                    guidance: `💀 GEN Z MEME CULTURE STYLE:
+═══════════════════════════════════════
+Humor absurd, ironic, chaotic energy!
+
+🎨 VISUAL CHAOS:
+- Random zooms bất ngờ
+- Glitch effects, deep fried aesthetic
+- Bass boosted moments
+- Cursed image energy
+
+💬 LANGUAGE:
+- "Bruh", "No cap", "Fr fr", "Slay"
+- Skull emoji energy (💀)
+- Ironic overreactions
+- "It's giving..." statements
+- Unserious about everything
+
+🎭 HUMOR TYPE:
+- Anti-humor (not funny = funny)
+- Absurdist (makes no sense = hilarious)
+- Self-deprecating
+- Referencing other memes`
+                },
+                'educational_sassy': {
+                    name: 'Educational with Attitude (Giáo dục với thái độ)',
+                    keywords: 'sassy teaching, raised eyebrow, disappointed expression, slow condescending clap, eye roll, lecturing pose, pointing at facts, proving idiots wrong, judging ignorance',
+                    guidance: `🙄 EDUCATIONAL WITH ATTITUDE STYLE:
+═══════════════════════════════════════
+Dạy kiến thức nhưng với THÁI ĐỘ sassy!
+
+💅 ATTITUDE:
+- "Bạn không biết điều này thật à?"
+- "Wow, still believing that myth?"
+- "Let me educate you real quick"
+- Disappointed parent energy
+
+📸 EXPRESSIONS:
+- Raised eyebrow (ngạc nhiên mỉa mai)
+- Slow, condescending clap
+- Eye roll cực dramatic
+- "I can't believe I have to explain this" face
+- Sighing heavily
+
+🎬 STRUCTURE:
+1. Present common misconception
+2. "Ờ thật à?" expression
+3. Drop the FACTS
+4. Smug satisfaction`
+                },
+                'mystery_detective': {
+                    name: 'Mystery / Detective (Bí ẩn / Thám tử)',
+                    keywords: 'detective noir style, magnifying glass, mysterious shadows, clue discovery, evidence board with strings, dramatic reveal lighting, suspenseful atmosphere, twist ending',
+                    guidance: `🔍 MYSTERY / DETECTIVE STYLE:
+- Noir lighting, shadows
+- Investigation scenes
+- Clue reveals, "aha!" moments
+- Evidence boards with red strings
+- Dramatic twist endings`
+                },
+                'breaking_4th_wall': {
+                    name: 'Breaking the 4th Wall (Phá vỡ bức tường thứ 4)',
+                    keywords: 'breaking fourth wall, looking directly at camera, winking at viewer, aside glance, talking to audience, meta awareness, acknowledging being in a video, conspiratorial whisper',
+                    guidance: `👀 BREAKING THE 4TH WALL STYLE:
+═══════════════════════════════════════
+Nhân vật BIẾT họ đang trong video!
+
+🎭 TECHNIQUES:
+- Direct eye contact với camera
+- Winking at viewer (chia sẻ bí mật)
+- Aside glances ("you seeing this?")
+- Addressing viewer directly
+- Meta comments ("như tôi đã nói ở video trước...")
+
+💬 DIALOGUE:
+- "Bạn có thấy cái đó không?" *nhìn camera*
+- "Đừng nói với ai nhé" *thì thầm*
+- "Tôi biết bạn đang nghĩ gì đấy"
+- "Subscribe đi, tôi thấy bạn chưa subscribe"
+- *something happens* *looks at camera like in The Office*`
+                },
+                'villain_origin': {
+                    name: 'Villain Origin Story (Nguồn gốc phản diện)',
+                    keywords: 'villain origin, tragic backstory, dark transformation, sympathetic villain lighting, before and after contrast, corrupting moment, justified anger, becoming the villain',
+                    guidance: `😈 VILLAIN ORIGIN STORY STYLE:
+- Tragic backstory reveals
+- "They made me this way" narrative
+- Before (innocent) vs After (villain) contrast
+- Sympathetic villain lighting
+- Transformation sequences`
+                },
+                'underdog_triumph': {
+                    name: 'Underdog Triumph (Kẻ yếu vươn lên)',
+                    keywords: 'underdog story, being mocked initially, training montage, moment of doubt, final triumph, shocked faces of doubters, spotlight on winner, proving them wrong',
+                    guidance: `🏆 UNDERDOG TRIUMPH STYLE:
+- Start: được/bị coi thường
+- Middle: training, struggling, doubting
+- End: PROVE THEM WRONG
+- Shocked faces of doubters
+- Victory spotlight moment`
+                },
+                'chaos_unhinged': {
+                    name: 'Chaotic / Unhinged Energy (Năng lượng điên)',
+                    keywords: 'chaotic energy, things going wrong, forced smile while panicking, fire in background, screaming internally, everything is fine meme, escalating disaster, unhinged laughter',
+                    guidance: `🤪 CHAOTIC / UNHINGED ENERGY STYLE:
+═══════════════════════════════════════
+"This is fine" while everything burns!
+
+🔥 CONCEPT:
+- Situation escalates out of control
+- Character pretends everything is okay
+- Internal screaming, external smiling
+- Comedy of errors
+
+🎬 ESCALATION:
+1. Small problem appears
+2. "No big deal" reaction
+3. Problem gets worse
+4. Forced smile intensifies
+5. COMPLETE CHAOS
+6. "Haha anyway..." 
+
+🎭 EXPRESSIONS:
+- Forced smile with twitching eye
+- Nervous laughter
+- "I'm fine" while clearly not fine
+- Thousand-yard stare
+- Snapping into unhinged joy`
                 }
             }
 
