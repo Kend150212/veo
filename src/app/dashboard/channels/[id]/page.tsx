@@ -156,6 +156,14 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
         { id: 'casual', label: '💬 Casual', desc: 'Mention tự nhiên' },
     ]
 
+    // Bulk Create Episodes
+    const [showBulkCreate, setShowBulkCreate] = useState(false)
+    const [bulkEpisodes, setBulkEpisodes] = useState<{ description: string; categoryId: string }[]>([])
+    const [bulkCategoryId, setBulkCategoryId] = useState('')
+    const [bulkNewDescription, setBulkNewDescription] = useState('')
+    const [bulkGenerating, setBulkGenerating] = useState(false)
+    const [bulkProgress, setBulkProgress] = useState({ current: 0, total: 0 })
+
     // Category management
     const [categories, setCategories] = useState<EpisodeCategory[]>([])
     const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null)  // For episode creation
@@ -453,6 +461,67 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
             setIsGenerating(false)
         }
     }
+
+    // Bulk Generate Episodes
+    const handleBulkGenerate = async () => {
+        if (bulkEpisodes.length === 0) {
+            toast.error('Vui lòng thêm ít nhất 1 episode')
+            return
+        }
+
+        setBulkGenerating(true)
+        setBulkProgress({ current: 0, total: bulkEpisodes.length })
+
+        for (let i = 0; i < bulkEpisodes.length; i++) {
+            const ep = bulkEpisodes[i]
+            setBulkProgress({ current: i + 1, total: bulkEpisodes.length })
+
+            try {
+                const res = await fetch(`/api/channels/${id}/episodes`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        totalScenes: sceneCount,
+                        categoryId: ep.categoryId || null,
+                        customContent: ep.description,
+                        selectedStyleId,
+                        useCharacters,
+                        selectedCharacterIds,
+                        voiceOverMode,
+                        voiceGender,
+                        voiceTone,
+                        visualHookEnabled,
+                        emotionalCurveEnabled,
+                        spatialAudioEnabled,
+                        dialogueDensityMin,
+                        dialogueDensityMax,
+                        storytellerBrollEnabled: voiceOverMode === 'host_storyteller' ? storytellerBrollEnabled : false
+                    })
+                })
+
+                const data = await res.json()
+                if (data.episode) {
+                    toast.success(`✅ Episode ${i + 1}/${bulkEpisodes.length}: ${data.episode.title}`)
+                } else {
+                    toast.error(`❌ Episode ${i + 1}: ${data.error || 'Lỗi'}`)
+                }
+            } catch (error) {
+                toast.error(`❌ Episode ${i + 1}: Lỗi kết nối`)
+            }
+
+            // Small delay between episodes
+            if (i < bulkEpisodes.length - 1) {
+                await new Promise(r => setTimeout(r, 1000))
+            }
+        }
+
+        setBulkGenerating(false)
+        setShowBulkCreate(false)
+        setBulkEpisodes([])
+        fetchChannel()
+        toast.success(`🎉 Đã tạo xong ${bulkEpisodes.length} episodes!`)
+    }
+
 
     const handleCopyEpisode = async (episode: Episode) => {
         const text = episode.scenes.map(s =>
@@ -874,7 +943,15 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
 
             {/* Generate New Episode */}
             <div className="glass-card p-6 mb-6">
-                <h3 className="font-semibold mb-4">Tạo Episode Mới</h3>
+                <div className="flex items-center justify-between mb-4">
+                    <h3 className="font-semibold">Tạo Episode Mới</h3>
+                    <button
+                        onClick={() => setShowBulkCreate(true)}
+                        className="px-3 py-1.5 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg text-sm font-medium hover:opacity-90 transition flex items-center gap-1"
+                    >
+                        📦 Bulk Create
+                    </button>
+                </div>
 
                 {/* Category Selector for new episode */}
                 {categories.length > 0 && (
@@ -1855,8 +1932,8 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
                                                     showYoutubeStrategies === episode.id ? null : episode.id
                                                 )}
                                                 className={`text-sm flex items-center gap-1 px-3 py-1.5 rounded-lg transition ${showYoutubeStrategies === episode.id
-                                                        ? 'bg-red-500 text-white'
-                                                        : 'bg-red-500/20 text-red-400 hover:bg-red-500/30'
+                                                    ? 'bg-red-500 text-white'
+                                                    : 'bg-red-500/20 text-red-400 hover:bg-red-500/30'
                                                     }`}
                                             >
                                                 <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
@@ -1930,6 +2007,164 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
                     ))
                 )}
             </div>
+
+            {/* Bulk Create Modal */}
+            {showBulkCreate && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-[var(--bg-secondary)] rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                        <div className="p-6 border-b border-[var(--border-subtle)]">
+                            <div className="flex items-center justify-between">
+                                <h2 className="text-xl font-bold flex items-center gap-2">
+                                    📦 Bulk Create Episodes
+                                </h2>
+                                <button
+                                    onClick={() => {
+                                        setShowBulkCreate(false)
+                                        setBulkEpisodes([])
+                                    }}
+                                    className="p-2 hover:bg-[var(--bg-tertiary)] rounded-lg"
+                                    disabled={bulkGenerating}
+                                >
+                                    ✕
+                                </button>
+                            </div>
+                            <p className="text-sm text-[var(--text-muted)] mt-1">
+                                Thêm nhiều mô tả episode và tạo hàng loạt
+                            </p>
+                        </div>
+
+                        <div className="p-6 space-y-4">
+                            {/* Category Selector */}
+                            <div>
+                                <label className="block text-sm font-medium mb-2">📁 Danh mục mặc định</label>
+                                <select
+                                    value={bulkCategoryId}
+                                    onChange={(e) => setBulkCategoryId(e.target.value)}
+                                    className="input-field w-full"
+                                    disabled={bulkGenerating}
+                                >
+                                    <option value="">Chưa phân loại</option>
+                                    {categories.map(cat => (
+                                        <option key={cat.id} value={cat.id}>{cat.name}</option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            {/* Add Episode Form */}
+                            <div>
+                                <label className="block text-sm font-medium mb-2">📝 Mô tả Episode mới</label>
+                                <div className="flex gap-2">
+                                    <textarea
+                                        value={bulkNewDescription}
+                                        onChange={(e) => setBulkNewDescription(e.target.value)}
+                                        placeholder="Nhập mô tả nội dung cho episode... (VD: 10 cách kiếm tiền online, Bí mật thành công...)"
+                                        className="input-field flex-1 min-h-[80px]"
+                                        disabled={bulkGenerating}
+                                    />
+                                </div>
+                                <button
+                                    onClick={() => {
+                                        if (bulkNewDescription.trim()) {
+                                            setBulkEpisodes([...bulkEpisodes, {
+                                                description: bulkNewDescription.trim(),
+                                                categoryId: bulkCategoryId
+                                            }])
+                                            setBulkNewDescription('')
+                                        }
+                                    }}
+                                    disabled={!bulkNewDescription.trim() || bulkGenerating}
+                                    className="mt-2 px-4 py-2 bg-[var(--accent-primary)] text-white rounded-lg text-sm font-medium hover:opacity-90 transition disabled:opacity-50"
+                                >
+                                    ➕ Thêm Episode
+                                </button>
+                            </div>
+
+                            {/* Episodes List */}
+                            {bulkEpisodes.length > 0 && (
+                                <div>
+                                    <label className="block text-sm font-medium mb-2">
+                                        📋 Danh sách Episodes ({bulkEpisodes.length})
+                                    </label>
+                                    <div className="space-y-2 max-h-[200px] overflow-y-auto">
+                                        {bulkEpisodes.map((ep, i) => (
+                                            <div key={i} className="flex items-start gap-2 bg-[var(--bg-tertiary)] p-3 rounded-lg">
+                                                <span className="text-sm font-bold text-[var(--accent-primary)]">
+                                                    #{i + 1}
+                                                </span>
+                                                <div className="flex-1">
+                                                    <p className="text-sm">{ep.description}</p>
+                                                    {ep.categoryId && (
+                                                        <span className="text-xs text-[var(--text-muted)]">
+                                                            📁 {categories.find(c => c.id === ep.categoryId)?.name}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                <button
+                                                    onClick={() => {
+                                                        setBulkEpisodes(bulkEpisodes.filter((_, idx) => idx !== i))
+                                                    }}
+                                                    disabled={bulkGenerating}
+                                                    className="text-red-400 hover:text-red-300 p-1"
+                                                >
+                                                    🗑️
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Progress */}
+                            {bulkGenerating && (
+                                <div className="bg-[var(--bg-tertiary)] p-4 rounded-lg">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <span className="text-sm font-medium">Đang tạo...</span>
+                                        <span className="text-sm text-[var(--accent-primary)]">
+                                            {bulkProgress.current}/{bulkProgress.total}
+                                        </span>
+                                    </div>
+                                    <div className="w-full bg-[var(--bg-primary)] rounded-full h-2">
+                                        <div
+                                            className="bg-gradient-to-r from-purple-500 to-pink-500 h-2 rounded-full transition-all"
+                                            style={{ width: `${(bulkProgress.current / bulkProgress.total) * 100}%` }}
+                                        />
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Footer */}
+                        <div className="p-6 border-t border-[var(--border-subtle)] flex gap-3">
+                            <button
+                                onClick={() => {
+                                    setShowBulkCreate(false)
+                                    setBulkEpisodes([])
+                                }}
+                                disabled={bulkGenerating}
+                                className="flex-1 py-2 bg-[var(--bg-tertiary)] rounded-lg font-medium hover:bg-[var(--bg-hover)] transition"
+                            >
+                                Hủy
+                            </button>
+                            <button
+                                onClick={handleBulkGenerate}
+                                disabled={bulkEpisodes.length === 0 || bulkGenerating}
+                                className="flex-1 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg font-medium hover:opacity-90 transition disabled:opacity-50 flex items-center justify-center gap-2"
+                            >
+                                {bulkGenerating ? (
+                                    <>
+                                        <Loader2 className="w-4 h-4 animate-spin" />
+                                        Đang tạo...
+                                    </>
+                                ) : (
+                                    <>
+                                        🚀 Tạo {bulkEpisodes.length} Episodes
+                                    </>
+                                )}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }
