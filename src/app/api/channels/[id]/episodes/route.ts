@@ -47,6 +47,7 @@ export async function POST(
             totalScenes = 10,
             useCharacters = true,
             selectedCharacterIds = [],
+            adaptCharactersToScript = false, // AI tự điều chỉnh nhân vật theo kịch bản
             selectedStyleId = null,
             mentionChannel = false,
             ctaMode = 'random',
@@ -139,6 +140,42 @@ export async function POST(
                 ).join('\n')}`
             }
         }
+
+        // Character adaptation instructions
+        const characterAdaptInstr = adaptCharactersToScript && characterBible ? `
+🎭 AI CHARACTER ADAPTATION MODE (ENABLED):
+═══════════════════════════════════════
+AI được phép ĐIỀU CHỈNH nhân vật để phù hợp với từng cảnh trong kịch bản.
+
+✅ CÓ THỂ THAY ĐỔI:
+- Trang phục: Thay đổi theo bối cảnh (ngủ → pyjama, tiệc → vest/đầm, mưa → áo mưa...)
+- Biểu cảm: Vui, buồn, giận, sợ, ngạc nhiên... theo cảm xúc của cảnh
+- Tư thế & Hành động: Đứng, ngồi, chạy, ôm, khóc... theo diễn biến
+- Phụ kiện: Thêm/bớt theo ngữ cảnh (kính, mũ, túi, vũ khí...)
+- Trạng thái: Ướt, bẩn, rách, chảy máu... theo tình huống
+- Vị trí: Trong nhà, ngoài trời, xe, văn phòng... theo bối cảnh
+
+❌ KHÔNG ĐƯỢC THAY ĐỔI (giữ nhất quán):
+- Đặc điểm nhận dạng: Màu da, màu mắt, chiều cao, tuổi
+- Kiểu tóc cơ bản: Màu tóc, độ dài tóc (trừ khi cốt truyện yêu cầu)
+- Giọng nói: Giữ nguyên voice tag
+- Tính cách cốt lõi: Tính cách cơ bản của nhân vật
+
+📝 FORMAT KHI ĐIỀU CHỈNH:
+[TÊN NHÂN VẬT: đặc điểm cố định + ĐIỀU CHỈNH CHO CẢNH NÀY: trang phục/biểu cảm/trạng thái mới]
+
+VÍ DỤ:
+- Gốc: "[LINH: 28 tuổi, tóc đen dài, da trắng]"
+- Cảnh ngủ: "[LINH: 28 tuổi, tóc đen dài rối, da trắng, mặc pyjama hồng, mắt nhắm, biểu cảm bình yên]"
+- Cảnh mưa: "[LINH: 28 tuổi, tóc đen dài ướt sũng, da trắng, áo mưa trong suốt, mắt lo lắng, run rẩy]"
+- Cảnh tiệc: "[LINH: 28 tuổi, tóc đen dài búi cao, da trắng, đầm đỏ lộng lẫy, makeup glamorous, tự tin]"
+` : (characterBible ? `
+🎭 CHARACTER CONSISTENCY MODE (STRICT):
+═══════════════════════════════════════
+KHÔNG được thay đổi bất kỳ chi tiết nào của nhân vật.
+Copy NGUYÊN VĂN mô tả từ CHARACTER BIBLE vào MỌI cảnh.
+Trang phục, biểu cảm, phụ kiện phải GIỐNG HỆT nhau trong tất cả các scene.
+` : '')
 
         // Existing episodes (avoid duplication)
         const recentEpisodes = channel.episodes.slice(-5)
@@ -634,6 +671,7 @@ CHANNEL INFO:
 - Language: ${dialogueLangLabel.toUpperCase()} ONLY
 
 ${characterBible || '(No host/characters for this episode)'}
+${characterAdaptInstr}
 ${existingEpisodesSummary}
 ${customContentInstr}
 

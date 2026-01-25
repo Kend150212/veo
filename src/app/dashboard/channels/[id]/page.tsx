@@ -110,6 +110,7 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
     // Episode creation options
     const [useCharacters, setUseCharacters] = useState(true)
     const [selectedCharacterIds, setSelectedCharacterIds] = useState<string[]>([])
+    const [adaptCharactersToScript, setAdaptCharactersToScript] = useState(false) // AI tự điều chỉnh nhân vật
     const [selectedStyleId, setSelectedStyleId] = useState<string>('')
     const [mentionChannel, setMentionChannel] = useState(false)
     const [ctaMode, setCtaMode] = useState<'random' | 'select'>('random')
@@ -425,6 +426,7 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
                     totalScenes: sceneCount,
                     useCharacters,
                     selectedCharacterIds: useCharacters ? selectedCharacterIds : [],
+                    adaptCharactersToScript,
                     selectedStyleId: selectedStyleId || null,
                     mentionChannel,
                     ctaMode,
@@ -494,6 +496,7 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
                         selectedStyleId,
                         useCharacters,
                         selectedCharacterIds,
+                        adaptCharactersToScript,
                         voiceOverMode,
                         voiceGender,
                         voiceTone,
@@ -615,6 +618,7 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
                         selectedStyleId,
                         useCharacters,
                         selectedCharacterIds,
+                        adaptCharactersToScript,
                         voiceOverMode,
                         voiceGender,
                         voiceTone,
@@ -1331,6 +1335,26 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
                                 ? 'Sử dụng tất cả nhân vật'
                                 : `Đã chọn ${selectedCharacterIds.length} nhân vật`}
                         </p>
+
+                        {/* AI Adapt Characters Option */}
+                        <div className="mt-3 pt-3 border-t border-[var(--border-color)]">
+                            <label className="flex items-center gap-3 cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    checked={adaptCharactersToScript}
+                                    onChange={(e) => setAdaptCharactersToScript(e.target.checked)}
+                                    className="w-4 h-4 rounded accent-[var(--accent-primary)]"
+                                />
+                                <div className="flex-1">
+                                    <span className="text-sm font-medium">🎭 AI tự điều chỉnh nhân vật theo kịch bản</span>
+                                    <p className="text-xs text-[var(--text-muted)]">
+                                        {adaptCharactersToScript
+                                            ? 'AI sẽ thay đổi trang phục, biểu cảm, vị trí... phù hợp với từng cảnh'
+                                            : 'Giữ nguyên mô tả nhân vật gốc trong mọi cảnh'}
+                                    </p>
+                                </div>
+                            </label>
+                        </div>
                     </div>
                 )}
 
