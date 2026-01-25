@@ -432,10 +432,10 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
 
     // Native Ad Insertion
     const [adEnabled, setAdEnabled] = useState(false)
-    const [productInfo, setProductInfo] = useState('')
+    const [adProductInfo, setAdProductInfo] = useState('')
     const [productImageUrl, setProductImageUrl] = useState('')
     const [productLink, setProductLink] = useState('')
-    const [isAnalyzingProduct, setIsAnalyzingProduct] = useState(false)
+    const [isAnalyzingAdProduct, setIsAnalyzingAdProduct] = useState(false)
     const [analyzedProduct, setAnalyzedProduct] = useState<{
         name: string
         description: string
@@ -686,18 +686,18 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
 
     // Analyze product for Native Ad
     const handleAnalyzeProduct = async () => {
-        if (!productImageUrl && !productInfo) {
+        if (!productImageUrl && !adProductInfo) {
             toast.error('Vui lòng nhập thông tin sản phẩm hoặc URL hình ảnh')
             return
         }
-        setIsAnalyzingProduct(true)
+        setIsAnalyzingAdProduct(true)
         try {
             const res = await fetch('/api/channels/analyze-product', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     imageUrl: productImageUrl,
-                    productInfo,
+                    productInfo: adProductInfo,
                     productLink
                 })
             })
@@ -711,7 +711,7 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
         } catch {
             toast.error('Lỗi phân tích sản phẩm')
         } finally {
-            setIsAnalyzingProduct(false)
+            setIsAnalyzingAdProduct(false)
         }
     }
 
@@ -784,7 +784,7 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
                     dialogueDensityMax,
                     // Native Ad Insertion
                     adEnabled,
-                    productInfo: adEnabled ? productInfo : null,
+                    productInfo: adEnabled ? adProductInfo : null,
                     productImageUrl: adEnabled ? productImageUrl : null,
                     productLink: adEnabled ? productLink : null,
                     analyzedProduct: adEnabled ? analyzedProduct : null,
@@ -2338,8 +2338,8 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
                                 </label>
                                 <textarea
                                     placeholder="Nhập mô tả sản phẩm muốn quảng cáo trong video..."
-                                    value={productInfo}
-                                    onChange={(e) => setProductInfo(e.target.value)}
+                                    value={adProductInfo}
+                                    onChange={(e) => setAdProductInfo(e.target.value)}
                                     rows={3}
                                     className="input-field w-full text-sm resize-none"
                                 />
@@ -2360,10 +2360,10 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
                                     />
                                     <button
                                         onClick={handleAnalyzeProduct}
-                                        disabled={isAnalyzingProduct || (!productImageUrl && !productInfo)}
+                                        disabled={isAnalyzingAdProduct || (!productImageUrl && !adProductInfo)}
                                         className="btn-secondary px-3 flex items-center gap-1 text-sm"
                                     >
-                                        {isAnalyzingProduct ? (
+                                        {isAnalyzingAdProduct ? (
                                             <Loader2 className="w-4 h-4 animate-spin" />
                                         ) : (
                                             <>🔍 Phân tích</>
