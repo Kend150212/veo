@@ -317,73 +317,193 @@ ACTION: Ducks from explosions, shields face, dramatic reactions
 CRITICAL: Element appears [behind/beside/above] host, face always visible.
 Include "VOICE: [matching host gender]" at the end.`
         } else if (voiceOverMode === 'cinematic_film') {
-            voiceOverInstr = `CONTENT TYPE: CINEMATIC FILM (Kịch bản điện ảnh chuyên nghiệp)
+            voiceOverInstr = `CONTENT TYPE: HOLLYWOOD CINEMATIC FILM (Kịch bản điện ảnh Hollywood chuyên nghiệp)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-🎬 THIS IS A REAL FILM SCRIPT - NOT A YOUTUBE VIDEO WITH HOST!
+🎬 THIS IS A REAL HOLLYWOOD-STYLE FILM SCRIPT!
 - NO host narrating to camera
 - NO educational explanation style
-- NO "chào các bạn" or "hôm nay chúng ta sẽ..."
-- Characters ACT OUT the story naturally
+- NO "chào các bạn" or YouTube-style content
+- Characters ACT OUT the story like a real movie
+- Include SILENT scenes, ESTABLISHING shots, TRANSITIONS
 
-🎭 CINEMATIC STORYTELLING RULES:
-1. Characters have conversations with each other (not to audience)
-2. Show emotions through actions, expressions, dialogue
-3. Use proper film scene structure: setup → conflict → resolution
-4. Environmental storytelling - let visuals tell the story
-5. Natural dialogue as if in a real movie
+═══════════════════════════════════════
+🎥 HOLLYWOOD SCENE TYPES (MIX ALL TYPES):
+═══════════════════════════════════════
 
-📍 SCENE STRUCTURE (Use Film Format):
-- Location establishing shots
-- Character entrances and movements
-- Dialogue exchanges between characters
-- Reaction shots and emotional beats
-- Action sequences when appropriate
+1️⃣ COLD OPEN / TEASER (Scene 1-2):
+   - Start IN THE MIDDLE of action or mystery
+   - NO dialogue or minimal - pure visual storytelling
+   - Hook audience immediately with intrigue/danger/beauty
+   - Example: A silhouette running through rain. A hand reaching for a photo. Blood dripping.
+   - Mark: [SCENE TYPE: COLD OPEN - NO DIALOGUE]
 
-🎥 CAMERA LANGUAGE (MANDATORY):
-- Wide shot: Establishing location and scale
-- Medium shot: Character interactions
-- Close-up: Emotional moments, important details
-- Over-the-shoulder: Conversations
-- POV shot: Character perspective
-- Tracking shot: Following action
-- Crane/drone: Epic reveals
-- Handheld: Tension, chaos
+2️⃣ TITLE SEQUENCE (Scene 2-3):
+   - Cinematic title card with style
+   - Can overlay on establishing shots
+   - Atmospheric music builds
+   - Mark: [SCENE TYPE: TITLE SEQUENCE]
 
-💡 LIGHTING STYLES:
-- Golden hour: Romance, nostalgia
-- Blue hour: Mystery, melancholy
-- High-key: Happy, comedic
-- Low-key: Thriller, horror
-- Practical lighting: Realism
-- Chiaroscuro: Drama, noir
+3️⃣ ESTABLISHING SHOTS (Use frequently - 20% of scenes):
+   - Wide shots showing location WITHOUT dialogue
+   - Set mood, time, atmosphere
+   - Examples: City skyline at dawn. Empty street with fog. Waves crashing on rocks.
+   - Pure visuals + ambient sound + music
+   - Mark: [SCENE TYPE: ESTABLISHING - NO DIALOGUE]
+   - voiceover field = "(Không có lời - chỉ hình ảnh và âm nhạc)"
 
-🎭 DIALOGUE FORMAT:
-- Characters speak TO EACH OTHER, not to camera
-- Natural conversations with subtext
-- Show character personality through speech patterns
-- Include reactions, pauses, interruptions
-- Vietnamese dialogue should feel natural, not scripted
+4️⃣ TRANSITION / MONTAGE SCENES (10% of scenes):
+   - Time passage, emotional shifts, preparation
+   - Series of quick visual moments
+   - Music-driven, minimal or no dialogue
+   - Examples: Sun rising and setting. Character training. Seasons changing.
+   - Mark: [SCENE TYPE: MONTAGE - MUSIC ONLY]
+   - voiceover field = "(Montage - nhạc nền)"
 
-📝 PROMPTTEXT FORMAT FOR EACH SCENE:
-[SCENE TYPE: INT/EXT - LOCATION - TIME]
-[CHARACTER ACTION: Full character description doing specific action]
-[DIALOGUE: "Character speaks naturally to another character" - Character reacts]
-[CAMERA: Shot type, movement, angle, lens]
-[LIGHTING: Type, direction, mood]
-[SOUND: Ambient sounds, music cue if any]
-[EMOTION: The feeling this scene should evoke]
-STYLE: ${styleKeywords}
+5️⃣ DIALOGUE SCENES (40% of scenes):
+   - Characters talking TO EACH OTHER
+   - Subtext and emotion in every line
+   - Include reactions, pauses, interruptions
+   - Show don't tell
+   - Mark: [SCENE TYPE: DIALOGUE]
 
-🎬 EXAMPLE CINEMATIC SCENE:
-"[EXT. ROOFTOP - NIGHT] [Linh (28, long black hair, red dress, teary eyes) stands at the edge, looking at the city lights below]. [Minh (30, white shirt, desperate expression) rushes through the door behind her]. DIALOGUE: Minh calls out 'Đừng làm vậy!' with trembling voice. Linh slowly turns, tears streaming down her face, whispers 'Anh đến làm gì?'. CAMERA: Wide establishing shot, then quick track-in to medium two-shot. LIGHTING: Neon city lights from below, moonlight from above creating rim light on hair. SOUND: Distant traffic, wind, melancholic piano begins softly. EMOTION: Desperation, regret, love."
+6️⃣ ACTION / CHASE SCENES (When appropriate):
+   - Fast-paced visual sequences
+   - Minimal dialogue - grunts, shouts, commands
+   - Dynamic camera work
+   - Mark: [SCENE TYPE: ACTION - MINIMAL DIALOGUE]
 
-⚠️ CRITICAL RULES:
-- Each scene = one dramatic beat or story moment
-- Build tension across scenes
-- Include character reactions and emotional beats
-- Voice tags should match character speaking: "VOICE: Female voice" or "VOICE: Male voice"
-- All dialogue in ${dialogueLang === 'en' ? 'English' : 'Vietnamese'}`
+7️⃣ EMOTIONAL BEAT SCENES (Key moments):
+   - Close-ups on faces, reactions
+   - Slow pacing, let emotion breathe
+   - Music swells
+   - Character realizations, heartbreak, joy
+   - Mark: [SCENE TYPE: EMOTIONAL BEAT]
+
+8️⃣ CLIMAX / CONFRONTATION (Near end):
+   - Peak tension and conflict
+   - All storylines converge
+   - High stakes dialogue or action
+   - Mark: [SCENE TYPE: CLIMAX]
+
+9️⃣ DENOUEMENT / ENDING (Final scenes):
+   - Resolution, aftermath
+   - Often quiet, reflective
+   - Can be silent with music
+   - Thematic closure
+   - Mark: [SCENE TYPE: ENDING]
+
+═══════════════════════════════════════
+🎬 HOLLYWOOD FILM STRUCTURE:
+═══════════════════════════════════════
+
+📍 OPENING SEQUENCE (10-15% of scenes):
+• Cold Open: Hook with mystery/action (NO dialogue)
+• Title card over establishing shot
+• Introduce protagonist's world
+• "Normal life" before the storm
+
+📍 INCITING INCIDENT (Scene 3-5):
+• Something disrupts the normal
+• Forces protagonist to react
+• Point of no return
+
+📍 RISING ACTION (30-40% of scenes):
+• Obstacles and challenges
+• Character development
+• Subplots introduced
+• Use ESTABLISHING shots between locations
+• Use TRANSITIONS for time jumps
+
+📍 MIDPOINT TWIST (50% mark):
+• Major revelation or reversal
+• Stakes raised significantly
+• Protagonist's approach must change
+
+📍 CRISIS / DARK MOMENT (70-75% mark):
+• All seems lost
+• Character at lowest point
+• Internal and external conflict peak
+
+📍 CLIMAX (80-90% mark):
+• Final confrontation
+• All threads come together
+• Maximum tension
+
+📍 RESOLUTION (Final 10%):
+• Aftermath and new equilibrium
+• Character changed by journey
+• Thematic statement
+• Often SILENT ending shot
+
+═══════════════════════════════════════
+🎥 CAMERA & VISUAL LANGUAGE:
+═══════════════════════════════════════
+- Extreme Wide: Isolation, epic scale, establishing
+- Wide: Context, geography, group dynamics
+- Medium: Standard dialogue, character interaction
+- Close-up: Emotion, important details, intimacy
+- Extreme Close-up: Eyes, hands, objects - heightened drama
+- Over-shoulder: Conversation, POV hint
+- POV: Subjective experience
+- Dutch angle: Unease, disorientation
+- Low angle: Power, threat, heroism
+- High angle: Vulnerability, overview
+- Tracking: Following action, energy
+- Steadicam: Flowing movement, immersion
+- Handheld: Chaos, documentary feel, tension
+- Crane/Drone: Reveals, scope, transitions
+- Dolly zoom (Vertigo): Realization, shock
+
+═══════════════════════════════════════
+💡 LIGHTING & ATMOSPHERE:
+═══════════════════════════════════════
+- Golden hour: Romance, hope, nostalgia
+- Blue hour: Mystery, melancholy, contemplation
+- High-key: Comedy, happiness, safety
+- Low-key: Thriller, noir, danger
+- Chiaroscuro: Drama, moral ambiguity
+- Practical lights: Realism, intimacy
+- Neon: Urban, modern, cyberpunk
+- Candlelight: Historical, intimate, vulnerable
+- Silhouette: Mystery, beauty, transition
+
+═══════════════════════════════════════
+🔊 SOUND DESIGN (CRITICAL FOR SILENT SCENES):
+═══════════════════════════════════════
+- Ambient: Wind, rain, traffic, nature, room tone
+- Foley: Footsteps, doors, objects, cloth
+- Music: Score type (orchestral, electronic, minimal piano)
+- Silence: Powerful when used intentionally
+- Sound motifs: Recurring sounds for themes
+
+═══════════════════════════════════════
+📝 PROMPTTEXT FORMATS BY SCENE TYPE:
+═══════════════════════════════════════
+
+🎬 SILENT/ESTABLISHING SCENE:
+"[SCENE TYPE: ESTABLISHING - NO DIALOGUE] [EXT. SAIGON SKYLINE - DAWN]. Aerial drone shot slowly descending over misty city. Sun breaks through clouds, golden light spills across rooftops. A lone motorbike crosses an empty bridge below. CAMERA: Drone descending, wide to medium transition, 24mm lens. LIGHTING: Golden hour, volumetric fog, lens flare from rising sun. SOUND: Distant city waking, birds, soft ambient score begins. MOOD: Contemplative, new beginnings. STYLE: ${styleKeywords}. NO DIALOGUE - VISUAL ONLY."
+
+🎬 DIALOGUE SCENE:
+"[SCENE TYPE: DIALOGUE] [INT. COFFEE SHOP - DAY]. [Linh (28, long black hair, white blouse, nervous fingers on cup) sits across from Minh (32, tired eyes, stubble, leather jacket)]. She avoids his gaze. He leans forward. DIALOGUE: Minh speaks softly 'Em còn yêu anh không?' Long pause. Linh's eyes water. She whispers 'Câu hỏi đó... đến muộn quá rồi.' CAMERA: Medium two-shot, slow push-in, 50mm. Cut to close-up on her trembling hands. LIGHTING: Window light creating soft shadows, warm tones. SOUND: Café ambience fades, only their breathing remains. EMOTION: Regret, unspoken love. STYLE: ${styleKeywords}. VOICE: Male voice for Minh lines, Female voice for Linh lines."
+
+🎬 MONTAGE SCENE:
+"[SCENE TYPE: MONTAGE - MUSIC ONLY] Series of shots: 1) Hands packing a suitcase. 2) Empty apartment, dust in sunlight. 3) Calendar pages turning. 4) Rain on window, then sun breaking through. 5) New city, new street, new door opening. CAMERA: Various - close-ups, medium shots, time-lapse. LIGHTING: Transitions from dark to light symbolizing hope. SOUND: Melancholic piano transitions to uplifting orchestral. MOOD: Passage of time, healing, moving forward. STYLE: ${styleKeywords}. NO DIALOGUE - MUSIC DRIVES EMOTION."
+
+🎬 ACTION SCENE:
+"[SCENE TYPE: ACTION - MINIMAL DIALOGUE] [EXT. ALLEY - NIGHT]. [Protagonist runs, breath visible in cold air, glancing back]. Pursuers' footsteps echo. He vaults over trash cans. Slips. Gets up. Dead end. Turns to face them. CAMERA: Handheld tracking, quick cuts, low angles. LIGHTING: Harsh streetlight, deep shadows, orange sodium glow. SOUND: Heavy breathing, footsteps, heartbeat bass pulse. EMOTION: Desperation, survival. STYLE: ${styleKeywords}. VOICE: Heavy breathing, no dialogue."
+
+⚠️ CRITICAL HOLLYWOOD RULES:
+- 20-30% of scenes should be SILENT (no dialogue) - establishing, transitions, emotional beats
+- Start with COLD OPEN - no exposition, drop into action/mystery
+- Use VISUAL STORYTELLING - show don't tell
+- Include proper TRANSITIONS between locations/times
+- Each scene has ONE purpose - don't overload
+- Build RHYTHM - fast scenes followed by slow, dialogue by silence
+- END with powerful IMAGE, often silent
+- All dialogue in ${dialogueLang === 'en' ? 'English' : 'Vietnamese'}
+- Voice tags: "VOICE: Male voice" or "VOICE: Female voice" for dialogue scenes
+- For silent scenes: voiceover field = "(Không có lời)" or description of music/sound only`
         } else {
             voiceOverInstr = `CONTENT TYPE: B-ROLL ONLY (pure visuals, no dialogue).
 - The "voiceover" field should be empty or minimal ambient text
@@ -530,36 +650,64 @@ ${adInsertionInstr}
 EPISODE STRUCTURE (MUST FOLLOW EXACTLY):
 ═══════════════════════════════════════
 ${voiceOverMode === 'cinematic_film' ? `
-🎬 CINEMATIC FILM STRUCTURE (3-ACT STRUCTURE):
-This is a FILM, not a YouTube video. Follow classic film storytelling:
+🎬 HOLLYWOOD 3-ACT STRUCTURE FOR ${totalScenes} SCENES:
+This is a FILM, not a YouTube video. Follow Hollywood screenplay conventions:
 
-ACT 1 - SETUP (25% of scenes):
-• Scene 1-2: Opening shot - Establish world, mood, atmosphere
-• Scene 3-4: Introduce protagonist in their normal world
-• Scene 5-6: Inciting incident - Something disrupts the status quo
-• Scene 7-8: Character's initial reaction/decision
+═══════════════════════════════════════
+ACT 1 - SETUP (25% = ~${Math.round(totalScenes * 0.25)} scenes):
+═══════════════════════════════════════
+• Scene 1: COLD OPEN - Hook immediately (NO dialogue, pure visual intrigue)
+• Scene 2: TITLE SEQUENCE - Cinematic title over establishing shot
+• Scene 3-4: ESTABLISHING - Show the world (minimal or no dialogue)
+• Scene 5-6: Introduce protagonist in normal life
+• Scene 7-8: INCITING INCIDENT - Something disrupts everything
+• Include 2-3 SILENT establishing shots in Act 1
 
-ACT 2 - CONFRONTATION (50% of scenes):
-• Rising action - Protagonist faces obstacles
-• Character development through challenges
-• Subplots and relationships develop
-• Midpoint twist/revelation
-• Stakes escalate
-• All seems lost moment
+═══════════════════════════════════════
+ACT 2 - CONFRONTATION (50% = ~${Math.round(totalScenes * 0.5)} scenes):
+═══════════════════════════════════════
+• Rising action with obstacles and challenges
+• TRANSITION/MONTAGE scenes for time jumps
+• Character relationships develop (dialogue scenes)
+• MIDPOINT TWIST at 50% mark - major revelation
+• ESTABLISHING shots when changing locations
+• Stakes escalate progressively
+• "ALL IS LOST" moment near end of Act 2
+• Mix: 40% dialogue, 30% action/emotion, 30% visual/silent
 
-ACT 3 - RESOLUTION (25% of scenes):
-• Climax - Final confrontation/challenge
+═══════════════════════════════════════
+ACT 3 - RESOLUTION (25% = ~${Math.round(totalScenes * 0.25)} scenes):
+═══════════════════════════════════════
+• CLIMAX - Final confrontation (can be action OR emotional)
 • Resolution - Consequences unfold
-• New equilibrium - Character changed
-• Final image - Thematic closure
+• DENOUEMENT - Quiet reflection scene
+• FINAL IMAGE - Powerful closing shot (often SILENT)
+• Character transformed by journey
 
-⚠️ FILM STORYTELLING RULES:
-- NO host talking to camera
-- NO "subscribe", "like", "comment" CTAs
-- Characters interact with EACH OTHER
+⚠️ SCENE TYPE DISTRIBUTION (MANDATORY):
+• 20-30% SILENT scenes (establishing, transitions, emotional beats)
+• 40-50% DIALOGUE scenes (character interactions)
+• 20-30% ACTION/EMOTIONAL beats (visual storytelling)
+
+📍 SCENE TYPE MARKERS (REQUIRED IN EVERY SCENE):
+Mark each scene with its type in promptText:
+• [SCENE TYPE: COLD OPEN - NO DIALOGUE]
+• [SCENE TYPE: TITLE SEQUENCE]
+• [SCENE TYPE: ESTABLISHING - NO DIALOGUE]
+• [SCENE TYPE: MONTAGE - MUSIC ONLY]
+• [SCENE TYPE: DIALOGUE]
+• [SCENE TYPE: ACTION - MINIMAL DIALOGUE]
+• [SCENE TYPE: EMOTIONAL BEAT]
+• [SCENE TYPE: CLIMAX]
+• [SCENE TYPE: ENDING - SILENT]
+
+⚠️ HOLLYWOOD RULES:
+- Start with COLD OPEN - no exposition, drop into mystery/action
+- 20-30% scenes have NO dialogue - pure visual + music
+- Use TRANSITIONS between locations and time jumps
 - Show, don't tell - visual storytelling
-- Dialogue reveals character and advances plot
-- Each scene has a PURPOSE in the story arc
+- NO YouTube CTAs (subscribe, like, comment)
+- End with powerful FINAL IMAGE (often silent)
 ` : `📋 CONTENT PLANNING - CRITICAL STEP:
 1. FIRST: Identify ALL major topics/sections from the user's input content
 2. COUNT how many distinct topics exist (e.g., if input has 6 sections, you have 6 topics)
@@ -591,25 +739,88 @@ ACT 3 - RESOLUTION (25% of scenes):
 SCENE FORMAT (EVERY SCENE MUST HAVE):
 ═══════════════════════════════════════
 ${voiceOverMode === 'cinematic_film' ? `
-🎬 CINEMATIC SCENE FORMAT:
+🎬 HOLLYWOOD SCENE FORMAT:
 {
     "order": number,
     "title": "Scene title (dramatic/descriptive)",
     "duration": 8,
-    "voiceover": "Character dialogue or action description. Format: 'Character Name: Dialogue' or '(Action description)'",
-    "promptText": "Cinematic scene description - see format below"
+    "voiceover": "See format by scene type below",
+    "promptText": "Cinematic scene description with [SCENE TYPE: ...] marker"
 }
 
-CINEMATIC PROMPTTEXT FORMAT:
-[SCENE: INT/EXT - LOCATION - TIME OF DAY]. [CHARACTER: Full appearance description, emotional state, specific action]. DIALOGUE: "Character speaks to another character" - Reaction description. CAMERA: {Wide/Medium/Close-up/Over-shoulder}, {movement: static/pan/track/crane}, lens {24mm/35mm/50mm/85mm}. LIGHTING: {natural/dramatic/soft/hard}, {direction}, {color: warm/cool/neutral}. SOUND: {ambient sounds}, {music mood}. EMOTION: {what audience should feel}. STYLE: ${styleKeywords}.
+═══════════════════════════════════════
+📝 VOICEOVER FIELD BY SCENE TYPE:
+═══════════════════════════════════════
+• SILENT scenes: "(Không có lời - chỉ hình ảnh và âm nhạc)"
+• MONTAGE scenes: "(Montage - nhạc nền emotional)"
+• DIALOGUE scenes: "Tên nhân vật: 'Lời thoại' - Phản ứng"
+• ACTION scenes: "(Hành động - âm thanh và nhạc nền)"
 
-EXAMPLE CINEMATIC SCENE:
+═══════════════════════════════════════
+🎬 EXAMPLE SCENES BY TYPE:
+═══════════════════════════════════════
+
+📍 COLD OPEN (Scene 1 - NO DIALOGUE):
 {
-    "order": 5,
+    "order": 1,
+    "title": "Cold Open - Bí ẩn trong đêm",
+    "duration": 8,
+    "voiceover": "(Không có lời - chỉ hình ảnh và âm nhạc)",
+    "promptText": "[SCENE TYPE: COLD OPEN - NO DIALOGUE] [EXT. DARK ALLEY - NIGHT]. A shadowy figure runs through rain-soaked streets. Quick glimpse of fear in their eyes. They clutch something tightly to their chest. Behind them, distant headlights sweep across wet walls. CAMERA: Handheld tracking, quick cuts, 35mm lens, slight motion blur. LIGHTING: Harsh streetlight pools, deep shadows, wet surfaces reflecting neon. SOUND: Heavy breathing, splashing footsteps, ominous bass drone building. EMOTION: Mystery, danger, urgency. STYLE: ${styleKeywords}. NO VOICE - PURE VISUAL."
+}
+
+📍 ESTABLISHING SHOT (NO DIALOGUE):
+{
+    "order": 3,
+    "title": "Sài Gòn thức giấc",
+    "duration": 8,
+    "voiceover": "(Không có lời - establishing shot)",
+    "promptText": "[SCENE TYPE: ESTABLISHING - NO DIALOGUE] [EXT. SAIGON SKYLINE - DAWN]. Aerial view of the city awakening. Mist rises from the river. First motorbikes appear on streets below. Sun breaks through clouds, painting rooftops gold. CAMERA: Drone shot, slow descending arc, ultra-wide 16mm lens. LIGHTING: Golden hour, volumetric fog, warm orange breaking through blue dawn. SOUND: Distant city sounds awakening, birds, soft ambient piano begins. EMOTION: Peace before the storm, beauty of everyday life. STYLE: ${styleKeywords}. NO VOICE - AMBIENT ONLY."
+}
+
+📍 MONTAGE / TRANSITION:
+{
+    "order": 12,
+    "title": "Montage - Thời gian trôi",
+    "duration": 8,
+    "voiceover": "(Montage - nhạc nền melancholic)",
+    "promptText": "[SCENE TYPE: MONTAGE - MUSIC ONLY] Series of shots showing time passage: 1) Calendar pages flipping. 2) Coffee cups accumulating on desk. 3) Window showing day/night cycle. 4) Character staring at phone, waiting. 5) Seasons change outside window - rain, sun, leaves falling. CAMERA: Mix of close-ups and medium shots, smooth transitions, 50mm lens. LIGHTING: Transitions from warm to cool representing emotional journey. SOUND: Melancholic piano building, clock ticking fades in and out. EMOTION: Longing, passage of time, hope fading. STYLE: ${styleKeywords}. NO DIALOGUE - MUSIC DRIVES EMOTION."
+}
+
+📍 DIALOGUE SCENE:
+{
+    "order": 8,
     "title": "Cuộc đối đầu trong mưa",
     "duration": 8,
     "voiceover": "Minh: 'Anh biết em đang giấu điều gì.' - Linh quay mặt đi, mắt ngấn lệ.",
-    "promptText": "[SCENE: EXT - ROOFTOP - NIGHT, RAIN]. [MINH: 32-year-old Vietnamese man, short black hair, soaked white shirt clinging to body, intense determined eyes, standing 2 meters from Linh]. [LINH: 28-year-old Vietnamese woman, long wet black hair, red dress, tears mixing with rain on cheeks, half-turned away]. DIALOGUE: Minh steps forward, voice firm but breaking - 'Anh biết em đang giấu điều gì.' Linh's shoulders tremble, she whispers without turning - 'Có những thứ anh không nên biết.' CAMERA: Medium two-shot, slow dolly in, 50mm lens. LIGHTING: Blue moonlight from above, neon city glow from below, rim light on wet surfaces. SOUND: Heavy rain, distant thunder, melancholic piano. EMOTION: Heartbreak, desperation, unspoken love. STYLE: ${styleKeywords}. VOICE: Male voice for Minh, Female voice for Linh."
+    "promptText": "[SCENE TYPE: DIALOGUE] [EXT. ROOFTOP - NIGHT, RAIN]. [MINH: 32-year-old Vietnamese man, short black hair, soaked white shirt, intense eyes, standing firm]. [LINH: 28-year-old Vietnamese woman, long wet black hair, red dress, tears mixing with rain, half-turned away]. DIALOGUE: Minh steps forward, voice breaking - 'Anh biết em đang giấu điều gì.' Linh's shoulders tremble. She whispers without turning - 'Có những thứ anh không nên biết.' CAMERA: Medium two-shot, slow dolly in, 50mm lens. LIGHTING: Blue moonlight above, neon glow below, rim light on wet surfaces. SOUND: Heavy rain, thunder, melancholic strings swell. EMOTION: Heartbreak, desperation. STYLE: ${styleKeywords}. VOICE: Male voice for Minh, Female voice for Linh."
+}
+
+📍 ACTION SCENE:
+{
+    "order": 18,
+    "title": "Truy đuổi",
+    "duration": 8,
+    "voiceover": "(Hành động - minimal dialogue)",
+    "promptText": "[SCENE TYPE: ACTION - MINIMAL DIALOGUE] [EXT. MARKET STREETS - DAY]. [PROTAGONIST: running full speed, knocking over fruit stands, glancing back]. Pursuers closing in. He vaults over a motorbike. Crashes through a shop's bead curtain. Elderly vendor shouts. He emerges on other side, keeps running. CAMERA: Handheld tracking, quick cuts, low angle when vaulting, 24mm wide lens. LIGHTING: Harsh midday sun, chaotic shadows, motion blur. SOUND: Crashing, shouting, pounding heartbeat bass, urgent percussion. EMOTION: Desperation, survival. STYLE: ${styleKeywords}. VOICE: Only grunts and shouts - 'Đứng lại!'"
+}
+
+📍 EMOTIONAL BEAT (Silent):
+{
+    "order": 22,
+    "title": "Khoảnh khắc nhận ra",
+    "duration": 8,
+    "voiceover": "(Không có lời - emotional beat)",
+    "promptText": "[SCENE TYPE: EMOTIONAL BEAT - SILENT] [INT. EMPTY APARTMENT - EVENING]. [CHARACTER: sitting alone on floor, holding old photograph, single tear rolls down cheek]. Sunset light streams through dusty window. She traces the faces in the photo with her finger. A small, sad smile forms. She closes her eyes. CAMERA: Start wide showing isolation, slowly push in to extreme close-up of eyes, 85mm portrait lens. LIGHTING: Golden hour through window, dust particles in light, warm but melancholic. SOUND: Complete silence for 3 seconds, then soft piano note, single violin joins. EMOTION: Acceptance, letting go, bittersweet memory. STYLE: ${styleKeywords}. NO DIALOGUE - LET EMOTION BREATHE."
+}
+
+📍 ENDING SCENE (Often Silent):
+{
+    "order": ${totalScenes},
+    "title": "Final Image",
+    "duration": 8,
+    "voiceover": "(Không có lời - final image)",
+    "promptText": "[SCENE TYPE: ENDING - SILENT] [EXT. BEACH - SUNRISE]. [CHARACTER: silhouette standing at water's edge, facing the rising sun]. Waves lap gently at their feet. They take one deep breath. Turn and walk away from camera into the light. New day. New beginning. CAMERA: Wide shot, static, let them walk into frame then out of frame, 35mm. LIGHTING: Sunrise silhouette, golden rays, lens flare. SOUND: Ocean waves, seagulls, orchestral swell to silence. EMOTION: Hope, rebirth, closure. STYLE: ${styleKeywords}. NO DIALOGUE - POWERFUL FINAL IMAGE. FADE TO BLACK."
 }` : `{
     "order": number,
     "title": "Scene title",
