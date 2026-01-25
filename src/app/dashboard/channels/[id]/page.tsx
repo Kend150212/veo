@@ -832,22 +832,39 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
             parts.push('⚠️ QUAN TRỌNG: Tất cả scene PHẢI có cùng background này!')
         }
         
-        // AI Analysis
+        // AI Analysis - DETAILED
         if (productAnalysis) {
             parts.push('')
-            parts.push('🤖 AI PHÂN TÍCH SẢN PHẨM:')
-            if (productAnalysis.productType) parts.push(`- Loại: ${productAnalysis.productType}`)
-            if (productAnalysis.color) parts.push(`- Màu: ${productAnalysis.color}`)
+            parts.push('🤖 AI PHÂN TÍCH SẢN PHẨM (QUAN TRỌNG - PHẢI MÔ TẢ CHÍNH XÁC):')
+            
+            // Exact description FIRST - most important
+            if (productAnalysis.exactDescription) {
+                parts.push('')
+                parts.push(`👗 MÔ TẢ CHÍNH XÁC SẢN PHẨM: ${productAnalysis.exactDescription}`)
+            }
+            
+            parts.push('')
+            if (productAnalysis.productType) parts.push(`- Loại: ${productAnalysis.productType} ${productAnalysis.productSubtype ? `(${productAnalysis.productSubtype})` : ''}`)
+            if (productAnalysis.color) parts.push(`- Màu chính xác: ${productAnalysis.color}`)
             if (productAnalysis.material) parts.push(`- Chất liệu: ${productAnalysis.material}`)
+            if (productAnalysis.texture) parts.push(`- Bề mặt: ${productAnalysis.texture}`)
+            if (productAnalysis.pattern) parts.push(`- Họa tiết: ${productAnalysis.pattern}`)
+            if (productAnalysis.neckline) parts.push(`- Cổ áo: ${productAnalysis.neckline}`)
+            if (productAnalysis.sleeveType) parts.push(`- Tay áo: ${productAnalysis.sleeveType}`)
+            if (productAnalysis.fit) parts.push(`- Form dáng: ${productAnalysis.fit}`)
+            if (productAnalysis.length) parts.push(`- Độ dài: ${productAnalysis.length}`)
             if (productAnalysis.style) parts.push(`- Style: ${productAnalysis.style}`)
+            
             if (productAnalysis.promptKeywords) {
                 parts.push('')
-                parts.push(`🏷️ PRODUCT KEYWORDS (USE IN EVERY SCENE): ${productAnalysis.promptKeywords}`)
+                parts.push(`🏷️ ENGLISH KEYWORDS FOR IMAGE GENERATION (CRITICAL - USE THESE EXACT WORDS):`)
+                parts.push(productAnalysis.promptKeywords)
             }
+            
             if (productAnalysis.stylingTips?.length) {
                 parts.push('')
                 parts.push('💡 Gợi ý phối đồ:')
-                productAnalysis.stylingTips.forEach((tip, i) => {
+                productAnalysis.stylingTips.forEach((tip: string, i: number) => {
                     parts.push(`${i + 1}. ${tip}`)
                 })
             }
@@ -1215,13 +1232,19 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
     const handleGenerateSceneImage = async (sceneId: string, promptText: string) => {
         setGeneratingImageForScene(sceneId)
         try {
-            // Build enhanced prompt with product info AND background
-            let enhancedPrompt = promptText
-
-            // Add product keywords if available
-            if (productAnalysis?.promptKeywords) {
-                enhancedPrompt = `${promptText}. EXACT PRODUCT: ${productAnalysis.promptKeywords}`
+            // Build enhanced prompt with EXACT product description FIRST
+            let enhancedPrompt = ''
+            
+            // PUT PRODUCT DESCRIPTION FIRST (highest priority for AI)
+            if (productAnalysis?.exactDescription) {
+                enhancedPrompt = `THE MODEL IS WEARING: ${productAnalysis.exactDescription}. `
             }
+            if (productAnalysis?.promptKeywords) {
+                enhancedPrompt += `EXACT CLOTHING DETAILS: ${productAnalysis.promptKeywords}. `
+            }
+            
+            // Then add the scene prompt
+            enhancedPrompt += promptText
             
             // Add background info
             const selectedBg = FASHION_BACKGROUNDS.find(bg => bg.id === fashionBackground)
@@ -2044,21 +2067,29 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
                                 
                                 {productAnalysis && !isAnalyzingProduct && (
                                     <div className="flex-1 p-3 bg-[var(--bg-tertiary)] rounded-lg text-sm">
-                                        <p className="font-medium text-pink-400 mb-2">🤖 AI Phân tích:</p>
-                                        <div className="space-y-1 text-xs">
-                                            <p><span className="text-[var(--text-muted)]">Loại:</span> {productAnalysis.productType}</p>
+                                        <p className="font-medium text-pink-400 mb-2">🤖 AI Phân tích sản phẩm:</p>
+                                        
+                                        {/* Exact Description - Most Important */}
+                                        {productAnalysis.exactDescription && (
+                                            <div className="mb-3 p-2 bg-green-500/10 border border-green-500/30 rounded">
+                                                <p className="text-xs text-green-400 font-medium mb-1">👗 Mô tả chính xác (dùng cho AI):</p>
+                                                <p className="text-xs text-white">{productAnalysis.exactDescription}</p>
+                                            </div>
+                                        )}
+                                        
+                                        <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs">
+                                            <p><span className="text-[var(--text-muted)]">Loại:</span> {productAnalysis.productType} {productAnalysis.productSubtype && `(${productAnalysis.productSubtype})`}</p>
                                             <p><span className="text-[var(--text-muted)]">Màu:</span> {productAnalysis.color}</p>
                                             <p><span className="text-[var(--text-muted)]">Chất liệu:</span> {productAnalysis.material}</p>
                                             <p><span className="text-[var(--text-muted)]">Style:</span> {productAnalysis.style}</p>
+                                            {productAnalysis.pattern && <p><span className="text-[var(--text-muted)]">Họa tiết:</span> {productAnalysis.pattern}</p>}
+                                            {productAnalysis.fit && <p><span className="text-[var(--text-muted)]">Form:</span> {productAnalysis.fit}</p>}
                                         </div>
-                                        {productAnalysis.stylingTips && (
+                                        
+                                        {productAnalysis.promptKeywords && (
                                             <div className="mt-2 pt-2 border-t border-[var(--border-color)]">
-                                                <p className="text-[var(--text-muted)]">💡 Tips:</p>
-                                                <ul className="list-disc list-inside">
-                                                    {productAnalysis.stylingTips.slice(0, 2).map((tip, i) => (
-                                                        <li key={i} className="text-xs">{tip}</li>
-                                                    ))}
-                                                </ul>
+                                                <p className="text-[var(--text-muted)] text-xs mb-1">🏷️ Keywords cho Imagen:</p>
+                                                <p className="text-xs text-purple-300 bg-purple-500/10 p-1 rounded">{productAnalysis.promptKeywords}</p>
                                             </div>
                                         )}
                                     </div>

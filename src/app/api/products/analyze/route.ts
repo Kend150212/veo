@@ -27,29 +27,39 @@ export async function POST(req: Request) {
         const geminiApiKey = config.apiKey
         const model = 'gemini-2.0-flash' // Vision capable model
 
-        const prompt = `Bạn là chuyên gia phân tích sản phẩm thời trang.
+        const prompt = `Bạn là chuyên gia phân tích sản phẩm thời trang. NHIỆM VỤ QUAN TRỌNG: Mô tả sản phẩm CHI TIẾT NHẤT có thể để AI image generator có thể TÁI TẠO CHÍNH XÁC sản phẩm này.
 
-Hãy phân tích CHI TIẾT hình ảnh sản phẩm này và trả về JSON:
+Hãy phân tích SIÊU CHI TIẾT hình ảnh sản phẩm này và trả về JSON:
 
 {
     "productType": "loại sản phẩm (áo, quần, váy, đầm, giày, túi, phụ kiện...)",
-    "productSubtype": "loại chi tiết (croptop, sơ mi, jogger, sneaker...)",
-    "color": "màu chính của sản phẩm",
-    "colors": ["màu 1", "màu 2"], // tất cả màu có trong sản phẩm
-    "material": "chất liệu ước đoán (cotton, ren, da, lụa, len, jean...)",
-    "style": "phong cách (casual, formal, sexy, sporty, vintage, streetwear, elegant...)",
-    "pattern": "họa tiết nếu có (trơn, kẻ sọc, hoa, chấm bi, logo...)",
-    "features": ["đặc điểm 1", "đặc điểm 2"], // các đặc điểm nổi bật
-    "suitableFor": ["dịp 1", "dịp 2"], // phù hợp cho dịp nào (đi làm, đi chơi, dự tiệc...)
-    "seasonSuggestion": "mùa phù hợp (hè, đông, quanh năm...)",
-    "targetAudience": "đối tượng (nữ trẻ, nam công sở, teen...)",
+    "productSubtype": "loại chi tiết hơn (croptop tay ngắn, sơ mi cổ bẻ, jogger ống rộng...)",
+    "color": "màu chính CHÍNH XÁC (không chỉ nói 'xanh' mà phải là 'xanh navy', 'xanh mint', 'xanh rêu'...)",
+    "colorHex": "mã màu hex gần đúng (#XXXXXX)",
+    "colors": ["màu 1 chi tiết", "màu 2 chi tiết"],
+    "material": "chất liệu (cotton 100%, polyester, ren mỏng, da PU, lụa satin...)",
+    "texture": "bề mặt/texture (mịn, bóng, nhám, có gân, xốp...)",
+    "style": "phong cách (casual, formal, sexy, sporty, vintage, streetwear, elegant, minimalist...)",
+    "pattern": "họa tiết chi tiết (trơn, kẻ sọc dọc nhỏ, hoa nhí, chấm bi lớn, logo chữ...)",
+    "neckline": "cổ áo nếu là áo (cổ tròn, cổ V, cổ vuông, cổ bẻ, cổ cao...)",
+    "sleeveType": "tay áo nếu có (tay ngắn, tay dài, tay lỡ, không tay, tay phồng...)",
+    "length": "độ dài (croptop, ngang eo, dài qua hông, dài đến gối...)",
+    "fit": "form dáng (ôm body, regular fit, oversize, slim fit, loose...)",
+    "details": ["chi tiết 1 (nút, khóa, túi, viền...)", "chi tiết 2"],
+    "features": ["đặc điểm nổi bật 1", "đặc điểm 2"],
+    "suitableFor": ["dịp 1", "dịp 2"],
+    "seasonSuggestion": "mùa phù hợp",
+    "targetAudience": "đối tượng",
     "stylingTips": ["gợi ý phối đồ 1", "gợi ý phối đồ 2"],
-    "promptKeywords": "English keywords for AI image generation, comma separated, detailed description of the exact clothing item for reference"
+    "exactDescription": "MÔ TẢ CHÍNH XÁC NHẤT bằng tiếng Anh, 1 câu dài mô tả TẤT CẢ đặc điểm của sản phẩm",
+    "promptKeywords": "ENGLISH KEYWORDS - VERY DETAILED: exact garment type, exact color name, material, texture, neckline, sleeve type, fit, length, any patterns or prints, special details, overall style"
 }
 
-CHÚ Ý:
-- promptKeywords phải MÔ TẢ CHÍNH XÁC sản phẩm trong hình để AI có thể tái tạo
-- Bao gồm: loại đồ, màu sắc, chất liệu, chi tiết đặc biệt, kiểu dáng
+⚠️ QUAN TRỌNG:
+- "exactDescription" phải là MỘT CÂU TIẾNG ANH mô tả CHÍNH XÁC sản phẩm, ví dụ: "A forest green cotton t-shirt with round neckline, short sleeves, relaxed fit, solid color, small white logo print on left chest"
+- "promptKeywords" phải bao gồm TẤT CẢ chi tiết để AI image generator tái tạo ĐÚNG sản phẩm
+- Màu sắc phải CỤ THỂ (không nói "xanh" mà phải "emerald green", "navy blue", "mint green"...)
+- Nếu có họa tiết/logo, mô tả CHI TIẾT
 
 Chỉ trả về JSON, không giải thích thêm.`
 
