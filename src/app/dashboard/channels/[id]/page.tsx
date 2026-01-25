@@ -266,6 +266,17 @@ const CONTENT_TYPE_INFO: Record<string, { name: string; description: string; ico
             'Focus on SOUNDS: crisp, crunchy, sizzling',
             'Relaxing, meditative atmosphere'
         ]
+    },
+    'fashion_showcase': {
+        name: 'Fashion Showcase',
+        description: 'Thử đồ, quảng cáo thời trang - Virtual Model mặc sản phẩm của bạn!',
+        icon: '👗',
+        tips: [
+            '1. Upload hình sản phẩm → AI tự phân tích',
+            '2. Nhập giá, khuyến mãi → AI tạo script',
+            '3. Click "Tạo ảnh" mỗi scene → Imagen 3 tạo ảnh',
+            '4. Download ảnh → Dùng cho video AI'
+        ]
     }
 }
 
@@ -379,8 +390,30 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
         'with_host' | 'voice_over' | 'broll_only' | 'host_dynamic_env' | 'host_storyteller' | 'cinematic_film' |
         'roast_comedy' | 'reaction_commentary' | 'asmr_satisfying' | 'horror_survival' | 'romance_drama' |
         'gen_z_meme' | 'educational_sassy' | 'mystery_detective' | 'breaking_4th_wall' | 'villain_origin' |
-        'underdog_triumph' | 'chaos_unhinged' | 'food_animation' | 'food_drama'
+        'underdog_triumph' | 'chaos_unhinged' | 'food_animation' | 'food_drama' | 'fashion_showcase'
     >('with_host')
+    
+    // Fashion showcase product state
+    const [productImage, setProductImage] = useState<string>('')
+    const [productImageBase64, setProductImageBase64] = useState<string>('')
+    const [productAnalysis, setProductAnalysis] = useState<{
+        productType?: string
+        color?: string
+        material?: string
+        style?: string
+        promptKeywords?: string
+        stylingTips?: string[]
+    } | null>(null)
+    const [isAnalyzingProduct, setIsAnalyzingProduct] = useState(false)
+    const [productInfo, setProductInfo] = useState({
+        name: '',
+        price: '',
+        salePrice: '',
+        promotion: ''
+    })
+    
+    // Image generation state
+    const [generatingImageForScene, setGeneratingImageForScene] = useState<string | null>(null)
     const [cinematicStyle, setCinematicStyle] = useState<string>('cinematic_documentary') // Style cho mode điện ảnh
 
     // Voice settings (for voice_over mode)
@@ -682,6 +715,38 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
         }
     }
 
+    // Build content string for fashion showcase
+    const buildFashionContent = () => {
+        const parts = []
+        
+        if (productInfo.name) parts.push(`🏷️ Tên sản phẩm: ${productInfo.name}`)
+        if (productInfo.price) parts.push(`💰 Giá gốc: ${productInfo.price}`)
+        if (productInfo.salePrice) parts.push(`🔥 Giá sale: ${productInfo.salePrice}`)
+        if (productInfo.promotion) parts.push(`🎁 Khuyến mãi: ${productInfo.promotion}`)
+        
+        if (productAnalysis) {
+            parts.push('')
+            parts.push('🤖 AI PHÂN TÍCH SẢN PHẨM:')
+            if (productAnalysis.productType) parts.push(`- Loại: ${productAnalysis.productType}`)
+            if (productAnalysis.color) parts.push(`- Màu: ${productAnalysis.color}`)
+            if (productAnalysis.material) parts.push(`- Chất liệu: ${productAnalysis.material}`)
+            if (productAnalysis.style) parts.push(`- Style: ${productAnalysis.style}`)
+            if (productAnalysis.promptKeywords) {
+                parts.push('')
+                parts.push(`🏷️ PRODUCT KEYWORDS (USE IN EVERY SCENE): ${productAnalysis.promptKeywords}`)
+            }
+            if (productAnalysis.stylingTips?.length) {
+                parts.push('')
+                parts.push('💡 Gợi ý phối đồ:')
+                productAnalysis.stylingTips.forEach((tip, i) => {
+                    parts.push(`${i + 1}. ${tip}`)
+                })
+            }
+        }
+        
+        return parts.length > 0 ? parts.join('\n') : null
+    }
+
     const handleGenerateEpisode = async () => {
         setIsGenerating(true)
         try {
@@ -697,8 +762,16 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
                     mentionChannel,
                     ctaMode,
                     selectedCTAs: ctaMode === 'select' ? selectedCTAs : [],
-                    customContent: customContent.trim() || null,
+                    customContent: voiceOverMode === 'fashion_showcase' 
+                        ? buildFashionContent() 
+                        : (customContent.trim() || null),
                     voiceOverMode,
+                    // Fashion showcase specific
+                    fashionProduct: voiceOverMode === 'fashion_showcase' ? {
+                        ...productInfo,
+                        imageBase64: productImageBase64,
+                        analysis: productAnalysis
+                    } : null,
                     cinematicStyle: voiceOverMode === 'cinematic_film' ? cinematicStyle : null,
                     voiceGender: voiceOverMode === 'voice_over' ? voiceGender : 'auto',
                     voiceTone: voiceOverMode === 'voice_over' ? voiceTone : 'warm',
@@ -980,6 +1053,89 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
             fetchChannel()
         } catch {
             toast.error('Lỗi xóa nhân vật')
+        }
+    }
+
+    // Handle product image upload for fashion showcase
+    const handleProductImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0]
+        if (!file) return
+
+        // Convert to base64
+        const reader = new FileReader()
+        reader.onload = async (event) => {
+            const base64 = event.target?.result as string
+            setProductImage(base64)
+            setProductImageBase64(base64)
+            
+            // Auto-analyze the product
+            setIsAnalyzingProduct(true)
+            try {
+                const res = await fetch('/api/products/analyze', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        imageBase64: base64,
+                        mimeType: file.type
+                    })
+                })
+
+                if (res.ok) {
+                    const data = await res.json()
+                    setProductAnalysis(data.analysis)
+                    toast.success('Đã phân tích sản phẩm!')
+                } else {
+                    const err = await res.json()
+                    toast.error(err.error || 'Lỗi phân tích')
+                }
+            } catch (error) {
+                console.error('Analyze error:', error)
+                toast.error('Lỗi phân tích sản phẩm')
+            } finally {
+                setIsAnalyzingProduct(false)
+            }
+        }
+        reader.readAsDataURL(file)
+    }
+
+    // Generate image for a scene using Imagen 3
+    const handleGenerateSceneImage = async (sceneId: string, promptText: string) => {
+        setGeneratingImageForScene(sceneId)
+        try {
+            // Build enhanced prompt with product info
+            let enhancedPrompt = promptText
+
+            // Add product keywords if available
+            if (productAnalysis?.promptKeywords) {
+                enhancedPrompt = `${promptText}. PRODUCT: ${productAnalysis.promptKeywords}`
+            }
+
+            const res = await fetch('/api/imagen/generate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    prompt: enhancedPrompt,
+                    referenceImageBase64: productImageBase64,
+                    aspectRatio: '9:16', // Vertical for TikTok/Reels
+                    sceneId: sceneId
+                })
+            })
+
+            if (res.ok) {
+                const data = await res.json()
+                toast.success('Đã tạo ảnh thành công!')
+                // Refresh to get updated scene with image
+                fetchChannel()
+                return data.imageUrl
+            } else {
+                const err = await res.json()
+                toast.error(err.error || 'Lỗi tạo ảnh')
+            }
+        } catch (error) {
+            console.error('Generate image error:', error)
+            toast.error('Lỗi tạo ảnh')
+        } finally {
+            setGeneratingImageForScene(null)
         }
     }
 
@@ -1661,7 +1817,8 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
                                     'with_host', 'host_dynamic_env', 'host_storyteller', 'cinematic_film',
                                     'roast_comedy', 'reaction_commentary', 'horror_survival', 'romance_drama',
                                     'gen_z_meme', 'educational_sassy', 'mystery_detective', 'breaking_4th_wall',
-                                    'villain_origin', 'underdog_triumph', 'chaos_unhinged', 'food_animation', 'food_drama'
+                                    'villain_origin', 'underdog_triumph', 'chaos_unhinged', 'food_animation', 'food_drama',
+                                    'fashion_showcase'
                                 ]
                                 setUseCharacters(characterModes.includes(mode))
                             }}
@@ -1699,9 +1856,133 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
                             <optgroup label="🎧 Đặc biệt">
                                 <option value="asmr_satisfying">🎧 ASMR / Satisfying</option>
                             </optgroup>
+                            <optgroup label="👗 E-Commerce / Thời trang">
+                                <option value="fashion_showcase">👗 Fashion Showcase (Thử đồ)</option>
+                            </optgroup>
                         </select>
                     </div>
                 </div>
+
+                {/* Fashion Showcase - Product Upload UI */}
+                {voiceOverMode === 'fashion_showcase' && (
+                    <div className="mb-4 p-4 bg-gradient-to-r from-pink-500/10 to-purple-500/10 border border-pink-500/20 rounded-lg">
+                        <h4 className="font-medium mb-3 flex items-center gap-2">
+                            <span className="text-xl">👗</span>
+                            Fashion Showcase - Upload Sản Phẩm
+                        </h4>
+                        
+                        {/* Product Image Upload */}
+                        <div className="mb-4">
+                            <label className="block text-sm font-medium mb-2">📸 Hình ảnh sản phẩm</label>
+                            <div className="flex gap-4">
+                                <div className="flex-1">
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={handleProductImageUpload}
+                                        className="hidden"
+                                        id="product-image-upload"
+                                    />
+                                    <label
+                                        htmlFor="product-image-upload"
+                                        className="block w-full p-4 border-2 border-dashed border-pink-500/30 rounded-lg cursor-pointer hover:border-pink-500/60 transition text-center"
+                                    >
+                                        {productImage ? (
+                                            <img 
+                                                src={productImage} 
+                                                alt="Product" 
+                                                className="max-h-40 mx-auto rounded"
+                                            />
+                                        ) : (
+                                            <div className="text-[var(--text-muted)]">
+                                                <p className="text-2xl mb-2">📷</p>
+                                                <p>Kéo thả hoặc click để upload</p>
+                                            </div>
+                                        )}
+                                    </label>
+                                </div>
+                                
+                                {/* AI Analysis Result */}
+                                {isAnalyzingProduct && (
+                                    <div className="flex-1 flex items-center justify-center">
+                                        <Loader2 className="w-6 h-6 animate-spin text-pink-500" />
+                                        <span className="ml-2">Đang phân tích...</span>
+                                    </div>
+                                )}
+                                
+                                {productAnalysis && !isAnalyzingProduct && (
+                                    <div className="flex-1 p-3 bg-[var(--bg-tertiary)] rounded-lg text-sm">
+                                        <p className="font-medium text-pink-400 mb-2">🤖 AI Phân tích:</p>
+                                        <div className="space-y-1 text-xs">
+                                            <p><span className="text-[var(--text-muted)]">Loại:</span> {productAnalysis.productType}</p>
+                                            <p><span className="text-[var(--text-muted)]">Màu:</span> {productAnalysis.color}</p>
+                                            <p><span className="text-[var(--text-muted)]">Chất liệu:</span> {productAnalysis.material}</p>
+                                            <p><span className="text-[var(--text-muted)]">Style:</span> {productAnalysis.style}</p>
+                                        </div>
+                                        {productAnalysis.stylingTips && (
+                                            <div className="mt-2 pt-2 border-t border-[var(--border-color)]">
+                                                <p className="text-[var(--text-muted)]">💡 Tips:</p>
+                                                <ul className="list-disc list-inside">
+                                                    {productAnalysis.stylingTips.slice(0, 2).map((tip, i) => (
+                                                        <li key={i} className="text-xs">{tip}</li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Product Info */}
+                        <div className="grid grid-cols-2 gap-3 mb-3">
+                            <div>
+                                <label className="block text-xs text-[var(--text-muted)] mb-1">Tên sản phẩm</label>
+                                <input
+                                    type="text"
+                                    value={productInfo.name}
+                                    onChange={(e) => setProductInfo({ ...productInfo, name: e.target.value })}
+                                    placeholder="VD: Áo croptop ren trắng"
+                                    className="input-field text-sm"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-xs text-[var(--text-muted)] mb-1">Giá gốc</label>
+                                <input
+                                    type="text"
+                                    value={productInfo.price}
+                                    onChange={(e) => setProductInfo({ ...productInfo, price: e.target.value })}
+                                    placeholder="VD: 350.000đ"
+                                    className="input-field text-sm"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-xs text-[var(--text-muted)] mb-1">Giá sale (nếu có)</label>
+                                <input
+                                    type="text"
+                                    value={productInfo.salePrice}
+                                    onChange={(e) => setProductInfo({ ...productInfo, salePrice: e.target.value })}
+                                    placeholder="VD: 199.000đ"
+                                    className="input-field text-sm"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-xs text-[var(--text-muted)] mb-1">Khuyến mãi</label>
+                                <input
+                                    type="text"
+                                    value={productInfo.promotion}
+                                    onChange={(e) => setProductInfo({ ...productInfo, promotion: e.target.value })}
+                                    placeholder="VD: Freeship + Tặng quà"
+                                    className="input-field text-sm"
+                                />
+                            </div>
+                        </div>
+
+                        <p className="text-xs text-[var(--text-muted)]">
+                            💡 AI sẽ tự động tạo script dựa trên hình ảnh và thông tin sản phẩm. Mỗi scene sẽ có nút tạo ảnh bằng Imagen 3.
+                        </p>
+                    </div>
+                )}
 
                 {/* Content Type Tips (for viral content types) */}
                 {CONTENT_TYPE_INFO[voiceOverMode] && (
@@ -2668,13 +2949,54 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
                                                         <span className="font-medium text-sm">
                                                             Scene {scene.order}: {scene.title}
                                                         </span>
-                                                        <span className="text-xs text-[var(--text-muted)]">
-                                                            {scene.duration}s
-                                                        </span>
+                                                        <div className="flex items-center gap-2">
+                                                            <span className="text-xs text-[var(--text-muted)]">
+                                                                {scene.duration}s
+                                                            </span>
+                                                            {/* Generate Image Button */}
+                                                            <button
+                                                                onClick={() => handleGenerateSceneImage(scene.id, scene.promptText)}
+                                                                disabled={generatingImageForScene === scene.id}
+                                                                className="px-2 py-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 disabled:opacity-50 rounded text-xs text-white flex items-center gap-1"
+                                                                title="Tạo ảnh bằng Google Imagen 3"
+                                                            >
+                                                                {generatingImageForScene === scene.id ? (
+                                                                    <>
+                                                                        <Loader2 className="w-3 h-3 animate-spin" />
+                                                                        Đang tạo...
+                                                                    </>
+                                                                ) : (
+                                                                    <>
+                                                                        🖼️ Tạo ảnh
+                                                                    </>
+                                                                )}
+                                                            </button>
+                                                        </div>
                                                     </div>
                                                     <pre className="text-xs text-[var(--text-secondary)] whitespace-pre-wrap bg-[var(--bg-primary)] rounded p-2 mono">
                                                         {scene.promptText}
                                                     </pre>
+                                                    
+                                                    {/* Show generated image if exists */}
+                                                    {(scene as { generatedImageUrl?: string }).generatedImageUrl && (
+                                                        <div className="mt-2 p-2 bg-[var(--bg-tertiary)] rounded">
+                                                            <div className="flex items-center justify-between mb-2">
+                                                                <span className="text-xs text-green-400">✅ Ảnh đã tạo</span>
+                                                                <a
+                                                                    href={(scene as { generatedImageUrl?: string }).generatedImageUrl}
+                                                                    download={`scene-${scene.order}.png`}
+                                                                    className="text-xs text-purple-400 hover:text-purple-300 flex items-center gap-1"
+                                                                >
+                                                                    ⬇️ Download
+                                                                </a>
+                                                            </div>
+                                                            <img 
+                                                                src={(scene as { generatedImageUrl?: string }).generatedImageUrl} 
+                                                                alt={`Scene ${scene.order}`}
+                                                                className="max-h-40 rounded mx-auto"
+                                                            />
+                                                        </div>
+                                                    )}
                                                 </div>
                                             ))}
                                         </div>

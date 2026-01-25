@@ -171,6 +171,9 @@ model Channel {
   suggestedCharCount Int?     // AI đề xuất số nhân vật
   dialogueLanguage  String    @default("vi") // vi = tiếng Việt, en = tiếng Anh
   
+  // Channel Type
+  channelType       String    @default("general") // general, fashion_showcase, product_review...
+  
   // YouTube Defaults (nhập 1 lần, dùng cho tất cả episodes)
   youtubeDefaults     String?   // JSON: { socialLinks, affiliateLinks, channelTagline, defaultHashtags }
   thumbnailStyleId    String?   // ID của thumbnail style đã chọn
@@ -179,6 +182,7 @@ model Channel {
   characters        ChannelCharacter[]
   episodes          Episode[]
   categories        EpisodeCategory[]
+  products          Product[]
   
   userId            String
   user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -218,6 +222,7 @@ model Episode {
   status          String    @default("draft") // draft, generating, completed, error
   
   scenes          EpisodeScene[]
+  products        Product[]
   
   channelId       String
   channel         Channel   @relation(fields: [channelId], references: [id], onDelete: Cascade)
@@ -254,9 +259,45 @@ model EpisodeScene {
   hookType      String?   // opening, climax, etc.
   notes         String?
   isEdited      Boolean   @default(false)
+  generatedImageUrl String? // URL của ảnh đã generate bằng Imagen
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   
   episodeId     String
   episode       Episode   @relation(fields: [episodeId], references: [id], onDelete: Cascade)
+}
+
+// ============================================
+// FASHION SHOWCASE / PRODUCT SYSTEM
+// ============================================
+
+model Product {
+  id              String    @id @default(cuid())
+  name            String    // Tên sản phẩm
+  description     String?   // Mô tả sản phẩm
+  price           Float?    // Giá gốc
+  salePrice       Float?    // Giá khuyến mãi
+  discount        String?   // Phần trăm giảm giá hoặc text
+  promotion       String?   // Thông tin khuyến mãi (freeship, tặng quà...)
+  
+  // Image info
+  imageUrl        String    // URL hình ảnh sản phẩm đã upload
+  imageBase64     String?   // Base64 của hình (cho AI analysis)
+  
+  // AI Analysis results
+  aiAnalysis      String?   // JSON: loại đồ, màu, chất liệu, style...
+  productType     String?   // Loại: áo, quần, váy, giày, túi...
+  color           String?   // Màu chính
+  material        String?   // Chất liệu
+  style           String?   // Style: sexy, casual, formal, sporty...
+  
+  // Relations
+  episodeId       String?
+  episode         Episode?  @relation(fields: [episodeId], references: [id], onDelete: SetNull)
+  
+  channelId       String
+  channel         Channel   @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 }

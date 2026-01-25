@@ -1397,6 +1397,89 @@ ${selectedCinematicStyle.keywords}
 
 📸 PROMPTTEXT FORMAT:
 [ASMR/SATISFYING. Extreme macro close-up of (subject). Slow motion. Soft ambient lighting. Focus on (sound type) sounds. Relaxing, meditative atmosphere. Crisp audio detail.]`
+        } else if (voiceOverMode === 'fashion_showcase') {
+            // Get product info from request if available
+            const productInfo = customContent ? `
+📦 THÔNG TIN SẢN PHẨM:
+${customContent}
+` : ''
+
+            voiceOverInstr = `CONTENT TYPE: FASHION SHOWCASE / OUTFIT TRY-ON (Thử đồ / Quảng cáo thời trang)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+👗 CONCEPT: Virtual Model thử đồ, showcase trang phục - Style TikTok/Reels
+
+${productInfo}
+
+🎬 CẤU TRÚC VIDEO CHUẨN:
+1. HOOK (Scene 1): Mở đầu gây chú ý
+   - "Outfit hôm nay xinh lắm nè!"
+   - "Đây là bộ đồ hot nhất tuần!"
+   - Model xuất hiện, pose nhanh
+
+2. PRODUCT REVEAL (Scene 2): Giới thiệu sản phẩm
+   - Zoom vào sản phẩm
+   - Nói tên, màu sắc, chất liệu
+   - Highlight điểm đặc biệt
+
+3. TRY-ON (Scene 3-4): Thử đồ
+   - Model mặc outfit
+   - Xoay người 360°
+   - Full body shot
+   - Chi tiết các góc
+
+4. STYLING TIPS (Scene 5): Gợi ý phối đồ
+   - "Phối với quần/váy X sẽ đẹp"
+   - "Đi với giày Y nha"
+   - Mix & match ideas
+
+5. DETAILS (Scene 6): Chi tiết sản phẩm
+   - Close-up chất liệu
+   - Đường may, nút, khóa
+   - Độ co giãn, thoáng mát
+
+6. PRICE CTA (Scene 7-8): Giá và kêu gọi
+   - Hiển thị giá (gạch giá cũ nếu sale)
+   - "Chỉ còn X đồng!"
+   - "Link ở bio/comment"
+   - "Inbox để order nha"
+
+📸 VISUAL STYLE:
+- Bright, clean lighting (studio hoặc phòng thử đồ)
+- Mirror selfie style hoặc tripod shot
+- Vertical format (9:16) cho TikTok/Reels
+- Closet/wardrobe background
+- Ring light aesthetic
+
+🎭 MODEL EXPRESSIONS & POSES:
+- Confident, happy, natural
+- Spin/twirl khi show outfit
+- Point to product details
+- Price tag gesture
+- Wink at camera
+- "Chef's kiss" for good outfit
+
+💬 DIALOGUE STYLE:
+- Casual, friendly, Gen Z language
+- "Ê, xem nè!"
+- "Quá đẹp luôn á!"
+- "Chất vải mềm mịn lắm nha"
+- "Sale sập sàn luôn!"
+- Direct price callout
+
+📱 PROMPTTEXT FORMAT FOR FASHION:
+[Fashion showcase. (Model description) wearing (EXACT product description from analysis). 
+(Pose/action). (Setting: fitting room/studio/bedroom). 
+Bright lighting, vertical format 9:16. 
+(Emotion/expression). 
+PRODUCT DETAILS: (color, material, style from analysis).
+VOICE: (dialogue about the product)]
+
+⚠️ QUAN TRỌNG:
+- Mỗi scene PHẢI mô tả CHÍNH XÁC sản phẩm (dùng product keywords)
+- Include giá cả và khuyến mãi trong CTA scenes
+- Model phải NHẤT QUÁN xuyên suốt
+- Sản phẩm là FOCUS chính, không phải model`
         } else {
             voiceOverInstr = `CONTENT TYPE: B-ROLL ONLY (pure visuals, no dialogue).
 - The "voiceover" field should be empty or minimal ambient text
