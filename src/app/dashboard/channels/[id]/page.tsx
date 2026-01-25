@@ -541,41 +541,73 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
         let backgroundDesc = ''
         const selectedBg = FASHION_BACKGROUNDS.find(bg => bg.id === fashionBackground)
         if (fashionBackground === 'uploaded' && backgroundImageBase64) {
-            backgroundDesc = 'custom uploaded background'
+            backgroundDesc = 'fitting room with mirrors and warm lighting'
         } else if (fashionBackground === 'custom' && customBackground) {
             backgroundDesc = customBackground
         } else if (selectedBg) {
             backgroundDesc = selectedBg.keywords
         }
         
-        // Get product description
-        const productDesc = productAnalysis?.exactDescription || productAnalysis?.promptKeywords || 'fashion clothing item'
+        // Get product description - VERY DETAILED
+        const productDesc = productAnalysis?.exactDescription || productAnalysis?.promptKeywords || ''
+        const productColor = productAnalysis?.color || ''
+        const productType = productAnalysis?.productType || 'dress'
+        const productMaterial = productAnalysis?.material || ''
         
-        // Define scene types for fashion showcase
+        // Build EXACT product specification
+        const exactProduct = productDesc 
+            ? `EXACT CLOTHING FROM REFERENCE IMAGE: ${productDesc}. Color: ${productColor}. Material: ${productMaterial}.`
+            : `The exact clothing item shown in the reference image.`
+        
+        // Get character description if selected
+        let characterDesc = 'A beautiful Asian female fashion model'
+        if (useCharacters && channel?.characters && channel.characters.length > 0) {
+            const mainChar = selectedCharacterIds === 'all' 
+                ? channel.characters.find((c: ChannelCharacter) => c.isMain) || channel.characters[0]
+                : channel.characters.find((c: ChannelCharacter) => selectedCharacterIds.includes(c.id))
+            
+            if (mainChar) {
+                characterDesc = mainChar.fullDescription || `${mainChar.name}, ${mainChar.appearance || ''}`
+            }
+        }
+        
+        // Define scene types for fashion showcase - WITH STRICT PRODUCT REFERENCE
         const sceneTypes = [
-            { type: 'intro', prompt: `Fashion model standing confidently, full body shot, wearing ${productDesc}. ${backgroundDesc}. Friendly smile, waving at camera. iPhone quality, vertical 9:16.` },
-            { type: 'front', prompt: `Fashion model posing front view, full body shot, wearing ${productDesc}. ${backgroundDesc}. Standing naturally, hands on hips. iPhone quality, vertical 9:16.` },
-            { type: 'side', prompt: `Fashion model posing side profile view, full body shot, wearing ${productDesc}. ${backgroundDesc}. Elegant pose showing outfit details. iPhone quality, vertical 9:16.` },
-            { type: 'back', prompt: `Fashion model showing back view, full body shot, wearing ${productDesc}. ${backgroundDesc}. Looking over shoulder. iPhone quality, vertical 9:16.` },
-            { type: 'detail', prompt: `Fashion model pointing to clothing details, medium shot, wearing ${productDesc}. ${backgroundDesc}. Touching fabric, showing quality. iPhone quality, vertical 9:16.` },
-            { type: 'spin', prompt: `Fashion model mid-spin, full body shot, wearing ${productDesc}. ${backgroundDesc}. Dynamic twirl pose, fabric flowing. iPhone quality, vertical 9:16.` },
-            { type: 'cta', prompt: `Fashion model making heart gesture, full body shot, wearing ${productDesc}. ${backgroundDesc}. Smiling at camera, call to action pose. iPhone quality, vertical 9:16.` },
-            { type: 'price', prompt: `Fashion model posing confidently, full body shot, wearing ${productDesc}. ${backgroundDesc}. Thumbs up, excited expression. iPhone quality, vertical 9:16.` },
+            { type: 'intro', prompt: `${characterDesc} standing confidently in ${backgroundDesc}. Full body shot. The model is wearing ${exactProduct} Friendly smile, waving at camera.` },
+            { type: 'front', prompt: `${characterDesc} posing front view in ${backgroundDesc}. Full body shot. The model is wearing ${exactProduct} Standing naturally with hands on hips.` },
+            { type: 'side', prompt: `${characterDesc} posing side profile in ${backgroundDesc}. Full body shot. The model is wearing ${exactProduct} Elegant pose showing the outfit.` },
+            { type: 'back', prompt: `${characterDesc} showing back view in ${backgroundDesc}. Full body shot. The model is wearing ${exactProduct} Looking over shoulder at camera.` },
+            { type: 'detail', prompt: `${characterDesc} showing clothing details in ${backgroundDesc}. Medium shot. The model is wearing ${exactProduct} Touching the fabric to show quality.` },
+            { type: 'spin', prompt: `${characterDesc} doing a graceful spin in ${backgroundDesc}. Full body shot. The model is wearing ${exactProduct} Dynamic twirl pose, outfit visible.` },
+            { type: 'cta', prompt: `${characterDesc} making heart gesture in ${backgroundDesc}. Full body shot. The model is wearing ${exactProduct} Smiling warmly at camera.` },
+            { type: 'price', prompt: `${characterDesc} giving thumbs up in ${backgroundDesc}. Full body shot. The model is wearing ${exactProduct} Excited, happy expression.` },
         ]
         
         const selectedScenes = sceneTypes.slice(0, fashionSceneCount)
         const generated: {url: string, prompt: string}[] = []
+        
+        // Build the reference instruction
+        const referenceInstruction = `
+CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the reference image I'm providing.
+- The clothing must be IDENTICAL: same color (${productColor}), same style, same design
+- DO NOT create a different outfit - use the EXACT one from the reference
+- The reference image shows a ${productType} - recreate THIS EXACT item
+- NO text, NO watermarks, NO graphics on the image
+- iPhone quality photo, vertical 9:16 format
+- FIXED camera angle like a livestream tripod shot`
         
         try {
             for (let i = 0; i < selectedScenes.length; i++) {
                 const scene = selectedScenes[i]
                 toast.loading(`Đang tạo ảnh ${i + 1}/${selectedScenes.length}...`, { id: 'fashion-preview' })
                 
+                const fullPrompt = scene.prompt + referenceInstruction
+                
                 const res = await fetch('/api/imagen/generate', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        prompt: scene.prompt + ' IMPORTANT: NO TEXT, NO WATERMARKS, NO GRAPHICS on image. Pure visual only. FIXED CAMERA ANGLE like livestream.',
+                        prompt: fullPrompt,
                         referenceImageBase64: productImageBase64,
                         aspectRatio: '9:16'
                     })

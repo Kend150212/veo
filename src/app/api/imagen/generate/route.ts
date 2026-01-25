@@ -56,22 +56,24 @@ export async function POST(req: Request) {
                     const cleanBase64 = referenceImageBase64.replace(/^data:image\/\w+;base64,/, '')
                     
                     // Build prompt with reference instruction
-                    const referencePrompt = `You are creating an image for a fashion showcase video.
+                    const referencePrompt = `I am providing you a REFERENCE IMAGE of a clothing item. Your task is to generate a NEW image with a fashion model wearing the EXACT SAME clothing item.
 
-REFERENCE PRODUCT IMAGE: I am providing you with the EXACT product image. You MUST recreate this EXACT clothing item in the generated image.
+REFERENCE CLOTHING (from image I'm attaching):
+- You MUST analyze the clothing in my reference image
+- Recreate this EXACT clothing item - same color, same style, same design, same material
+- DO NOT create a different outfit
+- The reference shows the exact clothing that must appear in your generated image
 
-TASK: Generate an image where a fashion model is wearing the EXACT same clothing item shown in the reference image. 
-- The clothing MUST be identical: same color, same style, same material, same pattern, same design
-- Do NOT change ANY detail of the clothing
-- The model should be posing naturally
+SCENE TO GENERATE:
+${prompt}
 
-SCENE DESCRIPTION: ${prompt}
-
-CRITICAL RULES:
-- NO text, NO watermarks, NO graphics on the image
-- Pure photography style, clean visual
-- Vertical format ${aspectRatio}
-- The clothing item MUST match the reference image EXACTLY`
+STRICT RULES:
+1. The model MUST wear the EXACT clothing from my reference image
+2. Same color - do not change the color
+3. Same style - do not change the design
+4. NO text, watermarks, or graphics on the image
+5. Vertical format ${aspectRatio}
+6. iPhone quality photography`
 
                     const response = await fetch(
                         `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
