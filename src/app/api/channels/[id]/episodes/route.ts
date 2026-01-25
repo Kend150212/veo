@@ -441,6 +441,105 @@ Include "VOICE: [matching host gender]" at the end.`
 - Scale shift: Zoom từ người → tế bào → phân tử
 - Âm thanh: Synth electronic, bass sâu, sci-fi ambience
 - Phù hợp: Giải thích cơ thể, tâm lý học, công nghệ`
+                },
+                'food_animation': {
+                    name: 'Anthropomorphic Food Animation (Hoạt hình thực phẩm nhân hóa) - VIRAL!',
+                    keywords: 'anthropomorphic food characters, 3D Pixar-style animation, vegetables and fruits with human faces and expressions, kitchen environment, bright colorful lighting, cute food characters with emotions, comedic exaggerated reactions, cooking scenes',
+                    guidance: `🥕 ANTHROPOMORPHIC FOOD ANIMATION STYLE (SIÊU VIRAL):
+═══════════════════════════════════════
+Đây là thể loại đang cực kỳ viral trên YouTube/TikTok!
+
+🎨 NHÂN VẬT - THỰC PHẨM NHÂN HÓA:
+- Rau củ, trái cây, thực phẩm có KHUÔN MẶT và BIỂU CẢM như người
+- Mắt to, biểu cảm PHÓNG ĐẠI (giận dữ, sợ hãi, vui vẻ, ngạc nhiên)
+- Có tay chân hoặc không (tùy thiết kế)
+- Mỗi loại thực phẩm có TÍNH CÁCH riêng:
+  • Ớt: Nóng tính, hay cáu
+  • Cà rốt: Năng động, khỏe mạnh
+  • Khoai tây: Chậm rãi, hài hước
+  • Hành: Hay khóc, nhạy cảm
+  • Tỏi: Mạnh mẽ, bảo vệ
+
+🏠 BỐI CẢNH:
+- Nhà bếp hiện đại, sáng sủa
+- Bàn ăn, tủ lạnh, bếp nấu
+- Chợ rau củ, siêu thị
+- Vườn rau (origin story)
+
+📸 CAMERA & VISUAL:
+- 3D Pixar/DreamWorks quality
+- Ánh sáng ấm áp, tươi sáng (high-key)
+- Góc quay eye-level với thực phẩm (như nhìn từ góc của chúng)
+- Close-up khi biểu cảm quan trọng
+- Wide shot khi có nhiều nhân vật
+
+🎭 KỊCH BẢN THƯỜNG GẶP:
+1. "Sự thật về [thực phẩm]" - nhân vật kể về bản thân
+2. "Battle/Đối đầu" - hai thực phẩm tranh cãi ai tốt hơn
+3. "Mẹo nấu ăn" - thực phẩm hướng dẫn cách chế biến
+4. "Sợ bị ăn" - drama khi sắp bị nấu
+5. "Team up" - nhiều thực phẩm hợp tác
+
+💬 DIALOGUE STYLE:
+- Hài hước, đáng yêu
+- Puns về thực phẩm ("Tôi đang 'rau' rối quá!")
+- Phản ứng exaggerated
+- Breaking the 4th wall (nói với khán giả)
+
+🔊 SOUND:
+- Nhạc vui tươi, upbeat
+- Sound effects hài (boing, splat, whoosh)
+- Voice: Cute, energetic`
+                },
+                'food_drama': {
+                    name: 'Food Drama / Food Wars (Kịch tính ẩm thực)',
+                    keywords: 'food battle drama, anthropomorphic ingredients fighting, dramatic showdown, energy effects around food, arena-style kitchen, intense expressions, action camera angles, epic food confrontation, slow motion impacts',
+                    guidance: `⚔️ FOOD DRAMA / FOOD WARS STYLE:
+═══════════════════════════════════════
+Thực phẩm nhân hóa trong các tình huống KỊCH TÍNH, ĐỐI ĐẦU!
+
+🥊 CONCEPT:
+- Thực phẩm tham gia "battle", đối đầu, cạnh tranh
+- Ai là thực phẩm TỐT NHẤT? AI THẮNG?
+- Drama, tension, winner/loser dynamics
+
+🎬 CÁC DẠNG BATTLE:
+1. "Thực phẩm nào tốt hơn?" - So sánh dinh dưỡng
+2. "Cuộc chiến bữa sáng" - Bánh mì vs Phở vs Xôi
+3. "Healthy vs Junk Food" - Rau củ vs Fast food
+4. "Ai được chọn?" - Cạnh tranh để được nấu
+
+🎨 VISUAL STYLE:
+- Dramatic lighting với shadows mạnh
+- Energy auras xung quanh thực phẩm
+- Slow motion khi đối đầu
+- Arena/Sân đấu trong nhà bếp
+- Split screen so sánh
+- Power-up effects
+
+📸 CAMERA:
+- Low angle: Thực phẩm trông mạnh mẽ
+- Quick cuts: Tăng tension
+- Zoom dramatic: Khi reveal winner
+- Orbit shot: Xoay quanh cuộc đối đầu
+
+🎭 BIỂU CẢM:
+- Giận dữ, quyết tâm (khi battle)
+- Kiêu ngạo, tự tin (thực phẩm mạnh)
+- Sợ hãi, lo lắng (thực phẩm yếu)
+- Chiến thắng, thất bại rõ ràng
+
+💥 HIỆU ỨNG:
+- Lửa, điện, năng lượng xung quanh
+- Impact frames khi va chạm
+- Victory celebration (confetti, spotlight)
+- Defeat animation (tan rã, rơi xuống)
+
+🔊 SOUND:
+- Epic orchestral music
+- Dramatic bass drops
+- Crowd cheering (tưởng tượng)
+- Impact sounds`
                 }
             }
 

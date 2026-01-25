@@ -89,6 +89,26 @@ const CINEMATIC_STYLES = [
         useCase: 'Giải thích cơ chế cơ thể, tâm lý học, công nghệ tương lai',
         icon: '🧬',
         promptKeywords: 'bio-CGI visualization, neon cyberpunk colors, bioluminescence effects, fly-through camera, microscopic world made epic, DNA strands, neural networks, futuristic technology'
+    },
+    {
+        id: 'food_animation',
+        name: 'Anthropomorphic Food Animation',
+        nameVi: 'Hoạt hình thực phẩm nhân hóa',
+        description: 'Rau củ, trái cây trở thành nhân vật với cảm xúc và tính cách - SIÊU VIRAL!',
+        visualLanguage: '3D Pixar-style, màu sắc tươi sáng, biểu cảm phóng đại, bối cảnh nhà bếp',
+        useCase: 'Mẹo nấu ăn, dinh dưỡng, sự thật thực phẩm, giáo dục trẻ em, viral content',
+        icon: '🥕',
+        promptKeywords: 'anthropomorphic food characters, 3D Pixar-style animation, vegetables and fruits with human faces, exaggerated expressions, kitchen environment, cooking scenes, bright colorful lighting, cute food characters with emotions, comedic reactions'
+    },
+    {
+        id: 'food_drama',
+        name: 'Food Drama / Food Wars',
+        nameVi: 'Kịch tính ẩm thực',
+        description: 'Thực phẩm tham gia vào các tình huống kịch tính, đối đầu, cạnh tranh',
+        visualLanguage: 'Dramatic lighting, góc quay action, hiệu ứng năng lượng, slow motion',
+        useCase: 'So sánh thực phẩm, battle giữa các món, drama ẩm thực viral',
+        icon: '⚔️',
+        promptKeywords: 'food battle drama, anthropomorphic ingredients fighting, dramatic showdown, energy effects around food, arena-style kitchen, intense expressions, action camera angles, epic food confrontation, winner loser dynamics'
     }
 ]
 
