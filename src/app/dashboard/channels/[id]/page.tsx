@@ -118,6 +118,9 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
     const [voiceGender, setVoiceGender] = useState<'male' | 'female' | 'auto'>('auto')
     const [voiceTone, setVoiceTone] = useState<'warm' | 'professional' | 'energetic' | 'calm' | 'serious'>('warm')
 
+    // Storyteller B-Roll option
+    const [storytellerBrollEnabled, setStorytellerBrollEnabled] = useState(false)
+
     // Advanced Episode Features
     const [visualHookEnabled, setVisualHookEnabled] = useState(true)
     const [emotionalCurveEnabled, setEmotionalCurveEnabled] = useState(true)
@@ -427,7 +430,9 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
                     productLink: adEnabled ? productLink : null,
                     analyzedProduct: adEnabled ? analyzedProduct : null,
                     selectedAdStyles: adEnabled ? selectedAdStyles : [],
-                    adSceneCount: adEnabled ? adSceneCount : 2
+                    adSceneCount: adEnabled ? adSceneCount : 2,
+                    // Storyteller B-Roll option
+                    storytellerBrollEnabled: voiceOverMode === 'host_storyteller' ? storytellerBrollEnabled : false
                 })
             })
 
@@ -1029,6 +1034,31 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
                         </select>
                     </div>
                 </div>
+
+                {/* Storyteller B-Roll Option */}
+                {voiceOverMode === 'host_storyteller' && (
+                    <div className="mb-4 p-3 bg-[var(--bg-tertiary)] rounded-lg">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <p className="text-sm font-medium">🎬 Chèn B-Roll vào câu chuyện</p>
+                                <p className="text-xs text-[var(--text-muted)]">
+                                    {storytellerBrollEnabled
+                                        ? 'Host + cảnh B-Roll minh họa xen kẽ'
+                                        : '100% Host trên màn hình suốt video'}
+                                </p>
+                            </div>
+                            <button
+                                onClick={() => setStorytellerBrollEnabled(!storytellerBrollEnabled)}
+                                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition ${storytellerBrollEnabled
+                                        ? 'bg-[var(--accent-primary)] text-white'
+                                        : 'bg-[var(--bg-secondary)] text-[var(--text-muted)]'
+                                    }`}
+                            >
+                                {storytellerBrollEnabled ? 'B-Roll ON' : '100% Host'}
+                            </button>
+                        </div>
+                    </div>
+                )}
 
                 {/* Voice Settings (for Voice Over mode) */}
                 {voiceOverMode === 'voice_over' && (

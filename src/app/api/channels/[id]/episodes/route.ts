@@ -67,7 +67,9 @@ export async function POST(
             productLink = null,
             analyzedProduct = null,
             selectedAdStyles = [],
-            adSceneCount = 2
+            adSceneCount = 2,
+            // Storyteller B-Roll option
+            storytellerBrollEnabled = false
         } = await req.json()
 
         // CTA options
@@ -233,8 +235,23 @@ CRITICAL - VOICE GENDER CONSISTENCY:
 [Host speaking: "dialogue here"]. Host stands/sits in frame while ENVIRONMENT TRANSFORMS to [describe new environment matching topic]. [Camera movement]. [Transition effects: particle dissolve, light sweep, morphing elements].
 Include "VOICE: [matching host gender]" at the end of each promptText`
         } else if (voiceOverMode === 'host_storyteller') {
+            const brollModeInstr = storytellerBrollEnabled
+                ? `\n🎬 B-ROLL MODE: ENABLED
+- Insert B-Roll scenes between host scenes to illustrate story
+- Alternate: Host scene → B-Roll illustration → Host scene
+- B-Roll shows what host is describing (visuals only, no host)
+- Host appears in ~60-70% of scenes, B-Roll fills ~30-40%
+- B-Roll scenes: cinematic visuals matching narration with voiceover`
+                : `\n🎬 100% HOST MODE: NO B-ROLL
+- Host appears on screen in 100% of ALL scenes
+- NO pure B-Roll/cutaway scenes without host visible
+- Story elements appear AROUND host, never replacing host
+- Every single scene MUST show the host character`
+
             voiceOverInstr = `CONTENT TYPE: HOST STORYTELLER MODE (Kể chuyện sinh động với Elements tương tác)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+${brollModeInstr}
+
 🎙️ VOICE GENDER CONSISTENCY (CRITICAL):
 - Determine host gender from character description
 - Include "VOICE: Female voice (giọng nữ)" or "VOICE: Male voice (giọng nam)" at END of EVERY promptText
