@@ -56,6 +56,9 @@ export async function POST(req: Request) {
             console.log(`[Imagen] Trying model: ${modelName}`)
 
             try {
+                // Add explicit instruction to avoid text generation
+                const cleanPrompt = `${prompt} STYLE: Pure photography, clean visual. NEVER add ANY text, watermarks, logos, captions, or graphic overlays on the image.`
+                
                 const response = await fetch(imagenEndpoint, {
                     method: 'POST',
                     headers: {
@@ -63,7 +66,7 @@ export async function POST(req: Request) {
                         'x-goog-api-key': apiKey, // Correct header format
                     },
                     body: JSON.stringify({
-                        instances: [{ prompt }],
+                        instances: [{ prompt: cleanPrompt }],
                         parameters: {
                             sampleCount: 1,
                             aspectRatio: aspectRatio,

@@ -428,9 +428,84 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
     // Image generation state
     const [generatingImageForScene, setGeneratingImageForScene] = useState<string | null>(null)
     
-    // Fashion background state
+    // Fashion background state (saved to channel)
     const [fashionBackground, setFashionBackground] = useState('fitting_room')
     const [customBackground, setCustomBackground] = useState('')
+    const [backgroundImage, setBackgroundImage] = useState<string | null>(null)
+    const [backgroundImageBase64, setBackgroundImageBase64] = useState<string | null>(null)
+    
+    // Multiple product images (different angles)
+    const [productImages, setProductImages] = useState<{file: File, base64: string, name: string}[]>([])
+    
+    // Download image helper function
+    const downloadImage = (dataUrl: string, filename: string) => {
+        // Convert data URL to blob
+        const arr = dataUrl.split(',')
+        const mime = arr[0].match(/:(.*?);/)?.[1] || 'image/png'
+        const bstr = atob(arr[1])
+        let n = bstr.length
+        const u8arr = new Uint8Array(n)
+        while (n--) {
+            u8arr[n] = bstr.charCodeAt(n)
+        }
+        const blob = new Blob([u8arr], { type: mime })
+        
+        // Create download link
+        const url = URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = url
+        link.download = filename
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+        URL.revokeObjectURL(url)
+    }
+    
+    // Handle background image upload
+    const handleBackgroundImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0]
+        if (!file) return
+        
+        const reader = new FileReader()
+        reader.onload = () => {
+            const base64 = reader.result as string
+            setBackgroundImageBase64(base64)
+            setBackgroundImage(base64)
+            setFashionBackground('uploaded') // Special value for uploaded image
+        }
+        reader.readAsDataURL(file)
+    }
+    
+    // Handle multiple product images upload
+    const handleMultiProductImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const files = e.target.files
+        if (!files) return
+        
+        const newImages: {file: File, base64: string, name: string}[] = []
+        
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i]
+            const base64 = await new Promise<string>((resolve) => {
+                const reader = new FileReader()
+                reader.onload = () => resolve(reader.result as string)
+                reader.readAsDataURL(file)
+            })
+            newImages.push({ file, base64, name: file.name })
+        }
+        
+        setProductImages(prev => [...prev, ...newImages])
+        
+        // Set first image as main product image if not set
+        if (newImages.length > 0 && !productImageBase64) {
+            setProductImageBase64(newImages[0].base64)
+            setProductImage(newImages[0].base64)
+        }
+    }
+    
+    // Remove product image
+    const removeProductImage = (index: number) => {
+        setProductImages(prev => prev.filter((_, i) => i !== index))
+    }
     const [cinematicStyle, setCinematicStyle] = useState<string>('cinematic_documentary') // Style cho mode điện ảnh
 
     // Voice settings (for voice_over mode)
@@ -1140,13 +1215,29 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
     const handleGenerateSceneImage = async (sceneId: string, promptText: string) => {
         setGeneratingImageForScene(sceneId)
         try {
-            // Build enhanced prompt with product info
+            // Build enhanced prompt with product info AND background
             let enhancedPrompt = promptText
 
             // Add product keywords if available
             if (productAnalysis?.promptKeywords) {
-                enhancedPrompt = `${promptText}. PRODUCT: ${productAnalysis.promptKeywords}`
+                enhancedPrompt = `${promptText}. EXACT PRODUCT: ${productAnalysis.promptKeywords}`
             }
+            
+            // Add background info
+            const selectedBg = FASHION_BACKGROUNDS.find(bg => bg.id === fashionBackground)
+            if (fashionBackground === 'uploaded' && backgroundImageBase64) {
+                enhancedPrompt += '. Background: custom uploaded background.'
+            } else if (fashionBackground === 'custom' && customBackground) {
+                enhancedPrompt += `. Background: ${customBackground}.`
+            } else if (selectedBg) {
+                enhancedPrompt += `. Background: ${selectedBg.keywords}.`
+            }
+            
+            // CRITICAL: No text or graphics on image
+            enhancedPrompt += ' IMPORTANT: NO TEXT, NO WATERMARKS, NO GRAPHICS, NO LOGOS, NO CAPTIONS on the image. Pure visual only, clean image.'
+            
+            // Add photography style for realism
+            enhancedPrompt += ' iPhone camera quality, smartphone photo, natural lighting, TikTok/Reels style, 9:16 vertical format.'
 
             const res = await fetch('/api/imagen/generate', {
                 method: 'POST',
@@ -2019,13 +2110,38 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
                         {/* Background Selection */}
                         <div className="mb-4">
                             <label className="block text-sm font-medium mb-2">🏠 Background cố định (dùng cho TẤT CẢ scenes)</label>
+                            
+                            {/* Upload Background Option */}
+                            <div className="mb-3 p-3 bg-[var(--bg-tertiary)] rounded-lg">
+                                <label className="block text-xs font-medium mb-2 text-purple-400">📷 Upload ảnh Background của bạn</label>
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleBackgroundImageUpload}
+                                    className="text-xs file:mr-3 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:bg-purple-500/20 file:text-purple-400 hover:file:bg-purple-500/30"
+                                />
+                                {backgroundImage && (
+                                    <div className="mt-2 flex items-center gap-2">
+                                        <img src={backgroundImage} alt="Background" className="w-20 h-12 object-cover rounded" />
+                                        <span className="text-xs text-green-400">✓ Background đã upload</span>
+                                        <button 
+                                            onClick={() => { setBackgroundImage(null); setBackgroundImageBase64(null); setFashionBackground('fitting_room'); }}
+                                            className="text-xs text-red-400 hover:text-red-300"
+                                        >
+                                            ✕ Xóa
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                            
+                            <p className="text-xs text-[var(--text-muted)] mb-2">Hoặc chọn preset:</p>
                             <div className="grid grid-cols-4 gap-2 mb-2">
                                 {FASHION_BACKGROUNDS.map(bg => (
                                     <button
                                         key={bg.id}
                                         onClick={() => setFashionBackground(bg.id)}
                                         className={`p-2 rounded-lg border-2 text-center transition ${
-                                            fashionBackground === bg.id
+                                            fashionBackground === bg.id && !backgroundImage
                                                 ? 'border-pink-500 bg-pink-500/20'
                                                 : 'border-[var(--border-color)] hover:border-pink-500/50'
                                         }`}
@@ -2036,7 +2152,7 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
                                 ))}
                             </div>
                             
-                            {fashionBackground === 'custom' && (
+                            {fashionBackground === 'custom' && !backgroundImage && (
                                 <input
                                     type="text"
                                     value={customBackground}
@@ -2047,12 +2163,50 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
                             )}
                             
                             <p className="text-xs text-[var(--text-muted)] mt-2">
-                                📌 Background này sẽ được sử dụng NHẤT QUÁN trong tất cả các scene của video
+                                📌 Background này sẽ được sử dụng NHẤT QUÁN trong tất cả các scene
                             </p>
+                        </div>
+                        
+                        {/* Multiple Product Images (Different Angles) */}
+                        <div className="mb-4 p-3 bg-[var(--bg-tertiary)] rounded-lg">
+                            <label className="block text-sm font-medium mb-2 text-pink-400">📐 Ảnh sản phẩm nhiều góc (để AI tạo chính xác hơn)</label>
+                            <input
+                                type="file"
+                                accept="image/*"
+                                multiple
+                                onChange={handleMultiProductImageUpload}
+                                className="text-xs file:mr-3 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:bg-pink-500/20 file:text-pink-400 hover:file:bg-pink-500/30 mb-2"
+                            />
+                            <p className="text-xs text-[var(--text-muted)] mb-2">
+                                💡 Upload nhiều góc: trước, sau, detail, tag... để AI hiểu sản phẩm tốt hơn
+                            </p>
+                            
+                            {productImages.length > 0 && (
+                                <div className="flex flex-wrap gap-2 mt-2">
+                                    {productImages.map((img, idx) => (
+                                        <div key={idx} className="relative group">
+                                            <img 
+                                                src={img.base64} 
+                                                alt={`Product ${idx + 1}`} 
+                                                className={`w-16 h-16 object-cover rounded cursor-pointer ${idx === 0 ? 'ring-2 ring-pink-500' : ''}`}
+                                                onClick={() => { setProductImageBase64(img.base64); setProductImage(img.base64); }}
+                                                title={idx === 0 ? 'Ảnh chính' : 'Click để chọn làm ảnh chính'}
+                                            />
+                                            <button
+                                                onClick={() => removeProductImage(idx)}
+                                                className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-xs text-white opacity-0 group-hover:opacity-100 transition"
+                                            >
+                                                ×
+                                            </button>
+                                            {idx === 0 && <span className="absolute -bottom-1 left-0 right-0 text-center text-[8px] text-pink-400 bg-[var(--bg-primary)] rounded">Chính</span>}
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
                         </div>
 
                         <p className="text-xs text-[var(--text-muted)]">
-                            💡 AI sẽ tự động tạo script dựa trên hình ảnh và thông tin sản phẩm. Mỗi scene sẽ có nút tạo ảnh bằng Imagen 3.
+                            💡 AI sẽ tạo ảnh SẠCH, không có text/watermark/graphic. Mỗi scene có nút tạo ảnh bằng Imagen.
                         </p>
                     </div>
                 )}
@@ -3055,18 +3209,22 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
                                                         <div className="mt-2 p-2 bg-[var(--bg-tertiary)] rounded">
                                                             <div className="flex items-center justify-between mb-2">
                                                                 <span className="text-xs text-green-400">✅ Ảnh đã tạo</span>
-                                                                <a
-                                                                    href={(scene as { generatedImageUrl?: string }).generatedImageUrl}
-                                                                    download={`scene-${scene.order}.png`}
+                                                                <button
+                                                                    onClick={() => downloadImage(
+                                                                        (scene as { generatedImageUrl?: string }).generatedImageUrl!,
+                                                                        `scene-${scene.order}.png`
+                                                                    )}
                                                                     className="text-xs text-purple-400 hover:text-purple-300 flex items-center gap-1"
                                                                 >
                                                                     ⬇️ Download
-                                                                </a>
+                                                                </button>
                                                             </div>
                                                             <img 
                                                                 src={(scene as { generatedImageUrl?: string }).generatedImageUrl} 
                                                                 alt={`Scene ${scene.order}`}
-                                                                className="max-h-40 rounded mx-auto"
+                                                                className="max-h-40 rounded mx-auto cursor-pointer"
+                                                                onClick={() => window.open((scene as { generatedImageUrl?: string }).generatedImageUrl!, '_blank')}
+                                                                title="Click để xem ảnh lớn"
                                                             />
                                                         </div>
                                                     )}
