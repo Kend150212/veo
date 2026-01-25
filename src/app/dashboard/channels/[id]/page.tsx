@@ -1912,7 +1912,7 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
                                 >
                                     <div className="flex items-center gap-3">
                                         <span className="w-10 h-10 rounded-lg bg-gradient-to-br from-[var(--accent-primary)] to-purple-500 flex items-center justify-center text-white font-bold">
-                                            {episode.episodeNumber}
+                                            {index + 1}
                                         </span>
                                         <div>
                                             <p className="font-medium">{episode.title}</p>
