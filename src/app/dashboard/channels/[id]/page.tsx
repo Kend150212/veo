@@ -452,6 +452,11 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
     // Multiple product images (different angles)
     const [productImages, setProductImages] = useState<{file: File, base64: string, name: string}[]>([])
     
+    // Fashion Preview Images (generated BEFORE script)
+    const [fashionPreviewImages, setFashionPreviewImages] = useState<{url: string, prompt: string}[]>([])
+    const [isGeneratingPreview, setIsGeneratingPreview] = useState(false)
+    const [fashionSceneCount, setFashionSceneCount] = useState(6)
+    
     // Download image helper function
     const downloadImage = (dataUrl: string, filename: string) => {
         // Convert data URL to blob
@@ -520,6 +525,80 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
     // Remove product image
     const removeProductImage = (index: number) => {
         setProductImages(prev => prev.filter((_, i) => i !== index))
+    }
+    
+    // Generate Fashion Preview Images (BEFORE creating script)
+    const handleGenerateFashionPreviews = async () => {
+        if (!productImageBase64) {
+            toast.error('Vui lòng upload ảnh sản phẩm trước')
+            return
+        }
+        
+        setIsGeneratingPreview(true)
+        setFashionPreviewImages([])
+        
+        // Get background description
+        let backgroundDesc = ''
+        const selectedBg = FASHION_BACKGROUNDS.find(bg => bg.id === fashionBackground)
+        if (fashionBackground === 'uploaded' && backgroundImageBase64) {
+            backgroundDesc = 'custom uploaded background'
+        } else if (fashionBackground === 'custom' && customBackground) {
+            backgroundDesc = customBackground
+        } else if (selectedBg) {
+            backgroundDesc = selectedBg.keywords
+        }
+        
+        // Get product description
+        const productDesc = productAnalysis?.exactDescription || productAnalysis?.promptKeywords || 'fashion clothing item'
+        
+        // Define scene types for fashion showcase
+        const sceneTypes = [
+            { type: 'intro', prompt: `Fashion model standing confidently, full body shot, wearing ${productDesc}. ${backgroundDesc}. Friendly smile, waving at camera. iPhone quality, vertical 9:16.` },
+            { type: 'front', prompt: `Fashion model posing front view, full body shot, wearing ${productDesc}. ${backgroundDesc}. Standing naturally, hands on hips. iPhone quality, vertical 9:16.` },
+            { type: 'side', prompt: `Fashion model posing side profile view, full body shot, wearing ${productDesc}. ${backgroundDesc}. Elegant pose showing outfit details. iPhone quality, vertical 9:16.` },
+            { type: 'back', prompt: `Fashion model showing back view, full body shot, wearing ${productDesc}. ${backgroundDesc}. Looking over shoulder. iPhone quality, vertical 9:16.` },
+            { type: 'detail', prompt: `Fashion model pointing to clothing details, medium shot, wearing ${productDesc}. ${backgroundDesc}. Touching fabric, showing quality. iPhone quality, vertical 9:16.` },
+            { type: 'spin', prompt: `Fashion model mid-spin, full body shot, wearing ${productDesc}. ${backgroundDesc}. Dynamic twirl pose, fabric flowing. iPhone quality, vertical 9:16.` },
+            { type: 'cta', prompt: `Fashion model making heart gesture, full body shot, wearing ${productDesc}. ${backgroundDesc}. Smiling at camera, call to action pose. iPhone quality, vertical 9:16.` },
+            { type: 'price', prompt: `Fashion model posing confidently, full body shot, wearing ${productDesc}. ${backgroundDesc}. Thumbs up, excited expression. iPhone quality, vertical 9:16.` },
+        ]
+        
+        const selectedScenes = sceneTypes.slice(0, fashionSceneCount)
+        const generated: {url: string, prompt: string}[] = []
+        
+        try {
+            for (let i = 0; i < selectedScenes.length; i++) {
+                const scene = selectedScenes[i]
+                toast.loading(`Đang tạo ảnh ${i + 1}/${selectedScenes.length}...`, { id: 'fashion-preview' })
+                
+                const res = await fetch('/api/imagen/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        prompt: scene.prompt + ' IMPORTANT: NO TEXT, NO WATERMARKS, NO GRAPHICS on image. Pure visual only. FIXED CAMERA ANGLE like livestream.',
+                        referenceImageBase64: productImageBase64,
+                        aspectRatio: '9:16'
+                    })
+                })
+                
+                if (res.ok) {
+                    const data = await res.json()
+                    generated.push({ url: data.imageUrl, prompt: scene.prompt })
+                } else {
+                    const err = await res.json()
+                    console.error('Failed to generate scene', i, err)
+                    generated.push({ url: '', prompt: scene.prompt + ' (FAILED)' })
+                }
+            }
+            
+            setFashionPreviewImages(generated)
+            toast.success(`Đã tạo ${generated.filter(g => g.url).length}/${selectedScenes.length} ảnh!`, { id: 'fashion-preview' })
+        } catch (error) {
+            console.error('Fashion preview error:', error)
+            toast.error('Lỗi tạo ảnh preview', { id: 'fashion-preview' })
+        } finally {
+            setIsGeneratingPreview(false)
+        }
     }
     const [cinematicStyle, setCinematicStyle] = useState<string>('cinematic_documentary') // Style cho mode điện ảnh
 
@@ -1991,6 +2070,16 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
                                     'fashion_showcase'
                                 ]
                                 setUseCharacters(characterModes.includes(mode))
+                                
+                                // Fashion Showcase: Auto-disable ALL advanced features
+                                if (mode === 'fashion_showcase') {
+                                    setVisualHookEnabled(false)
+                                    setEmotionalCurveEnabled(false)
+                                    setSpatialAudioEnabled(false)
+                                    setRecapMomentEnabled(false)
+                                    setProductPlacementEnabled(false)
+                                    setMentionChannelName(false)
+                                }
                             }}
                             className="input-field w-full"
                         >
@@ -2254,8 +2343,94 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
                             )}
                         </div>
 
+                        {/* Step 3: Generate Preview Images */}
+                        <div className="mb-4 p-4 bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/30 rounded-lg">
+                            <h5 className="font-medium text-green-400 mb-3 flex items-center gap-2">
+                                <span>🎨</span>
+                                Bước 3: Tạo ảnh Preview (TRƯỚC khi tạo kịch bản)
+                            </h5>
+                            
+                            <div className="flex items-center gap-4 mb-3">
+                                <div>
+                                    <label className="text-xs text-[var(--text-muted)]">Số ảnh cần tạo:</label>
+                                    <select
+                                        value={fashionSceneCount}
+                                        onChange={(e) => setFashionSceneCount(Number(e.target.value))}
+                                        className="ml-2 bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded px-2 py-1 text-sm"
+                                    >
+                                        <option value={4}>4 ảnh</option>
+                                        <option value={6}>6 ảnh</option>
+                                        <option value={8}>8 ảnh</option>
+                                    </select>
+                                </div>
+                                
+                                <button
+                                    onClick={handleGenerateFashionPreviews}
+                                    disabled={!productImageBase64 || isGeneratingPreview}
+                                    className="px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 disabled:opacity-50 rounded-lg text-sm font-medium flex items-center gap-2"
+                                >
+                                    {isGeneratingPreview ? (
+                                        <>
+                                            <Loader2 className="w-4 h-4 animate-spin" />
+                                            Đang tạo ảnh...
+                                        </>
+                                    ) : (
+                                        <>
+                                            🖼️ Tạo {fashionSceneCount} ảnh Preview
+                                        </>
+                                    )}
+                                </button>
+                            </div>
+                            
+                            <p className="text-xs text-[var(--text-muted)]">
+                                AI sẽ tạo ảnh model mặc sản phẩm của bạn. Sau đó kịch bản sẽ được tạo dựa trên các ảnh này.
+                            </p>
+                        </div>
+                        
+                        {/* Preview Images Grid */}
+                        {fashionPreviewImages.length > 0 && (
+                            <div className="mb-4 p-4 bg-[var(--bg-tertiary)] rounded-lg">
+                                <h5 className="font-medium text-purple-400 mb-3 flex items-center gap-2">
+                                    <span>✨</span>
+                                    Ảnh Preview đã tạo ({fashionPreviewImages.filter(i => i.url).length}/{fashionPreviewImages.length})
+                                </h5>
+                                
+                                <div className="grid grid-cols-4 gap-3">
+                                    {fashionPreviewImages.map((img, idx) => (
+                                        <div key={idx} className="relative group">
+                                            {img.url ? (
+                                                <>
+                                                    <img 
+                                                        src={img.url} 
+                                                        alt={`Preview ${idx + 1}`}
+                                                        className="w-full aspect-[9/16] object-cover rounded-lg cursor-pointer"
+                                                        onClick={() => window.open(img.url, '_blank')}
+                                                    />
+                                                    <button
+                                                        onClick={() => downloadImage(img.url, `fashion-scene-${idx + 1}.png`)}
+                                                        className="absolute bottom-1 right-1 bg-black/70 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition"
+                                                    >
+                                                        ⬇️
+                                                    </button>
+                                                </>
+                                            ) : (
+                                                <div className="w-full aspect-[9/16] bg-red-500/20 rounded-lg flex items-center justify-center">
+                                                    <span className="text-red-400 text-xs">❌ Failed</span>
+                                                </div>
+                                            )}
+                                            <p className="text-xs text-center mt-1 text-[var(--text-muted)]">Scene {idx + 1}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                                
+                                <p className="text-xs text-green-400 mt-3">
+                                    ✅ Ảnh đã tạo xong! Bây giờ bạn có thể tạo kịch bản bên dưới. AI sẽ mô tả dựa trên các ảnh này.
+                                </p>
+                            </div>
+                        )}
+                        
                         <p className="text-xs text-[var(--text-muted)]">
-                            💡 AI sẽ tạo ảnh SẠCH, không có text/watermark/graphic. Mỗi scene có nút tạo ảnh bằng Imagen.
+                            💡 Quy trình: Upload sản phẩm → Chọn background → Tạo ảnh preview → Tạo kịch bản
                         </p>
                     </div>
                 )}
