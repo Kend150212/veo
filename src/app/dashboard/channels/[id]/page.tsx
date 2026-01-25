@@ -411,10 +411,25 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
     const [productImageBase64, setProductImageBase64] = useState<string>('')
     const [productAnalysis, setProductAnalysis] = useState<{
         productType?: string
+        productSubtype?: string
         color?: string
+        colorHex?: string
+        colors?: string[]
         material?: string
+        texture?: string
         style?: string
+        pattern?: string
+        neckline?: string
+        sleeveType?: string
+        length?: string
+        fit?: string
+        details?: string[]
+        features?: string[]
+        suitableFor?: string[]
+        seasonSuggestion?: string
+        targetAudience?: string
         promptKeywords?: string
+        exactDescription?: string
         stylingTips?: string[]
     } | null>(null)
     const [isAnalyzingProduct, setIsAnalyzingProduct] = useState(false)
