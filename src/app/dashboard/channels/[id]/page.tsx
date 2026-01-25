@@ -1236,8 +1236,11 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
             // CRITICAL: No text or graphics on image
             enhancedPrompt += ' IMPORTANT: NO TEXT, NO WATERMARKS, NO GRAPHICS, NO LOGOS, NO CAPTIONS on the image. Pure visual only, clean image.'
             
+            // CRITICAL: Fixed camera angle like livestream
+            enhancedPrompt += ' FIXED CAMERA ANGLE: Static tripod shot, full body frame, model centered. NO zoom, NO camera movement, NO angle change. Same framing as a livestream.'
+            
             // Add photography style for realism
-            enhancedPrompt += ' iPhone camera quality, smartphone photo, natural lighting, TikTok/Reels style, 9:16 vertical format.'
+            enhancedPrompt += ' iPhone camera quality on tripod, ring light, 9:16 vertical format.'
 
             const res = await fetch('/api/imagen/generate', {
                 method: 'POST',

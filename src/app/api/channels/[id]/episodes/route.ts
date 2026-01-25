@@ -1407,83 +1407,90 @@ ${customContent}
             voiceOverInstr = `CONTENT TYPE: FASHION SHOWCASE / OUTFIT TRY-ON (Thử đồ / Quảng cáo thời trang)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-👗 CONCEPT: Virtual Model thử đồ, showcase trang phục - Style TikTok/Reels
+👗 CONCEPT: Virtual Model thử đồ, showcase trang phục - Style TikTok/Reels Livestream
 
 ${productInfo}
 
-🎬 CẤU TRÚC VIDEO CHUẨN:
-1. HOOK (Scene 1): Mở đầu gây chú ý
-   - "Outfit hôm nay xinh lắm nè!"
-   - "Đây là bộ đồ hot nhất tuần!"
-   - Model xuất hiện, pose nhanh
+⚠️⚠️⚠️ QUAN TRỌNG NHẤT - GÓC MÁY CỐ ĐỊNH NHƯ LIVESTREAM ⚠️⚠️⚠️
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+- TẤT CẢ các scene PHẢI có CÙNG MỘT GÓC MÁY như đang livestream
+- Máy đặt cố định trên tripod, KHÔNG di chuyển, KHÔNG zoom, KHÔNG đổi góc
+- Framing: Full body shot, model đứng giữa khung hình
+- Camera angle: Ngang tầm mắt hoặc hơi thấp, giống selfie trên tripod
+- KHÔNG có close-up, KHÔNG có góc quay khác
+- Chỉ MODEL di chuyển (xoay người, đi lại, pose) - MÁY ĐỨNG YÊN
+- Như đang xem livestream bán hàng trên TikTok/Facebook
+
+🎬 CẤU TRÚC VIDEO (cùng góc máy):
+1. HOOK (Scene 1): Model xuất hiện trong frame
+   - "Xin chào! Outfit hôm nay xinh lắm nè!"
+   - Model vẫy tay chào camera
 
 2. PRODUCT REVEAL (Scene 2): Giới thiệu sản phẩm
-   - Zoom vào sản phẩm
+   - Model cầm/chỉ vào sản phẩm
    - Nói tên, màu sắc, chất liệu
-   - Highlight điểm đặc biệt
+   - VẪN CÙNG GÓC MÁY
 
-3. TRY-ON (Scene 3-4): Thử đồ
-   - Model mặc outfit
-   - Xoay người 360°
-   - Full body shot
-   - Chi tiết các góc
+3. TRY-ON (Scene 3-4): Show outfit
+   - Model xoay người 360° (MÁY ĐỨNG YÊN)
+   - Đi lại trong frame
+   - Pose các kiểu
 
 4. STYLING TIPS (Scene 5): Gợi ý phối đồ
-   - "Phối với quần/váy X sẽ đẹp"
-   - "Đi với giày Y nha"
-   - Mix & match ideas
+   - Model chỉ vào từng chi tiết
+   - Giải thích cách phối
 
 5. DETAILS (Scene 6): Chi tiết sản phẩm
-   - Close-up chất liệu
-   - Đường may, nút, khóa
-   - Độ co giãn, thoáng mát
+   - Model kéo vải, chỉ đường may
+   - Đưa tay lên gần camera để show detail
+   - VẪN CÙNG GÓC MÁY, không zoom
 
 6. PRICE CTA (Scene 7-8): Giá và kêu gọi
-   - Hiển thị giá (gạch giá cũ nếu sale)
-   - "Chỉ còn X đồng!"
-   - "Link ở bio/comment"
-   - "Inbox để order nha"
+   - Model nói giá
+   - Vẫy tay, call to action
 
 📸 VISUAL STYLE (CRITICAL):
-- iPhone/smartphone camera quality - phong cách TikTok/Reels thực tế
-- Vertical format (9:16) BẮT BUỘC
-- Quay bằng điện thoại, tự nhiên như influencer thật
+- FIXED CAMERA ANGLE - như livestream
+- iPhone trên tripod, KHÔNG di chuyển
+- Vertical format 9:16 BẮT BUỘC
+- Full body frame, model ở giữa
+- Cùng lighting, cùng background, cùng góc máy XUYÊN SUỐT
 
-🏠 BACKGROUND CỐ ĐỊNH (RẤT QUAN TRỌNG):
-- Sử dụng CÙNG MỘT BACKGROUND cho TẤT CẢ các scene
-- Background được mô tả trong phần THÔNG TIN SẢN PHẨM
-- KHÔNG đổi background giữa các scene
-- Điều này tạo sự nhất quán như video thật
+🏠 BACKGROUND + GÓC MÁY CỐ ĐỊNH:
+- CÙNG MỘT BACKGROUND cho TẤT CẢ scenes
+- CÙNG MỘT CAMERA ANGLE cho TẤT CẢ scenes
+- CÙNG MỘT FRAMING (full body, centered)
+- Background được mô tả trong THÔNG TIN SẢN PHẨM
 
 📱 CAMERA STYLE:
-- iPhone camera quality, selfie front camera
-- Natural handheld feel, slight movement
+- iPhone camera on TRIPOD (fixed position)
+- Static shot, NO camera movement
 - Ring light hoặc natural window light
-- Mirror selfie style hoặc tripod shot
+- Full body frame, model centered
+- Same exact angle for EVERY scene
 
-🎭 MODEL EXPRESSIONS & POSES:
-- Confident, happy, natural
-- Spin/twirl khi show outfit
-- Point to product details
-- Price tag gesture
-- Wink at camera
-- "Chef's kiss" for good outfit
+🎭 MODEL MOVEMENT (không phải camera):
+- Model xoay người trong frame
+- Model đi lại trước camera
+- Model pose các kiểu
+- Model cầm/chỉ sản phẩm
+- MÁY LUÔN ĐỨNG YÊN
 
 💬 DIALOGUE STYLE:
-- Casual, friendly, Gen Z language
-- "Ê, xem nè!"
+- Casual, friendly, livestream style
+- "Ê mọi người xem nè!"
 - "Quá đẹp luôn á!"
 - "Chất vải mềm mịn lắm nha"
 - "Sale sập sàn luôn!"
-- Direct price callout
+- Direct, engaging như đang live
 
 📱 PROMPTTEXT FORMAT FOR FASHION:
-[Fashion showcase. (Model description) wearing (EXACT product description from analysis). 
-(Pose/action). (Setting: fitting room/studio/bedroom). 
-Bright lighting, vertical format 9:16. 
-(Emotion/expression). 
-PRODUCT DETAILS: (color, material, style from analysis).
-VOICE: (dialogue about the product)]
+[FIXED CAMERA SHOT, tripod mounted, full body frame. (Model description) wearing (EXACT product description). 
+Model (action: standing/posing/turning/walking in frame). 
+SAME background as all other scenes. 
+Static camera, NO zoom, NO angle change.
+iPhone quality, vertical 9:16, ring light.
+VOICE: (dialogue)]`
 
 ⚠️ QUAN TRỌNG:
 - Mỗi scene PHẢI mô tả CHÍNH XÁC sản phẩm (dùng product keywords)
