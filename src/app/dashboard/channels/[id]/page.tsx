@@ -47,6 +47,7 @@ interface Episode {
     generatedScenes: number
     scenes: EpisodeScene[]
     categoryId: string | null
+    metadata: string | null
 }
 
 interface EpisodeCategory {
@@ -1050,8 +1051,8 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
                             <button
                                 onClick={() => setStorytellerBrollEnabled(!storytellerBrollEnabled)}
                                 className={`px-3 py-1.5 rounded-lg text-sm font-medium transition ${storytellerBrollEnabled
-                                        ? 'bg-[var(--accent-primary)] text-white'
-                                        : 'bg-[var(--bg-secondary)] text-[var(--text-muted)]'
+                                    ? 'bg-[var(--accent-primary)] text-white'
+                                    : 'bg-[var(--bg-secondary)] text-[var(--text-muted)]'
                                     }`}
                             >
                                 {storytellerBrollEnabled ? 'B-Roll ON' : '100% Host'}
@@ -1739,6 +1740,112 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
                                                 </p>
                                             </div>
                                         )}
+
+                                        {/* YouTube Strategies */}
+                                        {(() => {
+                                            const metadata = episode.metadata ? JSON.parse(episode.metadata) : null
+                                            const strategies = metadata?.youtubeStrategies
+                                            if (!strategies) return null
+
+                                            return (
+                                                <div className="px-4 py-3 border-b border-[var(--border-subtle)]">
+                                                    <h4 className="text-sm font-semibold mb-3 flex items-center gap-2">
+                                                        📺 YouTube Strategies
+                                                    </h4>
+                                                    <div className="space-y-4">
+                                                        {/* 3 Titles */}
+                                                        {strategies.titles?.length > 0 && (
+                                                            <div>
+                                                                <p className="text-xs text-[var(--text-muted)] mb-1">📝 Titles (3 options)</p>
+                                                                <div className="space-y-1">
+                                                                    {strategies.titles.map((title: string, i: number) => (
+                                                                        <div key={i} className="flex items-center gap-2 bg-[var(--bg-tertiary)] p-2 rounded text-sm">
+                                                                            <span className="flex-1">{title}</span>
+                                                                            <button
+                                                                                onClick={() => {
+                                                                                    navigator.clipboard.writeText(title)
+                                                                                    toast.success('Đã copy title!')
+                                                                                }}
+                                                                                className="p-1 hover:bg-[var(--bg-hover)] rounded"
+                                                                            >
+                                                                                <Copy className="w-3 h-3" />
+                                                                            </button>
+                                                                        </div>
+                                                                    ))}
+                                                                </div>
+                                                            </div>
+                                                        )}
+
+                                                        {/* Description */}
+                                                        {strategies.description && (
+                                                            <div>
+                                                                <p className="text-xs text-[var(--text-muted)] mb-1">📄 Description</p>
+                                                                <div className="relative bg-[var(--bg-tertiary)] p-2 rounded text-sm">
+                                                                    <p className="text-[var(--text-secondary)] whitespace-pre-wrap text-xs">{strategies.description}</p>
+                                                                    <button
+                                                                        onClick={() => {
+                                                                            navigator.clipboard.writeText(strategies.description)
+                                                                            toast.success('Đã copy description!')
+                                                                        }}
+                                                                        className="absolute top-2 right-2 p-1 hover:bg-[var(--bg-hover)] rounded"
+                                                                    >
+                                                                        <Copy className="w-3 h-3" />
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        )}
+
+                                                        {/* Tags */}
+                                                        {strategies.tags?.length > 0 && (
+                                                            <div>
+                                                                <div className="flex items-center justify-between mb-1">
+                                                                    <p className="text-xs text-[var(--text-muted)]">🏷️ Tags ({strategies.tags.length})</p>
+                                                                    <button
+                                                                        onClick={() => {
+                                                                            navigator.clipboard.writeText(strategies.tags.join(', '))
+                                                                            toast.success('Đã copy tags!')
+                                                                        }}
+                                                                        className="text-xs text-[var(--accent-primary)] hover:underline"
+                                                                    >
+                                                                        Copy all
+                                                                    </button>
+                                                                </div>
+                                                                <div className="flex flex-wrap gap-1">
+                                                                    {strategies.tags.map((tag: string, i: number) => (
+                                                                        <span key={i} className="text-xs bg-[var(--bg-tertiary)] px-2 py-0.5 rounded">
+                                                                            {tag}
+                                                                        </span>
+                                                                    ))}
+                                                                </div>
+                                                            </div>
+                                                        )}
+
+                                                        {/* 3 Thumbnails */}
+                                                        {strategies.thumbnails?.length > 0 && (
+                                                            <div>
+                                                                <p className="text-xs text-[var(--text-muted)] mb-1">🖼️ Thumbnail Prompts (3 options)</p>
+                                                                <div className="space-y-1">
+                                                                    {strategies.thumbnails.map((thumb: string, i: number) => (
+                                                                        <div key={i} className="flex items-start gap-2 bg-[var(--bg-tertiary)] p-2 rounded text-xs">
+                                                                            <span className="flex-1 text-[var(--text-secondary)]">{thumb}</span>
+                                                                            <button
+                                                                                onClick={() => {
+                                                                                    navigator.clipboard.writeText(thumb)
+                                                                                    toast.success('Đã copy thumbnail prompt!')
+                                                                                }}
+                                                                                className="p-1 hover:bg-[var(--bg-hover)] rounded shrink-0"
+                                                                            >
+                                                                                <Copy className="w-3 h-3" />
+                                                                            </button>
+                                                                        </div>
+                                                                    ))}
+                                                                </div>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            )
+                                        })()}
 
                                         {/* Actions */}
                                         <div className="px-4 py-2 flex gap-2 flex-wrap border-b border-[var(--border-subtle)]">
