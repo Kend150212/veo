@@ -1490,7 +1490,7 @@ Model (action: standing/posing/turning/walking in frame).
 SAME background as all other scenes. 
 Static camera, NO zoom, NO angle change.
 iPhone quality, vertical 9:16, ring light.
-VOICE: (dialogue)]`
+VOICE: (dialogue)]
 
 ⚠️ QUAN TRỌNG:
 - Mỗi scene PHẢI mô tả CHÍNH XÁC sản phẩm (dùng product keywords)
