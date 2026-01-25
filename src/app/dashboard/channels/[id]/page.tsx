@@ -2076,9 +2076,7 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
                                     setVisualHookEnabled(false)
                                     setEmotionalCurveEnabled(false)
                                     setSpatialAudioEnabled(false)
-                                    setRecapMomentEnabled(false)
-                                    setProductPlacementEnabled(false)
-                                    setMentionChannelName(false)
+                                    setMentionChannel(false)
                                 }
                             }}
                             className="input-field w-full"
