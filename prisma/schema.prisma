@@ -170,6 +170,10 @@ model Channel {
   suggestedCharCount Int?     // AI đề xuất số nhân vật
   dialogueLanguage  String    @default("vi") // vi = tiếng Việt, en = tiếng Anh
   
+  // YouTube Defaults (nhập 1 lần, dùng cho tất cả episodes)
+  youtubeDefaults     String?   // JSON: { socialLinks, affiliateLinks, channelTagline, defaultHashtags }
+  thumbnailStyleId    String?   // ID của thumbnail style đã chọn
+  
   // Relations
   characters        ChannelCharacter[]
   episodes          Episode[]
@@ -180,6 +184,7 @@ model Channel {
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
 }
+
 
 model ChannelCharacter {
   id              String    @id @default(cuid())

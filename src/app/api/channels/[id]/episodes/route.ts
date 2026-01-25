@@ -22,11 +22,13 @@ interface EpisodeData {
     storyOutline: string
     topicIdea: string
     scenes: SceneData[]
-    // YouTube content
-    youtubeTitle?: string
-    youtubeDescription?: string
-    youtubeTags?: string[]
-    thumbnailPrompt?: string
+    // YouTube Strategies
+    youtubeStrategies?: {
+        titles: string[]
+        description: string
+        tags: string[]
+        thumbnails: string[]
+    }
 }
 
 // POST: Generate a new episode with AI-created content
@@ -539,10 +541,20 @@ Return JSON:
     "storyOutline": "Story arc",
     "topicIdea": "Theme",
     "scenes": [... ${totalScenes} scenes ...],
-    "youtubeTitle": "SEO title with hook (60 chars) in ${dialogueLangLabel}",
-    "youtubeDescription": "Description with keywords (300-500 chars) in ${dialogueLangLabel}",
-    "youtubeTags": ["tag1", "tag2", "...up to 15 tags"],
-    "thumbnailPrompt": "Thumbnail with 3-8 HOOK WORDS overlay"
+    "youtubeStrategies": {
+        "titles": [
+            "Title 1: Hook + keyword (50-60 chars, curiosity-driven)",
+            "Title 2: Question style (make viewer curious)",
+            "Title 3: Number/List style (5 secrets, 10 tips...)"
+        ],
+        "description": "Full YouTube description 800-1200 chars: Opening hook, video summary, key points, call to action. Include channel keywords. End with: #hashtag1 #hashtag2 (10-15 hashtags)",
+        "tags": ["tag1", "tag2", "tag3", "... up to 20 SEO tags, mix broad and niche"],
+        "thumbnails": [
+            "Thumbnail 1: Bold visual with HOOK TEXT overlay: [2-4 BIG WORDS based on episode]",
+            "Thumbnail 2: Same style, alternative hook words",
+            "Thumbnail 3: Same style, different angle"
+        ]
+    }
 }
 
 Generate ALL ${totalScenes} scenes. Return ONLY valid JSON.`
@@ -710,12 +722,14 @@ Return ONLY valid JSON.`
                     status: 'completed',
                     channelId: id,
                     categoryId: categoryId || null,  // Danh mục episode
-                    // Store YouTube content in metadata field (as JSON)
+                    // Store YouTube strategies in metadata field (as JSON)
                     metadata: JSON.stringify({
-                        youtubeTitle: episodeData.youtubeTitle || '',
-                        youtubeDescription: episodeData.youtubeDescription || '',
-                        youtubeTags: episodeData.youtubeTags || [],
-                        thumbnailPrompt: episodeData.thumbnailPrompt || '',
+                        youtubeStrategies: episodeData.youtubeStrategies || {
+                            titles: [],
+                            description: '',
+                            tags: [],
+                            thumbnails: []
+                        },
                         styleUsed: styleId || channel.visualStyleId || 'default',
                         charactersUsed: useCharacters ? (selectedCharacterIds.length || 'all') : 'none'
                     }),
