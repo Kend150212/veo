@@ -28,6 +28,70 @@ import {
 import toast from 'react-hot-toast'
 import { VISUAL_STYLES } from '@/lib/ai-story'
 
+// Cinematic Film Styles for Hollywood mode
+const CINEMATIC_STYLES = [
+    {
+        id: 'cinematic_documentary',
+        name: 'Cinematic Documentary',
+        nameVi: 'Phim tài liệu điện ảnh',
+        description: 'Sự kết hợp giữa Host (người thật) và CGI/B-Roll hoành tráng',
+        visualLanguage: 'Ánh sáng tự nhiên, góc quay rộng (Wide Shot), camera mượt mà (Dolly/Orbit)',
+        useCase: 'Lịch sử, khoa học, khám phá vũ trụ',
+        icon: '🎥',
+        promptKeywords: 'documentary style, natural lighting, wide establishing shots, smooth dolly movements, orbit camera, epic B-roll, narrator presence, educational yet cinematic'
+    },
+    {
+        id: 'psychological_drama',
+        name: 'Psychological Drama',
+        nameVi: 'Kịch tính tâm lý',
+        description: 'Tập trung vào nội tâm, sự cô độc, và những quyết định quan trọng',
+        visualLanguage: 'Tương phản sáng tối (Chiaroscuro), góc nghiêng (Dutch Angle), đặc tả cực cận',
+        useCase: 'Phim ngắn, câu chuyện truyền cảm hứng, bi kịch',
+        icon: '🎭',
+        promptKeywords: 'psychological drama, chiaroscuro lighting, dutch angle, extreme close-ups, sweat droplets, eye reflections, internal conflict, moody atmosphere, shadows and highlights'
+    },
+    {
+        id: 'sitcom_comedy',
+        name: 'Sitcom / Narrative Comedy',
+        nameVi: 'Hài kịch tình huống',
+        description: 'Nhịp độ nhanh, đối thoại liên tục, tình huống trớ trêu',
+        visualLanguage: 'Ánh sáng rực rỡ (High-key), góc quay trung (Medium shot), màu sắc tươi sáng',
+        useCase: 'Series đời thường, vlog cặp đôi, tình huống hài hước Gen Z',
+        icon: '😂',
+        promptKeywords: 'sitcom style, high-key bright lighting, colorful vibrant scenes, medium shots for character interaction, quick cuts, comedic timing, expressive reactions'
+    },
+    {
+        id: 'horror_thriller',
+        name: 'Horror / Supernatural Thriller',
+        nameVi: 'Kinh dị / Giật gân',
+        description: 'Tạo sự sợ hãi, tò mò qua những thứ không nhìn rõ',
+        visualLanguage: 'Ánh sáng mờ ảo (Low-key), hiệu ứng khói/haze, âm thanh vòm (Spatial Audio)',
+        useCase: 'Khám phá bí ẩn, tâm linh, truyền thuyết đô thị',
+        icon: '👻',
+        promptKeywords: 'horror atmosphere, low-key lighting, fog and haze effects, deep shadows, unseen threats, spatial audio cues, creaking sounds, jump scare potential, eerie silence'
+    },
+    {
+        id: 'commercial_storytelling',
+        name: 'High-end Commercial Storytelling',
+        nameVi: 'Quảng cáo kể chuyện',
+        description: 'Giải quyết vấn đề (Problem/Solution) một cách nhân văn',
+        visualLanguage: 'Đặc tả sản phẩm lộng lẫy, bối cảnh sạch sẽ hiện đại, chuyển cảnh mượt mà',
+        useCase: 'Tiếp thị liên kết, giới thiệu sản phẩm cao cấp, Branding cá nhân',
+        icon: '✨',
+        promptKeywords: 'commercial cinematic, product macro shots, clean modern backgrounds, smooth transitions, problem-solution narrative, aspirational lifestyle, premium quality feel'
+    },
+    {
+        id: 'bio_cgi_explainer',
+        name: 'Bio-CGI / Educational Explainer',
+        nameVi: 'Diễn họa sinh học',
+        description: 'Biến những thứ siêu nhỏ thành một vũ trụ kỳ ảo',
+        visualLanguage: 'Màu sắc Neon (Cyberpunk), ánh sáng phát quang sinh học, góc quay bay xuyên qua',
+        useCase: 'Giải thích cơ chế cơ thể, tâm lý học, công nghệ tương lai',
+        icon: '🧬',
+        promptKeywords: 'bio-CGI visualization, neon cyberpunk colors, bioluminescence effects, fly-through camera, microscopic world made epic, DNA strands, neural networks, futuristic technology'
+    }
+]
+
 interface EpisodeScene {
     id: string
     order: number
@@ -116,6 +180,7 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
     const [ctaMode, setCtaMode] = useState<'random' | 'select'>('random')
     const [selectedCTAs, setSelectedCTAs] = useState<string[]>([])
     const [voiceOverMode, setVoiceOverMode] = useState<'with_host' | 'voice_over' | 'broll_only' | 'host_dynamic_env' | 'host_storyteller' | 'cinematic_film'>('with_host')
+    const [cinematicStyle, setCinematicStyle] = useState<string>('cinematic_documentary') // Style cho mode điện ảnh
 
     // Voice settings (for voice_over mode)
     const [voiceGender, setVoiceGender] = useState<'male' | 'female' | 'auto'>('auto')
@@ -433,6 +498,7 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
                     selectedCTAs: ctaMode === 'select' ? selectedCTAs : [],
                     customContent: customContent.trim() || null,
                     voiceOverMode,
+                    cinematicStyle: voiceOverMode === 'cinematic_film' ? cinematicStyle : null,
                     voiceGender: voiceOverMode === 'voice_over' ? voiceGender : 'auto',
                     voiceTone: voiceOverMode === 'voice_over' ? voiceTone : 'warm',
                     categoryId: selectedCategoryId,
@@ -498,6 +564,7 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
                         selectedCharacterIds,
                         adaptCharactersToScript,
                         voiceOverMode,
+                        cinematicStyle: voiceOverMode === 'cinematic_film' ? cinematicStyle : null,
                         voiceGender,
                         voiceTone,
                         visualHookEnabled,
@@ -620,6 +687,7 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
                         selectedCharacterIds,
                         adaptCharactersToScript,
                         voiceOverMode,
+                        cinematicStyle: voiceOverMode === 'cinematic_film' ? cinematicStyle : null,
                         voiceGender,
                         voiceTone,
                         visualHookEnabled,
@@ -1248,6 +1316,49 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
                         </select>
                     </div>
                 </div>
+
+                {/* Cinematic Style Selection (when cinematic_film mode) */}
+                {voiceOverMode === 'cinematic_film' && (
+                    <div className="mb-4 p-4 bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/20 rounded-lg">
+                        <label className="block text-sm font-medium mb-3 flex items-center gap-2">
+                            <span className="text-xl">🎬</span>
+                            Chọn phong cách điện ảnh
+                        </label>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            {CINEMATIC_STYLES.map(style => (
+                                <div
+                                    key={style.id}
+                                    onClick={() => setCinematicStyle(style.id)}
+                                    className={`p-3 rounded-lg cursor-pointer transition-all border-2 ${
+                                        cinematicStyle === style.id
+                                            ? 'border-amber-500 bg-amber-500/20'
+                                            : 'border-transparent bg-[var(--bg-tertiary)] hover:border-amber-500/50'
+                                    }`}
+                                >
+                                    <div className="flex items-start gap-3">
+                                        <span className="text-2xl">{style.icon}</span>
+                                        <div className="flex-1">
+                                            <p className="font-medium text-sm">{style.nameVi}</p>
+                                            <p className="text-xs text-[var(--text-muted)] mt-0.5">{style.name}</p>
+                                            <p className="text-xs text-[var(--text-secondary)] mt-1">{style.description}</p>
+                                            <div className="mt-2 text-xs">
+                                                <span className="text-amber-400">📷 </span>
+                                                <span className="text-[var(--text-muted)]">{style.visualLanguage}</span>
+                                            </div>
+                                            <div className="mt-1 text-xs">
+                                                <span className="text-green-400">✅ </span>
+                                                <span className="text-[var(--text-muted)]">{style.useCase}</span>
+                                            </div>
+                                        </div>
+                                        {cinematicStyle === style.id && (
+                                            <Check className="w-5 h-5 text-amber-500 flex-shrink-0" />
+                                        )}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
 
                 {/* Storyteller B-Roll Option */}
                 {voiceOverMode === 'host_storyteller' && (

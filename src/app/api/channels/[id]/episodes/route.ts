@@ -54,6 +54,7 @@ export async function POST(
             selectedCTAs = [],
             customContent = null,
             voiceOverMode = 'with_host',
+            cinematicStyle = null, // Cinematic film style (cinematic_documentary, psychological_drama, etc.)
             voiceGender = 'auto',
             voiceTone = 'warm',
             categoryId = null,
@@ -354,8 +355,94 @@ ACTION: Ducks from explosions, shields face, dramatic reactions
 CRITICAL: Element appears [behind/beside/above] host, face always visible.
 Include "VOICE: [matching host gender]" at the end.`
         } else if (voiceOverMode === 'cinematic_film') {
+            // Cinematic style specific instructions
+            const cinematicStyleMap: Record<string, { name: string, keywords: string, guidance: string }> = {
+                'cinematic_documentary': {
+                    name: 'Cinematic Documentary (Phim tài liệu điện ảnh)',
+                    keywords: 'documentary style, natural lighting, wide establishing shots, smooth dolly movements, orbit camera, epic B-roll, narrator presence, educational yet cinematic',
+                    guidance: `📽️ CINEMATIC DOCUMENTARY STYLE:
+- Kết hợp Host/Narrator với CGI/B-Roll hoành tráng
+- Ánh sáng tự nhiên (Natural Light), mềm mại, chân thực
+- Góc quay rộng (Wide Shot) thiết lập không gian
+- Camera mượt mà: Dolly, Orbit, Crane shots
+- Xen kẽ: Interview/Host → B-Roll minh họa → Infographic/CGI
+- Giọng kể chuyện uy tín, truyền cảm
+- Phù hợp: Lịch sử, khoa học, khám phá, du lịch`
+                },
+                'psychological_drama': {
+                    name: 'Psychological Drama (Kịch tính tâm lý)',
+                    keywords: 'psychological drama, chiaroscuro lighting, dutch angle, extreme close-ups, sweat droplets, eye reflections, internal conflict, moody atmosphere, shadows and highlights',
+                    guidance: `🎭 PSYCHOLOGICAL DRAMA STYLE:
+- Tập trung vào NỘI TÂM, xung đột bên trong nhân vật
+- Ánh sáng Chiaroscuro: tương phản MẠNH giữa sáng và tối
+- Dutch Angle (góc nghiêng) tạo cảm giác bất ổn
+- Extreme Close-up: mồ hôi, ánh mắt, run rẩy, thở gấp
+- Nhịp CHẬM, để khán giả cảm nhận sâu
+- Âm thanh: im lặng căng thẳng, nhịp tim, tiếng thở
+- Phù hợp: Bi kịch, nội tâm, quyết định khó khăn`
+                },
+                'sitcom_comedy': {
+                    name: 'Sitcom / Narrative Comedy (Hài kịch tình huống)',
+                    keywords: 'sitcom style, high-key bright lighting, colorful vibrant scenes, medium shots for character interaction, quick cuts, comedic timing, expressive reactions',
+                    guidance: `😂 SITCOM / COMEDY STYLE:
+- Nhịp độ NHANH, dialogue liên tục, timing hài hước
+- Ánh sáng High-key: rực rỡ, đầy màu sắc, vui tươi
+- Medium shots để thấy tương tác giữa các nhân vật
+- Quick cuts theo nhịp joke, reaction shots ngay sau punchline
+- Biểu cảm PHÓNG ĐẠI, cử chỉ lớn
+- Âm thanh: tiếng cười, sound effects hài, nhạc upbeat
+- Phù hợp: Series đời thường, tình huống hài Gen Z`
+                },
+                'horror_thriller': {
+                    name: 'Horror / Supernatural Thriller (Kinh dị / Giật gân)',
+                    keywords: 'horror atmosphere, low-key lighting, fog and haze effects, deep shadows, unseen threats, spatial audio cues, creaking sounds, jump scare potential, eerie silence',
+                    guidance: `👻 HORROR / THRILLER STYLE:
+- Tạo sợ hãi bằng những thứ KHÔNG NHÌN RÕ
+- Ánh sáng Low-key: mờ ảo, nhiều bóng tối
+- Hiệu ứng khói, haze, sương mù
+- Camera: slow push-in, sudden zoom, POV victim
+- Jump scare: xây dựng tension → silence → BÙM
+- Spatial Audio QUAN TRỌNG: tiếng bước chân từ phía sau, thì thầm
+- Phù hợp: Tâm linh, truyền thuyết đô thị, bí ẩn`
+                },
+                'commercial_storytelling': {
+                    name: 'High-end Commercial Storytelling (Quảng cáo kể chuyện)',
+                    keywords: 'commercial cinematic, product macro shots, clean modern backgrounds, smooth transitions, problem-solution narrative, aspirational lifestyle, premium quality feel',
+                    guidance: `✨ COMMERCIAL STORYTELLING STYLE:
+- Kể chuyện Problem → Solution một cách NHÂN VĂN
+- Product shots: Macro lộng lẫy, ánh sáng hoàn hảo
+- Bối cảnh: Sạch sẽ, hiện đại, aspirational
+- Chuyển cảnh mượt mà: "Nỗi đau" → "Sự giải thoát"
+- Màu sắc: Premium, gold tones, clean whites
+- Nhân vật: Real người, relatable story
+- Phù hợp: Affiliate marketing, premium branding`
+                },
+                'bio_cgi_explainer': {
+                    name: 'Bio-CGI / Educational Explainer (Diễn họa sinh học)',
+                    keywords: 'bio-CGI visualization, neon cyberpunk colors, bioluminescence effects, fly-through camera, microscopic world made epic, DNA strands, neural networks, futuristic technology',
+                    guidance: `🧬 BIO-CGI / EXPLAINER STYLE:
+- Biến thế giới vi mô thành VŨ TRỤ HOÀNH TRÁNG
+- Màu sắc: Neon, Cyberpunk, phát quang sinh học
+- Camera: Fly-through xuyên qua DNA, tế bào, não bộ
+- Hiệu ứng: Particles, glow, organic movement
+- Scale shift: Zoom từ người → tế bào → phân tử
+- Âm thanh: Synth electronic, bass sâu, sci-fi ambience
+- Phù hợp: Giải thích cơ thể, tâm lý học, công nghệ`
+                }
+            }
+
+            const selectedCinematicStyle = cinematicStyleMap[cinematicStyle || 'cinematic_documentary'] || cinematicStyleMap['cinematic_documentary']
+
             voiceOverInstr = `CONTENT TYPE: HOLLYWOOD CINEMATIC FILM (Kịch bản điện ảnh Hollywood chuyên nghiệp)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎯 SELECTED STYLE: ${selectedCinematicStyle.name}
+${selectedCinematicStyle.guidance}
+
+🎨 STYLE KEYWORDS (Include in EVERY scene):
+${selectedCinematicStyle.keywords}
+
+═══════════════════════════════════════
 
 🎬 THIS IS A REAL HOLLYWOOD-STYLE FILM SCRIPT!
 - NO host narrating to camera
@@ -363,6 +450,7 @@ Include "VOICE: [matching host gender]" at the end.`
 - NO "chào các bạn" or YouTube-style content
 - Characters ACT OUT the story like a real movie
 - Include SILENT scenes, ESTABLISHING shots, TRANSITIONS
+- Apply the ${selectedCinematicStyle.name} style throughout
 
 ═══════════════════════════════════════
 🎥 HOLLYWOOD SCENE TYPES (MIX ALL TYPES):
