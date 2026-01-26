@@ -100,11 +100,12 @@ export default function NewChannelPage() {
     const [niche, setNiche] = useState('')
     const [description, setDescription] = useState('')
     const [isGeneratingDescription, setIsGeneratingDescription] = useState(false)
+    const [language, setLanguage] = useState<'vi' | 'en'>('vi') // Ngôn ngữ kênh
     
     // Branding
     const [branding, setBranding] = useState<ChannelBranding | null>(null)
     const [isGeneratingBranding, setIsGeneratingBranding] = useState(false)
-    const [expandedSection, setExpandedSection] = useState<string | null>('description')
+    const [expandedSection, setExpandedSection] = useState<string | null>('names') // Show names first
 
     // YouTube API
     const [youtubeApiKey, setYoutubeApiKey] = useState('')
@@ -145,6 +146,20 @@ export default function NewChannelPage() {
         toast.success(`Đã copy ${label}!`)
     }
 
+    // Handle selecting a suggested name - also update description
+    const handleSelectName = (newName: string) => {
+        const oldName = channelName
+        setChannelName(newName)
+        
+        // Update description to replace old name with new name
+        if (description && oldName) {
+            const updatedDescription = description.replace(new RegExp(oldName, 'gi'), newName)
+            setDescription(updatedDescription)
+        }
+        
+        toast.success(`Đã chọn tên: ${newName}`)
+    }
+
     // Generate complete branding package with AI
     const handleGenerateBranding = async () => {
         if (!channelName || !niche) {
@@ -157,7 +172,7 @@ export default function NewChannelPage() {
             const res = await fetch('/api/channels/generate-branding', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name: channelName, niche })
+                body: JSON.stringify({ name: channelName, niche, language })
             })
             const data = await res.json()
 
@@ -224,6 +239,7 @@ export default function NewChannelPage() {
                     name: channelName, 
                     niche, 
                     description,
+                    dialogueLanguage: language,
                     brandingData: branding ? JSON.stringify(branding) : null
                 })
             })
@@ -495,6 +511,40 @@ export default function NewChannelPage() {
                                 </p>
                             </div>
 
+                            {/* Language Selection */}
+                            <div>
+                                <label className="block text-sm font-medium mb-2">🌐 Ngôn ngữ kênh</label>
+                                <div className="flex gap-2">
+                                    <button
+                                        type="button"
+                                        onClick={() => setLanguage('vi')}
+                                        className={`flex-1 py-3 px-4 rounded-lg font-medium transition flex items-center justify-center gap-2 ${
+                                            language === 'vi'
+                                                ? 'bg-[var(--accent-primary)] text-white'
+                                                : 'bg-[var(--bg-tertiary)] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]'
+                                        }`}
+                                    >
+                                        🇻🇳 Tiếng Việt
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setLanguage('en')}
+                                        className={`flex-1 py-3 px-4 rounded-lg font-medium transition flex items-center justify-center gap-2 ${
+                                            language === 'en'
+                                                ? 'bg-[var(--accent-primary)] text-white'
+                                                : 'bg-[var(--bg-tertiary)] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]'
+                                        }`}
+                                    >
+                                        🇺🇸 English
+                                    </button>
+                                </div>
+                                <p className="text-xs text-[var(--text-muted)] mt-1">
+                                    {language === 'vi' 
+                                        ? 'Mô tả, kịch bản sẽ được tạo bằng tiếng Việt'
+                                        : 'Description, scripts will be generated in English'}
+                                </p>
+                            </div>
+
                             {/* AI Branding Generator - Main Feature */}
                             <div className="p-4 bg-gradient-to-r from-purple-500/10 via-pink-500/10 to-orange-500/10 border border-purple-500/30 rounded-lg">
                                 <div className="flex items-center justify-between mb-4">
@@ -551,10 +601,7 @@ export default function NewChannelPage() {
                                                     {branding.nameSuggestions.map((suggestion, i) => (
                                                         <div 
                                                             key={i} 
-                                                            onClick={() => {
-                                                                setChannelName(suggestion.name)
-                                                                toast.success(`Đã chọn tên: ${suggestion.name}`)
-                                                            }}
+                                                            onClick={() => handleSelectName(suggestion.name)}
                                                             className="p-3 bg-[var(--bg-tertiary)] rounded-lg cursor-pointer hover:bg-yellow-500/20 hover:border-yellow-500/50 border border-transparent transition group"
                                                         >
                                                             <div className="flex items-center justify-between">

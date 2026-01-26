@@ -12,7 +12,7 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
         }
 
-        const { name, niche } = await req.json()
+        const { name, niche, language = 'vi' } = await req.json()
 
         if (!name || !niche) {
             return NextResponse.json(
@@ -20,6 +20,11 @@ export async function POST(req: Request) {
                 { status: 400 }
             )
         }
+
+        const isVietnamese = language === 'vi'
+        const langInstruction = isVietnamese 
+            ? 'Tạo nội dung bằng TIẾNG VIỆT. Mô tả, tags có thể mix tiếng Anh cho SEO.'
+            : 'Create content in ENGLISH. Description, tags should be in English with some Vietnamese keywords for SEO.'
 
         // Get AI config from user settings
         const aiConfig = await getAIConfigFromSettings(session.user.id)
@@ -36,6 +41,9 @@ Hãy tạo TRỌN BỘ BRANDING cho kênh YouTube dựa trên thông tin:
 
 🏷️ TÊN KÊNH HIỆN TẠI: ${name}
 📌 CHỦ ĐỀ/NICHE: ${niche}
+🌐 NGÔN NGỮ: ${isVietnamese ? 'Tiếng Việt' : 'English'}
+
+⚠️ ${langInstruction}
 
 Trả về JSON với format sau (QUAN TRỌNG: chỉ trả về JSON, không có text khác):
 
