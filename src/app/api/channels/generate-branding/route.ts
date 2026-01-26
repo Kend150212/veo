@@ -34,12 +34,27 @@ export async function POST(req: Request) {
         const prompt = `Bạn là một chuyên gia branding và marketing YouTube hàng đầu. 
 Hãy tạo TRỌN BỘ BRANDING cho kênh YouTube dựa trên thông tin:
 
-🏷️ TÊN KÊNH: ${name}
+🏷️ TÊN KÊNH HIỆN TẠI: ${name}
 📌 CHỦ ĐỀ/NICHE: ${niche}
 
 Trả về JSON với format sau (QUAN TRỌNG: chỉ trả về JSON, không có text khác):
 
 {
+  "nameSuggestions": [
+    {
+      "name": "Tên kênh gợi ý 1 - hay hơn, catchy hơn, dễ nhớ",
+      "reason": "Giải thích ngắn tại sao tên này hay"
+    },
+    {
+      "name": "Tên kênh gợi ý 2 - khác biệt, unique",
+      "reason": "Giải thích ngắn"
+    },
+    {
+      "name": "Tên kênh gợi ý 3 - sáng tạo, viral potential",
+      "reason": "Giải thích ngắn"
+    }
+  ],
+
   "description": "Mô tả kênh chi tiết 300-500 từ bằng tiếng Việt, bao gồm: giới thiệu kênh với slogan hấp dẫn, nội dung chính (bullet points), đối tượng khán giả, lịch đăng video, giá trị cam kết, call to action mời subscribe. Sử dụng emoji phù hợp. Format dễ đọc.",
   
   "tags": ["15-20 tags/keywords SEO phù hợp cho kênh, tiếng Việt và tiếng Anh mix"],

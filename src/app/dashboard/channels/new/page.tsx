@@ -64,7 +64,13 @@ interface PromptOption {
     description: string
 }
 
+interface NameSuggestion {
+    name: string
+    reason: string
+}
+
 interface ChannelBranding {
+    nameSuggestions: NameSuggestion[]
     description: string
     tags: string[]
     logoPrompts: PromptOption[]
@@ -210,11 +216,16 @@ export default function NewChannelPage() {
 
         setIsAnalyzing(true)
         try {
-            // Create channel first
+            // Create channel first (include branding data if available)
             const createRes = await fetch('/api/channels', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name: channelName, niche, description })
+                body: JSON.stringify({ 
+                    name: channelName, 
+                    niche, 
+                    description,
+                    brandingData: branding ? JSON.stringify(branding) : null
+                })
             })
             const createData = await createRes.json()
 
@@ -519,6 +530,52 @@ export default function NewChannelPage() {
                                 {/* Branding Results */}
                                 {branding && (
                                     <div className="space-y-3 mt-4">
+                                        {/* Name Suggestions Section */}
+                                        {branding.nameSuggestions && branding.nameSuggestions.length > 0 && (
+                                        <div className="bg-gradient-to-r from-yellow-500/10 to-orange-500/10 border border-yellow-500/30 rounded-lg overflow-hidden">
+                                            <button
+                                                onClick={() => setExpandedSection(expandedSection === 'names' ? null : 'names')}
+                                                className="w-full p-3 flex items-center justify-between hover:bg-yellow-500/10 transition"
+                                            >
+                                                <span className="flex items-center gap-2 font-medium">
+                                                    <Sparkles className="w-4 h-4 text-yellow-400" />
+                                                    ✨ Gợi ý tên kênh hay hơn (3 options)
+                                                </span>
+                                                {expandedSection === 'names' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                                            </button>
+                                            {expandedSection === 'names' && (
+                                                <div className="p-3 pt-0 space-y-2">
+                                                    <p className="text-xs text-[var(--text-muted)] mb-2">
+                                                        Click vào tên để sử dụng:
+                                                    </p>
+                                                    {branding.nameSuggestions.map((suggestion, i) => (
+                                                        <div 
+                                                            key={i} 
+                                                            onClick={() => {
+                                                                setChannelName(suggestion.name)
+                                                                toast.success(`Đã chọn tên: ${suggestion.name}`)
+                                                            }}
+                                                            className="p-3 bg-[var(--bg-tertiary)] rounded-lg cursor-pointer hover:bg-yellow-500/20 hover:border-yellow-500/50 border border-transparent transition group"
+                                                        >
+                                                            <div className="flex items-center justify-between">
+                                                                <span className="font-semibold text-yellow-300 group-hover:text-yellow-200">
+                                                                    {suggestion.name}
+                                                                </span>
+                                                                <span className="text-xs px-2 py-1 bg-yellow-500/20 text-yellow-300 rounded opacity-0 group-hover:opacity-100 transition">
+                                                                    Click để chọn
+                                                                </span>
+                                                            </div>
+                                                            <p className="text-xs text-[var(--text-muted)] mt-1">{suggestion.reason}</p>
+                                                        </div>
+                                                    ))}
+                                                    <p className="text-xs text-green-400 mt-2">
+                                                        💡 Tên hiện tại: <strong>{channelName}</strong>
+                                                    </p>
+                                                </div>
+                                            )}
+                                        </div>
+                                        )}
+
                                         {/* Description Section */}
                                         <div className="bg-[var(--bg-secondary)] rounded-lg overflow-hidden">
                                             <button
