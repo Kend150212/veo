@@ -565,7 +565,7 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
         // Get character description if selected
         let characterDesc = 'A beautiful Asian female fashion model'
         if (useCharacters && channel?.characters && channel.characters.length > 0) {
-            const mainChar = selectedCharacterIds === 'all' 
+            const mainChar = (selectedCharacterIds.length === 0 || selectedCharacterIds.includes('all'))
                 ? channel.characters.find((c: ChannelCharacter) => c.isMain) || channel.characters[0]
                 : channel.characters.find((c: ChannelCharacter) => selectedCharacterIds.includes(c.id))
             
@@ -2300,8 +2300,8 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                             </div>
                         </div>
 
-                        {/* Background Selection - Only needed when AI generates images */}
-                        {!useOwnImages && (
+                        {/* Background & Multi-Image - Only needed when AI generates images */}
+                        {!useOwnImages && (<>
                         <div className="mb-4">
                             <label className="block text-sm font-medium mb-2">🏠 Background cố định (cho AI tạo ảnh)</label>
                             
@@ -2398,10 +2398,10 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                                 </div>
                             )}
                         </div>
-                        )}
+                        </>)}
 
                         {/* Step 3: Generate Preview Images - ONLY when NOT using own images */}
-                        {!useOwnImages && (
+                        {!useOwnImages && (<>
                         <div className="mb-4 p-4 bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/30 rounded-lg">
                             <h5 className="font-medium text-green-400 mb-3 flex items-center gap-2">
                                 <span>🎨</span>
@@ -2486,8 +2486,7 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                                 </p>
                             </div>
                         )}
-                        </div>
-                        )}
+                        </>)}
                         
                         {/* Simple mode: Just script creation */}
                         {useOwnImages && (
