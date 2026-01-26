@@ -2103,7 +2103,7 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                                     'roast_comedy', 'reaction_commentary', 'horror_survival', 'romance_drama',
                                     'gen_z_meme', 'educational_sassy', 'mystery_detective', 'breaking_4th_wall',
                                     'villain_origin', 'underdog_triumph', 'chaos_unhinged', 'food_animation', 'food_drama',
-                                    'fashion_showcase'
+                                    'fashion_showcase', 'silent_life', 'virtual_companion', 'cozy_aesthetic'
                                 ]
                                 setUseCharacters(characterModes.includes(mode))
                                 
@@ -2148,6 +2148,11 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                             </optgroup>
                             <optgroup label="🎧 Đặc biệt">
                                 <option value="asmr_satisfying">🎧 ASMR / Satisfying</option>
+                            </optgroup>
+                            <optgroup label="🌸 Slice of Life / Healing">
+                                <option value="silent_life">🌸 Silent Life (Cuộc sống thầm lặng)</option>
+                                <option value="virtual_companion">☕ Virtual Companion (Bạn đồng hành)</option>
+                                <option value="cozy_aesthetic">🏠 Cozy Aesthetic (Không gian ấm cúng)</option>
                             </optgroup>
                             <optgroup label="👗 E-Commerce / Thời trang">
                                 <option value="fashion_showcase">👗 Fashion Showcase (Thử đồ)</option>

@@ -1397,6 +1397,202 @@ ${selectedCinematicStyle.keywords}
 
 📸 PROMPTTEXT FORMAT:
 [ASMR/SATISFYING. Extreme macro close-up of (subject). Slow motion. Soft ambient lighting. Focus on (sound type) sounds. Relaxing, meditative atmosphere. Crisp audio detail.]`
+        } else if (voiceOverMode === 'silent_life') {
+            voiceOverInstr = `CONTENT TYPE: SILENT LIFE (Cuộc sống thầm lặng - Healing Content)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🌸 CONCEPT: Theo dõi cuộc sống hàng ngày của một nhân vật KOL ảo
+- KHÔNG có lời thoại, KHÔNG voice over
+- Chỉ có ambient sounds + lo-fi/chill music
+- Nhịp điệu CHẬM, thư giãn, healing
+- Tạo cảm giác gần gũi, hoài niệm, đồng cảm
+- Người xem cảm thấy như đang "sống cùng" nhân vật
+
+🏠 KHÔNG GIAN RIÊNG CỦA NHÂN VẬT:
+Nhân vật có đời sống riêng với:
+- Căn phòng/apartment riêng (consistent design qua các video)
+- Đồ vật cá nhân: sách, plant, mug yêu thích, đồ decor
+- Thú cưng (nếu có)
+- Góc làm việc/học tập
+- Bếp/góc pha cà phê
+
+📸 VISUAL STYLE:
+- Góc quay ấm áp, gần gũi
+- Natural lighting (ánh nắng qua cửa sổ)
+- Warm color palette (earth tones, cream, beige)
+- Soft focus, dreamy atmosphere
+- Studio Ghibli / Korean aesthetic vibes
+- Chi tiết về tay, bàn tay làm việc
+
+🎬 HOẠT ĐỘNG THƯỜNG NGÀY (slow pace):
+- ☕ Pha cà phê/trà buổi sáng
+- 🍳 Nấu ăn đơn giản, một mình
+- 📚 Đọc sách bên cửa sổ
+- 🧹 Dọn dẹp phòng nhẹ nhàng
+- 🌱 Chăm sóc cây cối
+- 💻 Làm việc/học tập
+- 🎨 Hoạt động sáng tạo (vẽ, viết)
+- 🛁 Skincare routine, tự chăm sóc
+- 🌙 Chuẩn bị ngủ, đọc trước khi ngủ
+- 🌧️ Ngắm mưa qua cửa sổ
+- 🍜 Ăn một mình, peaceful
+
+🔊 AMBIENT SOUNDS (CRITICAL):
+- Tiếng mưa rơi
+- Tiếng chim hót buổi sáng
+- Tiếng nước sôi
+- Tiếng xào nấu nhẹ
+- Tiếng gió
+- Tiếng giấy sột soạt
+- Tiếng bước chân nhẹ
+- Clock ticking
+- City ambience xa xa
+
+💬 DIALOGUE: KHÔNG CÓ DIALOGUE
+- Chỉ có "(Ambient: [describe sound])"
+- Không có voice over
+- Không có text on screen
+- Để âm thanh môi trường và nhạc nền kể chuyện
+
+🎵 MUSIC SUGGESTION:
+- Lo-fi hip hop
+- Acoustic guitar nhẹ
+- Piano ambient
+- Japanese city pop (nhẹ nhàng)
+
+😌 CẢM XÚC TẠO RA:
+- Bình yên, thư thái
+- Hoài niệm về những điều giản dị
+- Cảm giác đồng hành, không cô đơn
+- Healing, therapeutic
+- "Parasocial comfort"
+
+📸 PROMPTTEXT FORMAT:
+[SILENT LIFE. (Character) in their cozy (location), (action). Warm natural lighting through window. Soft, dreamy atmosphere. Intimate POV. Studio Ghibli aesthetic. Ambient sound: (sound). No dialogue. Lo-fi mood.]`
+        } else if (voiceOverMode === 'virtual_companion') {
+            voiceOverInstr = `CONTENT TYPE: VIRTUAL COMPANION (Bạn đồng hành ảo - Parasocial Bonding)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+☕ CONCEPT: Nhân vật như một người bạn ảo mà khán giả "nuôi"
+- KHÔNG lời thoại trực tiếp
+- Nhân vật sống cuộc sống riêng, khán giả quan sát
+- Tạo bond mạnh mẽ qua thời gian
+- Consistent character design & living space
+- Mỗi video = 1 ngày/khoảnh khắc trong cuộc sống
+
+🏡 WORLD BUILDING:
+Nhân vật có universe riêng:
+- Căn hộ/phòng với layout consistent
+- Những đồ vật "signature" (mug, gối, blanket yêu thích)
+- Routine hàng ngày
+- Mùa/thời tiết thay đổi theo video
+- Có thể có thú cưng là supporting character
+
+📸 VISUAL APPROACH:
+- Fixed camera angles (như security cam ấm áp)
+- Natural time passing (sáng → trưa → tối)
+- Seasonal changes (mưa, nắng, tuyết, lá rơi)
+- Cozy, cottagecore aesthetic
+- Soft, muted color palette
+- Detail shots: bàn tay, tách trà, ánh sáng
+
+🎬 EPISODE THEMES:
+- "Một buổi sáng của [tên]"
+- "[Tên] nấu ăn ngày mưa"
+- "Study with [tên]" (không nói)
+- "Buổi tối của [tên]"
+- "[Tên] dọn phòng mùa thu"
+- "Weekend của [tên]"
+- "[Tên] và chú mèo"
+
+🔊 SOUND DESIGN:
+- Layer 1: Room tone (background hum)
+- Layer 2: Activity sounds (cooking, writing)
+- Layer 3: Nature (birds, rain, wind)
+- Layer 4: Lo-fi/ambient music
+- NO voice, NO narration
+
+💬 DIALOGUE FORMAT:
+Thay vì dialogue, mô tả:
+- "(Tiếng nước đổ vào ấm)"
+- "(Tiếng mưa nhẹ bên ngoài)"
+- "(Tiếng giấy sột soạt)"
+- "(Ambient: city sounds from window)"
+
+🎭 CHARACTER BEHAVIOR:
+- Cử chỉ nhỏ, tự nhiên
+- Biểu cảm subtle (mỉm cười một mình)
+- Moments of stillness
+- Small rituals (cách pha trà, cách gấp chăn)
+- Occasionally look at "camera" nhẹ nhàng
+
+📸 PROMPTTEXT FORMAT:
+[VIRTUAL COMPANION. (Character) in their personal space, (quiet activity). Consistent room design. Warm, cozy lighting. Fixed angle like gentle observation. Ambient sounds: (sounds). Soft smile, peaceful expression. No dialogue. Cottagecore/lo-fi aesthetic.]`
+        } else if (voiceOverMode === 'cozy_aesthetic') {
+            voiceOverInstr = `CONTENT TYPE: COZY AESTHETIC (Không gian ấm cúng - Aesthetic Healing)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🏠 CONCEPT: Tập trung vào KHÔNG GIAN và ATMOSPHERE
+- Nhân vật là "cư dân" của không gian đẹp
+- Highlight: decor, ánh sáng, chi tiết nhỏ
+- Korean cafe/apartment aesthetic
+- Pinterest-worthy visuals
+- Healing through beautiful spaces
+
+🎨 AESTHETIC STYLES:
+1. Korean Minimalist
+   - White + wood + plants
+   - Clean lines
+   - Natural light
+   
+2. Cottagecore
+   - Vintage, rustic
+   - Dried flowers, books
+   - Warm earth tones
+   
+3. Japanese Modern
+   - Muji-style simplicity
+   - Tatami, paper screens
+   - Zen elements
+   
+4. Cafe Aesthetic
+   - Coffee shop vibes
+   - Warm lighting
+   - Bookshelves, plants
+
+📸 VISUAL PRIORITIES:
+- Wide establishing shots of beautiful rooms
+- Close-ups on aesthetic details
+- Golden hour lighting
+- Steam from hot drinks
+- Sunlight patterns through windows
+- Plants, books, candles as props
+- Soft textiles (blankets, curtains)
+
+🎬 SCENE STRUCTURE:
+1. Establishing shot: Beautiful space
+2. Character enters/moves through
+3. Detail shots của đồ vật
+4. Character doing simple activity
+5. Lingering on aesthetic moments
+6. Peaceful ending
+
+🔊 SOUND PALETTE:
+- Soft piano
+- Acoustic covers
+- Nature sounds
+- Coffee shop ambience
+- Crackling fireplace
+- Gentle rain
+
+💬 NO DIALOGUE:
+- Chỉ ambient sounds
+- "(Tiếng [chi tiết])"
+- Music + atmosphere kể chuyện
+- Để hình ảnh nói thay lời
+
+📸 PROMPTTEXT FORMAT:
+[COZY AESTHETIC. Beautiful (room type) with (aesthetic style). (Character) (gentle action). Soft golden light through sheer curtains. Steam rising from coffee. Plants, books, candles. Dreamy, Pinterest-worthy composition. Warm color palette. Ambient: (sounds). No dialogue. Pure visual comfort.]`
         } else if (voiceOverMode === 'fashion_showcase') {
             // Check if user is using their own images (simple mode)
             const isUserOwnImages = customContent?.includes('CHẾ ĐỘ: NGƯỜI DÙNG TỰ CÓ ẢNH')
