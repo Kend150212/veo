@@ -24,7 +24,15 @@ export async function POST(req: Request) {
         const isVietnamese = language === 'vi'
         const langInstruction = isVietnamese 
             ? 'Tạo nội dung bằng TIẾNG VIỆT. Mô tả, tags có thể mix tiếng Anh cho SEO.'
-            : 'Create content in ENGLISH. Description, tags should be in English with some Vietnamese keywords for SEO.'
+            : `⚠️ CRITICAL - ENGLISH ONLY MODE ⚠️
+ALL content MUST be in ENGLISH. Even if user input is in Vietnamese/other language:
+- TRANSLATE the concept to English first
+- Description: 100% ENGLISH (no Vietnamese text at all)
+- Name suggestions: English names
+- Tags: English keywords (can add 2-3 Vietnamese keywords at the end for local SEO)
+- All explanations and reasons: ENGLISH
+- Target audience: ENGLISH
+ABSOLUTELY NO VIETNAMESE in the main description content!`
 
         // Get AI config from user settings
         const aiConfig = await getAIConfigFromSettings(session.user.id)
@@ -41,31 +49,40 @@ Hãy tạo TRỌN BỘ BRANDING cho kênh YouTube dựa trên thông tin:
 
 🏷️ TÊN KÊNH HIỆN TẠI: ${name}
 📌 CHỦ ĐỀ/NICHE: ${niche}
-🌐 NGÔN NGỮ: ${isVietnamese ? 'Tiếng Việt' : 'English'}
+🌐 NGÔN NGỮ OUTPUT: ${isVietnamese ? 'TIẾNG VIỆT' : 'ENGLISH ONLY'}
 
-⚠️ ${langInstruction}
+${langInstruction}
+
+${!isVietnamese ? `
+🚨 REMINDER: User selected ENGLISH. 
+- If the channel name/niche above is in Vietnamese, TRANSLATE the concept
+- Generate EVERYTHING in English
+- The description should read naturally in English, not translated Vietnamese
+` : ''}
 
 Trả về JSON với format sau (QUAN TRỌNG: chỉ trả về JSON, không có text khác):
 
 {
   "nameSuggestions": [
     {
-      "name": "Tên kênh gợi ý 1 - hay hơn, catchy hơn, dễ nhớ",
-      "reason": "Giải thích ngắn tại sao tên này hay"
+      "name": "${isVietnamese ? 'Tên kênh gợi ý 1 - hay hơn, catchy, dễ nhớ' : 'Suggested name 1 - catchy, memorable, English name'}",
+      "reason": "${isVietnamese ? 'Giải thích ngắn tại sao tên này hay' : 'Brief explanation why this name is good (in English)'}"
     },
     {
-      "name": "Tên kênh gợi ý 2 - khác biệt, unique",
-      "reason": "Giải thích ngắn"
+      "name": "${isVietnamese ? 'Tên kênh gợi ý 2 - khác biệt, unique' : 'Suggested name 2 - unique, different (English)'}",
+      "reason": "${isVietnamese ? 'Giải thích ngắn' : 'Brief explanation (English)'}"
     },
     {
-      "name": "Tên kênh gợi ý 3 - sáng tạo, viral potential",
-      "reason": "Giải thích ngắn"
+      "name": "${isVietnamese ? 'Tên kênh gợi ý 3 - sáng tạo, viral potential' : 'Suggested name 3 - creative, viral potential (English)'}",
+      "reason": "${isVietnamese ? 'Giải thích ngắn' : 'Brief explanation (English)'}"
     }
   ],
 
-  "description": "Mô tả kênh chi tiết 300-500 từ bằng tiếng Việt, bao gồm: giới thiệu kênh với slogan hấp dẫn, nội dung chính (bullet points), đối tượng khán giả, lịch đăng video, giá trị cam kết, call to action mời subscribe. Sử dụng emoji phù hợp. Format dễ đọc.",
+  "description": "${isVietnamese 
+    ? 'Mô tả kênh chi tiết 300-500 từ bằng TIẾNG VIỆT, bao gồm: giới thiệu kênh với slogan hấp dẫn, nội dung chính (bullet points), đối tượng khán giả, lịch đăng video, giá trị cam kết, call to action mời subscribe. Sử dụng emoji phù hợp. Format dễ đọc.' 
+    : 'Channel description 300-500 words in ENGLISH ONLY. Include: channel intro with catchy slogan, main content (bullet points), target audience, upload schedule, value proposition, call to action for subscribe. Use appropriate emojis. Easy to read format. DO NOT write in Vietnamese!'}",
   
-  "tags": ["15-20 tags/keywords SEO phù hợp cho kênh, tiếng Việt và tiếng Anh mix"],
+  "tags": ["${isVietnamese ? '15-20 tags/keywords SEO, mix tiếng Việt và tiếng Anh' : '15-20 SEO tags/keywords in ENGLISH, can add 2-3 Vietnamese keywords at the end for local SEO'}"],
   
   "logoPrompts": [
     {
@@ -112,19 +129,26 @@ Trả về JSON với format sau (QUAN TRỌNG: chỉ trả về JSON, không c�
   },
   
   "targetAudience": {
-    "ageRange": "VD: 18-35",
-    "interests": ["sở thích 1", "sở thích 2"],
-    "demographics": "Mô tả ngắn đối tượng"
+    "ageRange": "e.g., 18-35",
+    "interests": ["${isVietnamese ? 'sở thích 1' : 'interest 1 in English'}", "${isVietnamese ? 'sở thích 2' : 'interest 2 in English'}"],
+    "demographics": "${isVietnamese ? 'Mô tả ngắn đối tượng' : 'Brief audience description in ENGLISH'}"
   }
 }
 
-YÊU CẦU QUAN TRỌNG:
+${isVietnamese ? `YÊU CẦU QUAN TRỌNG:
 1. Logo prompts phải đa dạng styles: 1 modern/minimalist, 1 creative/artistic, 1 professional/corporate
 2. Banner prompts phải đa dạng: 1 clean professional, 1 dynamic/energetic, 1 thematic/storytelling
 3. Prompts phải BẰNG TIẾNG ANH và rất chi tiết để AI image generator hiểu
 4. Mỗi prompt phải include: art style, color palette, composition, mood, specific elements
 5. Tags phải SEO-friendly, mix tiếng Việt và Anh
-6. Description phải hấp dẫn, có emoji, dễ copy vào YouTube
+6. Description phải hấp dẫn, có emoji, dễ copy vào YouTube` : `CRITICAL REQUIREMENTS:
+1. Logo prompts: diverse styles - 1 modern/minimalist, 1 creative/artistic, 1 professional/corporate
+2. Banner prompts: diverse - 1 clean professional, 1 dynamic/energetic, 1 thematic/storytelling
+3. Image prompts MUST be in ENGLISH and very detailed for AI image generator
+4. Each prompt must include: art style, color palette, composition, mood, specific elements
+5. Tags: SEO-friendly, mostly ENGLISH (add 2-3 Vietnamese keywords for local SEO)
+6. Description: MUST BE IN ENGLISH, engaging, with emojis, ready to copy to YouTube
+7. ⚠️ FINAL CHECK: The "description" field MUST be 100% in English. NO Vietnamese text!`}
 
 CHỈ TRẢ VỀ JSON, KHÔNG CÓ MARKDOWN HOẶC TEXT KHÁC.`
 
