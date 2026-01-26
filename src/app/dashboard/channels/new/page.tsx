@@ -19,7 +19,15 @@ import {
     Plus,
     Trash2,
     Wand2,
-    FileText
+    FileText,
+    Image,
+    Copy,
+    Tag,
+    PaintBucket,
+    Layout,
+    Target,
+    ChevronDown,
+    ChevronUp
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { CHANNEL_STYLES, STYLE_CATEGORIES, getStylesByCategory } from '@/lib/channel-styles'
@@ -50,6 +58,30 @@ interface CharacterInput {
     voiceStyle?: string
 }
 
+interface PromptOption {
+    style: string
+    prompt: string
+    description: string
+}
+
+interface ChannelBranding {
+    description: string
+    tags: string[]
+    logoPrompts: PromptOption[]
+    bannerPrompts: PromptOption[]
+    channelKeywords: string
+    suggestedColors: {
+        primary: string
+        secondary: string
+        accent: string
+    }
+    targetAudience: {
+        ageRange: string
+        interests: string[]
+        demographics: string
+    }
+}
+
 export default function NewChannelPage() {
     const { data: session } = useSession()
     const router = useRouter()
@@ -62,6 +94,11 @@ export default function NewChannelPage() {
     const [niche, setNiche] = useState('')
     const [description, setDescription] = useState('')
     const [isGeneratingDescription, setIsGeneratingDescription] = useState(false)
+    
+    // Branding
+    const [branding, setBranding] = useState<ChannelBranding | null>(null)
+    const [isGeneratingBranding, setIsGeneratingBranding] = useState(false)
+    const [expandedSection, setExpandedSection] = useState<string | null>('description')
 
     // YouTube API
     const [youtubeApiKey, setYoutubeApiKey] = useState('')
@@ -96,7 +133,45 @@ export default function NewChannelPage() {
     const [channelId, setChannelId] = useState<string | null>(null)
     const [isSaving, setIsSaving] = useState(false)
 
-    // Generate channel description with AI
+    // Copy to clipboard helper
+    const copyToClipboard = (text: string, label: string) => {
+        navigator.clipboard.writeText(text)
+        toast.success(`Đã copy ${label}!`)
+    }
+
+    // Generate complete branding package with AI
+    const handleGenerateBranding = async () => {
+        if (!channelName || !niche) {
+            toast.error('Vui lòng nhập tên kênh và chủ đề trước')
+            return
+        }
+
+        setIsGeneratingBranding(true)
+        try {
+            const res = await fetch('/api/channels/generate-branding', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: channelName, niche })
+            })
+            const data = await res.json()
+
+            if (data.branding) {
+                setBranding(data.branding)
+                setDescription(data.branding.description || '')
+                setExpandedSection('description')
+                toast.success('Đã tạo trọn bộ branding thành công!')
+            } else {
+                toast.error(data.error || 'Không thể tạo branding')
+            }
+        } catch (error) {
+            console.error('Generate branding error:', error)
+            toast.error('Lỗi khi tạo branding')
+        } finally {
+            setIsGeneratingBranding(false)
+        }
+    }
+
+    // Generate channel description with AI (legacy - still available)
     const handleGenerateDescription = async () => {
         if (!channelName || !niche) {
             toast.error('Vui lòng nhập tên kênh và chủ đề trước')
@@ -409,42 +484,290 @@ export default function NewChannelPage() {
                                 </p>
                             </div>
 
-                            {/* AI-Generated Description */}
-                            <div className="p-4 bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/20 rounded-lg">
-                                <div className="flex items-center justify-between mb-3">
-                                    <label className="flex items-center gap-2 text-sm font-medium">
-                                        <FileText className="w-4 h-4 text-purple-400" />
-                                        Mô tả kênh
-                                        <span className="text-xs text-[var(--text-muted)]">(AI tự động tạo)</span>
-                                    </label>
+                            {/* AI Branding Generator - Main Feature */}
+                            <div className="p-4 bg-gradient-to-r from-purple-500/10 via-pink-500/10 to-orange-500/10 border border-purple-500/30 rounded-lg">
+                                <div className="flex items-center justify-between mb-4">
+                                    <div>
+                                        <h3 className="font-semibold flex items-center gap-2">
+                                            <Sparkles className="w-5 h-5 text-yellow-400" />
+                                            AI Tạo Trọn Bộ Branding
+                                        </h3>
+                                        <p className="text-xs text-[var(--text-muted)] mt-1">
+                                            Mô tả, Tags, 3 Prompt Logo, 3 Prompt Banner
+                                        </p>
+                                    </div>
                                     <button
                                         type="button"
-                                        onClick={handleGenerateDescription}
-                                        disabled={isGeneratingDescription || !channelName || !niche}
-                                        className="flex items-center gap-2 px-3 py-1.5 text-sm bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
+                                        onClick={handleGenerateBranding}
+                                        disabled={isGeneratingBranding || !channelName || !niche}
+                                        className="flex items-center gap-2 px-4 py-2 text-sm bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed font-medium"
                                     >
-                                        {isGeneratingDescription ? (
+                                        {isGeneratingBranding ? (
                                             <>
                                                 <Loader2 className="w-4 h-4 animate-spin" />
-                                                Đang tạo...
+                                                Đang tạo branding...
                                             </>
                                         ) : (
                                             <>
                                                 <Wand2 className="w-4 h-4" />
-                                                AI Tạo mô tả
+                                                ✨ Tạo Branding
                                             </>
                                         )}
                                     </button>
                                 </div>
-                                <textarea
-                                    value={description}
-                                    onChange={(e) => setDescription(e.target.value)}
-                                    placeholder="Nhấn 'AI Tạo mô tả' để AI tự động tạo mô tả chi tiết cho kênh của bạn dựa trên tên và chủ đề..."
-                                    className="input-field min-h-[200px] text-sm"
-                                />
-                                <p className="text-xs text-[var(--text-muted)] mt-2">
-                                    💡 AI sẽ tạo mô tả bao gồm: giới thiệu kênh, nội dung chính, đối tượng khán giả, lịch đăng và call-to-action
-                                </p>
+
+                                {/* Branding Results */}
+                                {branding && (
+                                    <div className="space-y-3 mt-4">
+                                        {/* Description Section */}
+                                        <div className="bg-[var(--bg-secondary)] rounded-lg overflow-hidden">
+                                            <button
+                                                onClick={() => setExpandedSection(expandedSection === 'description' ? null : 'description')}
+                                                className="w-full p-3 flex items-center justify-between hover:bg-[var(--bg-tertiary)] transition"
+                                            >
+                                                <span className="flex items-center gap-2 font-medium">
+                                                    <FileText className="w-4 h-4 text-blue-400" />
+                                                    📝 Mô tả kênh
+                                                </span>
+                                                {expandedSection === 'description' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                                            </button>
+                                            {expandedSection === 'description' && (
+                                                <div className="p-3 pt-0">
+                                                    <div className="relative">
+                                                        <textarea
+                                                            value={description}
+                                                            onChange={(e) => setDescription(e.target.value)}
+                                                            className="input-field min-h-[200px] text-sm pr-10"
+                                                        />
+                                                        <button
+                                                            onClick={() => copyToClipboard(description, 'mô tả')}
+                                                            className="absolute top-2 right-2 p-1.5 bg-[var(--bg-tertiary)] rounded hover:bg-[var(--bg-hover)] transition"
+                                                            title="Copy mô tả"
+                                                        >
+                                                            <Copy className="w-4 h-4" />
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        {/* Tags Section */}
+                                        <div className="bg-[var(--bg-secondary)] rounded-lg overflow-hidden">
+                                            <button
+                                                onClick={() => setExpandedSection(expandedSection === 'tags' ? null : 'tags')}
+                                                className="w-full p-3 flex items-center justify-between hover:bg-[var(--bg-tertiary)] transition"
+                                            >
+                                                <span className="flex items-center gap-2 font-medium">
+                                                    <Tag className="w-4 h-4 text-green-400" />
+                                                    🏷️ Tags & Keywords ({branding.tags?.length || 0})
+                                                </span>
+                                                {expandedSection === 'tags' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                                            </button>
+                                            {expandedSection === 'tags' && (
+                                                <div className="p-3 pt-0">
+                                                    <div className="flex flex-wrap gap-2 mb-3">
+                                                        {branding.tags?.map((tag, i) => (
+                                                            <span key={i} className="px-2 py-1 bg-green-500/20 text-green-300 rounded-full text-xs">
+                                                                {tag}
+                                                            </span>
+                                                        ))}
+                                                    </div>
+                                                    <div className="flex gap-2">
+                                                        <button
+                                                            onClick={() => copyToClipboard(branding.tags?.join(', ') || '', 'tags')}
+                                                            className="text-xs px-3 py-1.5 bg-[var(--bg-tertiary)] rounded hover:bg-[var(--bg-hover)] transition flex items-center gap-1"
+                                                        >
+                                                            <Copy className="w-3 h-3" /> Copy tất cả
+                                                        </button>
+                                                    </div>
+                                                    {branding.channelKeywords && (
+                                                        <div className="mt-3 p-2 bg-[var(--bg-tertiary)] rounded">
+                                                            <p className="text-xs text-[var(--text-muted)] mb-1">Channel Keywords (cho YouTube settings):</p>
+                                                            <p className="text-sm">{branding.channelKeywords}</p>
+                                                            <button
+                                                                onClick={() => copyToClipboard(branding.channelKeywords, 'channel keywords')}
+                                                                className="mt-2 text-xs px-2 py-1 bg-[var(--bg-secondary)] rounded hover:bg-[var(--bg-hover)] transition flex items-center gap-1"
+                                                            >
+                                                                <Copy className="w-3 h-3" /> Copy
+                                                            </button>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        {/* Logo Prompts Section */}
+                                        <div className="bg-[var(--bg-secondary)] rounded-lg overflow-hidden">
+                                            <button
+                                                onClick={() => setExpandedSection(expandedSection === 'logo' ? null : 'logo')}
+                                                className="w-full p-3 flex items-center justify-between hover:bg-[var(--bg-tertiary)] transition"
+                                            >
+                                                <span className="flex items-center gap-2 font-medium">
+                                                    <Image className="w-4 h-4 text-orange-400" />
+                                                    🎨 Prompt tạo Logo (3 options)
+                                                </span>
+                                                {expandedSection === 'logo' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                                            </button>
+                                            {expandedSection === 'logo' && (
+                                                <div className="p-3 pt-0 space-y-3">
+                                                    {branding.logoPrompts?.map((logo, i) => (
+                                                        <div key={i} className="p-3 bg-[var(--bg-tertiary)] rounded-lg">
+                                                            <div className="flex items-center justify-between mb-2">
+                                                                <span className="font-medium text-sm text-orange-300">
+                                                                    Option {i + 1}: {logo.style}
+                                                                </span>
+                                                                <button
+                                                                    onClick={() => copyToClipboard(logo.prompt, `prompt logo ${i + 1}`)}
+                                                                    className="text-xs px-2 py-1 bg-orange-500/20 text-orange-300 rounded hover:bg-orange-500/30 transition flex items-center gap-1"
+                                                                >
+                                                                    <Copy className="w-3 h-3" /> Copy Prompt
+                                                                </button>
+                                                            </div>
+                                                            <p className="text-xs text-[var(--text-muted)] mb-2">{logo.description}</p>
+                                                            <div className="p-2 bg-[var(--bg-secondary)] rounded text-xs font-mono text-[var(--text-secondary)]">
+                                                                {logo.prompt}
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        {/* Banner Prompts Section */}
+                                        <div className="bg-[var(--bg-secondary)] rounded-lg overflow-hidden">
+                                            <button
+                                                onClick={() => setExpandedSection(expandedSection === 'banner' ? null : 'banner')}
+                                                className="w-full p-3 flex items-center justify-between hover:bg-[var(--bg-tertiary)] transition"
+                                            >
+                                                <span className="flex items-center gap-2 font-medium">
+                                                    <Layout className="w-4 h-4 text-pink-400" />
+                                                    🖼️ Prompt tạo Banner (3 options)
+                                                </span>
+                                                {expandedSection === 'banner' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                                            </button>
+                                            {expandedSection === 'banner' && (
+                                                <div className="p-3 pt-0 space-y-3">
+                                                    <p className="text-xs text-[var(--text-muted)]">
+                                                        📐 Kích thước chuẩn: 2560 x 1440 pixels
+                                                    </p>
+                                                    {branding.bannerPrompts?.map((banner, i) => (
+                                                        <div key={i} className="p-3 bg-[var(--bg-tertiary)] rounded-lg">
+                                                            <div className="flex items-center justify-between mb-2">
+                                                                <span className="font-medium text-sm text-pink-300">
+                                                                    Option {i + 1}: {banner.style}
+                                                                </span>
+                                                                <button
+                                                                    onClick={() => copyToClipboard(banner.prompt, `prompt banner ${i + 1}`)}
+                                                                    className="text-xs px-2 py-1 bg-pink-500/20 text-pink-300 rounded hover:bg-pink-500/30 transition flex items-center gap-1"
+                                                                >
+                                                                    <Copy className="w-3 h-3" /> Copy Prompt
+                                                                </button>
+                                                            </div>
+                                                            <p className="text-xs text-[var(--text-muted)] mb-2">{banner.description}</p>
+                                                            <div className="p-2 bg-[var(--bg-secondary)] rounded text-xs font-mono text-[var(--text-secondary)]">
+                                                                {banner.prompt}
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        {/* Colors & Target Audience */}
+                                        <div className="bg-[var(--bg-secondary)] rounded-lg overflow-hidden">
+                                            <button
+                                                onClick={() => setExpandedSection(expandedSection === 'extra' ? null : 'extra')}
+                                                className="w-full p-3 flex items-center justify-between hover:bg-[var(--bg-tertiary)] transition"
+                                            >
+                                                <span className="flex items-center gap-2 font-medium">
+                                                    <PaintBucket className="w-4 h-4 text-cyan-400" />
+                                                    🎯 Màu sắc & Đối tượng
+                                                </span>
+                                                {expandedSection === 'extra' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                                            </button>
+                                            {expandedSection === 'extra' && (
+                                                <div className="p-3 pt-0">
+                                                    {/* Colors */}
+                                                    {branding.suggestedColors && (
+                                                        <div className="mb-4">
+                                                            <p className="text-xs text-[var(--text-muted)] mb-2">Bảng màu đề xuất:</p>
+                                                            <div className="flex gap-3">
+                                                                <div className="flex items-center gap-2">
+                                                                    <div 
+                                                                        className="w-8 h-8 rounded-lg border border-white/20"
+                                                                        style={{ backgroundColor: branding.suggestedColors.primary?.split(' ')[0] || '#6366f1' }}
+                                                                    />
+                                                                    <span className="text-xs">Primary</span>
+                                                                </div>
+                                                                <div className="flex items-center gap-2">
+                                                                    <div 
+                                                                        className="w-8 h-8 rounded-lg border border-white/20"
+                                                                        style={{ backgroundColor: branding.suggestedColors.secondary?.split(' ')[0] || '#8b5cf6' }}
+                                                                    />
+                                                                    <span className="text-xs">Secondary</span>
+                                                                </div>
+                                                                <div className="flex items-center gap-2">
+                                                                    <div 
+                                                                        className="w-8 h-8 rounded-lg border border-white/20"
+                                                                        style={{ backgroundColor: branding.suggestedColors.accent?.split(' ')[0] || '#f59e0b' }}
+                                                                    />
+                                                                    <span className="text-xs">Accent</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                    
+                                                    {/* Target Audience */}
+                                                    {branding.targetAudience && (
+                                                        <div className="p-3 bg-[var(--bg-tertiary)] rounded-lg">
+                                                            <p className="text-xs text-[var(--text-muted)] mb-2 flex items-center gap-1">
+                                                                <Target className="w-3 h-3" /> Đối tượng mục tiêu:
+                                                            </p>
+                                                            <p className="text-sm mb-2">
+                                                                <span className="text-[var(--text-muted)]">Độ tuổi:</span> {branding.targetAudience.ageRange}
+                                                            </p>
+                                                            <p className="text-sm mb-2">{branding.targetAudience.demographics}</p>
+                                                            {branding.targetAudience.interests?.length > 0 && (
+                                                                <div className="flex flex-wrap gap-1">
+                                                                    {branding.targetAudience.interests.map((interest, i) => (
+                                                                        <span key={i} className="px-2 py-0.5 bg-cyan-500/20 text-cyan-300 rounded text-xs">
+                                                                            {interest}
+                                                                        </span>
+                                                                    ))}
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Simple description-only option */}
+                                {!branding && (
+                                    <div className="mt-3 pt-3 border-t border-[var(--border-color)]">
+                                        <p className="text-xs text-[var(--text-muted)] mb-2">Hoặc chỉ tạo mô tả đơn giản:</p>
+                                        <button
+                                            type="button"
+                                            onClick={handleGenerateDescription}
+                                            disabled={isGeneratingDescription || !channelName || !niche}
+                                            className="flex items-center gap-2 px-3 py-1.5 text-xs bg-[var(--bg-tertiary)] hover:bg-[var(--bg-hover)] text-[var(--text-secondary)] rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
+                                        >
+                                            {isGeneratingDescription ? (
+                                                <>
+                                                    <Loader2 className="w-3 h-3 animate-spin" />
+                                                    Đang tạo...
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <FileText className="w-3 h-3" />
+                                                    Chỉ tạo mô tả
+                                                </>
+                                            )}
+                                        </button>
+                                    </div>
+                                )}
                             </div>
 
                             <div className="p-4 bg-[var(--bg-tertiary)] rounded-lg">
