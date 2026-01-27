@@ -110,6 +110,16 @@ const CINEMATIC_STYLES = [
         useCase: 'So sánh thực phẩm, battle giữa các món, drama ẩm thực viral',
         icon: '⚔️',
         promptKeywords: 'food battle drama, anthropomorphic ingredients fighting, dramatic showdown, energy effects around food, arena-style kitchen, intense expressions, action camera angles, epic food confrontation, winner loser dynamics'
+    },
+    {
+        id: 'high_end_fashion',
+        name: 'High-End Fashion Film',
+        nameVi: 'Phim thời trang cao cấp (Longchamp Style)',
+        description: 'Quảng cáo thời trang cao cấp với yếu tố SIÊU THỰC - môi trường biến đổi, chuyển cảnh mượt mà',
+        visualLanguage: 'Golden hour, FPV drone, seamless morphing, surreal transitions, nature reclaiming city',
+        useCase: 'Thời trang cao cấp, quảng cáo thương hiệu, visual art film, fashion campaign',
+        icon: '✨',
+        promptKeywords: 'high fashion film, surreal transitions, seamless morphing, golden hour, Haussmann architecture, Paris rooftops, drone shots, FPV tracking, dreamcore aesthetic, environment transformation, portal transitions, volumetric lighting, 8K photorealistic'
     }
 ]
 
@@ -405,7 +415,7 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
         'gen_z_meme' | 'educational_sassy' | 'mystery_detective' | 'breaking_4th_wall' | 'villain_origin' |
         'underdog_triumph' | 'chaos_unhinged' | 'food_animation' | 'food_drama' | 'fashion_showcase'
     >('with_host')
-    
+
     // Fashion showcase product state
     const [productImage, setProductImage] = useState<string>('')
     const [productImageBase64, setProductImageBase64] = useState<string>('')
@@ -439,27 +449,27 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
         salePrice: '',
         promotion: ''
     })
-    
+
     // Image generation state
     const [generatingImageForScene, setGeneratingImageForScene] = useState<string | null>(null)
-    
+
     // Fashion background state (saved to channel)
     const [fashionBackground, setFashionBackground] = useState('fitting_room')
     const [customBackground, setCustomBackground] = useState('')
     const [backgroundImage, setBackgroundImage] = useState<string | null>(null)
     const [backgroundImageBase64, setBackgroundImageBase64] = useState<string | null>(null)
-    
+
     // Multiple product images (different angles)
-    const [productImages, setProductImages] = useState<{file: File, base64: string, name: string}[]>([])
-    
+    const [productImages, setProductImages] = useState<{ file: File, base64: string, name: string }[]>([])
+
     // Fashion Preview Images (generated BEFORE script)
-    const [fashionPreviewImages, setFashionPreviewImages] = useState<{url: string, prompt: string}[]>([])
+    const [fashionPreviewImages, setFashionPreviewImages] = useState<{ url: string, prompt: string }[]>([])
     const [isGeneratingPreview, setIsGeneratingPreview] = useState(false)
     const [fashionSceneCount, setFashionSceneCount] = useState(6)
-    
+
     // Fashion mode: Use own images (don't generate, just create script)
     const [useOwnImages, setUseOwnImages] = useState(true) // Default: user has their own images
-    
+
     // Download image helper function
     const downloadImage = (dataUrl: string, filename: string) => {
         // Convert data URL to blob
@@ -472,7 +482,7 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
             u8arr[n] = bstr.charCodeAt(n)
         }
         const blob = new Blob([u8arr], { type: mime })
-        
+
         // Create download link
         const url = URL.createObjectURL(blob)
         const link = document.createElement('a')
@@ -483,12 +493,12 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
         document.body.removeChild(link)
         URL.revokeObjectURL(url)
     }
-    
+
     // Handle background image upload
     const handleBackgroundImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]
         if (!file) return
-        
+
         const reader = new FileReader()
         reader.onload = () => {
             const base64 = reader.result as string
@@ -498,14 +508,14 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
         }
         reader.readAsDataURL(file)
     }
-    
+
     // Handle multiple product images upload
     const handleMultiProductImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files
         if (!files) return
-        
-        const newImages: {file: File, base64: string, name: string}[] = []
-        
+
+        const newImages: { file: File, base64: string, name: string }[] = []
+
         for (let i = 0; i < files.length; i++) {
             const file = files[i]
             const base64 = await new Promise<string>((resolve) => {
@@ -515,31 +525,31 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
             })
             newImages.push({ file, base64, name: file.name })
         }
-        
+
         setProductImages(prev => [...prev, ...newImages])
-        
+
         // Set first image as main product image if not set
         if (newImages.length > 0 && !productImageBase64) {
             setProductImageBase64(newImages[0].base64)
             setProductImage(newImages[0].base64)
         }
     }
-    
+
     // Remove product image
     const removeProductImage = (index: number) => {
         setProductImages(prev => prev.filter((_, i) => i !== index))
     }
-    
+
     // Generate Fashion Preview Images (BEFORE creating script)
     const handleGenerateFashionPreviews = async () => {
         if (!productImageBase64) {
             toast.error('Vui lòng upload ảnh sản phẩm trước')
             return
         }
-        
+
         setIsGeneratingPreview(true)
         setFashionPreviewImages([])
-        
+
         // Get background description
         let backgroundDesc = ''
         const selectedBg = FASHION_BACKGROUNDS.find(bg => bg.id === fashionBackground)
@@ -550,30 +560,30 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
         } else if (selectedBg) {
             backgroundDesc = selectedBg.keywords
         }
-        
+
         // Get product description - VERY DETAILED
         const productDesc = productAnalysis?.exactDescription || productAnalysis?.promptKeywords || ''
         const productColor = productAnalysis?.color || ''
         const productType = productAnalysis?.productType || 'dress'
         const productMaterial = productAnalysis?.material || ''
-        
+
         // Build EXACT product specification
-        const exactProduct = productDesc 
+        const exactProduct = productDesc
             ? `EXACT CLOTHING FROM REFERENCE IMAGE: ${productDesc}. Color: ${productColor}. Material: ${productMaterial}.`
             : `The exact clothing item shown in the reference image.`
-        
+
         // Get character description if selected
         let characterDesc = 'A beautiful Asian female fashion model'
         if (useCharacters && channel?.characters && channel.characters.length > 0) {
             const mainChar = (selectedCharacterIds.length === 0 || selectedCharacterIds.includes('all'))
                 ? channel.characters.find((c: ChannelCharacter) => c.isMain) || channel.characters[0]
                 : channel.characters.find((c: ChannelCharacter) => selectedCharacterIds.includes(c.id))
-            
+
             if (mainChar) {
                 characterDesc = mainChar.fullDescription || `${mainChar.name}, ${mainChar.appearance || ''}`
             }
         }
-        
+
         // Define scene types for fashion showcase - WITH STRICT PRODUCT REFERENCE
         const sceneTypes = [
             { type: 'intro', prompt: `${characterDesc} standing confidently in ${backgroundDesc}. Full body shot. The model is wearing ${exactProduct} Friendly smile, waving at camera.` },
@@ -585,10 +595,10 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
             { type: 'cta', prompt: `${characterDesc} making heart gesture in ${backgroundDesc}. Full body shot. The model is wearing ${exactProduct} Smiling warmly at camera.` },
             { type: 'price', prompt: `${characterDesc} giving thumbs up in ${backgroundDesc}. Full body shot. The model is wearing ${exactProduct} Excited, happy expression.` },
         ]
-        
+
         const selectedScenes = sceneTypes.slice(0, fashionSceneCount)
-        const generated: {url: string, prompt: string}[] = []
-        
+        const generated: { url: string, prompt: string }[] = []
+
         // Build the reference instruction
         const referenceInstruction = `
 CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the reference image I'm providing.
@@ -598,14 +608,14 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
 - NO text, NO watermarks, NO graphics on the image
 - iPhone quality photo, vertical 9:16 format
 - FIXED camera angle like a livestream tripod shot`
-        
+
         try {
             for (let i = 0; i < selectedScenes.length; i++) {
                 const scene = selectedScenes[i]
                 toast.loading(`Đang tạo ảnh ${i + 1}/${selectedScenes.length}...`, { id: 'fashion-preview' })
-                
+
                 const fullPrompt = scene.prompt + referenceInstruction
-                
+
                 const res = await fetch('/api/imagen/generate', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -615,7 +625,7 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                         aspectRatio: '9:16'
                     })
                 })
-                
+
                 if (res.ok) {
                     const data = await res.json()
                     generated.push({ url: data.imageUrl, prompt: scene.prompt })
@@ -625,7 +635,7 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                     generated.push({ url: '', prompt: scene.prompt + ' (FAILED)' })
                 }
             }
-            
+
             setFashionPreviewImages(generated)
             toast.success(`Đã tạo ${generated.filter(g => g.url).length}/${selectedScenes.length} ảnh!`, { id: 'fashion-preview' })
         } catch (error) {
@@ -939,7 +949,7 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
     // Build content string for fashion showcase
     const buildFashionContent = () => {
         const parts = []
-        
+
         // MODE indicator
         if (useOwnImages) {
             parts.push('⚠️ CHẾ ĐỘ: NGƯỜI DÙNG TỰ CÓ ẢNH/VIDEO')
@@ -948,13 +958,13 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
             parts.push('→ CHỈ tập trung vào: hành động, lời thoại, thông tin sản phẩm')
             parts.push('')
         }
-        
+
         // Product info
         if (productInfo.name) parts.push(`🏷️ Tên sản phẩm: ${productInfo.name}`)
         if (productInfo.price) parts.push(`💰 Giá gốc: ${productInfo.price}`)
         if (productInfo.salePrice) parts.push(`🔥 Giá sale: ${productInfo.salePrice}`)
         if (productInfo.promotion) parts.push(`🎁 Khuyến mãi: ${productInfo.promotion}`)
-        
+
         // Background info - ONLY when NOT using own images
         if (!useOwnImages) {
             const selectedBg = FASHION_BACKGROUNDS.find(bg => bg.id === fashionBackground)
@@ -971,24 +981,24 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                 parts.push('⚠️ QUAN TRỌNG: Tất cả scene PHẢI có cùng background này!')
             }
         }
-        
+
         // AI Analysis - Product details
         if (productAnalysis) {
             parts.push('')
             parts.push('🤖 AI PHÂN TÍCH SẢN PHẨM:')
-            
+
             // Exact description
             if (productAnalysis.exactDescription) {
                 parts.push(`👗 Mô tả: ${productAnalysis.exactDescription}`)
             }
-            
+
             if (productAnalysis.productType) parts.push(`- Loại: ${productAnalysis.productType} ${productAnalysis.productSubtype ? `(${productAnalysis.productSubtype})` : ''}`)
             if (productAnalysis.color) parts.push(`- Màu: ${productAnalysis.color}`)
             if (productAnalysis.material) parts.push(`- Chất liệu: ${productAnalysis.material}`)
             if (productAnalysis.pattern) parts.push(`- Họa tiết: ${productAnalysis.pattern}`)
             if (productAnalysis.fit) parts.push(`- Form dáng: ${productAnalysis.fit}`)
             if (productAnalysis.style) parts.push(`- Style: ${productAnalysis.style}`)
-            
+
             if (productAnalysis.stylingTips?.length) {
                 parts.push('')
                 parts.push('💡 Gợi ý phối đồ:')
@@ -997,13 +1007,13 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                 })
             }
         }
-        
+
         // Visual style - ONLY when AI generates images
         if (!useOwnImages) {
             parts.push('')
             parts.push('📸 VISUAL STYLE: iPhone camera quality, vertical 9:16, TikTok/Reels style')
         }
-        
+
         return parts.length > 0 ? parts.join('\n') : null
     }
 
@@ -1022,8 +1032,8 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                     mentionChannel,
                     ctaMode,
                     selectedCTAs: ctaMode === 'select' ? selectedCTAs : [],
-                    customContent: voiceOverMode === 'fashion_showcase' 
-                        ? buildFashionContent() 
+                    customContent: voiceOverMode === 'fashion_showcase'
+                        ? buildFashionContent()
                         : (customContent.trim() || null),
                     voiceOverMode,
                     // Fashion showcase specific
@@ -1327,7 +1337,7 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
             const base64 = event.target?.result as string
             setProductImage(base64)
             setProductImageBase64(base64)
-            
+
             // Auto-analyze the product
             setIsAnalyzingProduct(true)
             try {
@@ -1364,7 +1374,7 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
         try {
             // Build enhanced prompt with EXACT product description FIRST
             let enhancedPrompt = ''
-            
+
             // PUT PRODUCT DESCRIPTION FIRST (highest priority for AI)
             if (productAnalysis?.exactDescription) {
                 enhancedPrompt = `THE MODEL IS WEARING: ${productAnalysis.exactDescription}. `
@@ -1372,10 +1382,10 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
             if (productAnalysis?.promptKeywords) {
                 enhancedPrompt += `EXACT CLOTHING DETAILS: ${productAnalysis.promptKeywords}. `
             }
-            
+
             // Then add the scene prompt
             enhancedPrompt += promptText
-            
+
             // Add background info
             const selectedBg = FASHION_BACKGROUNDS.find(bg => bg.id === fashionBackground)
             if (fashionBackground === 'uploaded' && backgroundImageBase64) {
@@ -1385,13 +1395,13 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
             } else if (selectedBg) {
                 enhancedPrompt += `. Background: ${selectedBg.keywords}.`
             }
-            
+
             // CRITICAL: No text or graphics on image
             enhancedPrompt += ' IMPORTANT: NO TEXT, NO WATERMARKS, NO GRAPHICS, NO LOGOS, NO CAPTIONS on the image. Pure visual only, clean image.'
-            
+
             // CRITICAL: Fixed camera angle like livestream
             enhancedPrompt += ' FIXED CAMERA ANGLE: Static tripod shot, full body frame, model centered. NO zoom, NO camera movement, NO angle change. Same framing as a livestream.'
-            
+
             // Add photography style for realism
             enhancedPrompt += ' iPhone camera quality on tripod, ring light, 9:16 vertical format.'
 
@@ -2106,7 +2116,7 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                                     'fashion_showcase', 'silent_life', 'virtual_companion', 'cozy_aesthetic'
                                 ]
                                 setUseCharacters(characterModes.includes(mode))
-                                
+
                                 // Fashion Showcase: Auto-disable ALL advanced features
                                 if (mode === 'fashion_showcase') {
                                     setVisualHookEnabled(false)
@@ -2168,29 +2178,28 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                             <span className="text-xl">👗</span>
                             Fashion Showcase
                         </h4>
-                        
+
                         {/* Mode Toggle */}
                         <div className="mb-4 p-3 bg-[var(--bg-tertiary)] rounded-lg flex items-center justify-between">
                             <div>
                                 <p className="font-medium text-sm">📷 Bạn đã có sẵn ảnh/video?</p>
                                 <p className="text-xs text-[var(--text-muted)]">
-                                    {useOwnImages 
-                                        ? 'Chỉ tạo kịch bản, không mô tả nhân vật/background' 
+                                    {useOwnImages
+                                        ? 'Chỉ tạo kịch bản, không mô tả nhân vật/background'
                                         : 'AI sẽ tạo ảnh preview cho bạn'}
                                 </p>
                             </div>
                             <button
                                 onClick={() => setUseOwnImages(!useOwnImages)}
-                                className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
-                                    useOwnImages 
-                                        ? 'bg-green-500 text-white' 
+                                className={`px-4 py-2 rounded-lg text-sm font-medium transition ${useOwnImages
+                                        ? 'bg-green-500 text-white'
                                         : 'bg-purple-500 text-white'
-                                }`}
+                                    }`}
                             >
                                 {useOwnImages ? '✅ Có, tôi tự có ảnh' : '🎨 AI tạo ảnh'}
                             </button>
                         </div>
-                        
+
                         {/* Product Image Upload */}
                         <div className="mb-4">
                             <label className="block text-sm font-medium mb-2">📸 Hình ảnh sản phẩm (để AI phân tích)</label>
@@ -2208,9 +2217,9 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                                         className="block w-full p-4 border-2 border-dashed border-pink-500/30 rounded-lg cursor-pointer hover:border-pink-500/60 transition text-center"
                                     >
                                         {productImage ? (
-                                            <img 
-                                                src={productImage} 
-                                                alt="Product" 
+                                            <img
+                                                src={productImage}
+                                                alt="Product"
                                                 className="max-h-32 mx-auto rounded"
                                             />
                                         ) : (
@@ -2221,7 +2230,7 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                                         )}
                                     </label>
                                 </div>
-                                
+
                                 {/* AI Analysis Result */}
                                 {isAnalyzingProduct && (
                                     <div className="flex-1 flex items-center justify-center">
@@ -2229,18 +2238,18 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                                         <span className="ml-2 text-sm">Đang phân tích...</span>
                                     </div>
                                 )}
-                                
+
                                 {productAnalysis && !isAnalyzingProduct && (
                                     <div className="flex-1 p-3 bg-[var(--bg-tertiary)] rounded-lg text-sm">
                                         <p className="font-medium text-pink-400 mb-2">🤖 AI Phân tích:</p>
-                                        
+
                                         {/* Exact Description - Most Important */}
                                         {productAnalysis.exactDescription && (
                                             <div className="mb-2 p-2 bg-green-500/10 border border-green-500/30 rounded">
                                                 <p className="text-xs text-white">{productAnalysis.exactDescription}</p>
                                             </div>
                                         )}
-                                        
+
                                         <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs">
                                             <p><span className="text-[var(--text-muted)]">Loại:</span> {productAnalysis.productType} {productAnalysis.productSubtype && `(${productAnalysis.productSubtype})`}</p>
                                             <p><span className="text-[var(--text-muted)]">Màu:</span> {productAnalysis.color}</p>
@@ -2249,7 +2258,7 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                                             {productAnalysis.pattern && <p><span className="text-[var(--text-muted)]">Họa tiết:</span> {productAnalysis.pattern}</p>}
                                             {productAnalysis.fit && <p><span className="text-[var(--text-muted)]">Form:</span> {productAnalysis.fit}</p>}
                                         </div>
-                                        
+
                                         {productAnalysis.promptKeywords && (
                                             <div className="mt-2 pt-2 border-t border-[var(--border-color)]">
                                                 <p className="text-[var(--text-muted)] text-xs mb-1">🏷️ Keywords cho Imagen:</p>
@@ -2307,192 +2316,191 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
 
                         {/* Background & Multi-Image - Only needed when AI generates images */}
                         {!useOwnImages && (<>
-                        <div className="mb-4">
-                            <label className="block text-sm font-medium mb-2">🏠 Background cố định (cho AI tạo ảnh)</label>
-                            
-                            {/* Upload Background Option */}
-                            <div className="mb-3 p-3 bg-[var(--bg-tertiary)] rounded-lg">
-                                <label className="block text-xs font-medium mb-2 text-purple-400">📷 Upload ảnh Background của bạn</label>
+                            <div className="mb-4">
+                                <label className="block text-sm font-medium mb-2">🏠 Background cố định (cho AI tạo ảnh)</label>
+
+                                {/* Upload Background Option */}
+                                <div className="mb-3 p-3 bg-[var(--bg-tertiary)] rounded-lg">
+                                    <label className="block text-xs font-medium mb-2 text-purple-400">📷 Upload ảnh Background của bạn</label>
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={handleBackgroundImageUpload}
+                                        className="text-xs file:mr-3 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:bg-purple-500/20 file:text-purple-400 hover:file:bg-purple-500/30"
+                                    />
+                                    {backgroundImage && (
+                                        <div className="mt-2 flex items-center gap-2">
+                                            <img src={backgroundImage} alt="Background" className="w-20 h-12 object-cover rounded" />
+                                            <span className="text-xs text-green-400">✓ Background đã upload</span>
+                                            <button
+                                                onClick={() => { setBackgroundImage(null); setBackgroundImageBase64(null); setFashionBackground('fitting_room'); }}
+                                                className="text-xs text-red-400 hover:text-red-300"
+                                            >
+                                                ✕ Xóa
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
+
+                                <p className="text-xs text-[var(--text-muted)] mb-2">Hoặc chọn preset:</p>
+                                <div className="grid grid-cols-4 gap-2 mb-2">
+                                    {FASHION_BACKGROUNDS.map(bg => (
+                                        <button
+                                            key={bg.id}
+                                            onClick={() => setFashionBackground(bg.id)}
+                                            className={`p-2 rounded-lg border-2 text-center transition ${fashionBackground === bg.id && !backgroundImage
+                                                    ? 'border-pink-500 bg-pink-500/20'
+                                                    : 'border-[var(--border-color)] hover:border-pink-500/50'
+                                                }`}
+                                        >
+                                            <span className="text-xl">{bg.icon}</span>
+                                            <p className="text-xs mt-1">{bg.name}</p>
+                                        </button>
+                                    ))}
+                                </div>
+
+                                {fashionBackground === 'custom' && !backgroundImage && (
+                                    <input
+                                        type="text"
+                                        value={customBackground}
+                                        onChange={(e) => setCustomBackground(e.target.value)}
+                                        placeholder="Mô tả background của bạn (VD: Cửa hàng thời trang cao cấp, đèn vàng ấm áp)"
+                                        className="input-field text-sm w-full mt-2"
+                                    />
+                                )}
+
+                                <p className="text-xs text-[var(--text-muted)] mt-2">
+                                    📌 Background này sẽ được sử dụng NHẤT QUÁN trong tất cả các scene
+                                </p>
+                            </div>
+
+                            {/* Multiple Product Images (Different Angles) - For AI image generation */}
+                            <div className="mb-4 p-3 bg-[var(--bg-tertiary)] rounded-lg">
+                                <label className="block text-sm font-medium mb-2 text-pink-400">📐 Ảnh sản phẩm nhiều góc (để AI tạo chính xác hơn)</label>
                                 <input
                                     type="file"
                                     accept="image/*"
-                                    onChange={handleBackgroundImageUpload}
-                                    className="text-xs file:mr-3 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:bg-purple-500/20 file:text-purple-400 hover:file:bg-purple-500/30"
+                                    multiple
+                                    onChange={handleMultiProductImageUpload}
+                                    className="text-xs file:mr-3 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:bg-pink-500/20 file:text-pink-400 hover:file:bg-pink-500/30 mb-2"
                                 />
-                                {backgroundImage && (
-                                    <div className="mt-2 flex items-center gap-2">
-                                        <img src={backgroundImage} alt="Background" className="w-20 h-12 object-cover rounded" />
-                                        <span className="text-xs text-green-400">✓ Background đã upload</span>
-                                        <button 
-                                            onClick={() => { setBackgroundImage(null); setBackgroundImageBase64(null); setFashionBackground('fitting_room'); }}
-                                            className="text-xs text-red-400 hover:text-red-300"
-                                        >
-                                            ✕ Xóa
-                                        </button>
+                                <p className="text-xs text-[var(--text-muted)] mb-2">
+                                    💡 Upload nhiều góc: trước, sau, detail, tag... để AI hiểu sản phẩm tốt hơn
+                                </p>
+
+                                {productImages.length > 0 && (
+                                    <div className="flex flex-wrap gap-2 mt-2">
+                                        {productImages.map((img, idx) => (
+                                            <div key={idx} className="relative group">
+                                                <img
+                                                    src={img.base64}
+                                                    alt={`Product ${idx + 1}`}
+                                                    className={`w-16 h-16 object-cover rounded cursor-pointer ${idx === 0 ? 'ring-2 ring-pink-500' : ''}`}
+                                                    onClick={() => { setProductImageBase64(img.base64); setProductImage(img.base64); }}
+                                                    title={idx === 0 ? 'Ảnh chính' : 'Click để chọn làm ảnh chính'}
+                                                />
+                                                <button
+                                                    onClick={() => removeProductImage(idx)}
+                                                    className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-xs text-white opacity-0 group-hover:opacity-100 transition"
+                                                >
+                                                    ×
+                                                </button>
+                                                {idx === 0 && <span className="absolute -bottom-1 left-0 right-0 text-center text-[8px] text-pink-400 bg-[var(--bg-primary)] rounded">Chính</span>}
+                                            </div>
+                                        ))}
                                     </div>
                                 )}
                             </div>
-                            
-                            <p className="text-xs text-[var(--text-muted)] mb-2">Hoặc chọn preset:</p>
-                            <div className="grid grid-cols-4 gap-2 mb-2">
-                                {FASHION_BACKGROUNDS.map(bg => (
-                                    <button
-                                        key={bg.id}
-                                        onClick={() => setFashionBackground(bg.id)}
-                                        className={`p-2 rounded-lg border-2 text-center transition ${
-                                            fashionBackground === bg.id && !backgroundImage
-                                                ? 'border-pink-500 bg-pink-500/20'
-                                                : 'border-[var(--border-color)] hover:border-pink-500/50'
-                                        }`}
-                                    >
-                                        <span className="text-xl">{bg.icon}</span>
-                                        <p className="text-xs mt-1">{bg.name}</p>
-                                    </button>
-                                ))}
-                            </div>
-                            
-                            {fashionBackground === 'custom' && !backgroundImage && (
-                                <input
-                                    type="text"
-                                    value={customBackground}
-                                    onChange={(e) => setCustomBackground(e.target.value)}
-                                    placeholder="Mô tả background của bạn (VD: Cửa hàng thời trang cao cấp, đèn vàng ấm áp)"
-                                    className="input-field text-sm w-full mt-2"
-                                />
-                            )}
-                            
-                            <p className="text-xs text-[var(--text-muted)] mt-2">
-                                📌 Background này sẽ được sử dụng NHẤT QUÁN trong tất cả các scene
-                            </p>
-                        </div>
-                        
-                        {/* Multiple Product Images (Different Angles) - For AI image generation */}
-                        <div className="mb-4 p-3 bg-[var(--bg-tertiary)] rounded-lg">
-                            <label className="block text-sm font-medium mb-2 text-pink-400">📐 Ảnh sản phẩm nhiều góc (để AI tạo chính xác hơn)</label>
-                            <input
-                                type="file"
-                                accept="image/*"
-                                multiple
-                                onChange={handleMultiProductImageUpload}
-                                className="text-xs file:mr-3 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:bg-pink-500/20 file:text-pink-400 hover:file:bg-pink-500/30 mb-2"
-                            />
-                            <p className="text-xs text-[var(--text-muted)] mb-2">
-                                💡 Upload nhiều góc: trước, sau, detail, tag... để AI hiểu sản phẩm tốt hơn
-                            </p>
-                            
-                            {productImages.length > 0 && (
-                                <div className="flex flex-wrap gap-2 mt-2">
-                                    {productImages.map((img, idx) => (
-                                        <div key={idx} className="relative group">
-                                            <img 
-                                                src={img.base64} 
-                                                alt={`Product ${idx + 1}`} 
-                                                className={`w-16 h-16 object-cover rounded cursor-pointer ${idx === 0 ? 'ring-2 ring-pink-500' : ''}`}
-                                                onClick={() => { setProductImageBase64(img.base64); setProductImage(img.base64); }}
-                                                title={idx === 0 ? 'Ảnh chính' : 'Click để chọn làm ảnh chính'}
-                                            />
-                                            <button
-                                                onClick={() => removeProductImage(idx)}
-                                                className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-xs text-white opacity-0 group-hover:opacity-100 transition"
-                                            >
-                                                ×
-                                            </button>
-                                            {idx === 0 && <span className="absolute -bottom-1 left-0 right-0 text-center text-[8px] text-pink-400 bg-[var(--bg-primary)] rounded">Chính</span>}
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
                         </>)}
 
                         {/* Step 3: Generate Preview Images - ONLY when NOT using own images */}
                         {!useOwnImages && (<>
-                        <div className="mb-4 p-4 bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/30 rounded-lg">
-                            <h5 className="font-medium text-green-400 mb-3 flex items-center gap-2">
-                                <span>🎨</span>
-                                Tạo ảnh Preview (AI tạo ảnh model mặc sản phẩm)
-                            </h5>
-                            
-                            <div className="flex items-center gap-4 mb-3">
-                                <div>
-                                    <label className="text-xs text-[var(--text-muted)]">Số ảnh cần tạo:</label>
-                                    <select
-                                        value={fashionSceneCount}
-                                        onChange={(e) => setFashionSceneCount(Number(e.target.value))}
-                                        className="ml-2 bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded px-2 py-1 text-sm"
-                                    >
-                                        <option value={4}>4 ảnh</option>
-                                        <option value={6}>6 ảnh</option>
-                                        <option value={8}>8 ảnh</option>
-                                    </select>
-                                </div>
-                                
-                                <button
-                                    onClick={handleGenerateFashionPreviews}
-                                    disabled={!productImageBase64 || isGeneratingPreview}
-                                    className="px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 disabled:opacity-50 rounded-lg text-sm font-medium flex items-center gap-2"
-                                >
-                                    {isGeneratingPreview ? (
-                                        <>
-                                            <Loader2 className="w-4 h-4 animate-spin" />
-                                            Đang tạo ảnh...
-                                        </>
-                                    ) : (
-                                        <>
-                                            🖼️ Tạo {fashionSceneCount} ảnh Preview
-                                        </>
-                                    )}
-                                </button>
-                            </div>
-                            
-                            <p className="text-xs text-[var(--text-muted)]">
-                                AI sẽ tạo ảnh model mặc sản phẩm của bạn. Sau đó kịch bản sẽ được tạo dựa trên các ảnh này.
-                            </p>
-                        </div>
-                        
-                        {/* Preview Images Grid */}
-                        {fashionPreviewImages.length > 0 && (
-                            <div className="mb-4 p-4 bg-[var(--bg-tertiary)] rounded-lg">
-                                <h5 className="font-medium text-purple-400 mb-3 flex items-center gap-2">
-                                    <span>✨</span>
-                                    Ảnh Preview đã tạo ({fashionPreviewImages.filter(i => i.url).length}/{fashionPreviewImages.length})
+                            <div className="mb-4 p-4 bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/30 rounded-lg">
+                                <h5 className="font-medium text-green-400 mb-3 flex items-center gap-2">
+                                    <span>🎨</span>
+                                    Tạo ảnh Preview (AI tạo ảnh model mặc sản phẩm)
                                 </h5>
-                                
-                                <div className="grid grid-cols-4 gap-3">
-                                    {fashionPreviewImages.map((img, idx) => (
-                                        <div key={idx} className="relative group">
-                                            {img.url ? (
-                                                <>
-                                                    <img 
-                                                        src={img.url} 
-                                                        alt={`Preview ${idx + 1}`}
-                                                        className="w-full aspect-[9/16] object-cover rounded-lg cursor-pointer"
-                                                        onClick={() => window.open(img.url, '_blank')}
-                                                    />
-                                                    <button
-                                                        onClick={() => downloadImage(img.url, `fashion-scene-${idx + 1}.png`)}
-                                                        className="absolute bottom-1 right-1 bg-black/70 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition"
-                                                    >
-                                                        ⬇️
-                                                    </button>
-                                                </>
-                                            ) : (
-                                                <div className="w-full aspect-[9/16] bg-red-500/20 rounded-lg flex items-center justify-center">
-                                                    <span className="text-red-400 text-xs">❌ Failed</span>
-                                                </div>
-                                            )}
-                                            <p className="text-xs text-center mt-1 text-[var(--text-muted)]">Scene {idx + 1}</p>
-                                        </div>
-                                    ))}
+
+                                <div className="flex items-center gap-4 mb-3">
+                                    <div>
+                                        <label className="text-xs text-[var(--text-muted)]">Số ảnh cần tạo:</label>
+                                        <select
+                                            value={fashionSceneCount}
+                                            onChange={(e) => setFashionSceneCount(Number(e.target.value))}
+                                            className="ml-2 bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded px-2 py-1 text-sm"
+                                        >
+                                            <option value={4}>4 ảnh</option>
+                                            <option value={6}>6 ảnh</option>
+                                            <option value={8}>8 ảnh</option>
+                                        </select>
+                                    </div>
+
+                                    <button
+                                        onClick={handleGenerateFashionPreviews}
+                                        disabled={!productImageBase64 || isGeneratingPreview}
+                                        className="px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 disabled:opacity-50 rounded-lg text-sm font-medium flex items-center gap-2"
+                                    >
+                                        {isGeneratingPreview ? (
+                                            <>
+                                                <Loader2 className="w-4 h-4 animate-spin" />
+                                                Đang tạo ảnh...
+                                            </>
+                                        ) : (
+                                            <>
+                                                🖼️ Tạo {fashionSceneCount} ảnh Preview
+                                            </>
+                                        )}
+                                    </button>
                                 </div>
-                                
-                                <p className="text-xs text-green-400 mt-3">
-                                    ✅ Ảnh đã tạo xong! Bây giờ bạn có thể tạo kịch bản bên dưới.
+
+                                <p className="text-xs text-[var(--text-muted)]">
+                                    AI sẽ tạo ảnh model mặc sản phẩm của bạn. Sau đó kịch bản sẽ được tạo dựa trên các ảnh này.
                                 </p>
                             </div>
-                        )}
+
+                            {/* Preview Images Grid */}
+                            {fashionPreviewImages.length > 0 && (
+                                <div className="mb-4 p-4 bg-[var(--bg-tertiary)] rounded-lg">
+                                    <h5 className="font-medium text-purple-400 mb-3 flex items-center gap-2">
+                                        <span>✨</span>
+                                        Ảnh Preview đã tạo ({fashionPreviewImages.filter(i => i.url).length}/{fashionPreviewImages.length})
+                                    </h5>
+
+                                    <div className="grid grid-cols-4 gap-3">
+                                        {fashionPreviewImages.map((img, idx) => (
+                                            <div key={idx} className="relative group">
+                                                {img.url ? (
+                                                    <>
+                                                        <img
+                                                            src={img.url}
+                                                            alt={`Preview ${idx + 1}`}
+                                                            className="w-full aspect-[9/16] object-cover rounded-lg cursor-pointer"
+                                                            onClick={() => window.open(img.url, '_blank')}
+                                                        />
+                                                        <button
+                                                            onClick={() => downloadImage(img.url, `fashion-scene-${idx + 1}.png`)}
+                                                            className="absolute bottom-1 right-1 bg-black/70 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition"
+                                                        >
+                                                            ⬇️
+                                                        </button>
+                                                    </>
+                                                ) : (
+                                                    <div className="w-full aspect-[9/16] bg-red-500/20 rounded-lg flex items-center justify-center">
+                                                        <span className="text-red-400 text-xs">❌ Failed</span>
+                                                    </div>
+                                                )}
+                                                <p className="text-xs text-center mt-1 text-[var(--text-muted)]">Scene {idx + 1}</p>
+                                            </div>
+                                        ))}
+                                    </div>
+
+                                    <p className="text-xs text-green-400 mt-3">
+                                        ✅ Ảnh đã tạo xong! Bây giờ bạn có thể tạo kịch bản bên dưới.
+                                    </p>
+                                </div>
+                            )}
                         </>)}
-                        
+
                         {/* Simple mode: Just script creation */}
                         {useOwnImages && (
                             <div className="mb-4 p-3 bg-green-500/10 border border-green-500/30 rounded-lg">
@@ -2500,12 +2508,12 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                                     ✅ <strong>Chế độ đơn giản:</strong> AI sẽ tạo kịch bản dựa trên thông tin sản phẩm.
                                 </p>
                                 <p className="text-xs text-[var(--text-muted)] mt-1">
-                                    Kịch bản sẽ chỉ bao gồm: lời thoại, hành động/pose, thông tin sản phẩm. 
+                                    Kịch bản sẽ chỉ bao gồm: lời thoại, hành động/pose, thông tin sản phẩm.
                                     KHÔNG mô tả nhân vật/background (vì bạn tự có ảnh).
                                 </p>
                             </div>
                         )}
-                        
+
                         <p className="text-xs text-[var(--text-muted)]">
                             💡 {useOwnImages ? 'Upload sản phẩm → Nhập thông tin → Tạo kịch bản' : 'Upload sản phẩm → Chọn background → Tạo ảnh → Tạo kịch bản'}
                         </p>
@@ -2550,11 +2558,10 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                                 <div
                                     key={style.id}
                                     onClick={() => setCinematicStyle(style.id)}
-                                    className={`p-3 rounded-lg cursor-pointer transition-all border-2 ${
-                                        cinematicStyle === style.id
+                                    className={`p-3 rounded-lg cursor-pointer transition-all border-2 ${cinematicStyle === style.id
                                             ? 'border-amber-500 bg-amber-500/20'
                                             : 'border-transparent bg-[var(--bg-tertiary)] hover:border-amber-500/50'
-                                    }`}
+                                        }`}
                                 >
                                     <div className="flex items-start gap-3">
                                         <span className="text-2xl">{style.icon}</span>
@@ -3504,7 +3511,7 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                                                     <pre className="text-xs text-[var(--text-secondary)] whitespace-pre-wrap bg-[var(--bg-primary)] rounded p-2 mono">
                                                         {scene.promptText}
                                                     </pre>
-                                                    
+
                                                     {/* Show generated image if exists */}
                                                     {(scene as { generatedImageUrl?: string }).generatedImageUrl && (
                                                         <div className="mt-2 p-2 bg-[var(--bg-tertiary)] rounded">
@@ -3520,8 +3527,8 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                                                                     ⬇️ Download
                                                                 </button>
                                                             </div>
-                                                            <img 
-                                                                src={(scene as { generatedImageUrl?: string }).generatedImageUrl} 
+                                                            <img
+                                                                src={(scene as { generatedImageUrl?: string }).generatedImageUrl}
                                                                 alt={`Scene ${scene.order}`}
                                                                 className="max-h-40 rounded mx-auto cursor-pointer"
                                                                 onClick={() => window.open((scene as { generatedImageUrl?: string }).generatedImageUrl!, '_blank')}

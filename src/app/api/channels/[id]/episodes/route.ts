@@ -729,6 +729,61 @@ Nhân vật BIẾT họ đang trong video!
 - "I'm fine" while clearly not fine
 - Thousand-yard stare
 - Snapping into unhinged joy`
+                },
+                'high_end_fashion': {
+                    name: 'High-End Fashion Film (Phim thời trang cao cấp - Longchamp Style)',
+                    keywords: 'high fashion film, surreal transitions, seamless morphing, golden hour, Haussmann architecture, Paris rooftops, cobblestone streets, drone shots, FPV tracking, dreamcore aesthetic, environment transformation, portal transitions, volumetric lighting, slow motion to fast-paced, dynamic editing, 8K photorealistic, horses galloping, nature reclaiming architecture',
+                    guidance: `🎬 HIGH-END FASHION FILM STYLE (LONGCHAMP AESTHETIC):
+═══════════════════════════════════════
+Đây là phong cách quảng cáo thời trang cao cấp với yếu tố SIÊU THỰC!
+
+🌆 VISUAL SIGNATURE:
+- Golden hour lighting (giờ vàng hoàng hôn ấm áp)
+- Haussmann architecture, Paris rooftops, zinc-gray roofs
+- Cobblestone streets, classic European elegance
+- Horses galloping through urban streets → onto rooftops
+- Nature reclaiming architecture (grass, flowers covering buildings)
+- Text/Logo appears organically from environment
+
+🌊 SURREAL ELEMENTS (CRITICAL - MỖI CẢNH PHẢI CÓ):
+- Environment TRANSFORMS based on narrative:
+  • Street → meadow of flowers on rooftops
+  • Touching water puddle → underwater portal with goldfish
+  • Walking through archway → emerges in completely different world
+  • Flowers bloom instantly, covering entire buildings
+- Seamless morphing between realities
+- Dream-logic transitions (no hard cuts)
+
+🎥 CAMERA STYLE:
+- FPV drone chasing through streets at dusk
+- Low flycam tracking subjects dynamically
+- Dolly shots with smooth seamless transitions
+- Speed ramping: slow-motion beauty → fast-paced energy
+- Wide aerial views revealing epic scale
+- Intimate macro close-ups on fabric textures, skin details
+
+💡 LIGHTING:
+- Golden hour throughout (sunset glow)
+- Volumetric god rays, lens flares
+- High contrast, rich warm saturation
+- Soft rim lighting on subjects
+- Shadows create depth and drama
+
+🔊 SOUND DESIGN:
+- Cinematic orchestral OR electronic music (high BPM, pulsing)
+- Rhythmic editing matching music beats
+- Horse hooves on cobblestone → soft thuds on grass
+- Water splashes, wind whooshing past camera
+- Impactful bass drops on major transitions
+
+📝 PROMPTTEXT FORMAT:
+"[SCENE: Location]. [SURREAL ELEMENT: environment transformation description]. [Subject: FULL CHARACTER DESCRIPTION - see template]. [ACTION: dynamic movement]. CAMERA: [FPV/drone/dolly/tracking], [lens mm], [speed: slow-motion/fast-cut]. LIGHTING: golden hour, volumetric rays, lens flare. TRANSITION: [seamless morph to next scene]. STYLE: high fashion editorial, 8K, photorealistic. SOUND: [orchestral swell/electronic beat]. PACING: [slow-burn/fast-cut]."
+
+⚠️ MANDATORY:
+- Every scene has at least ONE surreal/transformation element
+- Seamless transitions (no hard cuts between scenes)
+- Golden hour lighting throughout
+- Characters described with FULL detail every time`
                 }
             }
 
@@ -742,6 +797,71 @@ ${selectedCinematicStyle.guidance}
 
 🎨 STYLE KEYWORDS (Include in EVERY scene):
 ${selectedCinematicStyle.keywords}
+
+═══════════════════════════════════════
+🎭 CHARACTER DESCRIPTION TEMPLATE (BẮT BUỘC CHO TẤT CẢ NHÂN VẬT):
+═══════════════════════════════════════
+⚠️⚠️⚠️ QUAN TRỌNG: NẾU CẢNH CÓ 2, 3 HOẶC NHIỀU NHÂN VẬT → TẤT CẢ ĐỀU PHẢI MÔ TẢ CHI TIẾT!
+Không được bỏ sót bất kỳ nhân vật nào xuất hiện trong cảnh!
+
+MỖI nhân vật xuất hiện trong MỖI cảnh PHẢI có mô tả CHÍNH XÁC theo format:
+
+[TÊN_NHÂN_VẬT: (tuổi), (dân tộc/sắc tộc),
+  DA: (tone da chi tiết - e.g., trắng ngà porcelain, ngăm đen ebony, olive Mediterranean, đồng nâu ấm bronze),
+  MẶT: (hình mặt, màu mắt, hình mắt, mũi, môi, đặc điểm nổi bật),
+  TÓC: (màu, độ dài, kiểu, texture - e.g., tóc đen dài óng ả, tóc nâu xoăn ngắn),
+  DÁNG: (thể hình - thon gọn, athletic, đầy đặn, cơ bắp),
+  TRANG PHỤC: (outfit cụ thể với màu sắc, chất liệu, kiểu dáng chi tiết),
+  PHỤ KIỆN: (trang sức, kính, đồng hồ, túi - mô tả cụ thể),
+  BIỂU CẢM: (trạng thái cảm xúc hiện tại phản ánh trên mặt),
+  TƯ THẾ: (cách đứng/ngồi, ngôn ngữ cơ thể)]
+
+❌ SAI (chỉ mô tả 1 người, bỏ sót người còn lại):
+"Rose (20s, elegant) đứng nói chuyện với Jack"
+
+✅ ĐÚNG (MÔ TẢ ĐẦY ĐỦ CẢ 2 NHÂN VẬT):
+"[ROSE: 20 tuổi, người Mỹ gốc Anh,
+  DA: trắng ngà porcelain với má hồng nhẹ,
+  MẶT: mặt trái xoan thanh tú, mắt xanh ngọc lục sáng với lông mi dài cong vút, mũi thon cao, môi hồng đầy đặn,
+  TÓC: tóc đỏ auburn dài quá vai với những lọn sóng mềm mại óng ả,
+  DÁNG: thon thả mảnh khảnh với eo nhỏ,
+  TRANG PHỤC: áo blouse lụa trắng với nút ngọc trai, chân váy velvet xanh ngọc dài chấm đất,
+  PHỤ KIỆN: vòng cổ Heart of the Ocean kim cương xanh, hoa tai ngọc trai giọt,
+  BIỂU CẢM: đôi mắt ngấn lệ nhưng kiên cường,
+  TƯ THẾ: đứng đối diện Jack, hai tay đặt trên ngực]
+
+[JACK: 20 tuổi, người Mỹ gốc Ireland,
+  DA: ngăm nhẹ tan từ nắng gió, với vài nốt tàn nhang trên mũi,
+  MẶT: mặt vuông góc cạnh nam tính, mắt xanh dương sáng như biển trời, mũi thẳng, nụ cười nghịch ngợm,
+  TÓC: tóc vàng nâu bù xù bay trong gió, không chải chuốt,
+  DÁNG: cao ráo nghệ sĩ, vai rộng, thân hình thon gọn,
+  TRANG PHỤC: áo sơ mi cotton trắng nhàu, quần tây nâu sờn gấu, áo vest cũ kỹ,
+  PHỤ KIỆN: không có trang sức, tay lấm than vì vẽ,
+  BIỂU CẢM: ánh mắt dịu dàng đầy tình cảm, nụ cười động viên,
+  TƯ THẾ: đứng gần Rose, một tay nắm lấy tay cô ấy, tay kia chạm nhẹ má cô]"
+
+⚠️ CRITICAL: Copy MỨC ĐỘ CHI TIẾT này cho MỌI nhân vật, MỌI cảnh!
+⚠️ NHẤT QUÁN: Mỗi nhân vật PHẢI giống nhau xuyên suốt tất cả các cảnh!
+⚠️ KHÔNG BỎ SÓT: Nếu có 3 người trong cảnh → mô tả đầy đủ cả 3 người!
+
+═══════════════════════════════════════
+🎥 CINEMATIC QUALITY REQUIREMENTS (CHẤT LƯỢNG ĐIỆN ẢNH):
+═══════════════════════════════════════
+Video phải đạt chất lượng ĐIỆN ẢNH THẬT SỰ - KHÔNG MƠ HỒ!
+
+✅ PHẢI CÓ:
+- Sharp focus, crystal clear image (hình ảnh sắc nét, rõ ràng)
+- 8K/4K quality, film grain texture (chất lượng cao, texture phim)
+- Professional color grading (màu sắc chuyên nghiệp)
+- Proper exposure, rich contrast (độ sáng chuẩn, tương phản đẹp)
+- Clean frame edges, no vignette (khung hình sạch, không tối góc)
+
+❌ TUYỆT ĐỐI KHÔNG:
+- Blurry, out of focus (mờ, lệch focus)
+- Overexposed, underexposed (quá sáng, quá tối)
+- Low resolution, pixelated (độ phân giải thấp)
+- Borders, frames, overlays (khung viền, overlay)
+- Watermarks, text overlays (watermark, chữ đè)
 
 ═══════════════════════════════════════
 
@@ -1596,7 +1716,7 @@ Thay vì dialogue, mô tả:
         } else if (voiceOverMode === 'fashion_showcase') {
             // Check if user is using their own images (simple mode)
             const isUserOwnImages = customContent?.includes('CHẾ ĐỘ: NGƯỜI DÙNG TỰ CÓ ẢNH')
-            
+
             // Get product info from request if available
             const productInfo = customContent ? `
 📦 THÔNG TIN SẢN PHẨM:
