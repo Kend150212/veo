@@ -62,6 +62,7 @@ export async function POST(
             visualHookEnabled = true,
             emotionalCurveEnabled = true,
             spatialAudioEnabled = true,
+            musicMode = 'with_music', // 'with_music' | 'ambient_only'
             dialogueDensityMin = 12,
             dialogueDensityMax = 18,
             // Native Ad Insertion
@@ -2037,6 +2038,42 @@ Add 3D directional audio cues based on scene content for immersive cinema experi
 REQUIREMENT: Include at least one [SPATIAL_AUDIO: ...] cue in each scene's promptText
 ` : ''
 
+        // Music Mode Instruction
+        const musicModeInstr = musicMode === 'ambient_only' ? `
+🔇 AMBIENT SOUNDS ONLY MODE (NO BACKGROUND MUSIC):
+═══════════════════════════════════════════════════
+⚠️ CRITICAL: DO NOT include any background music in prompts!
+- NO orchestral score, NO piano, NO electronic beats
+- NO "music swells", NO "score builds" 
+- ONLY use natural ambient sounds and foley
+
+✅ USE THESE SOUNDS:
+- Footsteps on different surfaces (stone, wood, gravel, carpet)
+- Breathing, heartbeats for tension
+- Wind, rain, thunder, waves
+- City sounds: traffic, chatter, horns
+- Nature: birds, insects, leaves rustling
+- Room tones: clock ticking, AC humming
+- Fabric rustling, objects being handled
+- Doors, cars, machinery
+
+❌ DO NOT USE:
+- Background music of any kind
+- Score, soundtrack, OST
+- "Emotional music", "dramatic score"
+- Any non-diegetic sound (sound that doesn't exist in the scene)
+
+📝 SOUND FORMAT IN PROMPTTEXT:
+Use: "SOUND: [ambient description]" NOT "MUSIC:"
+Example: "SOUND: Heavy rain on windows, distant thunder, her quiet sobs echoing"
+` : `
+🎵 BACKGROUND MUSIC MODE:
+Include appropriate background music/score in prompts:
+- Match music mood to scene emotion
+- Use "MUSIC:" or "SCORE:" in promptText
+- Orchestra for epic, piano for emotional, electronic for modern
+`
+
         // Dialogue Density
         const dialogueDensityInstr = `
 💬 DIALOGUE DENSITY REQUIREMENT (STRICT):
@@ -2130,6 +2167,7 @@ ${customContentInstr}
 ${visualHookInstr}
 ${emotionalCurveInstr}
 ${spatialAudioInstr}
+${musicModeInstr}
 ${dialogueDensityInstr}
 ${adInsertionInstr}
 

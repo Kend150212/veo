@@ -698,6 +698,7 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
     const [visualHookEnabled, setVisualHookEnabled] = useState(true)
     const [emotionalCurveEnabled, setEmotionalCurveEnabled] = useState(true)
     const [spatialAudioEnabled, setSpatialAudioEnabled] = useState(true)
+    const [musicMode, setMusicMode] = useState<'with_music' | 'ambient_only'>('with_music') // Nhạc nền hoặc chỉ âm thanh môi trường
     const [dialogueDensityMin, setDialogueDensityMin] = useState(12)
     const [dialogueDensityMax, setDialogueDensityMax] = useState(18)
 
@@ -1090,6 +1091,7 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                     visualHookEnabled,
                     emotionalCurveEnabled,
                     spatialAudioEnabled,
+                    musicMode,
                     dialogueDensityMin,
                     dialogueDensityMax,
                     // Native Ad Insertion
@@ -1154,6 +1156,7 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                         visualHookEnabled,
                         emotionalCurveEnabled,
                         spatialAudioEnabled,
+                        musicMode,
                         dialogueDensityMin,
                         dialogueDensityMax,
                         storytellerBrollEnabled: voiceOverMode === 'host_storyteller' ? storytellerBrollEnabled : false
@@ -1277,6 +1280,7 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                         visualHookEnabled,
                         emotionalCurveEnabled,
                         spatialAudioEnabled,
+                        musicMode,
                         dialogueDensityMin,
                         dialogueDensityMax,
                         storytellerBrollEnabled: voiceOverMode === 'host_storyteller' ? storytellerBrollEnabled : false
@@ -2858,6 +2862,36 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                             >
                                 {spatialAudioEnabled ? 'ON' : 'OFF'}
                             </button>
+                        </div>
+
+                        {/* Music Mode */}
+                        <div className="p-3 bg-[var(--bg-tertiary)] rounded-lg">
+                            <p className="text-sm font-medium mb-2">🎵 Chế độ âm thanh</p>
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={() => setMusicMode('with_music')}
+                                    className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition ${musicMode === 'with_music'
+                                        ? 'bg-[var(--accent-primary)] text-white'
+                                        : 'bg-[var(--bg-secondary)] text-[var(--text-muted)] hover:bg-[var(--bg-hover)]'
+                                        }`}
+                                >
+                                    🎶 Có nhạc nền
+                                </button>
+                                <button
+                                    onClick={() => setMusicMode('ambient_only')}
+                                    className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition ${musicMode === 'ambient_only'
+                                        ? 'bg-[var(--accent-primary)] text-white'
+                                        : 'bg-[var(--bg-secondary)] text-[var(--text-muted)] hover:bg-[var(--bg-hover)]'
+                                        }`}
+                                >
+                                    🔈 Chỉ âm thanh môi trường
+                                </button>
+                            </div>
+                            <p className="text-xs text-[var(--text-muted)] mt-2">
+                                {musicMode === 'with_music'
+                                    ? '✓ Có nhạc nền phù hợp với mood từng cảnh'
+                                    : '✓ Chỉ giữ âm thanh tự nhiên: tiếng bước chân, gió, mưa...'}
+                            </p>
                         </div>
 
                         {/* Dialogue Density */}
