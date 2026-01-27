@@ -784,6 +784,197 @@ Nhân vật BIẾT họ đang trong video!
 - Seamless transitions (no hard cuts between scenes)
 - Golden hour lighting throughout
 - Characters described with FULL detail every time`
+                },
+                'avatar_epic': {
+                    name: 'Avatar Epic Sci-Fi (Phim khoa học viễn tưởng hùng vĩ)',
+                    keywords: 'Avatar style, Pandora aesthetic, bioluminescent world, alien flora fauna, floating mountains, epic landscapes, Na\'vi blue skin, tribal markings, glowing plants, massive trees, alien creatures, spiritual connection, motion capture quality, 3D depth, IMAX cinematography, James Cameron epic scale',
+                    guidance: `🌌 AVATAR EPIC SCI-FI STYLE (James Cameron):
+═══════════════════════════════════════
+Thế giới ngoài hành tinh hùng vĩ, kỳ ảo như Pandora!
+
+🌿 VISUAL SIGNATURE:
+- Bioluminescent plants và creatures (phát sáng sinh học)
+- Floating mountains, massive alien trees (núi bay, cây khổng lồ)
+- Alien flora/fauna với màu sắc neon xanh, tím, hồng
+- Tribal markings, body paint patterns
+- Sacred spiritual locations với energy connections
+- Day/night contrast - đêm rực rỡ hơn ngày
+
+🎥 CAMERA STYLE:
+- IMAX scale wide shots showing epic landscapes
+- Smooth flying/floating camera movements
+- Intimate close-ups với alien eye reflections
+- Depth layering (foreground, mid, background all detailed)
+- Sweeping crane shots qua rừng alien
+
+💡 LIGHTING:
+- Bioluminescence là nguồn sáng chính ban đêm
+- Soft diffused light qua alien foliage
+- Glowing particles floating in air
+- Sacred locations have spiritual glow
+- Sunrise/sunset với alien sun colors
+
+🔊 SOUND:
+- Alien wildlife calls, exotic bird sounds
+- Spiritual humming, tribal chanting
+- Nature ambience nhưng otherworldly
+- Orchestral score with ethnic instruments
+
+📝 PROMPTTEXT FORMAT:
+"[SCENE: Alien location]. [ENVIRONMENT: bioluminescent details, floating elements, alien plants]. [CHARACTER: full description with tribal markings if any]. [ACTION]. CAMERA: [epic wide/intimate close-up], IMAX quality. LIGHTING: bioluminescent glow, [time of day]. ATMOSPHERE: spiritual, majestic, otherworldly. STYLE: Avatar, Pandora, James Cameron epic. PACING: [slow-burn/action]."`
+                },
+                'marvel_superhero': {
+                    name: 'Marvel Superhero Action (Phim siêu anh hùng Marvel)',
+                    keywords: 'Marvel Cinematic Universe, superhero action, dramatic poses, power effects, energy blasts, cape flowing, hero landing, team assembly shot, villain confrontation, CGI powers, dynamic action, slow-motion hero moments, epic battle, destruction scale, witty banter, dramatic lighting',
+                    guidance: `🦸 MARVEL SUPERHERO ACTION STYLE (MCU):
+═══════════════════════════════════════
+Phim siêu anh hùng đầy action và khoảnh khắc iconic!
+
+💥 VISUAL SIGNATURE:
+- HERO LANDING poses (đáp xuống với power)
+- Power effects: energy blasts, lightning, fire, magic
+- Cape/costume flowing dramatically
+- Team assembly shots (nhóm tập hợp)
+- Villain dramatic reveals
+- City destruction at epic scale
+- Portal/dimensional effects
+
+🎥 CAMERA STYLE:
+- 360° rotating hero shots
+- Speed ramping: slow-mo during hits, fast during movement
+- Low angle hero shots (power pose)
+- Tracking shots following action
+- Dramatic push-ins during confrontations
+- Wide shots showing battle scale
+
+💡 LIGHTING:
+- High contrast, dramatic shadows
+- Rim lighting on heroes
+- Power effects as light sources
+- Golden hour final battles
+- Blue/orange color grading
+
+🎭 SCENE TYPES:
+1. ORIGIN: Character discovers powers
+2. TRAINING: Learning to control abilities
+3. TEAM-UP: Heroes meet, initial conflict then alliance
+4. VILLAIN INTRO: Dramatic villain reveal
+5. FINAL BATTLE: Epic confrontation with stakes
+6. RESOLUTION: Hero pose, new status quo
+
+🔊 SOUND:
+- Epic orchestral with brass
+- Power sound effects (whoosh, blast, impact)
+- Witty dialogue during action
+- Dramatic silence before major hits
+
+📝 PROMPTTEXT FORMAT:
+"[SCENE TYPE: action/confrontation/team-up]. [HERO: full description with costume details, power indicators]. [VILLAIN if present: description]. [ACTION: specific power use, combat move]. CAMERA: [rotating/tracking/push-in], speed ramp. LIGHTING: dramatic, rim light, power glow. VFX: [energy effects, destruction]. STYLE: Marvel, MCU, superhero epic. PACING: fast-cut with slow-mo beats."`
+                },
+                'romance_cinematic': {
+                    name: 'Romance Cinematic (Phim tình cảm lãng mạn)',
+                    keywords: 'romantic drama, love story, emotional close-ups, golden hour romance, soft focus, bokeh backgrounds, intimate moments, first meeting, confession scene, rain kiss, airport reunion, wedding scene, heartbreak tears, makeup reconciliation, slow dance, letter reading, nostalgic flashback',
+                    guidance: `💕 ROMANCE CINEMATIC STYLE (Nicholas Sparks / Richard Curtis):
+═══════════════════════════════════════
+Câu chuyện tình yêu đầy cảm xúc và khoảnh khắc đẹp!
+
+💑 VISUAL SIGNATURE:
+- Golden hour everything (ánh nắng vàng)
+- Soft focus với beautiful bokeh
+- Intimate framing (2-shots, close-ups)
+- Beautiful locations: beach, Paris, small town
+- Rain as romantic element (kiss in rain)
+- Letters, photos, meaningful objects
+- Tears glistening in perfect lighting
+
+🎥 CAMERA STYLE:
+- Slow dolly-ins during emotional moments
+- Gentle handheld for intimacy
+- Over-shoulder shots during conversations
+- Wide establishing shots of romantic locations
+- Extreme close-ups on eyes, lips, hands touching
+- Slow-motion for key romantic moments
+
+💡 LIGHTING:
+- GOLDEN HOUR is essential (backlit subjects)
+- Soft, warm, flattering on skin
+- Candle light for intimate dinners
+- Window light for morning scenes
+- Fairy lights, city lights at night
+- Rain on windows with soft interior glow
+
+🎭 CLASSIC ROMANCE SCENES:
+1. MEET CUTE: First encounter (bumping into each other, save from danger)
+2. GROWING CLOSER: Montage of falling in love
+3. OBSTACLE: Something threatens the relationship
+4. SEPARATION: Heartbreaking goodbye
+5. REALIZATION: Character realizes they must fight for love
+6. GRAND GESTURE: Airport run, rain confession, wedding interruption
+7. REUNION: Emotional embrace, kiss, happily ever after
+
+🔊 SOUND:
+- Soft piano, acoustic guitar
+- Swelling orchestral for emotional peaks
+- Pop song montages
+- Whispered dialogue, meaningful silences
+- Rain, waves, wind as romantic ambience
+
+📝 PROMPTTEXT FORMAT:
+"[SCENE TYPE: meet cute/confession/reunion]. [LOCATION: romantic setting]. [CHARACTER 1: full description, emotion]. [CHARACTER 2: full description, emotion]. [ACTION: intimate gesture, eye contact, touch]. CAMERA: slow dolly/close-up/soft focus. LIGHTING: golden hour/candle/rain on window. EMOTION: [love/longing/joy/heartbreak]. STYLE: romantic drama, soft, warm. PACING: slow-burn, let emotion breathe."`
+                },
+                'fast_furious_action': {
+                    name: 'Fast & Furious Action (Phim hành động tốc độ)',
+                    keywords: 'Fast and Furious style, street racing, car chases, NOS boost, drift racing, heist action, family theme, muscle cars, exotic cars, explosions, impossible stunts, highway chase, nitrous flames, speedometer close-ups, gear shifting, tire burnout, slow-motion crash, Dom Toretto energy',
+                    guidance: `🏎️ FAST & FURIOUS ACTION STYLE:
+═══════════════════════════════════════
+Hành động tốc độ cao, xe đẹp, và FAMILY!
+
+🚗 VISUAL SIGNATURE:
+- Exotic cars, muscle cars, tuned imports
+- SPEED: motion blur, streaking lights
+- NOS flames shooting from exhaust
+- Drift smoke, tire burnout marks
+- Impossible stunts (car jumping buildings, parachute drops)
+- Highway chases with explosions
+- Night city lights reflection on car paint
+- Speedometer/tachometer close-ups
+
+🎥 CAMERA STYLE:
+- Low angle shots of cars (aggressive, powerful)
+- Interior shots: gear shifting, foot on pedal, eyes in mirror
+- Tracking shots keeping pace with speeding cars
+- Mounted camera on car showing driver POV
+- 360° rotating around car during drift
+- Slow-motion impacts, crashes, flips
+- Drone shots following car chase from above
+
+💡 LIGHTING:
+- Night city neon (street racing culture)
+- Tunnel lights streaking past
+- Headlight flares, tail light trails
+- Fire/explosion glow
+- Sunset for dramatic driving scenes
+- High contrast, saturated colors
+
+🎭 ACTION SEQUENCES:
+1. RACE START: Countdown, burnout, launch
+2. CHASE: Highway pursuit, weaving traffic
+3. DRIFT: Smoke-filled corners, perfect slide
+4. HEIST: Moving truck, mid-drive transfer
+5. STUNT: Impossible jump, explosion escape
+6. SHOWDOWN: Final race, winner takes all
+7. FAMILY: Crew gathering, BBQ scene
+
+🔊 SOUND:
+- Engine roars, turbo whine, exhaust pops
+- Tire screeching, gear grinding
+- NOS hissing, boost whoosh
+- Bass-heavy hip-hop/electronic soundtrack
+- Dramatic silence before race start
+- Impact sounds, glass shattering, metal crunching
+
+📝 PROMPTTEXT FORMAT:
+"[SCENE TYPE: race/chase/heist/stunt]. [VEHICLE: specific car with color, modifications]. [DRIVER: full description, expression of focus/determination]. [ACTION: specific driving move - drift, NOS boost, jump]. CAMERA: [low angle/interior/tracking/drone], speed lines. LIGHTING: night neon/tunnel strobe/fire glow. VFX: motion blur, NOS flames, tire smoke. STYLE: Fast & Furious, street racing, high octane. PACING: FAST-CUT, adrenaline pumping."`
                 }
             }
 

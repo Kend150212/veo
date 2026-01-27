@@ -120,6 +120,46 @@ const CINEMATIC_STYLES = [
         useCase: 'Thời trang cao cấp, quảng cáo thương hiệu, visual art film, fashion campaign',
         icon: '✨',
         promptKeywords: 'high fashion film, surreal transitions, seamless morphing, golden hour, Haussmann architecture, Paris rooftops, drone shots, FPV tracking, dreamcore aesthetic, environment transformation, portal transitions, volumetric lighting, 8K photorealistic'
+    },
+    {
+        id: 'avatar_epic',
+        name: 'Avatar Epic Sci-Fi',
+        nameVi: 'Phim khoa học viễn tưởng hùng vĩ (Avatar Style)',
+        description: 'Thế giới ngoài hành tinh hùng vĩ với cảnh quan IMAX, sinh vật phát sáng, núi bay',
+        visualLanguage: 'Bioluminescent, floating mountains, alien flora, IMAX scale, spiritual glow, Pandora aesthetic',
+        useCase: 'Sci-Fi epic, fantasy worlds, alien planets, spiritual journeys',
+        icon: '🌌',
+        promptKeywords: 'Avatar style, Pandora aesthetic, bioluminescent world, floating mountains, epic landscapes, alien flora fauna, IMAX cinematography, James Cameron epic scale'
+    },
+    {
+        id: 'marvel_superhero',
+        name: 'Marvel Superhero Action',
+        nameVi: 'Phim siêu anh hùng Marvel',
+        description: 'Action đỉnh cao với hero landing, power effects, team assembly shots, epic battles',
+        visualLanguage: '360° hero shots, speed ramping, power effects, CGI destruction, dramatic poses',
+        useCase: 'Superhero stories, action sequences, team dynamics, villain confrontations',
+        icon: '🦸',
+        promptKeywords: 'Marvel Cinematic Universe, superhero action, hero landing, power effects, team assembly, villain confrontation, epic battle, dramatic lighting'
+    },
+    {
+        id: 'romance_cinematic',
+        name: 'Romance Cinematic',
+        nameVi: 'Phim tình cảm lãng mạn',
+        description: 'Câu chuyện tình yêu đầy cảm xúc với golden hour, bokeh đẹp, khoảnh khắc thân mật',
+        visualLanguage: 'Golden hour, soft focus, bokeh, intimate close-ups, rain kiss, slow-motion',
+        useCase: 'Love stories, romantic drama, emotional journeys, wedding films',
+        icon: '💕',
+        promptKeywords: 'romantic drama, love story, golden hour romance, soft focus, bokeh, intimate moments, rain kiss, airport reunion, emotional close-ups'
+    },
+    {
+        id: 'fast_furious_action',
+        name: 'Fast & Furious Action',
+        nameVi: 'Phim hành động tốc độ',
+        description: 'Đua xe, rượt đuổi, NOS, drift, stunts không tưởng - FAMILY!',
+        visualLanguage: 'Speed blur, NOS flames, drift smoke, night neon, low angle cars, explosion',
+        useCase: 'Street racing, car chases, heist action, high-speed stunts',
+        icon: '🏎️',
+        promptKeywords: 'Fast and Furious style, street racing, car chases, NOS boost, drift racing, explosions, impossible stunts, muscle cars, night neon'
     }
 ]
 
@@ -2192,8 +2232,8 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                             <button
                                 onClick={() => setUseOwnImages(!useOwnImages)}
                                 className={`px-4 py-2 rounded-lg text-sm font-medium transition ${useOwnImages
-                                        ? 'bg-green-500 text-white'
-                                        : 'bg-purple-500 text-white'
+                                    ? 'bg-green-500 text-white'
+                                    : 'bg-purple-500 text-white'
                                     }`}
                             >
                                 {useOwnImages ? '✅ Có, tôi tự có ảnh' : '🎨 AI tạo ảnh'}
@@ -2349,8 +2389,8 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                                             key={bg.id}
                                             onClick={() => setFashionBackground(bg.id)}
                                             className={`p-2 rounded-lg border-2 text-center transition ${fashionBackground === bg.id && !backgroundImage
-                                                    ? 'border-pink-500 bg-pink-500/20'
-                                                    : 'border-[var(--border-color)] hover:border-pink-500/50'
+                                                ? 'border-pink-500 bg-pink-500/20'
+                                                : 'border-[var(--border-color)] hover:border-pink-500/50'
                                                 }`}
                                         >
                                             <span className="text-xl">{bg.icon}</span>
@@ -2559,8 +2599,8 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                                     key={style.id}
                                     onClick={() => setCinematicStyle(style.id)}
                                     className={`p-3 rounded-lg cursor-pointer transition-all border-2 ${cinematicStyle === style.id
-                                            ? 'border-amber-500 bg-amber-500/20'
-                                            : 'border-transparent bg-[var(--bg-tertiary)] hover:border-amber-500/50'
+                                        ? 'border-amber-500 bg-amber-500/20'
+                                        : 'border-transparent bg-[var(--bg-tertiary)] hover:border-amber-500/50'
                                         }`}
                                 >
                                     <div className="flex items-start gap-3">
