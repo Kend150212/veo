@@ -233,6 +233,17 @@ export const CHANNEL_STYLES: ChannelStyle[] = [
         category: 'artistic'
     },
     {
+        id: 'renaissance-portrait',
+        name: 'Renaissance Portrait',
+        nameVi: 'Chân Dung Phục Hưng',
+        description: 'Renaissance-style portrait with painterly textures and dramatic lighting',
+        descriptionVi: 'Chân dung phong cách Phục Hưng với kết cấu hội họa và ánh sáng kịch tính',
+        promptKeywords: 'Renaissance-style portrait, painterly textures, dramatic lighting, classical art style, visible brush strokes, high-contrast pastel colors, brushstroke-style text, muted painterly background, museum quality, elegant painterly feel',
+        hasCharacters: true,
+        suggestedCharCount: 1,
+        category: 'artistic'
+    },
+    {
         id: 'pop-art',
         name: 'Pop Art',
         nameVi: 'Nghệ Thuật Pop',
