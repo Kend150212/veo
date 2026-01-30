@@ -135,9 +135,20 @@ export const CHANNEL_STYLES: ChannelStyle[] = [
         nameVi: 'Hoạt Hình Đất Sét',
         description: 'Stop-motion clay animation with whimsical elements',
         descriptionVi: 'Hoạt hình stop-motion đất sét với yếu tố kỳ ảo',
-        promptKeywords: 'claymation stop-motion, modeling clay texture, fingerprint details, Wallace and Gromit aesthetic, plasticine look, warm earthy brown clay, bright playful colors, whimsical steam punk elements, fluffy streaky clay clouds, muted and bright pinks and oranges, intense warm orange and yellow glow, golden warm lighting, gentle glow, playful sculpted details, cheerful claymation hues',
+        promptKeywords: 'claymation stop-motion, modeling clay texture, fingerprint details, Wallace and Gromit aesthetic, plasticine look, warm earthy brown clay, bright playful colors, whimsical steam punk elements, fluffy streaky clay clouds, muted and bright pinks and oranges, intense warm orange and yellow glow, golden warm lighting, gentle glow, playful sculpted details, cheerful claymation hues, miniature scene, anthropomorphic characters, thumbprint textures typical of clay, wire arms, googly eyes, slightly uneven thumb-printed surface, plasticine sheen, bright solid slightly cartoony colors, sharp focus on main characters, soft background, playful innocent handcrafted whimsical charm',
         hasCharacters: true,
         suggestedCharCount: 2,
+        category: 'cartoon'
+    },
+    {
+        id: 'anthropomorphic-vegetable',
+        name: 'Anthropomorphic Vegetable',
+        nameVi: 'Rau Củ Nhân Hóa',
+        description: 'Whimsical anthropomorphic vegetable characters in miniature settings',
+        descriptionVi: 'Nhân vật rau củ nhân hóa kỳ ảo trong khung cảnh thu nhỏ',
+        promptKeywords: 'anthropomorphic vegetable characters, miniature scene, whimsical vegetable people, carrot conductor, broccoli violinists, pea drummers, oversized antique teacup, musical notes made of steam and tiny bubbles, sheet music with whimsical notes, vegetable garden setting, cheerful claymation carrot, giant cabbage, round pea character, playful innocent handcrafted, bright colors, teacup concert setting, Ode to the Radish, tiny whimsical details',
+        hasCharacters: true,
+        suggestedCharCount: 3,
         category: 'cartoon'
     },
     {
@@ -206,6 +217,17 @@ export const CHANNEL_STYLES: ChannelStyle[] = [
         promptKeywords: 'nature documentary, BBC Earth style, wildlife cinematography, 4K ultra HD, macro nature shots',
         hasCharacters: false,
         suggestedCharCount: 0,
+        category: 'realistic'
+    },
+    {
+        id: 'nadir-aerial-cultural',
+        name: 'Nadir Aerial Cultural',
+        nameVi: 'Chụp Từ Trên Xuống Văn Hóa',
+        description: 'Crisp nadir aerial photography capturing cultural and agricultural landscapes',
+        descriptionVi: 'Nhiếp ảnh từ trên xuống sắc nét ghi lại cảnh quan văn hóa và nông nghiệp',
+        promptKeywords: 'crisp nadir aerial photograph, viewed directly from above, intricate beauty shimmering flooded rice paddies, rural Southeast Asia, complex swirling patterns, vibrant green young rice shoots, reflective brown water, narrow winding lines earthen bunds levees, vast organic mosaic landscape, cultural transmission human connection, agricultural setting, lone farmer traditional conical straw hat, knee-deep muddy water, gesturing animatedly, small children sitting side-by-side, narrow dry bund, waterlogged paddy, quiet moment storytelling teaching, generational knowledge passed down, landscape of sustenance, human narrative woven into patterns of agriculture',
+        hasCharacters: true,
+        suggestedCharCount: 1,
         category: 'realistic'
     },
     {
@@ -318,6 +340,17 @@ export const CHANNEL_STYLES: ChannelStyle[] = [
         promptKeywords: 'vaporwave aesthetic, pink and cyan, retro computer graphics, glitch effects, 90s nostalgia, synthwave',
         hasCharacters: false,
         suggestedCharCount: 0,
+        category: 'artistic'
+    },
+    {
+        id: 'sepia-3d-anthropomorphic',
+        name: 'Sepia 3D Anthropomorphic',
+        nameVi: '3D Nhân Hóa Sepia',
+        description: 'Sepia-toned 3D rendering of anthropomorphic stone statues with playful authority',
+        descriptionVi: 'Render 3D tông sepia của tượng đá nhân hóa với quyền lực vui tươi',
+        promptKeywords: 'sepia-toned finely textured 3D rendering, carved stone statue, regal portrait bust, centered medium-close shot eye level, oversized light beige faux fur coat, soft plush draped dramatically over shoulders, small round sunglasses, confident boss-like personality, neutral background, subtle diffused lighting, monochromatic sepia-toned, emphasizing textured details of stone, luxurious appearance oversized coat, playful authority, anthropomorphic animal character, stone texture, elegant sepia palette',
+        hasCharacters: true,
+        suggestedCharCount: 1,
         category: 'artistic'
     },
 
@@ -520,6 +553,28 @@ export const CHANNEL_STYLES: ChannelStyle[] = [
         description: 'High energy TikTok viral content style',
         descriptionVi: 'Phong cách TikTok viral năng lượng cao',
         promptKeywords: 'TikTok viral style, dynamic camera angles, trendy transitions, gen-z aesthetic, smartphone vertical video, energetic poses, outfit reveal, fast-paced content',
+        hasCharacters: true,
+        suggestedCharCount: 1,
+        category: 'fashion'
+    },
+    {
+        id: 'fashion-editorial-macro',
+        name: 'Fashion Editorial Macro',
+        nameVi: 'Thời Trang Editorial Macro',
+        description: 'Extreme close-up fashion portrait with luxury editorial aesthetic',
+        descriptionVi: 'Chân dung thời trang cận cảnh cực đại với phong cách editorial sang trọng',
+        promptKeywords: 'extreme close-up fashion portrait photograph, focusing on upper torso and face, sharp high-detail digital photography, luxury fashion editorial, emphasizing texture and artistic garment, macro-level focus, 100mm macro lens, soft studio lighting, angled slightly from side, extremely shallow depth of field, hyper-sharp detail, neutral grey bokeh background, primary colors against cream base, intimate yet bold mood, craftsmanship and artistic concept, neutral focused gaze',
+        hasCharacters: true,
+        suggestedCharCount: 1,
+        category: 'fashion'
+    },
+    {
+        id: 'cinematic-fashion-urban',
+        name: 'Cinematic Fashion Urban',
+        nameVi: 'Thời Trang Điện Ảnh Đô Thị',
+        description: 'Cinematic fashion photography with urban night energy',
+        descriptionVi: 'Nhiếp ảnh thời trang điện ảnh với năng lượng đêm đô thị',
+        promptKeywords: 'cinematic fashion photograph, high-speed Kodak Portra 400 film emulation, rich colors subtle grain, dynamic urban energy sophisticated style, vibrant confident charged metropolitan movement, rain-slicked asphalt street at night, stylized Tokyo Shinjuku district, dramatic high-contrast lighting, multiple sources, colorful neon signs reflecting on wet pavement, sharp backlight defining silhouette, shallow depth of field, razor-sharp model, abstract bokeh background, streaking car lights, blurred neon signs, electric blues pinks greens neon-drenched urban nightscape, dynamic low angle, leading lines from street markings, forward motion',
         hasCharacters: true,
         suggestedCharCount: 1,
         category: 'fashion'
