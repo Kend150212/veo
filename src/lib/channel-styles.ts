@@ -130,6 +130,17 @@ export const CHANNEL_STYLES: ChannelStyle[] = [
         category: 'cartoon'
     },
     {
+        id: 'claymation',
+        name: 'Claymation',
+        nameVi: 'Hoạt Hình Đất Sét',
+        description: 'Stop-motion clay animation with whimsical elements',
+        descriptionVi: 'Hoạt hình stop-motion đất sét với yếu tố kỳ ảo',
+        promptKeywords: 'claymation stop-motion, modeling clay texture, fingerprint details, Wallace and Gromit aesthetic, plasticine look, warm earthy brown clay, bright playful colors, whimsical steam punk elements, fluffy streaky clay clouds, muted and bright pinks and oranges, intense warm orange and yellow glow, golden warm lighting, gentle glow, playful sculpted details, cheerful claymation hues',
+        hasCharacters: true,
+        suggestedCharCount: 2,
+        category: 'cartoon'
+    },
+    {
         id: 'south-park',
         name: 'Cutout Animation',
         nameVi: 'Hoạt Hình Cắt Dán',
@@ -239,6 +250,28 @@ export const CHANNEL_STYLES: ChannelStyle[] = [
         description: 'Renaissance-style portrait with painterly textures and dramatic lighting',
         descriptionVi: 'Chân dung phong cách Phục Hưng với kết cấu hội họa và ánh sáng kịch tính',
         promptKeywords: 'Renaissance-style portrait, painterly textures, dramatic lighting, classical art style, visible brush strokes, high-contrast pastel colors, brushstroke-style text, muted painterly background, museum quality, elegant painterly feel',
+        hasCharacters: true,
+        suggestedCharCount: 1,
+        category: 'artistic'
+    },
+    {
+        id: 'impasto-landscape',
+        name: 'Impasto Expressionist Landscape',
+        nameVi: 'Phong Cảnh Biểu Hiện Impasto',
+        description: 'Expressive landscape with thick impasto texture and visible brushstrokes',
+        descriptionVi: 'Phong cảnh biểu hiện với texture impasto dày và nét cọ rõ ràng',
+        promptKeywords: 'expressive landscape painting, thick visible brushstrokes, impasto texture, dramatic waves, blocky shapes, masses of thick paint, individual brushstrokes clearly visible, strong contrasts, dramatic light, brightly lit planes, deep shadowy areas, thick textured color, rich natural colors, deep blues and teals, earthy browns, vibrant greens, dramatic yellows or oranges, rugged beauty, windswept motion, raw energy of nature, textured application of paint',
+        hasCharacters: false,
+        suggestedCharCount: 0,
+        category: 'artistic'
+    },
+    {
+        id: 'lo-fi-cozy',
+        name: 'Lo-fi Cozy Illustration',
+        nameVi: 'Minh Họa Lo-fi Ấm Áp',
+        description: 'Cozy illustration with soft gradients, clean lines, and warm atmosphere',
+        descriptionVi: 'Minh họa ấm áp với gradient mềm mại, nét vẽ sạch, và không khí ấm cúng',
+        promptKeywords: 'cozy intimate illustration, soft slightly grainy color gradients, clean linework, subtle uniform digital noise texture, warm lo-fi atmosphere, peaceful escape, quiet focus, comfort of transit, soft warm light, gentle highlights, softly blurred landscape, cooler muted tones, smooth gradients, warm yellowish interior light, cool blues greens greys exterior, noise texture, close-up tight medium shot, absorbed posture, warm interior cool exterior contrast',
         hasCharacters: true,
         suggestedCharCount: 1,
         category: 'artistic'

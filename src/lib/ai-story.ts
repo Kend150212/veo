@@ -121,6 +121,22 @@ export const VISUAL_STYLES = [
         promptKeywords: 'Renaissance-style portrait, painterly textures, dramatic lighting, classical art style, visible brush strokes, high-contrast pastel colors, brushstroke-style text, muted painterly background, museum quality, elegant painterly feel'
     },
     {
+        id: 'impasto-landscape',
+        name: 'Impasto Expressionist Landscape',
+        description: 'Phong cảnh biểu hiện với texture impasto',
+        descriptionEn: 'Expressive landscape with thick impasto texture',
+        image: '/styles/watercolor_style_1768952096403.png', // Using watercolor image as placeholder
+        promptKeywords: 'expressive landscape painting, thick visible brushstrokes, impasto texture, dramatic waves, blocky shapes, masses of thick paint, individual brushstrokes clearly visible, strong contrasts, dramatic light, brightly lit planes, deep shadowy areas, thick textured color, rich natural colors, deep blues and teals, earthy browns, vibrant greens, dramatic yellows or oranges, rugged beauty, windswept motion, raw energy of nature, textured application of paint'
+    },
+    {
+        id: 'lo-fi-cozy',
+        name: 'Lo-fi Cozy Illustration',
+        description: 'Minh họa lo-fi ấm áp',
+        descriptionEn: 'Cozy illustration with soft gradients and warm atmosphere',
+        image: '/styles/minimalist_style_1768952170330.png', // Using minimalist image as placeholder
+        promptKeywords: 'cozy intimate illustration, soft slightly grainy color gradients, clean linework, subtle uniform digital noise texture, warm lo-fi atmosphere, peaceful escape, quiet focus, comfort of transit, soft warm light, gentle highlights, softly blurred landscape, cooler muted tones, smooth gradients, warm yellowish interior light, cool blues greens greys exterior, noise texture, close-up tight medium shot, absorbed posture, warm interior cool exterior contrast'
+    },
+    {
         id: 'pixel-art',
         name: 'Pixel Art',
         description: 'Retro 8-bit game',
@@ -142,7 +158,7 @@ export const VISUAL_STYLES = [
         description: 'Stop-motion đất sét',
         descriptionEn: 'Stop-motion clay animation',
         image: '/styles/claymation_style_1768952157135.png',
-        promptKeywords: 'Claymation stop-motion, modeling clay texture, fingerprint details, Wallace and Gromit aesthetic, plasticine look'
+        promptKeywords: 'Claymation stop-motion, modeling clay texture, fingerprint details, Wallace and Gromit aesthetic, plasticine look, warm earthy brown clay, bright playful colors, whimsical steam punk elements, fluffy streaky clay clouds, muted and bright pinks and oranges, intense warm orange and yellow glow, golden warm lighting, gentle glow, playful sculpted details, cheerful claymation hues'
     },
     {
         id: 'minimalist',
