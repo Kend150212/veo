@@ -340,6 +340,19 @@ const CONTENT_TYPE_INFO: Record<string, { name: string; description: string; ico
             '3. Click "Tạo ảnh" mỗi scene → Imagen 3 tạo ảnh',
             '4. Download ảnh → Dùng cho video AI'
         ]
+    },
+    'one_shot': {
+        name: 'One Shot',
+        description: 'Một cảnh quay liên tục không cắt, camera di chuyển từ siêu rộng đến cực macro',
+        icon: '🎥',
+        tips: [
+            'Single continuous shot - NO CUTS, seamless flow',
+            'Dynamic camera movement: slow for emotional, fast for action',
+            'Wide to macro transitions: ultra-wide establishing → extreme close-up details',
+            'Camera techniques: dolly, zoom, orbit, crane, tracking',
+            'Pacing varies with content: slow reveal, fast chase, gradual zoom',
+            'Create visual interest through framing and movement, not cuts'
+        ]
     }
 }
 
@@ -453,7 +466,7 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
         'with_host' | 'voice_over' | 'broll_only' | 'host_dynamic_env' | 'host_storyteller' | 'cinematic_film' |
         'roast_comedy' | 'reaction_commentary' | 'asmr_satisfying' | 'horror_survival' | 'romance_drama' |
         'gen_z_meme' | 'educational_sassy' | 'mystery_detective' | 'breaking_4th_wall' | 'villain_origin' |
-        'underdog_triumph' | 'chaos_unhinged' | 'food_animation' | 'food_drama' | 'fashion_showcase'
+        'underdog_triumph' | 'chaos_unhinged' | 'food_animation' | 'food_drama' | 'fashion_showcase' | 'one_shot'
     >('with_host')
 
     // Fashion showcase product state
@@ -2157,7 +2170,7 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                                     'roast_comedy', 'reaction_commentary', 'horror_survival', 'romance_drama',
                                     'gen_z_meme', 'educational_sassy', 'mystery_detective', 'breaking_4th_wall',
                                     'villain_origin', 'underdog_triumph', 'chaos_unhinged', 'food_animation', 'food_drama',
-                                    'fashion_showcase', 'silent_life', 'virtual_companion', 'cozy_aesthetic'
+                                    'fashion_showcase', 'silent_life', 'virtual_companion', 'cozy_aesthetic', 'one_shot'
                                 ]
                                 setUseCharacters(characterModes.includes(mode))
 
@@ -2177,6 +2190,7 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                                 <option value="broll_only">🎬 B-Roll only (không lời)</option>
                                 <option value="host_dynamic_env">🌍 Host 100% + Môi trường động</option>
                                 <option value="host_storyteller">🎭 Host Kể Chuyện (Elements sinh động)</option>
+                                <option value="one_shot">🎥 One Shot (Một cảnh liên tục)</option>
                             </optgroup>
                             <optgroup label="🎬 Điện ảnh">
                                 <option value="cinematic_film">🎬 Điện Ảnh Hollywood</option>

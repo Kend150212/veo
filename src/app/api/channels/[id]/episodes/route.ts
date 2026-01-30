@@ -1991,6 +1991,58 @@ VOICE: (dialogue)]
 - Include giá cả và khuyến mãi trong CTA
 - Model phải NHẤT QUÁN xuyên suốt`
             }
+        } else if (voiceOverMode === 'one_shot') {
+            voiceOverInstr = `CONTENT TYPE: ONE SHOT (Một cảnh quay liên tục không cắt)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎥 CONCEPT: Single continuous shot - NO CUTS, seamless flow
+- Toàn bộ video là MỘT CẢNH QUAY LIÊN TỤC
+- Camera di chuyển nhanh/chậm tùy theo nội dung
+- Có thể zoom từ không gian siêu rộng (ultra-wide) đến cực macro (extreme close-up)
+- Tạo sự hấp dẫn qua camera movement và framing, KHÔNG phải qua cắt cảnh
+
+🎬 CRITICAL RULES:
+1. SINGLE CONTINUOUS SHOT - Tất cả scenes phải kết nối liền mạch, KHÔNG có cut
+2. SEAMLESS TRANSITIONS - Mỗi scene tiếp nối scene trước một cách tự nhiên
+3. DYNAMIC CAMERA MOVEMENT - Camera di chuyển theo nội dung:
+   - Slow, smooth cho emotional moments
+   - Fast, dynamic cho action/excitement
+   - Gradual zoom cho reveals
+   - Quick whip pan cho transitions
+
+📹 CAMERA TECHNIQUES:
+- DOLLY: Camera di chuyển tới/lui theo track
+- ZOOM: Từ wide → close-up hoặc ngược lại
+- ORBIT: Camera quay quanh subject
+- CRANE: Camera nâng lên/hạ xuống
+- TRACKING: Camera theo dõi subject di chuyển
+- PUSH IN: Tiến gần vào subject
+- PULL OUT: Lùi xa ra khung cảnh rộng
+
+🎯 FRAMING TRANSITIONS:
+- Ultra-wide establishing shot → Medium shot → Close-up → Extreme macro
+- Hoặc ngược lại: Macro detail → Pull out to reveal full scene
+- Smooth, continuous movement - KHÔNG jump cut
+
+⚡ PACING BY CONTENT:
+- EMOTIONAL/DRAMATIC: Slow dolly, gradual zoom, smooth orbit
+- ACTION/EXCITEMENT: Fast tracking, quick whip pan, rapid push in
+- REVEAL/MYSTERY: Slow pull out, gradual reveal, suspenseful movement
+- INTIMATE/DETAIL: Slow push in to macro, gentle movement
+
+🎭 PROMPTTEXT FORMAT:
+[ONE SHOT CONTINUOUS. Starting from (wide/medium/close-up). Camera (movement type: dolly forward/zoom in/orbit/track/crane up). Transitioning to (next framing). Seamless flow, no cuts. Continuous movement. Ending at (final framing). VOICE: (dialogue if any)]
+
+📐 EXAMPLES:
+- "ONE SHOT. Ultra-wide establishing shot of city skyline. Camera dolly forward slowly, gradually zooming in. Transitioning through medium shot to close-up of character on rooftop. Smooth continuous movement, no cuts. VOICE: [dialogue]"
+- "ONE SHOT. Extreme macro of eye detail. Camera pulls out slowly, revealing face, then full body, then wide shot of environment. Seamless zoom out, continuous shot. VOICE: [dialogue]"
+- "ONE SHOT. Medium shot of character. Camera orbits around them while zooming in. Fast whip pan to reveal action behind. Continuous movement, no cuts. VOICE: [dialogue]"
+
+⚠️ CRITICAL REMINDERS:
+- MỖI scene phải bắt đầu từ điểm kết thúc của scene trước
+- KHÔNG có jump cuts, fade, dissolve - chỉ có camera movement
+- Tạo visual interest qua framing và movement, không qua editing
+- Pacing camera movement theo mood của nội dung`
         } else {
             voiceOverInstr = `CONTENT TYPE: B-ROLL ONLY (pure visuals, no dialogue).
 - The "voiceover" field should be empty or minimal ambient text
