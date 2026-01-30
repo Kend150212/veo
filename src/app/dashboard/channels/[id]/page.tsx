@@ -28,6 +28,7 @@ import {
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { VISUAL_STYLES } from '@/lib/ai-story'
+import { getStyleById } from '@/lib/channel-styles'
 
 // Cinematic Film Styles for Hollywood mode
 const CINEMATIC_STYLES = [
@@ -2151,9 +2152,14 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                             className="input-field w-full"
                         >
                             <option value="">Mặc định kênh</option>
-                            {VISUAL_STYLES.map(style => (
-                                <option key={style.id} value={style.id}>{style.name}</option>
-                            ))}
+                            {VISUAL_STYLES.map(style => {
+                                // Ưu tiên nameVi từ CHANNEL_STYLES nếu có, nếu không thì dùng description hoặc name
+                                const channelStyle = getStyleById(style.id)
+                                const displayName = channelStyle?.nameVi || style.description || style.name
+                                return (
+                                    <option key={style.id} value={style.id}>{displayName}</option>
+                                )
+                            })}
                         </select>
                     </div>
 
