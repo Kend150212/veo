@@ -113,6 +113,14 @@ export const VISUAL_STYLES = [
         promptKeywords: 'Watercolor painting style, soft flowing colors, wet-on-wet technique, paper texture, impressionistic'
     },
     {
+        id: 'renaissance-portrait',
+        name: 'Renaissance Portrait',
+        description: 'Chân dung phong cách Phục Hưng',
+        descriptionEn: 'Renaissance-style portrait with painterly textures',
+        image: '/styles/watercolor_style_1768952096403.png', // Using watercolor image as placeholder
+        promptKeywords: 'Renaissance-style portrait, painterly textures, dramatic lighting, classical art style, visible brush strokes, high-contrast pastel colors, brushstroke-style text, muted painterly background, museum quality, elegant painterly feel'
+    },
+    {
         id: 'pixel-art',
         name: 'Pixel Art',
         description: 'Retro 8-bit game',
