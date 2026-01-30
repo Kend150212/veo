@@ -140,6 +140,17 @@ export const CHANNEL_STYLES: ChannelStyle[] = [
         suggestedCharCount: 3,
         category: 'cartoon'
     },
+    {
+        id: 'historical-3d-illustrated',
+        name: 'Historical 3D Illustrated',
+        nameVi: 'Tái Hiện Lịch Sử 3D Có Nét Vẽ',
+        description: '3D animation with outline strokes for historical events like moon landing',
+        descriptionVi: 'Hoạt hình 3D có nét vẽ cho các sự kiện lịch sử như đặt chân lên mặt trăng',
+        promptKeywords: '3D animation with outline strokes, cel-shaded 3D, toon shading, historical documentary 3D style, NASA moon landing recreation, Apollo 11 style, 3D rendered with hand-drawn outlines, stylized 3D historical events, 3D toon rendering with black outlines, illustrated 3D documentary, photorealistic 3D with artistic strokes, historical reenactment 3D animation, 3D with sketchy line art overlay, cinematic 3D with outline edges, documentary 3D with illustrated style, 3D characters with bold outlines, historical moments 3D visualization',
+        hasCharacters: true,
+        suggestedCharCount: 2,
+        category: 'cartoon'
+    },
 
     // === REALISTIC CATEGORY ===
     {
@@ -184,6 +195,17 @@ export const CHANNEL_STYLES: ChannelStyle[] = [
         promptKeywords: 'nature documentary, BBC Earth style, wildlife cinematography, 4K ultra HD, macro nature shots',
         hasCharacters: false,
         suggestedCharCount: 0,
+        category: 'realistic'
+    },
+    {
+        id: 'health-warning-hybrid',
+        name: 'Health Warning Hybrid',
+        nameVi: 'Cảnh Báo Sức Khỏe Kết Hợp',
+        description: 'Live-action person combined with 3D animated virus/monster for health awareness videos',
+        descriptionVi: 'Người thật kết hợp với virus/quái vật 3D hoạt hình cho video cảnh báo sức khỏe',
+        promptKeywords: 'live-action person, realistic human subject, 3D animated virus monster, glowing green slimy creature, health warning video style, photorealistic human combined with stylized 3D animation, sick person in bed, threatening 3D animated character, mixed media health awareness, realistic lighting on live subject, 3D creature with glowing eyes, mucus and slime effects, dramatic health awareness cinematography, person suffering with animated threat, photorealistic bedroom scene with 3D monster overlay',
+        hasCharacters: true,
+        suggestedCharCount: 1,
         category: 'realistic'
     },
 

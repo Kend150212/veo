@@ -154,6 +154,14 @@ export const VISUAL_STYLES = [
         promptKeywords: 'Historical period film, sepia tones, aged film grain, vintage costumes, epic wide shots, dramatic orchestral mood, all text in English'
     },
     {
+        id: 'historical-3d-illustrated',
+        name: 'Historical 3D Illustrated',
+        description: 'Tái hiện lịch sử 3D có nét vẽ',
+        descriptionEn: '3D animation with outline strokes for historical events',
+        image: '/styles/historical_3d_illustrated.png',
+        promptKeywords: '3D animation with outline strokes, cel-shaded 3D, toon shading, historical documentary 3D style, NASA moon landing recreation, Apollo 11 style, 3D rendered with hand-drawn outlines, stylized 3D historical events, 3D toon rendering with black outlines, illustrated 3D documentary, photorealistic 3D with artistic strokes, historical reenactment 3D animation, 3D with sketchy line art overlay, cinematic 3D with outline edges, documentary 3D with illustrated style, 3D characters with bold outlines, historical moments 3D visualization'
+    },
+    {
         id: 'action-movie',
         name: 'Action Movie',
         description: 'Phim hành động mạnh mẽ',
@@ -251,6 +259,14 @@ export const VISUAL_STYLES = [
         descriptionEn: 'Engaging educational content',
         image: '/styles/educational.png',
         promptKeywords: 'Educational content style, clear explanations, animated diagrams, friendly approachable aesthetic, bright colors, all text in English'
+    },
+    {
+        id: 'health-warning-hybrid',
+        name: 'Health Warning Hybrid',
+        description: 'Cảnh báo sức khỏe kết hợp',
+        descriptionEn: 'Live-action person with 3D animated virus/monster for health awareness',
+        image: '/styles/health_warning_hybrid.png',
+        promptKeywords: 'live-action person, realistic human subject, 3D animated virus monster, glowing green slimy creature, health warning video style, photorealistic human combined with stylized 3D animation, sick person in bed, threatening 3D animated character, mixed media health awareness, realistic lighting on live subject, 3D creature with glowing eyes, mucus and slime effects, dramatic health awareness cinematography, person suffering with animated threat, photorealistic bedroom scene with 3D monster overlay'
     },
     // Sci-Fi & Fantasy
     {
