@@ -20,7 +20,7 @@ import {
     Image
 } from 'lucide-react'
 import toast from 'react-hot-toast'
-import { CHANNEL_STYLES, getStyleById } from '@/lib/channel-styles'
+import { CHANNEL_STYLES, getStyleById, STYLE_CATEGORIES, getStylesByCategory } from '@/lib/channel-styles'
 
 interface Channel {
     id: string
@@ -239,11 +239,19 @@ export default function ChannelSettingsPage({ params }: { params: Promise<{ id: 
                         className="input-field"
                     >
                         <option value="">-- Chọn style --</option>
-                        {CHANNEL_STYLES.map(style => (
-                            <option key={style.id} value={style.id}>
-                                {style.nameVi} - {style.descriptionVi}
-                            </option>
-                        ))}
+                        {STYLE_CATEGORIES.filter(cat => cat.id !== 'all').map(category => {
+                            const styles = getStylesByCategory(category.id)
+                            if (styles.length === 0) return null
+                            return (
+                                <optgroup key={category.id} label={category.name}>
+                                    {styles.map(style => (
+                                        <option key={style.id} value={style.id}>
+                                            {style.nameVi} - {style.descriptionVi}
+                                        </option>
+                                    ))}
+                                </optgroup>
+                            )
+                        })}
                     </select>
                 </div>
 

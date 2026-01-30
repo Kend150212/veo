@@ -27,7 +27,7 @@ import {
     Wand2
 } from 'lucide-react'
 import toast from 'react-hot-toast'
-import { CHANNEL_STYLES } from '@/lib/channel-styles'
+import { CHANNEL_STYLES, STYLE_CATEGORIES, getStylesByCategory } from '@/lib/channel-styles'
 
 // Cinematic Film Styles for Hollywood mode
 const CINEMATIC_STYLES = [
@@ -2151,11 +2151,19 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                             className="input-field w-full"
                         >
                             <option value="">Mặc định kênh</option>
-                            {CHANNEL_STYLES.map(style => (
-                                <option key={style.id} value={style.id}>
-                                    {style.nameVi} - {style.descriptionVi}
-                                </option>
-                            ))}
+                            {STYLE_CATEGORIES.filter(cat => cat.id !== 'all').map(category => {
+                                const styles = getStylesByCategory(category.id)
+                                if (styles.length === 0) return null
+                                return (
+                                    <optgroup key={category.id} label={category.name}>
+                                        {styles.map(style => (
+                                            <option key={style.id} value={style.id}>
+                                                {style.nameVi} - {style.descriptionVi}
+                                            </option>
+                                        ))}
+                                    </optgroup>
+                                )
+                            })}
                         </select>
                     </div>
 

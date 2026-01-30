@@ -610,6 +610,7 @@ export const STYLE_CATEGORIES = [
     { id: 'realistic', name: 'Thực tế', nameEn: 'Realistic' },
     { id: 'artistic', name: 'Nghệ thuật', nameEn: 'Artistic' },
     { id: 'minimalist', name: 'Tối giản', nameEn: 'Minimalist' },
+    { id: 'edutainment', name: 'Giáo dục / Giải trí', nameEn: 'Edutainment' },
     { id: 'fashion', name: 'Thời trang / Social', nameEn: 'Fashion / Social' }
 ]
 
