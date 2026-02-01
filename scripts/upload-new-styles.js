@@ -32,7 +32,20 @@ const styleMapping = {
     'style_oil_painting': 'oil-painting',
     'style_pop_art': 'pop-art',
     'style_digital_illustration': 'digital-illustration',
-    'style_doodle': 'doodle'
+    'style_doodle': 'doodle',
+    // Batch 2 - new styles
+    'style_3d_pixar': '3d-pixar',
+    'style_anime': 'anime',
+    'style_cartoon_2d': 'cartoon-2d',
+    'style_chibi': 'chibi',
+    'style_jellytoon': 'jellytoon',
+    'style_south_park': 'south-park',
+    'style_streetwear': 'streetwear-urban',
+    'style_studio_ecommerce': 'studio-ecommerce',
+    'style_korean_soft': 'korean-soft',
+    'style_tiktok_viral': 'tiktok-viral',
+    'style_health_warning': 'health-warning-hybrid',
+    'style_watercolor': 'watercolor'
 };
 
 async function uploadImage(filePath) {
