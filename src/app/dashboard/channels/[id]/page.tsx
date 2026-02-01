@@ -28,6 +28,8 @@ import {
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { VISUAL_STYLES } from '@/lib/ai-story'
+import { CHANNEL_STYLES } from '@/lib/channel-styles'
+import StyleSelectorModal from '@/components/StyleSelectorModal'
 
 // Cinematic Film Styles for Hollywood mode
 const CINEMATIC_STYLES = [
@@ -455,6 +457,7 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
     const [selectedCharacterIds, setSelectedCharacterIds] = useState<string[]>([])
     const [adaptCharactersToScript, setAdaptCharactersToScript] = useState(false) // AI tự điều chỉnh nhân vật
     const [selectedStyleId, setSelectedStyleId] = useState<string>('')
+    const [showStyleModal, setShowStyleModal] = useState(false)
     const [selectedContinuityStyleId, setSelectedContinuityStyleId] = useState<string>('')
     const [continuityStyles, setContinuityStyles] = useState<ContinuityStyle[]>([])
     const [defaultContinuityStyleId, setDefaultContinuityStyleId] = useState<string | null>(null)
@@ -2167,16 +2170,35 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
 
                     <div>
                         <label className="block text-sm font-medium mb-2">Visual Style</label>
-                        <select
-                            value={selectedStyleId}
-                            onChange={(e) => setSelectedStyleId(e.target.value)}
-                            className="input-field w-full"
+                        <button
+                            type="button"
+                            onClick={() => setShowStyleModal(true)}
+                            className="input-field w-full text-left flex items-center justify-between hover:border-[var(--accent-primary)] transition-colors"
                         >
-                            <option value="">Mặc định kênh</option>
-                            {VISUAL_STYLES.map(style => (
-                                <option key={style.id} value={style.id}>{style.name}</option>
-                            ))}
-                        </select>
+                            <span className="flex items-center gap-2">
+                                {selectedStyleId ? (
+                                    <>
+                                        {CHANNEL_STYLES.find(s => s.id === selectedStyleId)?.previewImage && (
+                                            <img
+                                                src={CHANNEL_STYLES.find(s => s.id === selectedStyleId)?.previewImage}
+                                                alt=""
+                                                className="w-8 h-8 rounded object-cover"
+                                            />
+                                        )}
+                                        {CHANNEL_STYLES.find(s => s.id === selectedStyleId)?.nameVi || selectedStyleId}
+                                    </>
+                                ) : (
+                                    <>🎨 Chọn Visual Style...</>
+                                )}
+                            </span>
+                            <ChevronDown className="w-4 h-4 text-gray-400" />
+                        </button>
+                        <StyleSelectorModal
+                            isOpen={showStyleModal}
+                            onClose={() => setShowStyleModal(false)}
+                            onSelect={(id) => setSelectedStyleId(id || '')}
+                            selectedStyleId={selectedStyleId}
+                        />
                     </div>
 
                     {continuityStyles.length > 0 && (

@@ -94,13 +94,6 @@ export async function POST(
             where: { id, userId: session.user.id },
             include: {
                 characters: true,
-                backgrounds: {
-                    orderBy: [
-                        { isDefault: 'desc' },
-                        { order: 'asc' },
-                        { createdAt: 'asc' }
-                    ]
-                },
                 episodes: {
                     select: {
                         episodeNumber: true,

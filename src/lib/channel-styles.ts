@@ -26,6 +26,7 @@ export const CHANNEL_STYLES: ChannelStyle[] = [
         promptKeywords: 'doodle art style, hand-drawn sketch, simple line art, whiteboard animation style, black ink drawings on white background',
         hasCharacters: true,
         suggestedCharCount: 1,
+        previewImage: 'https://cdn1.sharemyimage.com/smi/2026/02/01/af191a95b879.jpg',
         category: 'illustration'
     },
     {
@@ -37,6 +38,7 @@ export const CHANNEL_STYLES: ChannelStyle[] = [
         promptKeywords: 'digital illustration, professional artwork, clean vector art, vibrant colors, modern illustration style',
         hasCharacters: true,
         suggestedCharCount: 2,
+        previewImage: 'https://cdn1.sharemyimage.com/smi/2026/02/01/77710ee71523.jpg',
         category: 'illustration'
     },
     {
@@ -48,6 +50,7 @@ export const CHANNEL_STYLES: ChannelStyle[] = [
         promptKeywords: 'infographic style, data visualization, flat design icons, charts and graphs, clean modern layout',
         hasCharacters: false,
         suggestedCharCount: 0,
+        previewImage: 'https://cdn1.sharemyimage.com/smi/2026/02/01/8d34437860d3.jpg',
         category: 'illustration'
     },
     {
@@ -59,6 +62,7 @@ export const CHANNEL_STYLES: ChannelStyle[] = [
         promptKeywords: 'storybook illustration, warm colors, soft lighting, childrens book art style, whimsical characters',
         hasCharacters: true,
         suggestedCharCount: 2,
+        previewImage: 'https://cdn1.sharemyimage.com/smi/2026/02/01/87ac51e034f0.jpg',
         category: 'illustration'
     },
 
@@ -72,6 +76,7 @@ export const CHANNEL_STYLES: ChannelStyle[] = [
         promptKeywords: '2D cartoon animation, Disney style, expressive characters, vibrant cel shading, dynamic poses',
         hasCharacters: true,
         suggestedCharCount: 2,
+        previewImage: 'https://cdn1.sharemyimage.com/smi/2026/02/01/36cdd1ddc241.jpg',
         category: 'cartoon'
     },
     {
@@ -83,6 +88,7 @@ export const CHANNEL_STYLES: ChannelStyle[] = [
         promptKeywords: 'anime style, Japanese animation, large expressive eyes, detailed hair, vibrant colors, manga inspired',
         hasCharacters: true,
         suggestedCharCount: 2,
+        previewImage: 'https://cdn1.sharemyimage.com/smi/2026/02/01/fb89c2a7f8cb.jpg',
         category: 'cartoon'
     },
     {
@@ -94,6 +100,7 @@ export const CHANNEL_STYLES: ChannelStyle[] = [
         promptKeywords: 'chibi style, kawaii, cute characters, big head small body, adorable expressions, pastel colors',
         hasCharacters: true,
         suggestedCharCount: 2,
+        previewImage: 'https://cdn1.sharemyimage.com/smi/2026/02/01/5b12fdd8b726.jpg',
         category: 'cartoon'
     },
     {
@@ -105,6 +112,7 @@ export const CHANNEL_STYLES: ChannelStyle[] = [
         promptKeywords: 'Pixar 3D animation style, CGI render, expressive characters, cinematic lighting, detailed textures',
         hasCharacters: true,
         suggestedCharCount: 2,
+        previewImage: 'https://cdn1.sharemyimage.com/smi/2026/02/01/6a1ef8fa9911.jpg',
         category: 'cartoon'
     },
     {
@@ -127,6 +135,7 @@ export const CHANNEL_STYLES: ChannelStyle[] = [
         promptKeywords: 'comic book style, bold outlines, halftone dots, superhero comic, dynamic action poses, speech bubbles',
         hasCharacters: true,
         suggestedCharCount: 2,
+        previewImage: 'https://cdn1.sharemyimage.com/smi/2026/02/01/2c06fe1091c6.jpg',
         category: 'cartoon'
     },
     {
@@ -162,6 +171,7 @@ export const CHANNEL_STYLES: ChannelStyle[] = [
         promptKeywords: 'cinematic, photorealistic, film grain, 35mm, movie quality, dramatic lighting, shallow depth of field',
         hasCharacters: true,
         suggestedCharCount: 1,
+        previewImage: 'https://cdn1.sharemyimage.com/smi/2026/02/01/6cfa6889152a.jpg',
         category: 'realistic'
     },
     {
@@ -219,6 +229,7 @@ export const CHANNEL_STYLES: ChannelStyle[] = [
         promptKeywords: 'watercolor painting, soft edges, transparent layers, wet on wet technique, artistic brush strokes',
         hasCharacters: true,
         suggestedCharCount: 1,
+        previewImage: 'https://cdn1.sharemyimage.com/smi/2026/02/01/05004a3af9cd.jpg',
         category: 'artistic'
     },
     {
@@ -230,6 +241,7 @@ export const CHANNEL_STYLES: ChannelStyle[] = [
         promptKeywords: 'oil painting, rich textures, visible brush strokes, classical art style, museum quality',
         hasCharacters: true,
         suggestedCharCount: 1,
+        previewImage: 'https://cdn1.sharemyimage.com/smi/2026/02/01/0f93a4755044.jpg',
         category: 'artistic'
     },
     {
@@ -241,6 +253,7 @@ export const CHANNEL_STYLES: ChannelStyle[] = [
         promptKeywords: 'pop art, bold primary colors, Ben-Day dots, Andy Warhol style, high contrast, graphic design',
         hasCharacters: true,
         suggestedCharCount: 1,
+        previewImage: 'https://cdn1.sharemyimage.com/smi/2026/02/01/5f726b946d43.jpg',
         category: 'artistic'
     },
     {
