@@ -17,7 +17,7 @@ export async function POST(
 
         const { id: channelId } = await params
         const body = await req.json()
-        const { styleHint, characterHint } = body
+        const { styleHint, characterHint, quickDescription } = body
 
         // Get user's API key from settings
         const settings = await prisma.userSettings.findUnique({
@@ -50,6 +50,13 @@ export async function POST(
             ? `Main characters: ${channel.characters.map(c => `${c.name} (${c.role}): ${c.fullDescription}`).join('; ')}`
             : ''
 
+        // Enhanced prompt - prioritize quickDescription if provided
+        const userRequest = quickDescription
+            ? `QUAN TRỌNG - User yêu cầu style cụ thể: "${quickDescription}". Hãy tạo style DỰA TRÊN YÊU CẦU NÀY.`
+            : styleHint
+                ? `- User's style hint: ${styleHint}`
+                : ''
+
         const prompt = `You are an expert cinematographer and video production designer. Create a Continuity Style for a YouTube channel.
 
 Channel Information:
@@ -58,10 +65,12 @@ Channel Information:
 - Description: ${channel.description || 'Not provided'}
 - Visual Style ID: ${channel.visualStyleId || 'Not specified'}
 ${characterContext}
-${styleHint ? `- User's style hint: ${styleHint}` : ''}
+${userRequest}
 ${characterHint ? `- Character hint: ${characterHint}` : ''}
 
-Generate a comprehensive Continuity Style that will ensure visual consistency across all videos. Return a JSON object with these fields:
+Generate a comprehensive Continuity Style that will ensure visual consistency across all videos. ${quickDescription ? 'Focus on matching the user\'s requested style description.' : ''}
+
+Return a JSON object with these fields:
 
 {
   "name": "A creative name for this style (in Vietnamese)",

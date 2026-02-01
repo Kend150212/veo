@@ -48,6 +48,7 @@ export default function ContinuityStyleManager({ channelId }: Props) {
     const [isGenerating, setIsGenerating] = useState(false)
     const [isSaving, setIsSaving] = useState(false)
     const [expandedStyleId, setExpandedStyleId] = useState<string | null>(null)
+    const [quickDescription, setQuickDescription] = useState('')
 
     // Form state
     const [showForm, setShowForm] = useState(false)
@@ -84,15 +85,21 @@ export default function ContinuityStyleManager({ channelId }: Props) {
         }
     }
 
-    const handleGenerateWithAI = async () => {
+    const handleGenerateWithAI = async (useQuickDescription: boolean = false) => {
+        if (useQuickDescription && !quickDescription.trim()) {
+            toast.error('Vui lòng nhập mô tả ngắn cho style')
+            return
+        }
+
         setIsGenerating(true)
         try {
             const res = await fetch(`/api/channels/${channelId}/continuity-styles/generate`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    styleHint: form.visualStyle || undefined,
-                    characterHint: form.subjectDefault || undefined
+                    styleHint: useQuickDescription ? quickDescription : (form.visualStyle || undefined),
+                    characterHint: form.subjectDefault || undefined,
+                    quickDescription: useQuickDescription ? quickDescription : undefined
                 })
             })
             const data = await res.json()
@@ -110,6 +117,10 @@ export default function ContinuityStyleManager({ channelId }: Props) {
                     setAsDefault: true
                 })
                 toast.success('AI đã tạo style! Review và lưu khi sẵn sàng.')
+                if (useQuickDescription) {
+                    setQuickDescription('')
+                    setShowForm(true)
+                }
             } else {
                 toast.error(data.error || 'Không thể tạo style')
             }
@@ -274,6 +285,48 @@ export default function ContinuityStyleManager({ channelId }: Props) {
                 Định nghĩa phong cách liên tục cho video (palette, lighting, camera, style) để đảm bảo tính nhất quán.
             </p>
 
+            {/* Quick Generate from Description */}
+            <div className="mb-6 p-4 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-xl border border-purple-500/20">
+                <h4 className="text-sm font-medium mb-2 flex items-center gap-2">
+                    <Wand2 className="w-4 h-4 text-purple-400" />
+                    Tạo nhanh từ mô tả
+                </h4>
+                <div className="flex gap-2">
+                    <input
+                        type="text"
+                        value={quickDescription}
+                        onChange={(e) => setQuickDescription(e.target.value)}
+                        placeholder="VD: Phong cách điện ảnh Pixar, màu sắc tươi sáng, ánh sáng mềm mại..."
+                        className="input-field flex-1"
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter' && !isGenerating) {
+                                handleGenerateWithAI(true)
+                            }
+                        }}
+                    />
+                    <button
+                        onClick={() => handleGenerateWithAI(true)}
+                        disabled={isGenerating || !quickDescription.trim()}
+                        className="px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:opacity-90 transition flex items-center gap-2 disabled:opacity-50 whitespace-nowrap"
+                    >
+                        {isGenerating ? (
+                            <>
+                                <Loader2 className="w-4 h-4 animate-spin" />
+                                Đang tạo...
+                            </>
+                        ) : (
+                            <>
+                                <Sparkles className="w-4 h-4" />
+                                Tạo Style
+                            </>
+                        )}
+                    </button>
+                </div>
+                <p className="text-xs text-[var(--text-muted)] mt-2">
+                    Nhập mô tả ngắn về phong cách bạn muốn, AI sẽ tự động tạo đầy đủ các thông số (palette, lighting, camera...).
+                </p>
+            </div>
+
             {/* Styles List */}
             {styles.length === 0 ? (
                 <div className="text-center py-8 text-[var(--text-muted)]">
@@ -287,8 +340,8 @@ export default function ContinuityStyleManager({ channelId }: Props) {
                         <div
                             key={style.id}
                             className={`p-4 rounded-lg border-2 transition ${defaultStyleId === style.id
-                                    ? 'border-[var(--accent-primary)] bg-[var(--accent-primary)]/10'
-                                    : 'border-[var(--bg-tertiary)] bg-[var(--bg-secondary)]'
+                                ? 'border-[var(--accent-primary)] bg-[var(--accent-primary)]/10'
+                                : 'border-[var(--bg-tertiary)] bg-[var(--bg-secondary)]'
                                 }`}
                         >
                             <div className="flex items-center justify-between">
@@ -447,7 +500,7 @@ export default function ContinuityStyleManager({ channelId }: Props) {
                                     {editingStyle ? 'Chỉnh sửa Style' : 'Tạo Continuity Style mới'}
                                 </h4>
                                 <button
-                                    onClick={handleGenerateWithAI}
+                                    onClick={() => handleGenerateWithAI(false)}
                                     disabled={isGenerating}
                                     className="flex items-center gap-2 px-3 py-1.5 text-sm bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:opacity-90 transition disabled:opacity-50"
                                 >
