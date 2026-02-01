@@ -26,7 +26,7 @@ export const CHANNEL_STYLES: ChannelStyle[] = [
         promptKeywords: 'doodle art style, hand-drawn sketch, simple line art, whiteboard animation style, black ink drawings on white background',
         hasCharacters: true,
         suggestedCharCount: 1,
-        previewImage: 'https://cdn1.sharemyimage.com/smi/2026/02/01/af191a95b879.jpg',
+        previewImage: 'https://cdn1.sharemyimage.com/smi/2026/02/01/style_doodle_1769921761065.jpeg',
         category: 'illustration'
     },
     {
@@ -38,7 +38,7 @@ export const CHANNEL_STYLES: ChannelStyle[] = [
         promptKeywords: 'digital illustration, professional artwork, clean vector art, vibrant colors, modern illustration style',
         hasCharacters: true,
         suggestedCharCount: 2,
-        previewImage: 'https://cdn1.sharemyimage.com/smi/2026/02/01/77710ee71523.jpg',
+        previewImage: 'https://cdn1.sharemyimage.com/smi/2026/02/01/style_digital_illustration_1769921776817.jpeg',
         category: 'illustration'
     },
     {
@@ -50,7 +50,7 @@ export const CHANNEL_STYLES: ChannelStyle[] = [
         promptKeywords: 'infographic style, data visualization, flat design icons, charts and graphs, clean modern layout',
         hasCharacters: false,
         suggestedCharCount: 0,
-        previewImage: 'https://cdn1.sharemyimage.com/smi/2026/02/01/8d34437860d3.jpg',
+        previewImage: 'https://cdn1.sharemyimage.com/smi/2026/02/01/style_infographic_1769921792701.jpeg',
         category: 'illustration'
     },
     {
@@ -62,7 +62,7 @@ export const CHANNEL_STYLES: ChannelStyle[] = [
         promptKeywords: 'storybook illustration, warm colors, soft lighting, childrens book art style, whimsical characters',
         hasCharacters: true,
         suggestedCharCount: 2,
-        previewImage: 'https://cdn1.sharemyimage.com/smi/2026/02/01/87ac51e034f0.jpg',
+        previewImage: 'https://cdn1.sharemyimage.com/smi/2026/02/01/style_storybook_1769921809815.jpeg',
         category: 'illustration'
     },
 
@@ -246,7 +246,7 @@ export const CHANNEL_STYLES: ChannelStyle[] = [
         promptKeywords: 'oil painting, rich textures, visible brush strokes, classical art style, museum quality',
         hasCharacters: true,
         suggestedCharCount: 1,
-        previewImage: 'https://cdn1.sharemyimage.com/smi/2026/02/01/0f93a4755044.jpg',
+        previewImage: 'https://cdn1.sharemyimage.com/smi/2026/02/01/style_oil_painting_1769921999608.jpeg',
         category: 'artistic'
     },
     {
@@ -258,7 +258,7 @@ export const CHANNEL_STYLES: ChannelStyle[] = [
         promptKeywords: 'pop art, bold primary colors, Ben-Day dots, Andy Warhol style, high contrast, graphic design',
         hasCharacters: true,
         suggestedCharCount: 1,
-        previewImage: 'https://cdn1.sharemyimage.com/smi/2026/02/01/5f726b946d43.jpg',
+        previewImage: 'https://cdn1.sharemyimage.com/smi/2026/02/01/style_pop_art_1769922013297.jpeg',
         category: 'artistic'
     },
     {
@@ -270,6 +270,7 @@ export const CHANNEL_STYLES: ChannelStyle[] = [
         promptKeywords: 'retro vintage, 70s 80s aesthetic, faded colors, film grain, nostalgic, old photograph look',
         hasCharacters: true,
         suggestedCharCount: 1,
+        previewImage: 'https://cdn1.sharemyimage.com/smi/2026/02/01/style_retro_vintage_1769925947773.jpeg',
         category: 'artistic'
     },
     {
@@ -281,6 +282,7 @@ export const CHANNEL_STYLES: ChannelStyle[] = [
         promptKeywords: 'cyberpunk aesthetic, neon lights, futuristic cityscape, rain-slicked streets, high-tech low-life, synthwave',
         hasCharacters: true,
         suggestedCharCount: 1,
+        previewImage: 'https://cdn1.sharemyimage.com/smi/2026/02/01/style_neon_cyberpunk_1769925963131.jpeg',
         category: 'artistic'
     },
     {
@@ -292,6 +294,7 @@ export const CHANNEL_STYLES: ChannelStyle[] = [
         promptKeywords: 'vaporwave aesthetic, pink and cyan, retro computer graphics, glitch effects, 90s nostalgia, synthwave',
         hasCharacters: false,
         suggestedCharCount: 0,
+        previewImage: 'https://cdn1.sharemyimage.com/smi/2026/02/01/style_vaporwave_1769925977517.jpeg',
         category: 'artistic'
     },
 
@@ -305,6 +308,7 @@ export const CHANNEL_STYLES: ChannelStyle[] = [
         promptKeywords: 'flat design, solid colors, no gradients, geometric shapes, minimal shadows, clean modern',
         hasCharacters: true,
         suggestedCharCount: 1,
+        previewImage: 'https://cdn1.sharemyimage.com/smi/2026/02/01/style_flat_design_1769925990519.jpeg',
         category: 'minimalist'
     },
     {
@@ -316,6 +320,7 @@ export const CHANNEL_STYLES: ChannelStyle[] = [
         promptKeywords: 'line art, continuous line drawing, black lines on white, minimal color accents, elegant simplicity',
         hasCharacters: true,
         suggestedCharCount: 1,
+        previewImage: 'https://cdn1.sharemyimage.com/smi/2026/02/01/style_line_art_1769926014281.jpeg',
         category: 'minimalist'
     },
     {
@@ -327,6 +332,7 @@ export const CHANNEL_STYLES: ChannelStyle[] = [
         promptKeywords: 'abstract art, geometric shapes, non-representational, color blocks, conceptual visualization',
         hasCharacters: false,
         suggestedCharCount: 0,
+        previewImage: 'https://cdn1.sharemyimage.com/smi/2026/02/01/style_abstract_1769926029217.jpeg',
         category: 'minimalist'
     },
     {
@@ -338,6 +344,7 @@ export const CHANNEL_STYLES: ChannelStyle[] = [
         promptKeywords: 'silhouette art, high contrast, black shadows, dramatic backlighting, stark minimalism',
         hasCharacters: true,
         suggestedCharCount: 1,
+        previewImage: 'https://cdn1.sharemyimage.com/smi/2026/02/01/style_silhouette_1769926042051.jpeg',
         category: 'minimalist'
     },
     {
@@ -349,6 +356,7 @@ export const CHANNEL_STYLES: ChannelStyle[] = [
         promptKeywords: 'isometric 3D, 30 degree angle, architectural illustration, clean geometric, no perspective distortion',
         hasCharacters: false,
         suggestedCharCount: 0,
+        previewImage: 'https://cdn1.sharemyimage.com/smi/2026/02/01/style_isometric_1769926056742.jpeg',
         category: 'minimalist'
     },
     {
@@ -360,6 +368,7 @@ export const CHANNEL_STYLES: ChannelStyle[] = [
         promptKeywords: 'paper craft art, layered paper cutouts, 3D depth, soft shadows, handmade aesthetic',
         hasCharacters: true,
         suggestedCharCount: 1,
+        previewImage: 'https://cdn1.sharemyimage.com/smi/2026/02/01/style_paper_craft_1769926091161.jpeg',
         category: 'minimalist'
     },
 
@@ -373,6 +382,7 @@ export const CHANNEL_STYLES: ChannelStyle[] = [
         promptKeywords: 'edutainment hybrid style, live-action human host combined with 3D animated characters, biological visualization, educational science animation, cinematic lighting for live footage, colorful 3D bio-world, medical animation, stylized 3D internal body scenes, Kurzgesagt style',
         hasCharacters: true,
         suggestedCharCount: 2,
+        previewImage: 'https://cdn1.sharemyimage.com/smi/2026/02/01/style_edutainment_1769926109210.jpeg',
         category: 'edutainment'
     },
     {
@@ -384,6 +394,7 @@ export const CHANNEL_STYLES: ChannelStyle[] = [
         promptKeywords: 'kurzgesagt style, flat design animation, colorful geometric shapes, educational science visualization, bright saturated colors, simple but detailed, consistent character design, cosmic backgrounds',
         hasCharacters: true,
         suggestedCharCount: 2,
+        previewImage: 'https://cdn1.sharemyimage.com/smi/2026/02/01/style_kurzgesagt_1769926123637.jpeg',
         category: 'edutainment'
     },
     {
@@ -395,6 +406,7 @@ export const CHANNEL_STYLES: ChannelStyle[] = [
         promptKeywords: 'TED-Ed animation style, educational illustration, mixed media, animated infographics, storytelling visuals, conceptual visualization, engaging lecture style',
         hasCharacters: true,
         suggestedCharCount: 1,
+        previewImage: 'https://cdn1.sharemyimage.com/smi/2026/02/01/style_ted_ed_1769926167138.jpeg',
         category: 'edutainment'
     },
     {
@@ -406,6 +418,7 @@ export const CHANNEL_STYLES: ChannelStyle[] = [
         promptKeywords: 'medical 3D animation, biological visualization, cellular animation, anatomical illustration, internal body journey, microscopic world, organ systems, stylized medical graphics, educational anatomy',
         hasCharacters: false,
         suggestedCharCount: 0,
+        previewImage: 'https://cdn1.sharemyimage.com/smi/2026/02/01/style_medical_3d_1769926136695.jpeg',
         category: 'edutainment'
     },
 
@@ -419,6 +432,7 @@ export const CHANNEL_STYLES: ChannelStyle[] = [
         promptKeywords: 'iPhone camera quality, smartphone selfie, vertical 9:16 format, natural handheld feel, TikTok style, realistic lighting, front camera look, casual authentic feel, social media content',
         hasCharacters: true,
         suggestedCharCount: 1,
+        previewImage: 'https://cdn1.sharemyimage.com/smi/2026/02/01/style_iphone_1769926181422.jpeg',
         category: 'fashion'
     },
     {
@@ -430,6 +444,7 @@ export const CHANNEL_STYLES: ChannelStyle[] = [
         promptKeywords: 'fashion influencer aesthetic, ring light illumination, perfect selfie lighting, beauty influencer style, polished social media content, high quality smartphone camera, vertical format',
         hasCharacters: true,
         suggestedCharCount: 1,
+        previewImage: 'https://cdn1.sharemyimage.com/smi/2026/02/01/style_fashion_influencer_1769926195150.jpeg',
         category: 'fashion'
     },
     {
@@ -441,6 +456,7 @@ export const CHANNEL_STYLES: ChannelStyle[] = [
         promptKeywords: 'mirror selfie, full body mirror, OOTD style, smartphone visible in reflection, outfit of the day, fashion blogger, casual authentic, vertical format 9:16',
         hasCharacters: true,
         suggestedCharCount: 1,
+        previewImage: 'https://cdn1.sharemyimage.com/smi/2026/02/01/style_mirror_selfie_1769926208833.jpeg',
         category: 'fashion'
     },
     {
@@ -452,6 +468,7 @@ export const CHANNEL_STYLES: ChannelStyle[] = [
         promptKeywords: 'aesthetic lifestyle, soft natural lighting, muted color palette, cozy bedroom vibes, lifestyle photography, warm tones, instagram aesthetic, vertical 9:16',
         hasCharacters: true,
         suggestedCharCount: 1,
+        previewImage: 'https://cdn1.sharemyimage.com/smi/2026/02/01/style_aesthetic_lifestyle_1769926244674.jpeg',
         category: 'fashion'
     },
     {
