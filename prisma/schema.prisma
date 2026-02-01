@@ -186,11 +186,15 @@ model Channel {
   youtubeDefaults     String?   // JSON: { socialLinks, affiliateLinks, channelTagline, defaultHashtags }
   thumbnailStyleId    String?   // ID của thumbnail style đã chọn
   
+  // Continuity Style (Phong cách liên tục)
+  defaultContinuityStyleId String?   // Style mặc định cho episodes mới
+  
   // Relations
   characters        ChannelCharacter[]
   episodes          Episode[]
   categories        EpisodeCategory[]
   products          Product[]
+  continuityStyles  ContinuityStyle[]
   
   userId            String
   user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -229,6 +233,10 @@ model Episode {
   generatedScenes Int       @default(0)
   status          String    @default("draft") // draft, generating, completed, error
   
+  // Continuity Style (override channel default)
+  continuityStyleId String?
+  continuityStyle   ContinuityStyle? @relation(fields: [continuityStyleId], references: [id], onDelete: SetNull)
+  
   scenes          EpisodeScene[]
   products        Product[]
   
@@ -256,6 +264,31 @@ model EpisodeCategory {
   channelId   String
   channel     Channel   @relation(fields: [channelId], references: [id], onDelete: Cascade)
   episodes    Episode[]
+}
+
+// ============================================
+// CONTINUITY STYLE SYSTEM
+// ============================================
+
+model ContinuityStyle {
+  id              String    @id @default(cuid())
+  name            String    // Tên style: "Mia Anthropologist Style"
+  
+  // Core Continuity Elements
+  subjectDefault  String?   // Mô tả subject mặc định
+  palette         String    // Bảng màu: "Warm amber, deep teal, muted greens"
+  environment     String?   // Môi trường mặc định
+  lighting        String    // Ánh sáng: "Dramatic, directional, ethereal glows"
+  cameraStyle     String    // Camera: "Smooth, cinematic, dolly, track, crane"
+  visualStyle     String    // Style: "Science documentary, mysterious, cinematic"
+  audioMood       String?   // Âm thanh/mood: "Ambient electronic, mysterious"
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  channelId       String
+  channel         Channel   @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  episodes        Episode[]
 }
 
 model EpisodeScene {

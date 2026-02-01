@@ -27,7 +27,7 @@ import {
     Wand2
 } from 'lucide-react'
 import toast from 'react-hot-toast'
-import { CHANNEL_STYLES, STYLE_CATEGORIES, getStylesByCategory } from '@/lib/channel-styles'
+import { VISUAL_STYLES } from '@/lib/ai-story'
 
 // Cinematic Film Styles for Hollywood mode
 const CINEMATIC_STYLES = [
@@ -340,19 +340,6 @@ const CONTENT_TYPE_INFO: Record<string, { name: string; description: string; ico
             '3. Click "Tạo ảnh" mỗi scene → Imagen 3 tạo ảnh',
             '4. Download ảnh → Dùng cho video AI'
         ]
-    },
-    'one_shot': {
-        name: 'One Shot',
-        description: 'Một cảnh quay liên tục không cắt, camera di chuyển từ siêu rộng đến cực macro',
-        icon: '🎥',
-        tips: [
-            'Single continuous shot - NO CUTS, seamless flow',
-            'Dynamic camera movement: slow for emotional, fast for action',
-            'Wide to macro transitions: ultra-wide establishing → extreme close-up details',
-            'Camera techniques: dolly, zoom, orbit, crane, tracking',
-            'Pacing varies with content: slow reveal, fast chase, gradual zoom',
-            'Create visual interest through framing and movement, not cuts'
-        ]
     }
 }
 
@@ -376,6 +363,15 @@ interface Episode {
     scenes: EpisodeScene[]
     categoryId: string | null
     metadata: string | null
+}
+
+interface ContinuityStyle {
+    id: string
+    name: string
+    palette: string
+    lighting: string
+    cameraStyle: string
+    visualStyle: string
 }
 
 interface EpisodeCategory {
@@ -459,6 +455,9 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
     const [selectedCharacterIds, setSelectedCharacterIds] = useState<string[]>([])
     const [adaptCharactersToScript, setAdaptCharactersToScript] = useState(false) // AI tự điều chỉnh nhân vật
     const [selectedStyleId, setSelectedStyleId] = useState<string>('')
+    const [selectedContinuityStyleId, setSelectedContinuityStyleId] = useState<string>('')
+    const [continuityStyles, setContinuityStyles] = useState<ContinuityStyle[]>([])
+    const [defaultContinuityStyleId, setDefaultContinuityStyleId] = useState<string | null>(null)
     const [mentionChannel, setMentionChannel] = useState(false)
     const [ctaMode, setCtaMode] = useState<'random' | 'select'>('random')
     const [selectedCTAs, setSelectedCTAs] = useState<string[]>([])
@@ -466,7 +465,7 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
         'with_host' | 'voice_over' | 'broll_only' | 'host_dynamic_env' | 'host_storyteller' | 'cinematic_film' |
         'roast_comedy' | 'reaction_commentary' | 'asmr_satisfying' | 'horror_survival' | 'romance_drama' |
         'gen_z_meme' | 'educational_sassy' | 'mystery_detective' | 'breaking_4th_wall' | 'villain_origin' |
-        'underdog_triumph' | 'chaos_unhinged' | 'food_animation' | 'food_drama' | 'fashion_showcase' | 'one_shot'
+        'underdog_triumph' | 'chaos_unhinged' | 'food_animation' | 'food_drama' | 'fashion_showcase'
     >('with_host')
 
     // Fashion showcase product state
@@ -792,14 +791,33 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
         fetchChannel()
     }, [id])
 
+    // Fetch continuity styles for this channel
+    const fetchContinuityStyles = async () => {
+        try {
+            const res = await fetch(`/api/channels/${id}/continuity-styles`)
+            const data = await res.json()
+            if (data.styles) {
+                setContinuityStyles(data.styles)
+                setDefaultContinuityStyleId(data.defaultStyleId)
+                // Auto-select default style
+                if (data.defaultStyleId && !selectedContinuityStyleId) {
+                    setSelectedContinuityStyleId(data.defaultStyleId)
+                }
+            }
+        } catch (error) {
+            console.error('Failed to fetch continuity styles:', error)
+        }
+    }
+
     const fetchChannel = async () => {
         try {
             const res = await fetch(`/api/channels/${id}`)
             const data = await res.json()
             if (data.channel) {
                 setChannel(data.channel)
-                // Fetch categories after channel loads
+                // Fetch categories and continuity styles after channel loads
                 fetchCategories()
+                fetchContinuityStyles()
             } else {
                 toast.error('Không tìm thấy kênh')
                 router.push('/dashboard/channels')
@@ -1116,7 +1134,9 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                     selectedAdStyles: adEnabled ? selectedAdStyles : [],
                     adSceneCount: adEnabled ? adSceneCount : 2,
                     // Storyteller B-Roll option
-                    storytellerBrollEnabled: voiceOverMode === 'host_storyteller' ? storytellerBrollEnabled : false
+                    storytellerBrollEnabled: voiceOverMode === 'host_storyteller' ? storytellerBrollEnabled : false,
+                    // Continuity Style
+                    continuityStyleId: selectedContinuityStyleId || null
                 })
             })
 
@@ -1172,7 +1192,8 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                         musicMode,
                         dialogueDensityMin,
                         dialogueDensityMax,
-                        storytellerBrollEnabled: voiceOverMode === 'host_storyteller' ? storytellerBrollEnabled : false
+                        storytellerBrollEnabled: voiceOverMode === 'host_storyteller' ? storytellerBrollEnabled : false,
+                        continuityStyleId: selectedContinuityStyleId || null
                     })
                 })
 
@@ -1296,7 +1317,8 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                         musicMode,
                         dialogueDensityMin,
                         dialogueDensityMax,
-                        storytellerBrollEnabled: voiceOverMode === 'host_storyteller' ? storytellerBrollEnabled : false
+                        storytellerBrollEnabled: voiceOverMode === 'host_storyteller' ? storytellerBrollEnabled : false,
+                        continuityStyleId: selectedContinuityStyleId || null
                     })
                 })
 
@@ -2151,21 +2173,34 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                             className="input-field w-full"
                         >
                             <option value="">Mặc định kênh</option>
-                            {STYLE_CATEGORIES.filter(cat => cat.id !== 'all').map(category => {
-                                const styles = getStylesByCategory(category.id)
-                                if (styles.length === 0) return null
-                                return (
-                                    <optgroup key={category.id} label={category.name}>
-                                        {styles.map(style => (
-                                            <option key={style.id} value={style.id}>
-                                                {style.nameVi} - {style.descriptionVi}
-                                            </option>
-                                        ))}
-                                    </optgroup>
-                                )
-                            })}
+                            {VISUAL_STYLES.map(style => (
+                                <option key={style.id} value={style.id}>{style.name}</option>
+                            ))}
                         </select>
                     </div>
+
+                    {continuityStyles.length > 0 && (
+                        <div>
+                            <label className="block text-sm font-medium mb-2">🎬 Continuity Style</label>
+                            <select
+                                value={selectedContinuityStyleId}
+                                onChange={(e) => setSelectedContinuityStyleId(e.target.value)}
+                                className="input-field w-full"
+                            >
+                                <option value="">Không sử dụng</option>
+                                {continuityStyles.map(style => (
+                                    <option key={style.id} value={style.id}>
+                                        {style.name} {defaultContinuityStyleId === style.id ? '⭐' : ''}
+                                    </option>
+                                ))}
+                            </select>
+                            {selectedContinuityStyleId && (
+                                <p className="text-xs text-[var(--accent-primary)] mt-1">
+                                    ✓ Palette, lighting, camera sẽ được thêm vào prompts
+                                </p>
+                            )}
+                        </div>
+                    )}
 
                     <div>
                         <label className="block text-sm font-medium mb-2">Loại nội dung</label>
@@ -2180,7 +2215,7 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                                     'roast_comedy', 'reaction_commentary', 'horror_survival', 'romance_drama',
                                     'gen_z_meme', 'educational_sassy', 'mystery_detective', 'breaking_4th_wall',
                                     'villain_origin', 'underdog_triumph', 'chaos_unhinged', 'food_animation', 'food_drama',
-                                    'fashion_showcase', 'silent_life', 'virtual_companion', 'cozy_aesthetic', 'one_shot'
+                                    'fashion_showcase', 'silent_life', 'virtual_companion', 'cozy_aesthetic'
                                 ]
                                 setUseCharacters(characterModes.includes(mode))
 
@@ -2200,7 +2235,6 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                                 <option value="broll_only">🎬 B-Roll only (không lời)</option>
                                 <option value="host_dynamic_env">🌍 Host 100% + Môi trường động</option>
                                 <option value="host_storyteller">🎭 Host Kể Chuyện (Elements sinh động)</option>
-                                <option value="one_shot">🎥 One Shot (Một cảnh liên tục)</option>
                             </optgroup>
                             <optgroup label="🎬 Điện ảnh">
                                 <option value="cinematic_film">🎬 Điện Ảnh Hollywood</option>

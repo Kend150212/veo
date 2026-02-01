@@ -74,7 +74,9 @@ export async function POST(
             selectedAdStyles = [],
             adSceneCount = 2,
             // Storyteller B-Roll option
-            storytellerBrollEnabled = false
+            storytellerBrollEnabled = false,
+            // Continuity Style
+            continuityStyleId = null
         } = await req.json()
 
         // CTA options
@@ -92,6 +94,13 @@ export async function POST(
             where: { id, userId: session.user.id },
             include: {
                 characters: true,
+                backgrounds: {
+                    orderBy: [
+                        { isDefault: 'desc' },
+                        { order: 'asc' },
+                        { createdAt: 'asc' }
+                    ]
+                },
                 episodes: {
                     select: {
                         episodeNumber: true,
@@ -115,10 +124,28 @@ export async function POST(
             return NextResponse.json({ error: 'Chưa cấu hình API key' }, { status: 400 })
         }
 
-        // Get visual style - use selected or channel default
         const styleId = selectedStyleId || channel.visualStyleId
         const visualStyle = styleId ? getStyleById(styleId) : null
         const styleKeywords = visualStyle?.promptKeywords || channel.visualStyleKeywords || 'cinematic, professional'
+
+        // Get continuity style if specified
+        let continuityBlock = ''
+        if (continuityStyleId) {
+            const continuityStyle = await prisma.continuityStyle.findFirst({
+                where: { id: continuityStyleId, channelId: id }
+            })
+            if (continuityStyle) {
+                continuityBlock = `\nCONTINUITY: palette=${continuityStyle.palette}; lighting=${continuityStyle.lighting}; camera=${continuityStyle.cameraStyle}; style=${continuityStyle.visualStyle}${continuityStyle.environment ? `; environment=${continuityStyle.environment}` : ''}${continuityStyle.audioMood ? `; audio-mood=${continuityStyle.audioMood}` : ''}`
+            }
+        } else if (channel.defaultContinuityStyleId) {
+            // Use channel default if no specific style selected
+            const defaultStyle = await prisma.continuityStyle.findUnique({
+                where: { id: channel.defaultContinuityStyleId }
+            })
+            if (defaultStyle) {
+                continuityBlock = `\nCONTINUITY: palette=${defaultStyle.palette}; lighting=${defaultStyle.lighting}; camera=${defaultStyle.cameraStyle}; style=${defaultStyle.visualStyle}${defaultStyle.environment ? `; environment=${defaultStyle.environment}` : ''}${defaultStyle.audioMood ? `; audio-mood=${defaultStyle.audioMood}` : ''}`
+            }
+        }
 
         // Parse knowledge base
         let knowledgeBase: { episodeIdeas?: { title: string; synopsis: string }[] } = {}
@@ -1991,58 +2018,6 @@ VOICE: (dialogue)]
 - Include giá cả và khuyến mãi trong CTA
 - Model phải NHẤT QUÁN xuyên suốt`
             }
-        } else if (voiceOverMode === 'one_shot') {
-            voiceOverInstr = `CONTENT TYPE: ONE SHOT (Một cảnh quay liên tục không cắt)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-🎥 CONCEPT: Single continuous shot - NO CUTS, seamless flow
-- Toàn bộ video là MỘT CẢNH QUAY LIÊN TỤC
-- Camera di chuyển nhanh/chậm tùy theo nội dung
-- Có thể zoom từ không gian siêu rộng (ultra-wide) đến cực macro (extreme close-up)
-- Tạo sự hấp dẫn qua camera movement và framing, KHÔNG phải qua cắt cảnh
-
-🎬 CRITICAL RULES:
-1. SINGLE CONTINUOUS SHOT - Tất cả scenes phải kết nối liền mạch, KHÔNG có cut
-2. SEAMLESS TRANSITIONS - Mỗi scene tiếp nối scene trước một cách tự nhiên
-3. DYNAMIC CAMERA MOVEMENT - Camera di chuyển theo nội dung:
-   - Slow, smooth cho emotional moments
-   - Fast, dynamic cho action/excitement
-   - Gradual zoom cho reveals
-   - Quick whip pan cho transitions
-
-📹 CAMERA TECHNIQUES:
-- DOLLY: Camera di chuyển tới/lui theo track
-- ZOOM: Từ wide → close-up hoặc ngược lại
-- ORBIT: Camera quay quanh subject
-- CRANE: Camera nâng lên/hạ xuống
-- TRACKING: Camera theo dõi subject di chuyển
-- PUSH IN: Tiến gần vào subject
-- PULL OUT: Lùi xa ra khung cảnh rộng
-
-🎯 FRAMING TRANSITIONS:
-- Ultra-wide establishing shot → Medium shot → Close-up → Extreme macro
-- Hoặc ngược lại: Macro detail → Pull out to reveal full scene
-- Smooth, continuous movement - KHÔNG jump cut
-
-⚡ PACING BY CONTENT:
-- EMOTIONAL/DRAMATIC: Slow dolly, gradual zoom, smooth orbit
-- ACTION/EXCITEMENT: Fast tracking, quick whip pan, rapid push in
-- REVEAL/MYSTERY: Slow pull out, gradual reveal, suspenseful movement
-- INTIMATE/DETAIL: Slow push in to macro, gentle movement
-
-🎭 PROMPTTEXT FORMAT:
-[ONE SHOT CONTINUOUS. Starting from (wide/medium/close-up). Camera (movement type: dolly forward/zoom in/orbit/track/crane up). Transitioning to (next framing). Seamless flow, no cuts. Continuous movement. Ending at (final framing). VOICE: (dialogue if any)]
-
-📐 EXAMPLES:
-- "ONE SHOT. Ultra-wide establishing shot of city skyline. Camera dolly forward slowly, gradually zooming in. Transitioning through medium shot to close-up of character on rooftop. Smooth continuous movement, no cuts. VOICE: [dialogue]"
-- "ONE SHOT. Extreme macro of eye detail. Camera pulls out slowly, revealing face, then full body, then wide shot of environment. Seamless zoom out, continuous shot. VOICE: [dialogue]"
-- "ONE SHOT. Medium shot of character. Camera orbits around them while zooming in. Fast whip pan to reveal action behind. Continuous movement, no cuts. VOICE: [dialogue]"
-
-⚠️ CRITICAL REMINDERS:
-- MỖI scene phải bắt đầu từ điểm kết thúc của scene trước
-- KHÔNG có jump cuts, fade, dissolve - chỉ có camera movement
-- Tạo visual interest qua framing và movement, không qua editing
-- Pacing camera movement theo mood của nội dung`
         } else {
             voiceOverInstr = `CONTENT TYPE: B-ROLL ONLY (pure visuals, no dialogue).
 - The "voiceover" field should be empty or minimal ambient text
@@ -2200,6 +2175,30 @@ Example: "[AD_INTEGRATION: testimonial] Host showing product with genuine smile.
 - Keep ad segments SHORT (1 scene each, not long pitches)
 ` : ''
 
+        // Get default background for channel
+        const defaultBackground = (channel as any).backgrounds?.find((bg: any) => bg.isDefault) || (channel as any).backgrounds?.[0]
+        const backgroundInstr = defaultBackground ? `
+🎬 BACKGROUND SETTING (MANDATORY - USE FOR ALL SCENES):
+═══════════════════════════════════════════════════════
+Background Name: "${defaultBackground.name}"
+${defaultBackground.description ? `Description: ${defaultBackground.description}` : ''}
+${defaultBackground.promptKeywords ? `Background Keywords: ${defaultBackground.promptKeywords}` : ''}
+
+⚠️ CRITICAL BACKGROUND RULES:
+- ALL scenes in this episode MUST use this SAME background setting
+- Include background description in EVERY scene's promptText
+- Background should be consistent throughout the episode
+- If background has specific visual elements (furniture, lighting, colors), mention them in each scene
+- Background creates the atmosphere and setting for the entire episode
+
+📝 BACKGROUND FORMAT IN PROMPTTEXT:
+Include background description at the START of each promptText:
+"[BACKGROUND: ${defaultBackground.promptKeywords || defaultBackground.name}] [rest of scene description]"
+
+Example:
+"[BACKGROUND: ${defaultBackground.promptKeywords || defaultBackground.name}] Character standing in the center, [action description]..."
+` : ''
+
         // Generate episode with YouTube content
         const fullPrompt = `Create Episode ${nextEpisodeNumber} with EXACTLY ${totalScenes} scenes for channel "${channel.name}"
 
@@ -2212,6 +2211,7 @@ ${characterBible || '(No host/characters for this episode)'}
 ${characterAdaptInstr}
 ${existingEpisodesSummary}
 ${customContentInstr}
+${backgroundInstr}
 
 🎬 ${voiceOverInstr}
 📢 CHANNEL MENTION: ${channelMentionInstr}

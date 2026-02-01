@@ -130,28 +130,6 @@ export const CHANNEL_STYLES: ChannelStyle[] = [
         category: 'cartoon'
     },
     {
-        id: 'claymation',
-        name: 'Claymation',
-        nameVi: 'Hoạt Hình Đất Sét',
-        description: 'Stop-motion clay animation with whimsical elements',
-        descriptionVi: 'Hoạt hình stop-motion đất sét với yếu tố kỳ ảo',
-        promptKeywords: 'claymation stop-motion, modeling clay texture, fingerprint details, Wallace and Gromit aesthetic, plasticine look, warm earthy brown clay, bright playful colors, whimsical steam punk elements, fluffy streaky clay clouds, muted and bright pinks and oranges, intense warm orange and yellow glow, golden warm lighting, gentle glow, playful sculpted details, cheerful claymation hues, miniature scene, anthropomorphic characters, thumbprint textures typical of clay, wire arms, googly eyes, slightly uneven thumb-printed surface, plasticine sheen, bright solid slightly cartoony colors, sharp focus on main characters, soft background, playful innocent handcrafted whimsical charm',
-        hasCharacters: true,
-        suggestedCharCount: 2,
-        category: 'cartoon'
-    },
-    {
-        id: 'anthropomorphic-vegetable',
-        name: 'Anthropomorphic Vegetable',
-        nameVi: 'Rau Củ Nhân Hóa',
-        description: 'Whimsical anthropomorphic vegetable characters in miniature settings',
-        descriptionVi: 'Nhân vật rau củ nhân hóa kỳ ảo trong khung cảnh thu nhỏ',
-        promptKeywords: 'anthropomorphic vegetable characters, miniature scene, whimsical vegetable people, carrot conductor, broccoli violinists, pea drummers, oversized antique teacup, musical notes made of steam and tiny bubbles, sheet music with whimsical notes, vegetable garden setting, cheerful claymation carrot, giant cabbage, round pea character, playful innocent handcrafted, bright colors, teacup concert setting, Ode to the Radish, tiny whimsical details',
-        hasCharacters: true,
-        suggestedCharCount: 3,
-        category: 'cartoon'
-    },
-    {
         id: 'south-park',
         name: 'Cutout Animation',
         nameVi: 'Hoạt Hình Cắt Dán',
@@ -220,17 +198,6 @@ export const CHANNEL_STYLES: ChannelStyle[] = [
         category: 'realistic'
     },
     {
-        id: 'nadir-aerial-cultural',
-        name: 'Nadir Aerial Cultural',
-        nameVi: 'Chụp Từ Trên Xuống Văn Hóa',
-        description: 'Crisp nadir aerial photography capturing cultural and agricultural landscapes',
-        descriptionVi: 'Nhiếp ảnh từ trên xuống sắc nét ghi lại cảnh quan văn hóa và nông nghiệp',
-        promptKeywords: 'crisp nadir aerial photograph, viewed directly from above, intricate beauty shimmering flooded rice paddies, rural Southeast Asia, complex swirling patterns, vibrant green young rice shoots, reflective brown water, narrow winding lines earthen bunds levees, vast organic mosaic landscape, cultural transmission human connection, agricultural setting, lone farmer traditional conical straw hat, knee-deep muddy water, gesturing animatedly, small children sitting side-by-side, narrow dry bund, waterlogged paddy, quiet moment storytelling teaching, generational knowledge passed down, landscape of sustenance, human narrative woven into patterns of agriculture',
-        hasCharacters: true,
-        suggestedCharCount: 1,
-        category: 'realistic'
-    },
-    {
         id: 'health-warning-hybrid',
         name: 'Health Warning Hybrid',
         nameVi: 'Cảnh Báo Sức Khỏe Kết Hợp',
@@ -261,39 +228,6 @@ export const CHANNEL_STYLES: ChannelStyle[] = [
         description: 'Classic oil painting with rich textures',
         descriptionVi: 'Tranh sơn dầu cổ điển với texture phong phú',
         promptKeywords: 'oil painting, rich textures, visible brush strokes, classical art style, museum quality',
-        hasCharacters: true,
-        suggestedCharCount: 1,
-        category: 'artistic'
-    },
-    {
-        id: 'renaissance-portrait',
-        name: 'Renaissance Portrait',
-        nameVi: 'Chân Dung Phục Hưng',
-        description: 'Renaissance-style portrait with painterly textures and dramatic lighting',
-        descriptionVi: 'Chân dung phong cách Phục Hưng với kết cấu hội họa và ánh sáng kịch tính',
-        promptKeywords: 'Renaissance-style portrait, painterly textures, dramatic lighting, classical art style, visible brush strokes, high-contrast pastel colors, brushstroke-style text, muted painterly background, museum quality, elegant painterly feel',
-        hasCharacters: true,
-        suggestedCharCount: 1,
-        category: 'artistic'
-    },
-    {
-        id: 'impasto-landscape',
-        name: 'Impasto Expressionist Landscape',
-        nameVi: 'Phong Cảnh Biểu Hiện Impasto',
-        description: 'Expressive landscape with thick impasto texture and visible brushstrokes',
-        descriptionVi: 'Phong cảnh biểu hiện với texture impasto dày và nét cọ rõ ràng',
-        promptKeywords: 'expressive landscape painting, thick visible brushstrokes, impasto texture, dramatic waves, blocky shapes, masses of thick paint, individual brushstrokes clearly visible, strong contrasts, dramatic light, brightly lit planes, deep shadowy areas, thick textured color, rich natural colors, deep blues and teals, earthy browns, vibrant greens, dramatic yellows or oranges, rugged beauty, windswept motion, raw energy of nature, textured application of paint',
-        hasCharacters: false,
-        suggestedCharCount: 0,
-        category: 'artistic'
-    },
-    {
-        id: 'lo-fi-cozy',
-        name: 'Lo-fi Cozy Illustration',
-        nameVi: 'Minh Họa Lo-fi Ấm Áp',
-        description: 'Cozy illustration with soft gradients, clean lines, and warm atmosphere',
-        descriptionVi: 'Minh họa ấm áp với gradient mềm mại, nét vẽ sạch, và không khí ấm cúng',
-        promptKeywords: 'cozy intimate illustration, soft slightly grainy color gradients, clean linework, subtle uniform digital noise texture, warm lo-fi atmosphere, peaceful escape, quiet focus, comfort of transit, soft warm light, gentle highlights, softly blurred landscape, cooler muted tones, smooth gradients, warm yellowish interior light, cool blues greens greys exterior, noise texture, close-up tight medium shot, absorbed posture, warm interior cool exterior contrast',
         hasCharacters: true,
         suggestedCharCount: 1,
         category: 'artistic'
@@ -340,17 +274,6 @@ export const CHANNEL_STYLES: ChannelStyle[] = [
         promptKeywords: 'vaporwave aesthetic, pink and cyan, retro computer graphics, glitch effects, 90s nostalgia, synthwave',
         hasCharacters: false,
         suggestedCharCount: 0,
-        category: 'artistic'
-    },
-    {
-        id: 'sepia-3d-anthropomorphic',
-        name: 'Sepia 3D Anthropomorphic',
-        nameVi: '3D Nhân Hóa Sepia',
-        description: 'Sepia-toned 3D rendering of anthropomorphic stone statues with playful authority',
-        descriptionVi: 'Render 3D tông sepia của tượng đá nhân hóa với quyền lực vui tươi',
-        promptKeywords: 'sepia-toned finely textured 3D rendering, carved stone statue, regal portrait bust, centered medium-close shot eye level, oversized light beige faux fur coat, soft plush draped dramatically over shoulders, small round sunglasses, confident boss-like personality, neutral background, subtle diffused lighting, monochromatic sepia-toned, emphasizing textured details of stone, luxurious appearance oversized coat, playful authority, anthropomorphic animal character, stone texture, elegant sepia palette',
-        hasCharacters: true,
-        suggestedCharCount: 1,
         category: 'artistic'
     },
 
@@ -556,28 +479,6 @@ export const CHANNEL_STYLES: ChannelStyle[] = [
         hasCharacters: true,
         suggestedCharCount: 1,
         category: 'fashion'
-    },
-    {
-        id: 'fashion-editorial-macro',
-        name: 'Fashion Editorial Macro',
-        nameVi: 'Thời Trang Editorial Macro',
-        description: 'Extreme close-up fashion portrait with luxury editorial aesthetic',
-        descriptionVi: 'Chân dung thời trang cận cảnh cực đại với phong cách editorial sang trọng',
-        promptKeywords: 'extreme close-up fashion portrait photograph, focusing on upper torso and face, sharp high-detail digital photography, luxury fashion editorial, emphasizing texture and artistic garment, macro-level focus, 100mm macro lens, soft studio lighting, angled slightly from side, extremely shallow depth of field, hyper-sharp detail, neutral grey bokeh background, primary colors against cream base, intimate yet bold mood, craftsmanship and artistic concept, neutral focused gaze',
-        hasCharacters: true,
-        suggestedCharCount: 1,
-        category: 'fashion'
-    },
-    {
-        id: 'cinematic-fashion-urban',
-        name: 'Cinematic Fashion Urban',
-        nameVi: 'Thời Trang Điện Ảnh Đô Thị',
-        description: 'Cinematic fashion photography with urban night energy',
-        descriptionVi: 'Nhiếp ảnh thời trang điện ảnh với năng lượng đêm đô thị',
-        promptKeywords: 'cinematic fashion photograph, high-speed Kodak Portra 400 film emulation, rich colors subtle grain, dynamic urban energy sophisticated style, vibrant confident charged metropolitan movement, rain-slicked asphalt street at night, stylized Tokyo Shinjuku district, dramatic high-contrast lighting, multiple sources, colorful neon signs reflecting on wet pavement, sharp backlight defining silhouette, shallow depth of field, razor-sharp model, abstract bokeh background, streaking car lights, blurred neon signs, electric blues pinks greens neon-drenched urban nightscape, dynamic low angle, leading lines from street markings, forward motion',
-        hasCharacters: true,
-        suggestedCharCount: 1,
-        category: 'fashion'
     }
 ]
 
@@ -610,7 +511,6 @@ export const STYLE_CATEGORIES = [
     { id: 'realistic', name: 'Thực tế', nameEn: 'Realistic' },
     { id: 'artistic', name: 'Nghệ thuật', nameEn: 'Artistic' },
     { id: 'minimalist', name: 'Tối giản', nameEn: 'Minimalist' },
-    { id: 'edutainment', name: 'Giáo dục / Giải trí', nameEn: 'Edutainment' },
     { id: 'fashion', name: 'Thời trang / Social', nameEn: 'Fashion / Social' }
 ]
 
