@@ -4,10 +4,6 @@ import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { GoogleGenerativeAI } from '@google/generative-ai'
 
-const genAI = process.env.GEMINI_API_KEY
-    ? new GoogleGenerativeAI(process.env.GEMINI_API_KEY)
-    : null
-
 // POST: AI Generate continuity style based on channel niche
 export async function POST(
     req: Request,
@@ -19,13 +15,21 @@ export async function POST(
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
         }
 
-        if (!genAI) {
-            return NextResponse.json({ error: 'AI not configured' }, { status: 500 })
-        }
-
         const { id: channelId } = await params
         const body = await req.json()
         const { styleHint, characterHint } = body
+
+        // Get user's API key from settings
+        const settings = await prisma.userSettings.findUnique({
+            where: { userId: session.user.id }
+        })
+
+        const apiKey = settings?.geminiKey || process.env.GEMINI_API_KEY
+        if (!apiKey) {
+            return NextResponse.json({ error: 'Vui lòng cấu hình Gemini API Key trong Settings' }, { status: 400 })
+        }
+
+        const genAI = new GoogleGenerativeAI(apiKey)
 
         // Get channel with details
         const channel = await prisma.channel.findFirst({
