@@ -41,7 +41,11 @@ const newUrls = {
     "ted-ed": "https://cdn1.sharemyimage.com/smi/2026/02/02/style_ted_ed_1769926167138.jpeg",
     "tiktok-viral": "https://cdn1.sharemyimage.com/smi/2026/02/02/style_tiktok_viral_1769985644285.jpeg",
     "vaporwave": "https://cdn1.sharemyimage.com/smi/2026/02/02/style_vaporwave_1769925977517.jpeg",
-    "watercolor": "https://cdn1.sharemyimage.com/smi/2026/02/02/style_watercolor_1769921986143.jpeg"
+    "watercolor": "https://cdn1.sharemyimage.com/smi/2026/02/02/style_watercolor_1769921986143.jpeg",
+    "historical-3d-illustrated": "https://cdn1.sharemyimage.com/smi/2026/02/02/style_historical_3d_1769987778387.jpeg",
+    "documentary": "https://cdn1.sharemyimage.com/smi/2026/02/02/style_documentary_1769987791265.jpeg",
+    "stock-footage": "https://cdn1.sharemyimage.com/smi/2026/02/02/style_stock_footage_1769987805652.jpeg",
+    "nature-doc": "https://cdn1.sharemyimage.com/smi/2026/02/02/style_nature_doc_1769987819410.jpeg"
 };
 
 const filePath = '/Users/nhila/Desktop/CUSOR/Auto Video Prompt/app/src/lib/channel-styles.ts';

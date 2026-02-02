@@ -45,7 +45,12 @@ const styleMapping = {
     'style_korean_soft': 'korean-soft',
     'style_tiktok_viral': 'tiktok-viral',
     'style_health_warning': 'health-warning-hybrid',
-    'style_watercolor': 'watercolor'
+    'style_watercolor': 'watercolor',
+    // Final batch - remaining styles
+    'style_historical_3d': 'historical-3d-illustrated',
+    'style_documentary': 'documentary',
+    'style_stock_footage': 'stock-footage',
+    'style_nature_doc': 'nature-doc'
 };
 
 async function uploadImage(filePath) {

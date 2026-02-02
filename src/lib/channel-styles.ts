@@ -160,6 +160,7 @@ export const CHANNEL_STYLES: ChannelStyle[] = [
         promptKeywords: '3D animation with outline strokes, cel-shaded 3D, toon shading, historical documentary 3D style, NASA moon landing recreation, Apollo 11 style, 3D rendered with hand-drawn outlines, stylized 3D historical events, 3D toon rendering with black outlines, illustrated 3D documentary, photorealistic 3D with artistic strokes, historical reenactment 3D animation, 3D with sketchy line art overlay, cinematic 3D with outline edges, documentary 3D with illustrated style, 3D characters with bold outlines, historical moments 3D visualization',
         hasCharacters: true,
         suggestedCharCount: 2,
+        previewImage: 'https://cdn1.sharemyimage.com/smi/2026/02/02/style_historical_3d_1769987778387.jpeg',
         category: 'cartoon'
     },
 
@@ -185,6 +186,7 @@ export const CHANNEL_STYLES: ChannelStyle[] = [
         promptKeywords: 'documentary style, natural lighting, authentic, handheld camera feel, real-world footage look',
         hasCharacters: true,
         suggestedCharCount: 1,
+        previewImage: 'https://cdn1.sharemyimage.com/smi/2026/02/02/style_documentary_1769987791265.jpeg',
         category: 'realistic'
     },
     {
@@ -196,6 +198,7 @@ export const CHANNEL_STYLES: ChannelStyle[] = [
         promptKeywords: 'stock footage style, clean commercial look, professional video, neutral lighting, corporate aesthetic',
         hasCharacters: false,
         suggestedCharCount: 0,
+        previewImage: 'https://cdn1.sharemyimage.com/smi/2026/02/02/style_stock_footage_1769987805652.jpeg',
         category: 'realistic'
     },
     {
@@ -207,6 +210,7 @@ export const CHANNEL_STYLES: ChannelStyle[] = [
         promptKeywords: 'nature documentary, BBC Earth style, wildlife cinematography, 4K ultra HD, macro nature shots',
         hasCharacters: false,
         suggestedCharCount: 0,
+        previewImage: 'https://cdn1.sharemyimage.com/smi/2026/02/02/style_nature_doc_1769987819410.jpeg',
         category: 'realistic'
     },
     {
