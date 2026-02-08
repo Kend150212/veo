@@ -364,7 +364,7 @@ export default function HomePage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {plans.map((plan, index) => {
-              const planFeatures = JSON.parse(plan.features || '{}')
+              const planFeatures = plan.features || {}
               const price = billingCycle === 'monthly' ? plan.priceMonthly : plan.priceYearly / 12
 
               return (
@@ -416,8 +416,8 @@ export default function HomePage() {
                   <Link
                     href={plan.slug === 'free' ? '/register' : `/pricing?plan=${plan.slug}`}
                     className={`w-full py-3 rounded-xl font-medium transition-all flex items-center justify-center gap-2 ${plan.isPopular
-                        ? 'bg-gradient-to-r from-purple-500 to-cyan-500 text-white hover:opacity-90'
-                        : 'bg-[var(--bg-tertiary)] hover:bg-[var(--bg-hover)]'
+                      ? 'bg-gradient-to-r from-purple-500 to-cyan-500 text-white hover:opacity-90'
+                      : 'bg-[var(--bg-tertiary)] hover:bg-[var(--bg-hover)]'
                       }`}
                   >
                     {plan.slug === 'free' ? 'Bắt đầu miễn phí' : 'Chọn gói này'}
