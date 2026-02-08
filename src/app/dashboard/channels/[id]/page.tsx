@@ -500,6 +500,7 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
     const [isGeneratingCharacter, setIsGeneratingCharacter] = useState(false)
     const [showKnowledge, setShowKnowledge] = useState(false)
     const [expandedNiche, setExpandedNiche] = useState(false)
+    const [setupCollapsed, setSetupCollapsed] = useState(false) // Collapsible setup panel
 
     // Episode creation options
     const [useCharacters, setUseCharacters] = useState(true)
@@ -2229,1612 +2230,1636 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                         </div>
                     </div>
                 </div>
-                <button
-                    onClick={() => router.push(`/dashboard/channels/${id}/settings`)}
-                    className="btn-secondary flex items-center gap-2"
-                >
-                    <Settings className="w-4 h-4" />
-                    Cài đặt
-                </button>
-            </div>
-
-            {/* Stats */}
-            <div className="grid grid-cols-3 gap-4 mb-6">
-                <div className="glass-card p-4 text-center">
-                    <Film className="w-6 h-6 mx-auto mb-2 text-[var(--accent-primary)]" />
-                    <p className="text-2xl font-bold">{channel.episodes.length}</p>
-                    <p className="text-xs text-[var(--text-muted)]">Episodes</p>
-                </div>
-                <div className="glass-card p-4 text-center">
-                    <Users className="w-6 h-6 mx-auto mb-2 text-purple-400" />
-                    <p className="text-2xl font-bold">{channel.characters.length}</p>
-                    <p className="text-xs text-[var(--text-muted)]">Nhân vật</p>
-                </div>
-                <div className="glass-card p-4 text-center">
-                    <Sparkles className="w-6 h-6 mx-auto mb-2 text-yellow-400" />
-                    <p className="text-2xl font-bold">
-                        {channel.episodes.reduce((sum, ep) => sum + ep.scenes.length, 0)}
-                    </p>
-                    <p className="text-xs text-[var(--text-muted)]">Tổng scenes</p>
-                </div>
-            </div>
-
-            {/* Channel Knowledge Base - Collapsible */}
-            {channel.knowledgeBase && (
-                <div className="glass-card p-4 mb-6">
+                <div className="flex items-center gap-2">
                     <button
-                        onClick={() => setShowKnowledge(!showKnowledge)}
-                        className="w-full flex items-center justify-between"
+                        onClick={() => setSetupCollapsed(!setupCollapsed)}
+                        className="btn-secondary flex items-center gap-2"
+                        title={setupCollapsed ? 'Mở rộng Setup' : 'Thu gọn Setup'}
                     >
-                        <h3 className="font-semibold flex items-center gap-2">
-                            📚 Mô tả kênh & Knowledge Base
-                        </h3>
-                        {showKnowledge ? (
-                            <ChevronDown className="w-5 h-5" />
+                        {setupCollapsed ? (
+                            <>
+                                <ChevronRight className="w-4 h-4" />
+                                Setup
+                            </>
                         ) : (
-                            <ChevronRight className="w-5 h-5" />
+                            <>
+                                <ChevronDown className="w-4 h-4" />
+                                Thu gọn
+                            </>
                         )}
                     </button>
-                    {showKnowledge && (
-                        <div className="mt-3 text-sm text-[var(--text-secondary)] max-h-[300px] overflow-y-auto bg-[var(--bg-primary)] p-3 rounded-lg whitespace-pre-wrap">
-                            {channel.knowledgeBase}
-                        </div>
-                    )}
-                    {!showKnowledge && (
-                        <p className="mt-2 text-xs text-[var(--text-muted)]">
-                            Bấm để xem chi tiết mô tả kênh
-                        </p>
-                    )}
+                    <button
+                        onClick={() => router.push(`/dashboard/channels/${id}/settings`)}
+                        className="btn-secondary flex items-center gap-2"
+                    >
+                        <Settings className="w-4 h-4" />
+                        Cài đặt
+                    </button>
                 </div>
-            )}
-            <div className="glass-card p-4 mb-6">
-                <div className="flex items-center justify-between mb-3">
-                    <h3 className="font-semibold flex items-center gap-2">
-                        <Users className="w-4 h-4" />
-                        Nhân vật xuyên suốt ({channel.characters.length})
-                    </h3>
-                    <div className="flex items-center gap-2">
-                        <label className="flex items-center gap-2 text-sm cursor-pointer">
-                            <input
-                                type="checkbox"
-                                checked={channel.hasCharacters}
-                                onChange={(e) => handleToggleCharacters(e.target.checked)}
-                                className="w-4 h-4 rounded"
-                            />
-                            Sử dụng nhân vật
-                        </label>
-                        {channel.hasCharacters && (
-                            <button
-                                onClick={() => setShowAddCharacter(true)}
-                                className="btn-secondary text-sm flex items-center gap-1"
-                            >
-                                <Plus className="w-3 h-3" />
-                                Thêm
-                            </button>
-                        )}
-                    </div>
-                </div>
-
-                {channel.hasCharacters && channel.characters.length > 0 && (
-                    <div className="space-y-2">
-                        {channel.characters.map(char => (
-                            <div key={char.id} className="flex items-center justify-between p-3 bg-[var(--bg-tertiary)] rounded-lg">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold">
-                                        {char.name.charAt(0)}
-                                    </div>
-                                    <div>
-                                        <p className="font-medium">{char.name}</p>
-                                        <p className="text-xs text-[var(--text-muted)]">{char.role} {char.isMain && '• Main'}</p>
-                                    </div>
-                                </div>
-                                <div className="flex gap-1">
-                                    <button
-                                        onClick={() => {
-                                            setEditingCharacter(char)
-                                            setShowAddCharacter(true)
-                                        }}
-                                        className="p-2 rounded-lg hover:bg-[var(--bg-hover)] text-[var(--text-secondary)]"
-                                    >
-                                        <Edit2 className="w-4 h-4" />
-                                    </button>
-                                    <button
-                                        onClick={() => handleDeleteCharacter(char.id)}
-                                        className="p-2 rounded-lg hover:bg-red-500/20 text-red-400"
-                                    >
-                                        <Trash2 className="w-4 h-4" />
-                                    </button>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                )}
-
-                {channel.hasCharacters && channel.characters.length === 0 && (
-                    <p className="text-sm text-[var(--text-muted)] text-center py-4">
-                        Chưa có nhân vật. Bấm "Thêm" để tạo nhân vật mới.
-                    </p>
-                )}
-
-                {!channel.hasCharacters && (
-                    <p className="text-sm text-[var(--text-muted)] text-center py-2">
-                        Không sử dụng nhân vật - tạo nội dung không có nhân vật cụ thể.
-                    </p>
-                )}
             </div>
 
-            {/* Add/Edit Character Modal */}
-            {showAddCharacter && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                    <div className="glass-card p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto">
-                        <h3 className="font-semibold mb-4">
-                            {editingCharacter ? 'Chỉnh sửa nhân vật' : 'Thêm nhân vật mới'}
-                        </h3>
-                        <div className="space-y-4">
-                            {/* Name & Role Row */}
-                            <div className="grid grid-cols-2 gap-3">
-                                <div>
-                                    <label className="block text-sm font-medium mb-1">Tên nhân vật *</label>
-                                    <input
-                                        type="text"
-                                        value={newCharacter.name}
-                                        onChange={(e) => setNewCharacter({ ...newCharacter, name: e.target.value })}
-                                        className="input-field"
-                                        placeholder="VD: Minh"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium mb-1">Vai trò *</label>
-                                    <input
-                                        type="text"
-                                        value={newCharacter.role}
-                                        onChange={(e) => setNewCharacter({ ...newCharacter, role: e.target.value })}
-                                        className="input-field"
-                                        placeholder="VD: Host chính..."
-                                    />
-                                </div>
-                            </div>
+            {/* Collapsible Setup Section */}
+            {!setupCollapsed && (
+                <>
+                    {/* Stats */}
+                    <div className="grid grid-cols-3 gap-4 mb-6">
+                        <div className="glass-card p-4 text-center">
+                            <Film className="w-6 h-6 mx-auto mb-2 text-[var(--accent-primary)]" />
+                            <p className="text-2xl font-bold">{channel.episodes.length}</p>
+                            <p className="text-xs text-[var(--text-muted)]">Episodes</p>
+                        </div>
+                        <div className="glass-card p-4 text-center">
+                            <Users className="w-6 h-6 mx-auto mb-2 text-purple-400" />
+                            <p className="text-2xl font-bold">{channel.characters.length}</p>
+                            <p className="text-xs text-[var(--text-muted)]">Nhân vật</p>
+                        </div>
+                        <div className="glass-card p-4 text-center">
+                            <Sparkles className="w-6 h-6 mx-auto mb-2 text-yellow-400" />
+                            <p className="text-2xl font-bold">
+                                {channel.episodes.reduce((sum, ep) => sum + ep.scenes.length, 0)}
+                            </p>
+                            <p className="text-xs text-[var(--text-muted)]">Tổng scenes</p>
+                        </div>
+                    </div>
 
-                            {/* Gender & Age Row */}
-                            <div className="grid grid-cols-2 gap-3">
-                                <div>
-                                    <label className="block text-sm font-medium mb-1">Giới tính</label>
-                                    <select
-                                        value={newCharacter.gender || 'female'}
-                                        onChange={(e) => setNewCharacter({ ...newCharacter, gender: e.target.value })}
-                                        className="input-field"
-                                    >
-                                        <option value="female">👩 Nữ</option>
-                                        <option value="male">👨 Nam</option>
-                                        <option value="other">🧑 Khác</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium mb-1">Độ tuổi</label>
-                                    <select
-                                        value={newCharacter.ageRange || '25-35'}
-                                        onChange={(e) => setNewCharacter({ ...newCharacter, ageRange: e.target.value })}
-                                        className="input-field"
-                                    >
-                                        <option value="5-12">👶 Trẻ em (5-12)</option>
-                                        <option value="13-17">🧒 Thiếu niên (13-17)</option>
-                                        <option value="18-24">🧑 Trẻ (18-24)</option>
-                                        <option value="25-35">👤 Trưởng thành (25-35)</option>
-                                        <option value="36-50">👨 Trung niên (36-50)</option>
-                                        <option value="50+">👴 Lớn tuổi (50+)</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            {/* Personality */}
-                            <div>
-                                <label className="block text-sm font-medium mb-1">🎭 Tính cách nhân vật</label>
-                                <textarea
-                                    value={newCharacter.personality}
-                                    onChange={(e) => setNewCharacter({ ...newCharacter, personality: e.target.value })}
-                                    className="input-field min-h-[60px]"
-                                    placeholder="VD: Vui vẻ, hài hước, hay đùa. Nói nhanh, thích dùng từ lóng Gen Z..."
-                                />
-                            </div>
-
-                            {/* AI Generate Button */}
+                    {/* Channel Knowledge Base - Collapsible */}
+                    {channel.knowledgeBase && (
+                        <div className="glass-card p-4 mb-6">
                             <button
-                                onClick={handleGenerateCharacterDetails}
-                                disabled={isGeneratingCharacter || !newCharacter.name}
-                                className="w-full py-3 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 disabled:opacity-50 rounded-lg text-white font-medium flex items-center justify-center gap-2 transition"
+                                onClick={() => setShowKnowledge(!showKnowledge)}
+                                className="w-full flex items-center justify-between"
                             >
-                                {isGeneratingCharacter ? (
-                                    <>
-                                        <Loader2 className="w-4 h-4 animate-spin" />
-                                        Đang tạo mô tả chi tiết...
-                                    </>
+                                <h3 className="font-semibold flex items-center gap-2">
+                                    📚 Mô tả kênh & Knowledge Base
+                                </h3>
+                                {showKnowledge ? (
+                                    <ChevronDown className="w-5 h-5" />
                                 ) : (
-                                    <>
-                                        <Wand2 className="w-4 h-4" />
-                                        ✨ AI Tạo mô tả chi tiết (tóc, mắt, trang phục...)
-                                    </>
+                                    <ChevronRight className="w-5 h-5" />
                                 )}
                             </button>
-
-                            {/* Full Description */}
-                            <div>
-                                <label className="block text-sm font-medium mb-1">
-                                    📝 Mô tả đầy đủ * {newCharacter.fullDescription && <span className="text-green-400 text-xs">(Đã có)</span>}
-                                </label>
-                                <textarea
-                                    value={newCharacter.fullDescription}
-                                    onChange={(e) => setNewCharacter({ ...newCharacter, fullDescription: e.target.value })}
-                                    className="input-field min-h-[120px]"
-                                    placeholder="Nhấn nút AI ở trên để tự động tạo mô tả chi tiết, hoặc nhập thủ công..."
-                                />
-                            </div>
-
-                            {/* Show additional details if generated */}
-                            {newCharacter.hairDetails && (
-                                <div className="grid grid-cols-2 gap-2 text-xs">
-                                    <div className="p-2 bg-[var(--bg-tertiary)] rounded">
-                                        <span className="text-[var(--text-muted)]">💇 Tóc: </span>
-                                        <span>{newCharacter.hairDetails}</span>
-                                    </div>
-                                    <div className="p-2 bg-[var(--bg-tertiary)] rounded">
-                                        <span className="text-[var(--text-muted)]">👤 Mặt: </span>
-                                        <span>{newCharacter.faceDetails}</span>
-                                    </div>
-                                    <div className="p-2 bg-[var(--bg-tertiary)] rounded">
-                                        <span className="text-[var(--text-muted)]">👕 Outfit: </span>
-                                        <span>{newCharacter.clothing}</span>
-                                    </div>
-                                    <div className="p-2 bg-[var(--bg-tertiary)] rounded">
-                                        <span className="text-[var(--text-muted)]">🎨 Da: </span>
-                                        <span>{newCharacter.skinTone}</span>
-                                    </div>
+                            {showKnowledge && (
+                                <div className="mt-3 text-sm text-[var(--text-secondary)] max-h-[300px] overflow-y-auto bg-[var(--bg-primary)] p-3 rounded-lg whitespace-pre-wrap">
+                                    {channel.knowledgeBase}
                                 </div>
                             )}
-
-                            {newCharacter.styleKeywords && (
-                                <div className="p-2 bg-[var(--bg-tertiary)] rounded text-xs">
-                                    <span className="text-[var(--text-muted)]">🏷️ AI Keywords: </span>
-                                    <span className="text-purple-400">{newCharacter.styleKeywords}</span>
-                                </div>
+                            {!showKnowledge && (
+                                <p className="mt-2 text-xs text-[var(--text-muted)]">
+                                    Bấm để xem chi tiết mô tả kênh
+                                </p>
                             )}
-
-                            <label className="flex items-center gap-2">
-                                <input
-                                    type="checkbox"
-                                    checked={newCharacter.isMain}
-                                    onChange={(e) => setNewCharacter({ ...newCharacter, isMain: e.target.checked })}
-                                />
-                                Nhân vật chính
-                            </label>
-                        </div>
-                        <div className="flex gap-2 mt-6">
-                            <button
-                                onClick={handleSaveCharacter}
-                                disabled={!newCharacter.name || !newCharacter.fullDescription}
-                                className="btn-primary flex-1"
-                            >
-                                {editingCharacter ? 'Lưu thay đổi' : 'Thêm nhân vật'}
-                            </button>
-                            <button
-                                onClick={() => {
-                                    setShowAddCharacter(false)
-                                    setEditingCharacter(null)
-                                    setNewCharacter({ name: '', role: 'host', fullDescription: '', personality: '', isMain: false, gender: 'female', ageRange: '25-35', faceDetails: '', hairDetails: '', clothing: '', skinTone: '', styleKeywords: '' })
-                                }}
-                                className="btn-secondary"
-                            >
-                                Hủy
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {/* Generate New Episode */}
-            <div className="glass-card p-6 mb-6">
-                <div className="flex items-center justify-between mb-4">
-                    <h3 className="font-semibold">Tạo Episode Mới</h3>
-                    <button
-                        onClick={() => setShowBulkCreate(true)}
-                        className="px-3 py-1.5 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg text-sm font-medium hover:opacity-90 transition flex items-center gap-1"
-                    >
-                        📦 Bulk Create
-                    </button>
-                </div>
-
-                {/* Category Selector for new episode */}
-                {categories.length > 0 && (
-                    <div className="mb-4 p-3 bg-[var(--bg-tertiary)] rounded-lg">
-                        <label className="block text-sm font-medium mb-2">📁 Chọn Danh mục</label>
-                        <select
-                            value={selectedCategoryId || ''}
-                            onChange={(e) => setSelectedCategoryId(e.target.value || null)}
-                            className="input-field w-full"
-                        >
-                            <option value="">Chưa phân loại</option>
-                            {categories.map(cat => {
-                                const catCount = channel.episodes.filter(e => e.categoryId === cat.id).length
-                                return (
-                                    <option key={cat.id} value={cat.id}>
-                                        {cat.name} ({catCount} episodes)
-                                    </option>
-                                )
-                            })}
-                        </select>
-                        <p className="text-xs text-[var(--text-muted)] mt-1">
-                            {selectedCategoryId
-                                ? `Episode tiếp theo: #${(channel.episodes.filter(e => e.categoryId === selectedCategoryId).length) + 1} trong danh mục này`
-                                : `Episode tiếp theo: #${(channel.episodes.filter(e => !e.categoryId).length) + 1} (chưa phân loại)`
-                            }
-                        </p>
-                    </div>
-                )}
-
-                {/* Content Input Section */}
-                <div className="mb-4 p-4 bg-[var(--bg-tertiary)] rounded-lg">
-                    <div className="flex items-center justify-between mb-2">
-                        <label className="text-sm font-medium">📝 Nội dung / Mô tả (tùy chọn)</label>
-                        <span className="text-xs text-[var(--text-muted)]">
-                            Để AI tạo script dựa trên nội dung này
-                        </span>
-                    </div>
-
-                    {/* URL Import */}
-                    <div className="flex gap-2 mb-3">
-                        <input
-                            type="url"
-                            placeholder="Nhập URL bài viết để lấy nội dung..."
-                            value={contentUrl}
-                            onChange={(e) => setContentUrl(e.target.value)}
-                            className="input-field flex-1 text-sm"
-                        />
-                        <button
-                            onClick={handleParseUrl}
-                            disabled={isLoadingUrl || !contentUrl.trim()}
-                            className="btn-secondary px-4 text-sm flex items-center gap-1"
-                        >
-                            {isLoadingUrl ? (
-                                <Loader2 className="w-4 h-4 animate-spin" />
-                            ) : (
-                                <Globe className="w-4 h-4" />
-                            )}
-                            Lấy nội dung
-                        </button>
-                    </div>
-
-                    {/* Custom Content Textarea */}
-                    <textarea
-                        placeholder="Hoặc nhập mô tả/nội dung bạn muốn tạo script...&#10;&#10;Ví dụ: Tạo video về 5 mẹo tiết kiệm tiền cho sinh viên..."
-                        value={customContent}
-                        onChange={(e) => setCustomContent(e.target.value)}
-                        rows={4}
-                        className="input-field w-full text-sm resize-none"
-                    />
-                    {customContent && (
-                        <div className="flex items-center justify-between mt-2">
-                            <span className="text-xs text-[var(--accent-primary)]">
-                                ✓ AI sẽ tạo script dựa trên nội dung này
-                            </span>
-                            <button
-                                onClick={() => setCustomContent('')}
-                                className="text-xs text-[var(--text-muted)] hover:text-red-400"
-                            >
-                                Xóa nội dung
-                            </button>
                         </div>
                     )}
-                </div>
-
-                {/* Row 1: Scene count, Language */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-                    <div>
-                        <label className="block text-sm font-medium mb-2">Số cảnh</label>
-                        <input
-                            type="number"
-                            min="1"
-                            value={sceneCount}
-                            onChange={(e) => setSceneCount(parseInt(e.target.value) || 0)}
-                            onBlur={(e) => {
-                                const val = parseInt(e.target.value) || 10
-                                setSceneCount(Math.max(1, val))
-                            }}
-                            className="input-field w-full"
-                        />
-                        <p className="text-xs text-[var(--text-muted)] mt-1">
-                            ~{Math.round(sceneCount * 8 / 60)} phút
-                        </p>
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-medium mb-2">Ngôn ngữ</label>
-                        <div className="flex gap-1">
-                            <button
-                                onClick={() => handleUpdateLanguage('vi')}
-                                className={`px-3 py-2 rounded-lg text-sm font-medium transition flex-1 ${channel.dialogueLanguage === 'vi'
-                                    ? 'bg-[var(--accent-primary)] text-white'
-                                    : 'bg-[var(--bg-tertiary)] text-[var(--text-secondary)]'
-                                    }`}
-                            >
-                                🇻🇳 VI
-                            </button>
-                            <button
-                                onClick={() => handleUpdateLanguage('en')}
-                                className={`px-3 py-2 rounded-lg text-sm font-medium transition flex-1 ${channel.dialogueLanguage === 'en'
-                                    ? 'bg-[var(--accent-primary)] text-white'
-                                    : 'bg-[var(--bg-tertiary)] text-[var(--text-secondary)]'
-                                    }`}
-                            >
-                                🇺🇸 EN
-                            </button>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-medium mb-2">Visual Style</label>
-                        <button
-                            type="button"
-                            onClick={() => setShowStyleModal(true)}
-                            className="input-field w-full text-left flex items-center justify-between hover:border-[var(--accent-primary)] transition-colors"
-                        >
-                            <span className="flex items-center gap-2">
-                                {selectedStyleId ? (
-                                    <>
-                                        {CHANNEL_STYLES.find(s => s.id === selectedStyleId)?.previewImage && (
-                                            <img
-                                                src={CHANNEL_STYLES.find(s => s.id === selectedStyleId)?.previewImage}
-                                                alt=""
-                                                className="w-8 h-8 rounded object-cover"
-                                            />
-                                        )}
-                                        {CHANNEL_STYLES.find(s => s.id === selectedStyleId)?.nameVi || selectedStyleId}
-                                    </>
-                                ) : (
-                                    <>🎨 Chọn Visual Style...</>
-                                )}
-                            </span>
-                            <ChevronDown className="w-4 h-4 text-gray-400" />
-                        </button>
-                        <StyleSelectorModal
-                            isOpen={showStyleModal}
-                            onClose={() => setShowStyleModal(false)}
-                            onSelect={(id) => setSelectedStyleId(id || '')}
-                            selectedStyleId={selectedStyleId}
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-medium mb-2">Loại nội dung</label>
-                        <select
-                            value={voiceOverMode}
-                            onChange={(e) => {
-                                const mode = e.target.value as typeof voiceOverMode
-                                setVoiceOverMode(mode)
-                                // Modes that use characters
-                                const characterModes = [
-                                    'with_host', 'host_dynamic_env', 'host_storyteller', 'cinematic_film',
-                                    'roast_comedy', 'reaction_commentary', 'horror_survival', 'romance_drama',
-                                    'gen_z_meme', 'educational_sassy', 'mystery_detective', 'breaking_4th_wall',
-                                    'villain_origin', 'underdog_triumph', 'chaos_unhinged', 'food_animation', 'food_drama',
-                                    'fashion_showcase', 'silent_life', 'virtual_companion', 'cozy_aesthetic', 'one_shot'
-                                ]
-                                setUseCharacters(characterModes.includes(mode))
-
-                                // Fashion Showcase: Auto-disable ALL advanced features
-                                if (mode === 'fashion_showcase') {
-                                    setVisualHookEnabled(false)
-                                    setEmotionalCurveEnabled(false)
-                                    setSpatialAudioEnabled(false)
-                                    setMentionChannel(false)
-                                }
-                            }}
-                            className="input-field w-full"
-                        >
-                            <optgroup label="📹 Cơ bản">
-                                <option value="with_host">👤 Có Host/Nhân vật</option>
-                                <option value="voice_over">🎙️ Voice Over (Thuyết minh)</option>
-                                <option value="broll_only">🎬 B-Roll only (không lời)</option>
-                                <option value="host_dynamic_env">🌍 Host 100% + Môi trường động</option>
-                                <option value="host_storyteller">🎭 Host Kể Chuyện (Elements sinh động)</option>
-                                <option value="one_shot">🎥 One Shot (Một cảnh liên tục)</option>
-                            </optgroup>
-                            <optgroup label="🎬 Điện ảnh">
-                                <option value="cinematic_film">🎬 Điện Ảnh Hollywood</option>
-                            </optgroup>
-                            <optgroup label="🔥 VIRAL - Tương tác mạnh">
-                                <option value="roast_comedy">🔥 Roast Comedy (Chọc tức khán giả)</option>
-                                <option value="breaking_4th_wall">👀 Phá vỡ bức tường thứ 4</option>
-                                <option value="reaction_commentary">😱 Reaction / Commentary</option>
-                                <option value="educational_sassy">🙄 Giáo dục với thái độ (Sassy)</option>
-                                <option value="gen_z_meme">💀 Gen Z Meme Culture</option>
-                                <option value="chaos_unhinged">🤪 Chaotic / Năng lượng điên</option>
-                            </optgroup>
-                            <optgroup label="🎭 Kịch tính / Drama">
-                                <option value="horror_survival">😱 Kinh dị sinh tồn</option>
-                                <option value="romance_drama">💕 Tình cảm lãng mạn</option>
-                                <option value="mystery_detective">🔍 Bí ẩn / Thám tử</option>
-                                <option value="villain_origin">😈 Nguồn gốc phản diện</option>
-                                <option value="underdog_triumph">🏆 Kẻ yếu vươn lên</option>
-                            </optgroup>
-                            <optgroup label="🍕 Thực phẩm nhân hóa (VIRAL)">
-                                <option value="food_animation">🍔 Thực phẩm nhân hóa</option>
-                                <option value="food_drama">⚔️ Food Wars / Kịch tính ẩm thực</option>
-                            </optgroup>
-                            <optgroup label="🎧 Đặc biệt">
-                                <option value="asmr_satisfying">🎧 ASMR / Satisfying</option>
-                            </optgroup>
-                            <optgroup label="📖 Kể Chuyện / Storytelling">
-                                <option value="narrative_storytelling">📖 Kể Chuyện B-roll (Phong cách Anh Dư Leo)</option>
-                                <option value="educational_explainer">🎓 Giải Thích Giáo Dục (Phong cách Lóng)</option>
-                            </optgroup>
-                            <optgroup label="🌸 Slice of Life / Healing">
-                                <option value="silent_life">🌸 Silent Life (Cuộc sống thầm lặng)</option>
-                                <option value="virtual_companion">☕ Virtual Companion (Bạn đồng hành)</option>
-                                <option value="cozy_aesthetic">🏠 Cozy Aesthetic (Không gian ấm cúng)</option>
-                            </optgroup>
-                            <optgroup label="👗 E-Commerce / Thời trang">
-                                <option value="fashion_showcase">👗 Fashion Showcase (Thử đồ)</option>
-                            </optgroup>
-                        </select>
-                    </div>
-                </div>
-
-                {/* Fashion Showcase - Product Upload UI */}
-                {voiceOverMode === 'fashion_showcase' && (
-                    <div className="mb-4 p-4 bg-gradient-to-r from-pink-500/10 to-purple-500/10 border border-pink-500/20 rounded-lg">
-                        <h4 className="font-medium mb-3 flex items-center gap-2">
-                            <span className="text-xl">👗</span>
-                            Fashion Showcase
-                        </h4>
-
-                        {/* Mode Toggle */}
-                        <div className="mb-4 p-3 bg-[var(--bg-tertiary)] rounded-lg flex items-center justify-between">
-                            <div>
-                                <p className="font-medium text-sm">📷 Bạn đã có sẵn ảnh/video?</p>
-                                <p className="text-xs text-[var(--text-muted)]">
-                                    {useOwnImages
-                                        ? 'Chỉ tạo kịch bản, không mô tả nhân vật/background'
-                                        : 'AI sẽ tạo ảnh preview cho bạn'}
-                                </p>
-                            </div>
-                            <button
-                                onClick={() => setUseOwnImages(!useOwnImages)}
-                                className={`px-4 py-2 rounded-lg text-sm font-medium transition ${useOwnImages
-                                    ? 'bg-green-500 text-white'
-                                    : 'bg-purple-500 text-white'
-                                    }`}
-                            >
-                                {useOwnImages ? '✅ Có, tôi tự có ảnh' : '🎨 AI tạo ảnh'}
-                            </button>
-                        </div>
-
-                        {/* Product Image Upload */}
-                        <div className="mb-4">
-                            <label className="block text-sm font-medium mb-2">📸 Hình ảnh sản phẩm (để AI phân tích)</label>
-                            <div className="flex gap-4">
-                                <div className="flex-1">
+                    <div className="glass-card p-4 mb-6">
+                        <div className="flex items-center justify-between mb-3">
+                            <h3 className="font-semibold flex items-center gap-2">
+                                <Users className="w-4 h-4" />
+                                Nhân vật xuyên suốt ({channel.characters.length})
+                            </h3>
+                            <div className="flex items-center gap-2">
+                                <label className="flex items-center gap-2 text-sm cursor-pointer">
                                     <input
-                                        type="file"
-                                        accept="image/*"
-                                        onChange={handleProductImageUpload}
-                                        className="hidden"
-                                        id="product-image-upload"
+                                        type="checkbox"
+                                        checked={channel.hasCharacters}
+                                        onChange={(e) => handleToggleCharacters(e.target.checked)}
+                                        className="w-4 h-4 rounded"
                                     />
-                                    <label
-                                        htmlFor="product-image-upload"
-                                        className="block w-full p-4 border-2 border-dashed border-pink-500/30 rounded-lg cursor-pointer hover:border-pink-500/60 transition text-center"
+                                    Sử dụng nhân vật
+                                </label>
+                                {channel.hasCharacters && (
+                                    <button
+                                        onClick={() => setShowAddCharacter(true)}
+                                        className="btn-secondary text-sm flex items-center gap-1"
                                     >
-                                        {productImage ? (
-                                            <img
-                                                src={productImage}
-                                                alt="Product"
-                                                className="max-h-32 mx-auto rounded"
-                                            />
-                                        ) : (
-                                            <div className="text-[var(--text-muted)]">
-                                                <p className="text-2xl mb-2">📷</p>
-                                                <p className="text-sm">Upload ảnh sản phẩm</p>
-                                            </div>
-                                        )}
-                                    </label>
-                                </div>
-
-                                {/* AI Analysis Result */}
-                                {isAnalyzingProduct && (
-                                    <div className="flex-1 flex items-center justify-center">
-                                        <Loader2 className="w-6 h-6 animate-spin text-pink-500" />
-                                        <span className="ml-2 text-sm">Đang phân tích...</span>
-                                    </div>
+                                        <Plus className="w-3 h-3" />
+                                        Thêm
+                                    </button>
                                 )}
+                            </div>
+                        </div>
 
-                                {productAnalysis && !isAnalyzingProduct && (
-                                    <div className="flex-1 p-3 bg-[var(--bg-tertiary)] rounded-lg text-sm">
-                                        <p className="font-medium text-pink-400 mb-2">🤖 AI Phân tích:</p>
-
-                                        {/* Exact Description - Most Important */}
-                                        {productAnalysis.exactDescription && (
-                                            <div className="mb-2 p-2 bg-green-500/10 border border-green-500/30 rounded">
-                                                <p className="text-xs text-white">{productAnalysis.exactDescription}</p>
+                        {channel.hasCharacters && channel.characters.length > 0 && (
+                            <div className="space-y-2">
+                                {channel.characters.map(char => (
+                                    <div key={char.id} className="flex items-center justify-between p-3 bg-[var(--bg-tertiary)] rounded-lg">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold">
+                                                {char.name.charAt(0)}
                                             </div>
-                                        )}
-
-                                        <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs">
-                                            <p><span className="text-[var(--text-muted)]">Loại:</span> {productAnalysis.productType} {productAnalysis.productSubtype && `(${productAnalysis.productSubtype})`}</p>
-                                            <p><span className="text-[var(--text-muted)]">Màu:</span> {productAnalysis.color}</p>
-                                            <p><span className="text-[var(--text-muted)]">Chất liệu:</span> {productAnalysis.material}</p>
-                                            <p><span className="text-[var(--text-muted)]">Style:</span> {productAnalysis.style}</p>
-                                            {productAnalysis.pattern && <p><span className="text-[var(--text-muted)]">Họa tiết:</span> {productAnalysis.pattern}</p>}
-                                            {productAnalysis.fit && <p><span className="text-[var(--text-muted)]">Form:</span> {productAnalysis.fit}</p>}
+                                            <div>
+                                                <p className="font-medium">{char.name}</p>
+                                                <p className="text-xs text-[var(--text-muted)]">{char.role} {char.isMain && '• Main'}</p>
+                                            </div>
                                         </div>
-
-                                        {productAnalysis.promptKeywords && (
-                                            <div className="mt-2 pt-2 border-t border-[var(--border-color)]">
-                                                <p className="text-[var(--text-muted)] text-xs mb-1">🏷️ Keywords cho Imagen:</p>
-                                                <p className="text-xs text-purple-300 bg-purple-500/10 p-1 rounded">{productAnalysis.promptKeywords}</p>
-                                            </div>
-                                        )}
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-
-                        {/* Product Info */}
-                        <div className="grid grid-cols-2 gap-3 mb-3">
-                            <div>
-                                <label className="block text-xs text-[var(--text-muted)] mb-1">Tên sản phẩm</label>
-                                <input
-                                    type="text"
-                                    value={productInfo.name}
-                                    onChange={(e) => setProductInfo({ ...productInfo, name: e.target.value })}
-                                    placeholder="VD: Áo croptop ren trắng"
-                                    className="input-field text-sm"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-xs text-[var(--text-muted)] mb-1">Giá gốc</label>
-                                <input
-                                    type="text"
-                                    value={productInfo.price}
-                                    onChange={(e) => setProductInfo({ ...productInfo, price: e.target.value })}
-                                    placeholder="VD: 350.000đ"
-                                    className="input-field text-sm"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-xs text-[var(--text-muted)] mb-1">Giá sale (nếu có)</label>
-                                <input
-                                    type="text"
-                                    value={productInfo.salePrice}
-                                    onChange={(e) => setProductInfo({ ...productInfo, salePrice: e.target.value })}
-                                    placeholder="VD: 199.000đ"
-                                    className="input-field text-sm"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-xs text-[var(--text-muted)] mb-1">Khuyến mãi</label>
-                                <input
-                                    type="text"
-                                    value={productInfo.promotion}
-                                    onChange={(e) => setProductInfo({ ...productInfo, promotion: e.target.value })}
-                                    placeholder="VD: Freeship + Tặng quà"
-                                    className="input-field text-sm"
-                                />
-                            </div>
-                        </div>
-
-                        {/* Background & Multi-Image - Only needed when AI generates images */}
-                        {!useOwnImages && (<>
-                            <div className="mb-4">
-                                <label className="block text-sm font-medium mb-2">🏠 Background cố định (cho AI tạo ảnh)</label>
-
-                                {/* Upload Background Option */}
-                                <div className="mb-3 p-3 bg-[var(--bg-tertiary)] rounded-lg">
-                                    <label className="block text-xs font-medium mb-2 text-purple-400">📷 Upload ảnh Background của bạn</label>
-                                    <input
-                                        type="file"
-                                        accept="image/*"
-                                        onChange={handleBackgroundImageUpload}
-                                        className="text-xs file:mr-3 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:bg-purple-500/20 file:text-purple-400 hover:file:bg-purple-500/30"
-                                    />
-                                    {backgroundImage && (
-                                        <div className="mt-2 flex items-center gap-2">
-                                            <img src={backgroundImage} alt="Background" className="w-20 h-12 object-cover rounded" />
-                                            <span className="text-xs text-green-400">✓ Background đã upload</span>
+                                        <div className="flex gap-1">
                                             <button
-                                                onClick={() => { setBackgroundImage(null); setBackgroundImageBase64(null); setFashionBackground('fitting_room'); }}
-                                                className="text-xs text-red-400 hover:text-red-300"
+                                                onClick={() => {
+                                                    setEditingCharacter(char)
+                                                    setShowAddCharacter(true)
+                                                }}
+                                                className="p-2 rounded-lg hover:bg-[var(--bg-hover)] text-[var(--text-secondary)]"
                                             >
-                                                ✕ Xóa
+                                                <Edit2 className="w-4 h-4" />
+                                            </button>
+                                            <button
+                                                onClick={() => handleDeleteCharacter(char.id)}
+                                                className="p-2 rounded-lg hover:bg-red-500/20 text-red-400"
+                                            >
+                                                <Trash2 className="w-4 h-4" />
                                             </button>
                                         </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
+                        {channel.hasCharacters && channel.characters.length === 0 && (
+                            <p className="text-sm text-[var(--text-muted)] text-center py-4">
+                                Chưa có nhân vật. Bấm "Thêm" để tạo nhân vật mới.
+                            </p>
+                        )}
+
+                        {!channel.hasCharacters && (
+                            <p className="text-sm text-[var(--text-muted)] text-center py-2">
+                                Không sử dụng nhân vật - tạo nội dung không có nhân vật cụ thể.
+                            </p>
+                        )}
+                    </div>
+
+                    {/* Add/Edit Character Modal */}
+                    {showAddCharacter && (
+                        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+                            <div className="glass-card p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto">
+                                <h3 className="font-semibold mb-4">
+                                    {editingCharacter ? 'Chỉnh sửa nhân vật' : 'Thêm nhân vật mới'}
+                                </h3>
+                                <div className="space-y-4">
+                                    {/* Name & Role Row */}
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <div>
+                                            <label className="block text-sm font-medium mb-1">Tên nhân vật *</label>
+                                            <input
+                                                type="text"
+                                                value={newCharacter.name}
+                                                onChange={(e) => setNewCharacter({ ...newCharacter, name: e.target.value })}
+                                                className="input-field"
+                                                placeholder="VD: Minh"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium mb-1">Vai trò *</label>
+                                            <input
+                                                type="text"
+                                                value={newCharacter.role}
+                                                onChange={(e) => setNewCharacter({ ...newCharacter, role: e.target.value })}
+                                                className="input-field"
+                                                placeholder="VD: Host chính..."
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {/* Gender & Age Row */}
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <div>
+                                            <label className="block text-sm font-medium mb-1">Giới tính</label>
+                                            <select
+                                                value={newCharacter.gender || 'female'}
+                                                onChange={(e) => setNewCharacter({ ...newCharacter, gender: e.target.value })}
+                                                className="input-field"
+                                            >
+                                                <option value="female">👩 Nữ</option>
+                                                <option value="male">👨 Nam</option>
+                                                <option value="other">🧑 Khác</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium mb-1">Độ tuổi</label>
+                                            <select
+                                                value={newCharacter.ageRange || '25-35'}
+                                                onChange={(e) => setNewCharacter({ ...newCharacter, ageRange: e.target.value })}
+                                                className="input-field"
+                                            >
+                                                <option value="5-12">👶 Trẻ em (5-12)</option>
+                                                <option value="13-17">🧒 Thiếu niên (13-17)</option>
+                                                <option value="18-24">🧑 Trẻ (18-24)</option>
+                                                <option value="25-35">👤 Trưởng thành (25-35)</option>
+                                                <option value="36-50">👨 Trung niên (36-50)</option>
+                                                <option value="50+">👴 Lớn tuổi (50+)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    {/* Personality */}
+                                    <div>
+                                        <label className="block text-sm font-medium mb-1">🎭 Tính cách nhân vật</label>
+                                        <textarea
+                                            value={newCharacter.personality}
+                                            onChange={(e) => setNewCharacter({ ...newCharacter, personality: e.target.value })}
+                                            className="input-field min-h-[60px]"
+                                            placeholder="VD: Vui vẻ, hài hước, hay đùa. Nói nhanh, thích dùng từ lóng Gen Z..."
+                                        />
+                                    </div>
+
+                                    {/* AI Generate Button */}
+                                    <button
+                                        onClick={handleGenerateCharacterDetails}
+                                        disabled={isGeneratingCharacter || !newCharacter.name}
+                                        className="w-full py-3 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 disabled:opacity-50 rounded-lg text-white font-medium flex items-center justify-center gap-2 transition"
+                                    >
+                                        {isGeneratingCharacter ? (
+                                            <>
+                                                <Loader2 className="w-4 h-4 animate-spin" />
+                                                Đang tạo mô tả chi tiết...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Wand2 className="w-4 h-4" />
+                                                ✨ AI Tạo mô tả chi tiết (tóc, mắt, trang phục...)
+                                            </>
+                                        )}
+                                    </button>
+
+                                    {/* Full Description */}
+                                    <div>
+                                        <label className="block text-sm font-medium mb-1">
+                                            📝 Mô tả đầy đủ * {newCharacter.fullDescription && <span className="text-green-400 text-xs">(Đã có)</span>}
+                                        </label>
+                                        <textarea
+                                            value={newCharacter.fullDescription}
+                                            onChange={(e) => setNewCharacter({ ...newCharacter, fullDescription: e.target.value })}
+                                            className="input-field min-h-[120px]"
+                                            placeholder="Nhấn nút AI ở trên để tự động tạo mô tả chi tiết, hoặc nhập thủ công..."
+                                        />
+                                    </div>
+
+                                    {/* Show additional details if generated */}
+                                    {newCharacter.hairDetails && (
+                                        <div className="grid grid-cols-2 gap-2 text-xs">
+                                            <div className="p-2 bg-[var(--bg-tertiary)] rounded">
+                                                <span className="text-[var(--text-muted)]">💇 Tóc: </span>
+                                                <span>{newCharacter.hairDetails}</span>
+                                            </div>
+                                            <div className="p-2 bg-[var(--bg-tertiary)] rounded">
+                                                <span className="text-[var(--text-muted)]">👤 Mặt: </span>
+                                                <span>{newCharacter.faceDetails}</span>
+                                            </div>
+                                            <div className="p-2 bg-[var(--bg-tertiary)] rounded">
+                                                <span className="text-[var(--text-muted)]">👕 Outfit: </span>
+                                                <span>{newCharacter.clothing}</span>
+                                            </div>
+                                            <div className="p-2 bg-[var(--bg-tertiary)] rounded">
+                                                <span className="text-[var(--text-muted)]">🎨 Da: </span>
+                                                <span>{newCharacter.skinTone}</span>
+                                            </div>
+                                        </div>
                                     )}
+
+                                    {newCharacter.styleKeywords && (
+                                        <div className="p-2 bg-[var(--bg-tertiary)] rounded text-xs">
+                                            <span className="text-[var(--text-muted)]">🏷️ AI Keywords: </span>
+                                            <span className="text-purple-400">{newCharacter.styleKeywords}</span>
+                                        </div>
+                                    )}
+
+                                    <label className="flex items-center gap-2">
+                                        <input
+                                            type="checkbox"
+                                            checked={newCharacter.isMain}
+                                            onChange={(e) => setNewCharacter({ ...newCharacter, isMain: e.target.checked })}
+                                        />
+                                        Nhân vật chính
+                                    </label>
+                                </div>
+                                <div className="flex gap-2 mt-6">
+                                    <button
+                                        onClick={handleSaveCharacter}
+                                        disabled={!newCharacter.name || !newCharacter.fullDescription}
+                                        className="btn-primary flex-1"
+                                    >
+                                        {editingCharacter ? 'Lưu thay đổi' : 'Thêm nhân vật'}
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            setShowAddCharacter(false)
+                                            setEditingCharacter(null)
+                                            setNewCharacter({ name: '', role: 'host', fullDescription: '', personality: '', isMain: false, gender: 'female', ageRange: '25-35', faceDetails: '', hairDetails: '', clothing: '', skinTone: '', styleKeywords: '' })
+                                        }}
+                                        className="btn-secondary"
+                                    >
+                                        Hủy
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Generate New Episode */}
+                    <div className="glass-card p-6 mb-6">
+                        <div className="flex items-center justify-between mb-4">
+                            <h3 className="font-semibold">Tạo Episode Mới</h3>
+                            <button
+                                onClick={() => setShowBulkCreate(true)}
+                                className="px-3 py-1.5 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg text-sm font-medium hover:opacity-90 transition flex items-center gap-1"
+                            >
+                                📦 Bulk Create
+                            </button>
+                        </div>
+
+                        {/* Category Selector for new episode */}
+                        {categories.length > 0 && (
+                            <div className="mb-4 p-3 bg-[var(--bg-tertiary)] rounded-lg">
+                                <label className="block text-sm font-medium mb-2">📁 Chọn Danh mục</label>
+                                <select
+                                    value={selectedCategoryId || ''}
+                                    onChange={(e) => setSelectedCategoryId(e.target.value || null)}
+                                    className="input-field w-full"
+                                >
+                                    <option value="">Chưa phân loại</option>
+                                    {categories.map(cat => {
+                                        const catCount = channel.episodes.filter(e => e.categoryId === cat.id).length
+                                        return (
+                                            <option key={cat.id} value={cat.id}>
+                                                {cat.name} ({catCount} episodes)
+                                            </option>
+                                        )
+                                    })}
+                                </select>
+                                <p className="text-xs text-[var(--text-muted)] mt-1">
+                                    {selectedCategoryId
+                                        ? `Episode tiếp theo: #${(channel.episodes.filter(e => e.categoryId === selectedCategoryId).length) + 1} trong danh mục này`
+                                        : `Episode tiếp theo: #${(channel.episodes.filter(e => !e.categoryId).length) + 1} (chưa phân loại)`
+                                    }
+                                </p>
+                            </div>
+                        )}
+
+                        {/* Content Input Section */}
+                        <div className="mb-4 p-4 bg-[var(--bg-tertiary)] rounded-lg">
+                            <div className="flex items-center justify-between mb-2">
+                                <label className="text-sm font-medium">📝 Nội dung / Mô tả (tùy chọn)</label>
+                                <span className="text-xs text-[var(--text-muted)]">
+                                    Để AI tạo script dựa trên nội dung này
+                                </span>
+                            </div>
+
+                            {/* URL Import */}
+                            <div className="flex gap-2 mb-3">
+                                <input
+                                    type="url"
+                                    placeholder="Nhập URL bài viết để lấy nội dung..."
+                                    value={contentUrl}
+                                    onChange={(e) => setContentUrl(e.target.value)}
+                                    className="input-field flex-1 text-sm"
+                                />
+                                <button
+                                    onClick={handleParseUrl}
+                                    disabled={isLoadingUrl || !contentUrl.trim()}
+                                    className="btn-secondary px-4 text-sm flex items-center gap-1"
+                                >
+                                    {isLoadingUrl ? (
+                                        <Loader2 className="w-4 h-4 animate-spin" />
+                                    ) : (
+                                        <Globe className="w-4 h-4" />
+                                    )}
+                                    Lấy nội dung
+                                </button>
+                            </div>
+
+                            {/* Custom Content Textarea */}
+                            <textarea
+                                placeholder="Hoặc nhập mô tả/nội dung bạn muốn tạo script...&#10;&#10;Ví dụ: Tạo video về 5 mẹo tiết kiệm tiền cho sinh viên..."
+                                value={customContent}
+                                onChange={(e) => setCustomContent(e.target.value)}
+                                rows={4}
+                                className="input-field w-full text-sm resize-none"
+                            />
+                            {customContent && (
+                                <div className="flex items-center justify-between mt-2">
+                                    <span className="text-xs text-[var(--accent-primary)]">
+                                        ✓ AI sẽ tạo script dựa trên nội dung này
+                                    </span>
+                                    <button
+                                        onClick={() => setCustomContent('')}
+                                        className="text-xs text-[var(--text-muted)] hover:text-red-400"
+                                    >
+                                        Xóa nội dung
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Row 1: Scene count, Language */}
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                            <div>
+                                <label className="block text-sm font-medium mb-2">Số cảnh</label>
+                                <input
+                                    type="number"
+                                    min="1"
+                                    value={sceneCount}
+                                    onChange={(e) => setSceneCount(parseInt(e.target.value) || 0)}
+                                    onBlur={(e) => {
+                                        const val = parseInt(e.target.value) || 10
+                                        setSceneCount(Math.max(1, val))
+                                    }}
+                                    className="input-field w-full"
+                                />
+                                <p className="text-xs text-[var(--text-muted)] mt-1">
+                                    ~{Math.round(sceneCount * 8 / 60)} phút
+                                </p>
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium mb-2">Ngôn ngữ</label>
+                                <div className="flex gap-1">
+                                    <button
+                                        onClick={() => handleUpdateLanguage('vi')}
+                                        className={`px-3 py-2 rounded-lg text-sm font-medium transition flex-1 ${channel.dialogueLanguage === 'vi'
+                                            ? 'bg-[var(--accent-primary)] text-white'
+                                            : 'bg-[var(--bg-tertiary)] text-[var(--text-secondary)]'
+                                            }`}
+                                    >
+                                        🇻🇳 VI
+                                    </button>
+                                    <button
+                                        onClick={() => handleUpdateLanguage('en')}
+                                        className={`px-3 py-2 rounded-lg text-sm font-medium transition flex-1 ${channel.dialogueLanguage === 'en'
+                                            ? 'bg-[var(--accent-primary)] text-white'
+                                            : 'bg-[var(--bg-tertiary)] text-[var(--text-secondary)]'
+                                            }`}
+                                    >
+                                        🇺🇸 EN
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium mb-2">Visual Style</label>
+                                <button
+                                    type="button"
+                                    onClick={() => setShowStyleModal(true)}
+                                    className="input-field w-full text-left flex items-center justify-between hover:border-[var(--accent-primary)] transition-colors"
+                                >
+                                    <span className="flex items-center gap-2">
+                                        {selectedStyleId ? (
+                                            <>
+                                                {CHANNEL_STYLES.find(s => s.id === selectedStyleId)?.previewImage && (
+                                                    <img
+                                                        src={CHANNEL_STYLES.find(s => s.id === selectedStyleId)?.previewImage}
+                                                        alt=""
+                                                        className="w-8 h-8 rounded object-cover"
+                                                    />
+                                                )}
+                                                {CHANNEL_STYLES.find(s => s.id === selectedStyleId)?.nameVi || selectedStyleId}
+                                            </>
+                                        ) : (
+                                            <>🎨 Chọn Visual Style...</>
+                                        )}
+                                    </span>
+                                    <ChevronDown className="w-4 h-4 text-gray-400" />
+                                </button>
+                                <StyleSelectorModal
+                                    isOpen={showStyleModal}
+                                    onClose={() => setShowStyleModal(false)}
+                                    onSelect={(id) => setSelectedStyleId(id || '')}
+                                    selectedStyleId={selectedStyleId}
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium mb-2">Loại nội dung</label>
+                                <select
+                                    value={voiceOverMode}
+                                    onChange={(e) => {
+                                        const mode = e.target.value as typeof voiceOverMode
+                                        setVoiceOverMode(mode)
+                                        // Modes that use characters
+                                        const characterModes = [
+                                            'with_host', 'host_dynamic_env', 'host_storyteller', 'cinematic_film',
+                                            'roast_comedy', 'reaction_commentary', 'horror_survival', 'romance_drama',
+                                            'gen_z_meme', 'educational_sassy', 'mystery_detective', 'breaking_4th_wall',
+                                            'villain_origin', 'underdog_triumph', 'chaos_unhinged', 'food_animation', 'food_drama',
+                                            'fashion_showcase', 'silent_life', 'virtual_companion', 'cozy_aesthetic', 'one_shot'
+                                        ]
+                                        setUseCharacters(characterModes.includes(mode))
+
+                                        // Fashion Showcase: Auto-disable ALL advanced features
+                                        if (mode === 'fashion_showcase') {
+                                            setVisualHookEnabled(false)
+                                            setEmotionalCurveEnabled(false)
+                                            setSpatialAudioEnabled(false)
+                                            setMentionChannel(false)
+                                        }
+                                    }}
+                                    className="input-field w-full"
+                                >
+                                    <optgroup label="📹 Cơ bản">
+                                        <option value="with_host">👤 Có Host/Nhân vật</option>
+                                        <option value="voice_over">🎙️ Voice Over (Thuyết minh)</option>
+                                        <option value="broll_only">🎬 B-Roll only (không lời)</option>
+                                        <option value="host_dynamic_env">🌍 Host 100% + Môi trường động</option>
+                                        <option value="host_storyteller">🎭 Host Kể Chuyện (Elements sinh động)</option>
+                                        <option value="one_shot">🎥 One Shot (Một cảnh liên tục)</option>
+                                    </optgroup>
+                                    <optgroup label="🎬 Điện ảnh">
+                                        <option value="cinematic_film">🎬 Điện Ảnh Hollywood</option>
+                                    </optgroup>
+                                    <optgroup label="🔥 VIRAL - Tương tác mạnh">
+                                        <option value="roast_comedy">🔥 Roast Comedy (Chọc tức khán giả)</option>
+                                        <option value="breaking_4th_wall">👀 Phá vỡ bức tường thứ 4</option>
+                                        <option value="reaction_commentary">😱 Reaction / Commentary</option>
+                                        <option value="educational_sassy">🙄 Giáo dục với thái độ (Sassy)</option>
+                                        <option value="gen_z_meme">💀 Gen Z Meme Culture</option>
+                                        <option value="chaos_unhinged">🤪 Chaotic / Năng lượng điên</option>
+                                    </optgroup>
+                                    <optgroup label="🎭 Kịch tính / Drama">
+                                        <option value="horror_survival">😱 Kinh dị sinh tồn</option>
+                                        <option value="romance_drama">💕 Tình cảm lãng mạn</option>
+                                        <option value="mystery_detective">🔍 Bí ẩn / Thám tử</option>
+                                        <option value="villain_origin">😈 Nguồn gốc phản diện</option>
+                                        <option value="underdog_triumph">🏆 Kẻ yếu vươn lên</option>
+                                    </optgroup>
+                                    <optgroup label="🍕 Thực phẩm nhân hóa (VIRAL)">
+                                        <option value="food_animation">🍔 Thực phẩm nhân hóa</option>
+                                        <option value="food_drama">⚔️ Food Wars / Kịch tính ẩm thực</option>
+                                    </optgroup>
+                                    <optgroup label="🎧 Đặc biệt">
+                                        <option value="asmr_satisfying">🎧 ASMR / Satisfying</option>
+                                    </optgroup>
+                                    <optgroup label="📖 Kể Chuyện / Storytelling">
+                                        <option value="narrative_storytelling">📖 Kể Chuyện B-roll (Phong cách Anh Dư Leo)</option>
+                                        <option value="educational_explainer">🎓 Giải Thích Giáo Dục (Phong cách Lóng)</option>
+                                    </optgroup>
+                                    <optgroup label="🌸 Slice of Life / Healing">
+                                        <option value="silent_life">🌸 Silent Life (Cuộc sống thầm lặng)</option>
+                                        <option value="virtual_companion">☕ Virtual Companion (Bạn đồng hành)</option>
+                                        <option value="cozy_aesthetic">🏠 Cozy Aesthetic (Không gian ấm cúng)</option>
+                                    </optgroup>
+                                    <optgroup label="👗 E-Commerce / Thời trang">
+                                        <option value="fashion_showcase">👗 Fashion Showcase (Thử đồ)</option>
+                                    </optgroup>
+                                </select>
+                            </div>
+                        </div>
+
+                        {/* Fashion Showcase - Product Upload UI */}
+                        {voiceOverMode === 'fashion_showcase' && (
+                            <div className="mb-4 p-4 bg-gradient-to-r from-pink-500/10 to-purple-500/10 border border-pink-500/20 rounded-lg">
+                                <h4 className="font-medium mb-3 flex items-center gap-2">
+                                    <span className="text-xl">👗</span>
+                                    Fashion Showcase
+                                </h4>
+
+                                {/* Mode Toggle */}
+                                <div className="mb-4 p-3 bg-[var(--bg-tertiary)] rounded-lg flex items-center justify-between">
+                                    <div>
+                                        <p className="font-medium text-sm">📷 Bạn đã có sẵn ảnh/video?</p>
+                                        <p className="text-xs text-[var(--text-muted)]">
+                                            {useOwnImages
+                                                ? 'Chỉ tạo kịch bản, không mô tả nhân vật/background'
+                                                : 'AI sẽ tạo ảnh preview cho bạn'}
+                                        </p>
+                                    </div>
+                                    <button
+                                        onClick={() => setUseOwnImages(!useOwnImages)}
+                                        className={`px-4 py-2 rounded-lg text-sm font-medium transition ${useOwnImages
+                                            ? 'bg-green-500 text-white'
+                                            : 'bg-purple-500 text-white'
+                                            }`}
+                                    >
+                                        {useOwnImages ? '✅ Có, tôi tự có ảnh' : '🎨 AI tạo ảnh'}
+                                    </button>
                                 </div>
 
-                                <p className="text-xs text-[var(--text-muted)] mb-2">Hoặc chọn preset:</p>
-                                <div className="grid grid-cols-4 gap-2 mb-2">
-                                    {FASHION_BACKGROUNDS.map(bg => (
-                                        <button
-                                            key={bg.id}
-                                            onClick={() => setFashionBackground(bg.id)}
-                                            className={`p-2 rounded-lg border-2 text-center transition ${fashionBackground === bg.id && !backgroundImage
-                                                ? 'border-pink-500 bg-pink-500/20'
-                                                : 'border-[var(--border-color)] hover:border-pink-500/50'
+                                {/* Product Image Upload */}
+                                <div className="mb-4">
+                                    <label className="block text-sm font-medium mb-2">📸 Hình ảnh sản phẩm (để AI phân tích)</label>
+                                    <div className="flex gap-4">
+                                        <div className="flex-1">
+                                            <input
+                                                type="file"
+                                                accept="image/*"
+                                                onChange={handleProductImageUpload}
+                                                className="hidden"
+                                                id="product-image-upload"
+                                            />
+                                            <label
+                                                htmlFor="product-image-upload"
+                                                className="block w-full p-4 border-2 border-dashed border-pink-500/30 rounded-lg cursor-pointer hover:border-pink-500/60 transition text-center"
+                                            >
+                                                {productImage ? (
+                                                    <img
+                                                        src={productImage}
+                                                        alt="Product"
+                                                        className="max-h-32 mx-auto rounded"
+                                                    />
+                                                ) : (
+                                                    <div className="text-[var(--text-muted)]">
+                                                        <p className="text-2xl mb-2">📷</p>
+                                                        <p className="text-sm">Upload ảnh sản phẩm</p>
+                                                    </div>
+                                                )}
+                                            </label>
+                                        </div>
+
+                                        {/* AI Analysis Result */}
+                                        {isAnalyzingProduct && (
+                                            <div className="flex-1 flex items-center justify-center">
+                                                <Loader2 className="w-6 h-6 animate-spin text-pink-500" />
+                                                <span className="ml-2 text-sm">Đang phân tích...</span>
+                                            </div>
+                                        )}
+
+                                        {productAnalysis && !isAnalyzingProduct && (
+                                            <div className="flex-1 p-3 bg-[var(--bg-tertiary)] rounded-lg text-sm">
+                                                <p className="font-medium text-pink-400 mb-2">🤖 AI Phân tích:</p>
+
+                                                {/* Exact Description - Most Important */}
+                                                {productAnalysis.exactDescription && (
+                                                    <div className="mb-2 p-2 bg-green-500/10 border border-green-500/30 rounded">
+                                                        <p className="text-xs text-white">{productAnalysis.exactDescription}</p>
+                                                    </div>
+                                                )}
+
+                                                <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs">
+                                                    <p><span className="text-[var(--text-muted)]">Loại:</span> {productAnalysis.productType} {productAnalysis.productSubtype && `(${productAnalysis.productSubtype})`}</p>
+                                                    <p><span className="text-[var(--text-muted)]">Màu:</span> {productAnalysis.color}</p>
+                                                    <p><span className="text-[var(--text-muted)]">Chất liệu:</span> {productAnalysis.material}</p>
+                                                    <p><span className="text-[var(--text-muted)]">Style:</span> {productAnalysis.style}</p>
+                                                    {productAnalysis.pattern && <p><span className="text-[var(--text-muted)]">Họa tiết:</span> {productAnalysis.pattern}</p>}
+                                                    {productAnalysis.fit && <p><span className="text-[var(--text-muted)]">Form:</span> {productAnalysis.fit}</p>}
+                                                </div>
+
+                                                {productAnalysis.promptKeywords && (
+                                                    <div className="mt-2 pt-2 border-t border-[var(--border-color)]">
+                                                        <p className="text-[var(--text-muted)] text-xs mb-1">🏷️ Keywords cho Imagen:</p>
+                                                        <p className="text-xs text-purple-300 bg-purple-500/10 p-1 rounded">{productAnalysis.promptKeywords}</p>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* Product Info */}
+                                <div className="grid grid-cols-2 gap-3 mb-3">
+                                    <div>
+                                        <label className="block text-xs text-[var(--text-muted)] mb-1">Tên sản phẩm</label>
+                                        <input
+                                            type="text"
+                                            value={productInfo.name}
+                                            onChange={(e) => setProductInfo({ ...productInfo, name: e.target.value })}
+                                            placeholder="VD: Áo croptop ren trắng"
+                                            className="input-field text-sm"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs text-[var(--text-muted)] mb-1">Giá gốc</label>
+                                        <input
+                                            type="text"
+                                            value={productInfo.price}
+                                            onChange={(e) => setProductInfo({ ...productInfo, price: e.target.value })}
+                                            placeholder="VD: 350.000đ"
+                                            className="input-field text-sm"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs text-[var(--text-muted)] mb-1">Giá sale (nếu có)</label>
+                                        <input
+                                            type="text"
+                                            value={productInfo.salePrice}
+                                            onChange={(e) => setProductInfo({ ...productInfo, salePrice: e.target.value })}
+                                            placeholder="VD: 199.000đ"
+                                            className="input-field text-sm"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs text-[var(--text-muted)] mb-1">Khuyến mãi</label>
+                                        <input
+                                            type="text"
+                                            value={productInfo.promotion}
+                                            onChange={(e) => setProductInfo({ ...productInfo, promotion: e.target.value })}
+                                            placeholder="VD: Freeship + Tặng quà"
+                                            className="input-field text-sm"
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* Background & Multi-Image - Only needed when AI generates images */}
+                                {!useOwnImages && (<>
+                                    <div className="mb-4">
+                                        <label className="block text-sm font-medium mb-2">🏠 Background cố định (cho AI tạo ảnh)</label>
+
+                                        {/* Upload Background Option */}
+                                        <div className="mb-3 p-3 bg-[var(--bg-tertiary)] rounded-lg">
+                                            <label className="block text-xs font-medium mb-2 text-purple-400">📷 Upload ảnh Background của bạn</label>
+                                            <input
+                                                type="file"
+                                                accept="image/*"
+                                                onChange={handleBackgroundImageUpload}
+                                                className="text-xs file:mr-3 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:bg-purple-500/20 file:text-purple-400 hover:file:bg-purple-500/30"
+                                            />
+                                            {backgroundImage && (
+                                                <div className="mt-2 flex items-center gap-2">
+                                                    <img src={backgroundImage} alt="Background" className="w-20 h-12 object-cover rounded" />
+                                                    <span className="text-xs text-green-400">✓ Background đã upload</span>
+                                                    <button
+                                                        onClick={() => { setBackgroundImage(null); setBackgroundImageBase64(null); setFashionBackground('fitting_room'); }}
+                                                        className="text-xs text-red-400 hover:text-red-300"
+                                                    >
+                                                        ✕ Xóa
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        <p className="text-xs text-[var(--text-muted)] mb-2">Hoặc chọn preset:</p>
+                                        <div className="grid grid-cols-4 gap-2 mb-2">
+                                            {FASHION_BACKGROUNDS.map(bg => (
+                                                <button
+                                                    key={bg.id}
+                                                    onClick={() => setFashionBackground(bg.id)}
+                                                    className={`p-2 rounded-lg border-2 text-center transition ${fashionBackground === bg.id && !backgroundImage
+                                                        ? 'border-pink-500 bg-pink-500/20'
+                                                        : 'border-[var(--border-color)] hover:border-pink-500/50'
+                                                        }`}
+                                                >
+                                                    <span className="text-xl">{bg.icon}</span>
+                                                    <p className="text-xs mt-1">{bg.name}</p>
+                                                </button>
+                                            ))}
+                                        </div>
+
+                                        {fashionBackground === 'custom' && !backgroundImage && (
+                                            <input
+                                                type="text"
+                                                value={customBackground}
+                                                onChange={(e) => setCustomBackground(e.target.value)}
+                                                placeholder="Mô tả background của bạn (VD: Cửa hàng thời trang cao cấp, đèn vàng ấm áp)"
+                                                className="input-field text-sm w-full mt-2"
+                                            />
+                                        )}
+
+                                        <p className="text-xs text-[var(--text-muted)] mt-2">
+                                            📌 Background này sẽ được sử dụng NHẤT QUÁN trong tất cả các scene
+                                        </p>
+                                    </div>
+
+                                    {/* Multiple Product Images (Different Angles) - For AI image generation */}
+                                    <div className="mb-4 p-3 bg-[var(--bg-tertiary)] rounded-lg">
+                                        <label className="block text-sm font-medium mb-2 text-pink-400">📐 Ảnh sản phẩm nhiều góc (để AI tạo chính xác hơn)</label>
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            multiple
+                                            onChange={handleMultiProductImageUpload}
+                                            className="text-xs file:mr-3 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:bg-pink-500/20 file:text-pink-400 hover:file:bg-pink-500/30 mb-2"
+                                        />
+                                        <p className="text-xs text-[var(--text-muted)] mb-2">
+                                            💡 Upload nhiều góc: trước, sau, detail, tag... để AI hiểu sản phẩm tốt hơn
+                                        </p>
+
+                                        {productImages.length > 0 && (
+                                            <div className="flex flex-wrap gap-2 mt-2">
+                                                {productImages.map((img, idx) => (
+                                                    <div key={idx} className="relative group">
+                                                        <img
+                                                            src={img.base64}
+                                                            alt={`Product ${idx + 1}`}
+                                                            className={`w-16 h-16 object-cover rounded cursor-pointer ${idx === 0 ? 'ring-2 ring-pink-500' : ''}`}
+                                                            onClick={() => { setProductImageBase64(img.base64); setProductImage(img.base64); }}
+                                                            title={idx === 0 ? 'Ảnh chính' : 'Click để chọn làm ảnh chính'}
+                                                        />
+                                                        <button
+                                                            onClick={() => removeProductImage(idx)}
+                                                            className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-xs text-white opacity-0 group-hover:opacity-100 transition"
+                                                        >
+                                                            ×
+                                                        </button>
+                                                        {idx === 0 && <span className="absolute -bottom-1 left-0 right-0 text-center text-[8px] text-pink-400 bg-[var(--bg-primary)] rounded">Chính</span>}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                </>)}
+
+                                {/* Step 3: Generate Preview Images - ONLY when NOT using own images */}
+                                {!useOwnImages && (<>
+                                    <div className="mb-4 p-4 bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/30 rounded-lg">
+                                        <h5 className="font-medium text-green-400 mb-3 flex items-center gap-2">
+                                            <span>🎨</span>
+                                            Tạo ảnh Preview (AI tạo ảnh model mặc sản phẩm)
+                                        </h5>
+
+                                        <div className="flex items-center gap-4 mb-3">
+                                            <div>
+                                                <label className="text-xs text-[var(--text-muted)]">Số ảnh cần tạo:</label>
+                                                <select
+                                                    value={fashionSceneCount}
+                                                    onChange={(e) => setFashionSceneCount(Number(e.target.value))}
+                                                    className="ml-2 bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded px-2 py-1 text-sm"
+                                                >
+                                                    <option value={4}>4 ảnh</option>
+                                                    <option value={6}>6 ảnh</option>
+                                                    <option value={8}>8 ảnh</option>
+                                                </select>
+                                            </div>
+
+                                            <button
+                                                onClick={handleGenerateFashionPreviews}
+                                                disabled={!productImageBase64 || isGeneratingPreview}
+                                                className="px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 disabled:opacity-50 rounded-lg text-sm font-medium flex items-center gap-2"
+                                            >
+                                                {isGeneratingPreview ? (
+                                                    <>
+                                                        <Loader2 className="w-4 h-4 animate-spin" />
+                                                        Đang tạo ảnh...
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        🖼️ Tạo {fashionSceneCount} ảnh Preview
+                                                    </>
+                                                )}
+                                            </button>
+                                        </div>
+
+                                        <p className="text-xs text-[var(--text-muted)]">
+                                            AI sẽ tạo ảnh model mặc sản phẩm của bạn. Sau đó kịch bản sẽ được tạo dựa trên các ảnh này.
+                                        </p>
+                                    </div>
+
+                                    {/* Preview Images Grid */}
+                                    {fashionPreviewImages.length > 0 && (
+                                        <div className="mb-4 p-4 bg-[var(--bg-tertiary)] rounded-lg">
+                                            <h5 className="font-medium text-purple-400 mb-3 flex items-center gap-2">
+                                                <span>✨</span>
+                                                Ảnh Preview đã tạo ({fashionPreviewImages.filter(i => i.url).length}/{fashionPreviewImages.length})
+                                            </h5>
+
+                                            <div className="grid grid-cols-4 gap-3">
+                                                {fashionPreviewImages.map((img, idx) => (
+                                                    <div key={idx} className="relative group">
+                                                        {img.url ? (
+                                                            <>
+                                                                <img
+                                                                    src={img.url}
+                                                                    alt={`Preview ${idx + 1}`}
+                                                                    className="w-full aspect-[9/16] object-cover rounded-lg cursor-pointer"
+                                                                    onClick={() => window.open(img.url, '_blank')}
+                                                                />
+                                                                <button
+                                                                    onClick={() => downloadImage(img.url, `fashion-scene-${idx + 1}.png`)}
+                                                                    className="absolute bottom-1 right-1 bg-black/70 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition"
+                                                                >
+                                                                    ⬇️
+                                                                </button>
+                                                            </>
+                                                        ) : (
+                                                            <div className="w-full aspect-[9/16] bg-red-500/20 rounded-lg flex items-center justify-center">
+                                                                <span className="text-red-400 text-xs">❌ Failed</span>
+                                                            </div>
+                                                        )}
+                                                        <p className="text-xs text-center mt-1 text-[var(--text-muted)]">Scene {idx + 1}</p>
+                                                    </div>
+                                                ))}
+                                            </div>
+
+                                            <p className="text-xs text-green-400 mt-3">
+                                                ✅ Ảnh đã tạo xong! Bây giờ bạn có thể tạo kịch bản bên dưới.
+                                            </p>
+                                        </div>
+                                    )}
+                                </>)}
+
+                                {/* Simple mode: Just script creation */}
+                                {useOwnImages && (
+                                    <div className="mb-4 p-3 bg-green-500/10 border border-green-500/30 rounded-lg">
+                                        <p className="text-sm text-green-400">
+                                            ✅ <strong>Chế độ đơn giản:</strong> AI sẽ tạo kịch bản dựa trên thông tin sản phẩm.
+                                        </p>
+                                        <p className="text-xs text-[var(--text-muted)] mt-1">
+                                            Kịch bản sẽ chỉ bao gồm: lời thoại, hành động/pose, thông tin sản phẩm.
+                                            KHÔNG mô tả nhân vật/background (vì bạn tự có ảnh).
+                                        </p>
+                                    </div>
+                                )}
+
+                                <p className="text-xs text-[var(--text-muted)]">
+                                    💡 {useOwnImages ? 'Upload sản phẩm → Nhập thông tin → Tạo kịch bản' : 'Upload sản phẩm → Chọn background → Tạo ảnh → Tạo kịch bản'}
+                                </p>
+                            </div>
+                        )}
+
+                        {/* Content Type Tips (for viral content types) */}
+                        {CONTENT_TYPE_INFO[voiceOverMode] && (
+                            <div className="mb-4 p-4 bg-gradient-to-r from-red-500/10 to-orange-500/10 border border-red-500/20 rounded-lg">
+                                <div className="flex items-start gap-3">
+                                    <span className="text-3xl">{CONTENT_TYPE_INFO[voiceOverMode].icon}</span>
+                                    <div className="flex-1">
+                                        <h4 className="font-medium text-lg">{CONTENT_TYPE_INFO[voiceOverMode].name}</h4>
+                                        <p className="text-sm text-[var(--text-secondary)] mt-1">
+                                            {CONTENT_TYPE_INFO[voiceOverMode].description}
+                                        </p>
+                                        <div className="mt-3">
+                                            <p className="text-xs font-medium text-amber-400 mb-2">💡 Ví dụ / Tips:</p>
+                                            <ul className="space-y-1">
+                                                {CONTENT_TYPE_INFO[voiceOverMode].tips.map((tip, i) => (
+                                                    <li key={i} className="text-xs text-[var(--text-muted)] flex items-start gap-2">
+                                                        <span className="text-green-400">•</span>
+                                                        <span>{tip}</span>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Cinematic Style Selection (when cinematic_film mode) */}
+                        {voiceOverMode === 'cinematic_film' && (
+                            <div className="mb-4 p-4 bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/20 rounded-lg">
+                                <label className="block text-sm font-medium mb-3 flex items-center gap-2">
+                                    <span className="text-xl">🎬</span>
+                                    Chọn phong cách điện ảnh
+                                </label>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                    {CINEMATIC_STYLES.map(style => (
+                                        <div
+                                            key={style.id}
+                                            onClick={() => setCinematicStyle(style.id)}
+                                            className={`p-3 rounded-lg cursor-pointer transition-all border-2 ${cinematicStyle === style.id
+                                                ? 'border-amber-500 bg-amber-500/20'
+                                                : 'border-transparent bg-[var(--bg-tertiary)] hover:border-amber-500/50'
                                                 }`}
                                         >
-                                            <span className="text-xl">{bg.icon}</span>
-                                            <p className="text-xs mt-1">{bg.name}</p>
+                                            <div className="flex items-start gap-3">
+                                                <span className="text-2xl">{style.icon}</span>
+                                                <div className="flex-1">
+                                                    <p className="font-medium text-sm">{style.nameVi}</p>
+                                                    <p className="text-xs text-[var(--text-muted)] mt-0.5">{style.name}</p>
+                                                    <p className="text-xs text-[var(--text-secondary)] mt-1">{style.description}</p>
+                                                    <div className="mt-2 text-xs">
+                                                        <span className="text-amber-400">📷 </span>
+                                                        <span className="text-[var(--text-muted)]">{style.visualLanguage}</span>
+                                                    </div>
+                                                    <div className="mt-1 text-xs">
+                                                        <span className="text-green-400">✅ </span>
+                                                        <span className="text-[var(--text-muted)]">{style.useCase}</span>
+                                                    </div>
+                                                </div>
+                                                {cinematicStyle === style.id && (
+                                                    <Check className="w-5 h-5 text-amber-500 flex-shrink-0" />
+                                                )}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Storyteller B-Roll Option */}
+                        {voiceOverMode === 'host_storyteller' && (
+                            <div className="mb-4 p-3 bg-[var(--bg-tertiary)] rounded-lg">
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <p className="text-sm font-medium">🎬 Chèn B-Roll vào câu chuyện</p>
+                                        <p className="text-xs text-[var(--text-muted)]">
+                                            {storytellerBrollEnabled
+                                                ? 'Host + cảnh B-Roll minh họa xen kẽ'
+                                                : '100% Host trên màn hình suốt video'}
+                                        </p>
+                                    </div>
+                                    <button
+                                        onClick={() => setStorytellerBrollEnabled(!storytellerBrollEnabled)}
+                                        className={`px-3 py-1.5 rounded-lg text-sm font-medium transition ${storytellerBrollEnabled
+                                            ? 'bg-[var(--accent-primary)] text-white'
+                                            : 'bg-[var(--bg-secondary)] text-[var(--text-muted)]'
+                                            }`}
+                                    >
+                                        {storytellerBrollEnabled ? 'B-Roll ON' : '100% Host'}
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Voice Settings (for Voice Over mode) */}
+                        {voiceOverMode === 'voice_over' && (
+                            <div className="grid grid-cols-2 gap-4 mb-4 p-3 bg-[var(--bg-tertiary)] rounded-lg">
+                                <div>
+                                    <label className="block text-sm font-medium mb-2">🎙️ Giọng đọc</label>
+                                    <select
+                                        value={voiceGender}
+                                        onChange={(e) => setVoiceGender(e.target.value as 'male' | 'female' | 'auto')}
+                                        className="input-field w-full"
+                                    >
+                                        <option value="auto">🔄 Tự động</option>
+                                        <option value="female">👩 Giọng Nữ</option>
+                                        <option value="male">👨 Giọng Nam</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium mb-2">🎭 Tone giọng</label>
+                                    <select
+                                        value={voiceTone}
+                                        onChange={(e) => setVoiceTone(e.target.value as 'warm' | 'professional' | 'energetic' | 'calm' | 'serious')}
+                                        className="input-field w-full"
+                                    >
+                                        <option value="warm">🌸 Ấm áp, thân thiện</option>
+                                        <option value="professional">💼 Chuyên nghiệp</option>
+                                        <option value="energetic">⚡ Năng động, sôi nổi</option>
+                                        <option value="calm">🧘 Điềm tĩnh, nhẹ nhàng</option>
+                                        <option value="serious">📰 Nghiêm túc (tin tức)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Narrative Storytelling Settings */}
+                        {voiceOverMode === 'narrative_storytelling' && (
+                            <div className="mb-4 p-4 bg-gradient-to-r from-orange-500/10 to-amber-500/10 border border-orange-500/20 rounded-lg">
+                                <h4 className="font-medium mb-3 flex items-center gap-2">
+                                    <span className="text-xl">📖</span>
+                                    Kể Chuyện B-roll (Phong cách Anh Dư Leo)
+                                </h4>
+
+                                {/* Template Selection */}
+                                <div className="mb-3">
+                                    <label className="block text-sm font-medium mb-2">Chọn template kể chuyện</label>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                        {narrativeTemplates.map(template => (
+                                            <button
+                                                key={template.id}
+                                                onClick={() => setNarrativeTemplateId(template.id)}
+                                                className={`p-3 rounded-lg text-left transition ${narrativeTemplateId === template.id
+                                                    ? 'bg-orange-500/20 border-2 border-orange-500'
+                                                    : 'bg-[var(--bg-secondary)] border border-transparent hover:border-orange-500/50'
+                                                    }`}
+                                            >
+                                                <div className="font-medium text-sm">{template.name}</div>
+                                                <div className="text-xs text-[var(--text-muted)] mt-1">{template.description}</div>
+                                                <div className="flex flex-wrap gap-1 mt-2">
+                                                    {template.suitableFor.slice(0, 3).map((tag, i) => (
+                                                        <span key={i} className="px-1.5 py-0.5 bg-orange-500/10 text-orange-400 text-xs rounded">
+                                                            {tag}
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Key Points */}
+                                <div className="mb-3">
+                                    <label className="block text-sm font-medium mb-2">Điểm chính cần đề cập (tuỳ chọn)</label>
+                                    <input
+                                        type="text"
+                                        value={narrativeKeyPoints}
+                                        onChange={(e) => setNarrativeKeyPoints(e.target.value)}
+                                        placeholder="VD: Tiết kiệm, Đầu tư, Kiên nhẫn (phân cách bằng dấu phẩy)"
+                                        className="input-field w-full"
+                                    />
+                                    <p className="text-xs text-[var(--text-muted)] mt-1">
+                                        AI sẽ tự động tích hợp các điểm này vào kịch bản
+                                    </p>
+                                </div>
+
+                                {/* Host Mode Toggle */}
+                                <div className="mb-3">
+                                    <label className="block text-sm font-medium mb-2">Chế độ hiển thị</label>
+                                    <div className="flex gap-2">
+                                        <button
+                                            onClick={() => setNarrativeWithHost(false)}
+                                            className={`flex-1 p-3 rounded-lg text-sm transition ${!narrativeWithHost
+                                                ? 'bg-orange-500/20 border-2 border-orange-500'
+                                                : 'bg-[var(--bg-secondary)] border border-transparent hover:border-orange-500/50'
+                                                }`}
+                                        >
+                                            <div className="font-medium">🎬 100% B-roll</div>
+                                            <div className="text-xs text-[var(--text-muted)] mt-1">Chỉ hình minh họa + voiceover</div>
+                                        </button>
+                                        <button
+                                            onClick={() => setNarrativeWithHost(true)}
+                                            className={`flex-1 p-3 rounded-lg text-sm transition ${narrativeWithHost
+                                                ? 'bg-orange-500/20 border-2 border-orange-500'
+                                                : 'bg-[var(--bg-secondary)] border border-transparent hover:border-orange-500/50'
+                                                }`}
+                                        >
+                                            <div className="font-medium">👤 Có Host dẫn chuyện</div>
+                                            <div className="text-xs text-[var(--text-muted)] mt-1">Host xuất hiện + kể chuyện</div>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {/* Tips - Dynamic based on host mode */}
+                                <div className="bg-[var(--bg-secondary)] p-3 rounded-lg">
+                                    <p className="text-xs text-[var(--text-muted)] mb-2">💡 <strong>Mẹo:</strong></p>
+                                    {narrativeWithHost ? (
+                                        <ul className="text-xs text-[var(--text-muted)] space-y-1">
+                                            <li>• Host sẽ xuất hiện trên màn hình, kể chuyện trực tiếp</li>
+                                            <li>• Story elements sẽ xuất hiện xung quanh host để minh họa</li>
+                                            <li>• Sử dụng nhân vật đã tạo sẵn hoặc AI tự generate</li>
+                                        </ul>
+                                    ) : (
+                                        <ul className="text-xs text-[var(--text-muted)] space-y-1">
+                                            <li>• Video sẽ 100% B-roll với voiceover kể chuyện</li>
+                                            <li>• Nhập nội dung/topic chi tiết ở phần Nội dung bên dưới</li>
+                                            <li>• AI sẽ tự động tạo cấu trúc Hook → Bối cảnh → Kết quả → Lời khuyên</li>
+                                        </ul>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Row 2: Character selection (if useCharacters) */}
+                        {useCharacters && channel.characters.length > 0 && (
+                            <div className="mb-4 p-3 bg-[var(--bg-tertiary)] rounded-lg">
+                                <label className="block text-sm font-medium mb-2">Chọn nhân vật xuất hiện</label>
+                                <div className="flex flex-wrap gap-2">
+                                    {channel.characters.map(char => (
+                                        <button
+                                            key={char.id}
+                                            onClick={() => {
+                                                setSelectedCharacterIds(prev =>
+                                                    prev.includes(char.id)
+                                                        ? prev.filter(id => id !== char.id)
+                                                        : [...prev, char.id]
+                                                )
+                                            }}
+                                            className={`px-3 py-1.5 rounded-full text-sm transition ${selectedCharacterIds.includes(char.id) || selectedCharacterIds.length === 0
+                                                ? 'bg-[var(--accent-primary)] text-white'
+                                                : 'bg-[var(--bg-secondary)] text-[var(--text-secondary)]'
+                                                }`}
+                                        >
+                                            {char.isMain && '⭐ '}{char.name} ({char.role})
                                         </button>
                                     ))}
                                 </div>
-
-                                {fashionBackground === 'custom' && !backgroundImage && (
-                                    <input
-                                        type="text"
-                                        value={customBackground}
-                                        onChange={(e) => setCustomBackground(e.target.value)}
-                                        placeholder="Mô tả background của bạn (VD: Cửa hàng thời trang cao cấp, đèn vàng ấm áp)"
-                                        className="input-field text-sm w-full mt-2"
-                                    />
-                                )}
-
                                 <p className="text-xs text-[var(--text-muted)] mt-2">
-                                    📌 Background này sẽ được sử dụng NHẤT QUÁN trong tất cả các scene
-                                </p>
-                            </div>
-
-                            {/* Multiple Product Images (Different Angles) - For AI image generation */}
-                            <div className="mb-4 p-3 bg-[var(--bg-tertiary)] rounded-lg">
-                                <label className="block text-sm font-medium mb-2 text-pink-400">📐 Ảnh sản phẩm nhiều góc (để AI tạo chính xác hơn)</label>
-                                <input
-                                    type="file"
-                                    accept="image/*"
-                                    multiple
-                                    onChange={handleMultiProductImageUpload}
-                                    className="text-xs file:mr-3 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:bg-pink-500/20 file:text-pink-400 hover:file:bg-pink-500/30 mb-2"
-                                />
-                                <p className="text-xs text-[var(--text-muted)] mb-2">
-                                    💡 Upload nhiều góc: trước, sau, detail, tag... để AI hiểu sản phẩm tốt hơn
+                                    {selectedCharacterIds.length === 0
+                                        ? 'Sử dụng tất cả nhân vật'
+                                        : `Đã chọn ${selectedCharacterIds.length} nhân vật`}
                                 </p>
 
-                                {productImages.length > 0 && (
-                                    <div className="flex flex-wrap gap-2 mt-2">
-                                        {productImages.map((img, idx) => (
-                                            <div key={idx} className="relative group">
-                                                <img
-                                                    src={img.base64}
-                                                    alt={`Product ${idx + 1}`}
-                                                    className={`w-16 h-16 object-cover rounded cursor-pointer ${idx === 0 ? 'ring-2 ring-pink-500' : ''}`}
-                                                    onClick={() => { setProductImageBase64(img.base64); setProductImage(img.base64); }}
-                                                    title={idx === 0 ? 'Ảnh chính' : 'Click để chọn làm ảnh chính'}
-                                                />
-                                                <button
-                                                    onClick={() => removeProductImage(idx)}
-                                                    className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-xs text-white opacity-0 group-hover:opacity-100 transition"
-                                                >
-                                                    ×
-                                                </button>
-                                                {idx === 0 && <span className="absolute -bottom-1 left-0 right-0 text-center text-[8px] text-pink-400 bg-[var(--bg-primary)] rounded">Chính</span>}
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-                        </>)}
-
-                        {/* Step 3: Generate Preview Images - ONLY when NOT using own images */}
-                        {!useOwnImages && (<>
-                            <div className="mb-4 p-4 bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/30 rounded-lg">
-                                <h5 className="font-medium text-green-400 mb-3 flex items-center gap-2">
-                                    <span>🎨</span>
-                                    Tạo ảnh Preview (AI tạo ảnh model mặc sản phẩm)
-                                </h5>
-
-                                <div className="flex items-center gap-4 mb-3">
-                                    <div>
-                                        <label className="text-xs text-[var(--text-muted)]">Số ảnh cần tạo:</label>
-                                        <select
-                                            value={fashionSceneCount}
-                                            onChange={(e) => setFashionSceneCount(Number(e.target.value))}
-                                            className="ml-2 bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded px-2 py-1 text-sm"
-                                        >
-                                            <option value={4}>4 ảnh</option>
-                                            <option value={6}>6 ảnh</option>
-                                            <option value={8}>8 ảnh</option>
-                                        </select>
-                                    </div>
-
-                                    <button
-                                        onClick={handleGenerateFashionPreviews}
-                                        disabled={!productImageBase64 || isGeneratingPreview}
-                                        className="px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 disabled:opacity-50 rounded-lg text-sm font-medium flex items-center gap-2"
-                                    >
-                                        {isGeneratingPreview ? (
-                                            <>
-                                                <Loader2 className="w-4 h-4 animate-spin" />
-                                                Đang tạo ảnh...
-                                            </>
-                                        ) : (
-                                            <>
-                                                🖼️ Tạo {fashionSceneCount} ảnh Preview
-                                            </>
-                                        )}
-                                    </button>
+                                {/* AI Adapt Characters Option */}
+                                <div className="mt-3 pt-3 border-t border-[var(--border-color)]">
+                                    <label className="flex items-center gap-3 cursor-pointer">
+                                        <input
+                                            type="checkbox"
+                                            checked={adaptCharactersToScript}
+                                            onChange={(e) => setAdaptCharactersToScript(e.target.checked)}
+                                            className="w-4 h-4 rounded accent-[var(--accent-primary)]"
+                                        />
+                                        <div className="flex-1">
+                                            <span className="text-sm font-medium">🎭 AI tự điều chỉnh nhân vật theo kịch bản</span>
+                                            <p className="text-xs text-[var(--text-muted)]">
+                                                {adaptCharactersToScript
+                                                    ? 'AI sẽ thay đổi trang phục, biểu cảm, vị trí... phù hợp với từng cảnh'
+                                                    : 'Giữ nguyên mô tả nhân vật gốc trong mọi cảnh'}
+                                            </p>
+                                        </div>
+                                    </label>
                                 </div>
-
-                                <p className="text-xs text-[var(--text-muted)]">
-                                    AI sẽ tạo ảnh model mặc sản phẩm của bạn. Sau đó kịch bản sẽ được tạo dựa trên các ảnh này.
-                                </p>
-                            </div>
-
-                            {/* Preview Images Grid */}
-                            {fashionPreviewImages.length > 0 && (
-                                <div className="mb-4 p-4 bg-[var(--bg-tertiary)] rounded-lg">
-                                    <h5 className="font-medium text-purple-400 mb-3 flex items-center gap-2">
-                                        <span>✨</span>
-                                        Ảnh Preview đã tạo ({fashionPreviewImages.filter(i => i.url).length}/{fashionPreviewImages.length})
-                                    </h5>
-
-                                    <div className="grid grid-cols-4 gap-3">
-                                        {fashionPreviewImages.map((img, idx) => (
-                                            <div key={idx} className="relative group">
-                                                {img.url ? (
-                                                    <>
-                                                        <img
-                                                            src={img.url}
-                                                            alt={`Preview ${idx + 1}`}
-                                                            className="w-full aspect-[9/16] object-cover rounded-lg cursor-pointer"
-                                                            onClick={() => window.open(img.url, '_blank')}
-                                                        />
-                                                        <button
-                                                            onClick={() => downloadImage(img.url, `fashion-scene-${idx + 1}.png`)}
-                                                            className="absolute bottom-1 right-1 bg-black/70 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition"
-                                                        >
-                                                            ⬇️
-                                                        </button>
-                                                    </>
-                                                ) : (
-                                                    <div className="w-full aspect-[9/16] bg-red-500/20 rounded-lg flex items-center justify-center">
-                                                        <span className="text-red-400 text-xs">❌ Failed</span>
-                                                    </div>
-                                                )}
-                                                <p className="text-xs text-center mt-1 text-[var(--text-muted)]">Scene {idx + 1}</p>
-                                            </div>
-                                        ))}
-                                    </div>
-
-                                    <p className="text-xs text-green-400 mt-3">
-                                        ✅ Ảnh đã tạo xong! Bây giờ bạn có thể tạo kịch bản bên dưới.
-                                    </p>
-                                </div>
-                            )}
-                        </>)}
-
-                        {/* Simple mode: Just script creation */}
-                        {useOwnImages && (
-                            <div className="mb-4 p-3 bg-green-500/10 border border-green-500/30 rounded-lg">
-                                <p className="text-sm text-green-400">
-                                    ✅ <strong>Chế độ đơn giản:</strong> AI sẽ tạo kịch bản dựa trên thông tin sản phẩm.
-                                </p>
-                                <p className="text-xs text-[var(--text-muted)] mt-1">
-                                    Kịch bản sẽ chỉ bao gồm: lời thoại, hành động/pose, thông tin sản phẩm.
-                                    KHÔNG mô tả nhân vật/background (vì bạn tự có ảnh).
-                                </p>
                             </div>
                         )}
 
-                        <p className="text-xs text-[var(--text-muted)]">
-                            💡 {useOwnImages ? 'Upload sản phẩm → Nhập thông tin → Tạo kịch bản' : 'Upload sản phẩm → Chọn background → Tạo ảnh → Tạo kịch bản'}
-                        </p>
-                    </div>
-                )}
-
-                {/* Content Type Tips (for viral content types) */}
-                {CONTENT_TYPE_INFO[voiceOverMode] && (
-                    <div className="mb-4 p-4 bg-gradient-to-r from-red-500/10 to-orange-500/10 border border-red-500/20 rounded-lg">
-                        <div className="flex items-start gap-3">
-                            <span className="text-3xl">{CONTENT_TYPE_INFO[voiceOverMode].icon}</span>
-                            <div className="flex-1">
-                                <h4 className="font-medium text-lg">{CONTENT_TYPE_INFO[voiceOverMode].name}</h4>
-                                <p className="text-sm text-[var(--text-secondary)] mt-1">
-                                    {CONTENT_TYPE_INFO[voiceOverMode].description}
-                                </p>
-                                <div className="mt-3">
-                                    <p className="text-xs font-medium text-amber-400 mb-2">💡 Ví dụ / Tips:</p>
-                                    <ul className="space-y-1">
-                                        {CONTENT_TYPE_INFO[voiceOverMode].tips.map((tip, i) => (
-                                            <li key={i} className="text-xs text-[var(--text-muted)] flex items-start gap-2">
-                                                <span className="text-green-400">•</span>
-                                                <span>{tip}</span>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                )}
-
-                {/* Cinematic Style Selection (when cinematic_film mode) */}
-                {voiceOverMode === 'cinematic_film' && (
-                    <div className="mb-4 p-4 bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/20 rounded-lg">
-                        <label className="block text-sm font-medium mb-3 flex items-center gap-2">
-                            <span className="text-xl">🎬</span>
-                            Chọn phong cách điện ảnh
-                        </label>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                            {CINEMATIC_STYLES.map(style => (
-                                <div
-                                    key={style.id}
-                                    onClick={() => setCinematicStyle(style.id)}
-                                    className={`p-3 rounded-lg cursor-pointer transition-all border-2 ${cinematicStyle === style.id
-                                        ? 'border-amber-500 bg-amber-500/20'
-                                        : 'border-transparent bg-[var(--bg-tertiary)] hover:border-amber-500/50'
-                                        }`}
-                                >
-                                    <div className="flex items-start gap-3">
-                                        <span className="text-2xl">{style.icon}</span>
-                                        <div className="flex-1">
-                                            <p className="font-medium text-sm">{style.nameVi}</p>
-                                            <p className="text-xs text-[var(--text-muted)] mt-0.5">{style.name}</p>
-                                            <p className="text-xs text-[var(--text-secondary)] mt-1">{style.description}</p>
-                                            <div className="mt-2 text-xs">
-                                                <span className="text-amber-400">📷 </span>
-                                                <span className="text-[var(--text-muted)]">{style.visualLanguage}</span>
-                                            </div>
-                                            <div className="mt-1 text-xs">
-                                                <span className="text-green-400">✅ </span>
-                                                <span className="text-[var(--text-muted)]">{style.useCase}</span>
-                                            </div>
-                                        </div>
-                                        {cinematicStyle === style.id && (
-                                            <Check className="w-5 h-5 text-amber-500 flex-shrink-0" />
-                                        )}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                )}
-
-                {/* Storyteller B-Roll Option */}
-                {voiceOverMode === 'host_storyteller' && (
-                    <div className="mb-4 p-3 bg-[var(--bg-tertiary)] rounded-lg">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-sm font-medium">🎬 Chèn B-Roll vào câu chuyện</p>
-                                <p className="text-xs text-[var(--text-muted)]">
-                                    {storytellerBrollEnabled
-                                        ? 'Host + cảnh B-Roll minh họa xen kẽ'
-                                        : '100% Host trên màn hình suốt video'}
-                                </p>
-                            </div>
-                            <button
-                                onClick={() => setStorytellerBrollEnabled(!storytellerBrollEnabled)}
-                                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition ${storytellerBrollEnabled
-                                    ? 'bg-[var(--accent-primary)] text-white'
-                                    : 'bg-[var(--bg-secondary)] text-[var(--text-muted)]'
-                                    }`}
-                            >
-                                {storytellerBrollEnabled ? 'B-Roll ON' : '100% Host'}
-                            </button>
-                        </div>
-                    </div>
-                )}
-
-                {/* Voice Settings (for Voice Over mode) */}
-                {voiceOverMode === 'voice_over' && (
-                    <div className="grid grid-cols-2 gap-4 mb-4 p-3 bg-[var(--bg-tertiary)] rounded-lg">
-                        <div>
-                            <label className="block text-sm font-medium mb-2">🎙️ Giọng đọc</label>
-                            <select
-                                value={voiceGender}
-                                onChange={(e) => setVoiceGender(e.target.value as 'male' | 'female' | 'auto')}
-                                className="input-field w-full"
-                            >
-                                <option value="auto">🔄 Tự động</option>
-                                <option value="female">👩 Giọng Nữ</option>
-                                <option value="male">👨 Giọng Nam</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium mb-2">🎭 Tone giọng</label>
-                            <select
-                                value={voiceTone}
-                                onChange={(e) => setVoiceTone(e.target.value as 'warm' | 'professional' | 'energetic' | 'calm' | 'serious')}
-                                className="input-field w-full"
-                            >
-                                <option value="warm">🌸 Ấm áp, thân thiện</option>
-                                <option value="professional">💼 Chuyên nghiệp</option>
-                                <option value="energetic">⚡ Năng động, sôi nổi</option>
-                                <option value="calm">🧘 Điềm tĩnh, nhẹ nhàng</option>
-                                <option value="serious">📰 Nghiêm túc (tin tức)</option>
-                            </select>
-                        </div>
-                    </div>
-                )}
-
-                {/* Narrative Storytelling Settings */}
-                {voiceOverMode === 'narrative_storytelling' && (
-                    <div className="mb-4 p-4 bg-gradient-to-r from-orange-500/10 to-amber-500/10 border border-orange-500/20 rounded-lg">
-                        <h4 className="font-medium mb-3 flex items-center gap-2">
-                            <span className="text-xl">📖</span>
-                            Kể Chuyện B-roll (Phong cách Anh Dư Leo)
-                        </h4>
-
-                        {/* Template Selection */}
-                        <div className="mb-3">
-                            <label className="block text-sm font-medium mb-2">Chọn template kể chuyện</label>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                                {narrativeTemplates.map(template => (
-                                    <button
-                                        key={template.id}
-                                        onClick={() => setNarrativeTemplateId(template.id)}
-                                        className={`p-3 rounded-lg text-left transition ${narrativeTemplateId === template.id
-                                            ? 'bg-orange-500/20 border-2 border-orange-500'
-                                            : 'bg-[var(--bg-secondary)] border border-transparent hover:border-orange-500/50'
-                                            }`}
-                                    >
-                                        <div className="font-medium text-sm">{template.name}</div>
-                                        <div className="text-xs text-[var(--text-muted)] mt-1">{template.description}</div>
-                                        <div className="flex flex-wrap gap-1 mt-2">
-                                            {template.suitableFor.slice(0, 3).map((tag, i) => (
-                                                <span key={i} className="px-1.5 py-0.5 bg-orange-500/10 text-orange-400 text-xs rounded">
-                                                    {tag}
-                                                </span>
-                                            ))}
-                                        </div>
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* Key Points */}
-                        <div className="mb-3">
-                            <label className="block text-sm font-medium mb-2">Điểm chính cần đề cập (tuỳ chọn)</label>
-                            <input
-                                type="text"
-                                value={narrativeKeyPoints}
-                                onChange={(e) => setNarrativeKeyPoints(e.target.value)}
-                                placeholder="VD: Tiết kiệm, Đầu tư, Kiên nhẫn (phân cách bằng dấu phẩy)"
-                                className="input-field w-full"
-                            />
-                            <p className="text-xs text-[var(--text-muted)] mt-1">
-                                AI sẽ tự động tích hợp các điểm này vào kịch bản
-                            </p>
-                        </div>
-
-                        {/* Host Mode Toggle */}
-                        <div className="mb-3">
-                            <label className="block text-sm font-medium mb-2">Chế độ hiển thị</label>
-                            <div className="flex gap-2">
+                        {/* Row 3: Channel Mention & CTA */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div className="p-3 bg-[var(--bg-tertiary)] rounded-lg">
+                                <label className="block text-sm font-medium mb-2">Nhắc tên kênh trong script</label>
                                 <button
-                                    onClick={() => setNarrativeWithHost(false)}
-                                    className={`flex-1 p-3 rounded-lg text-sm transition ${!narrativeWithHost
-                                        ? 'bg-orange-500/20 border-2 border-orange-500'
-                                        : 'bg-[var(--bg-secondary)] border border-transparent hover:border-orange-500/50'
-                                        }`}
-                                >
-                                    <div className="font-medium">🎬 100% B-roll</div>
-                                    <div className="text-xs text-[var(--text-muted)] mt-1">Chỉ hình minh họa + voiceover</div>
-                                </button>
-                                <button
-                                    onClick={() => setNarrativeWithHost(true)}
-                                    className={`flex-1 p-3 rounded-lg text-sm transition ${narrativeWithHost
-                                        ? 'bg-orange-500/20 border-2 border-orange-500'
-                                        : 'bg-[var(--bg-secondary)] border border-transparent hover:border-orange-500/50'
-                                        }`}
-                                >
-                                    <div className="font-medium">👤 Có Host dẫn chuyện</div>
-                                    <div className="text-xs text-[var(--text-muted)] mt-1">Host xuất hiện + kể chuyện</div>
-                                </button>
-                            </div>
-                        </div>
-
-                        {/* Tips - Dynamic based on host mode */}
-                        <div className="bg-[var(--bg-secondary)] p-3 rounded-lg">
-                            <p className="text-xs text-[var(--text-muted)] mb-2">💡 <strong>Mẹo:</strong></p>
-                            {narrativeWithHost ? (
-                                <ul className="text-xs text-[var(--text-muted)] space-y-1">
-                                    <li>• Host sẽ xuất hiện trên màn hình, kể chuyện trực tiếp</li>
-                                    <li>• Story elements sẽ xuất hiện xung quanh host để minh họa</li>
-                                    <li>• Sử dụng nhân vật đã tạo sẵn hoặc AI tự generate</li>
-                                </ul>
-                            ) : (
-                                <ul className="text-xs text-[var(--text-muted)] space-y-1">
-                                    <li>• Video sẽ 100% B-roll với voiceover kể chuyện</li>
-                                    <li>• Nhập nội dung/topic chi tiết ở phần Nội dung bên dưới</li>
-                                    <li>• AI sẽ tự động tạo cấu trúc Hook → Bối cảnh → Kết quả → Lời khuyên</li>
-                                </ul>
-                            )}
-                        </div>
-                    </div>
-                )}
-
-                {/* Row 2: Character selection (if useCharacters) */}
-                {useCharacters && channel.characters.length > 0 && (
-                    <div className="mb-4 p-3 bg-[var(--bg-tertiary)] rounded-lg">
-                        <label className="block text-sm font-medium mb-2">Chọn nhân vật xuất hiện</label>
-                        <div className="flex flex-wrap gap-2">
-                            {channel.characters.map(char => (
-                                <button
-                                    key={char.id}
-                                    onClick={() => {
-                                        setSelectedCharacterIds(prev =>
-                                            prev.includes(char.id)
-                                                ? prev.filter(id => id !== char.id)
-                                                : [...prev, char.id]
-                                        )
-                                    }}
-                                    className={`px-3 py-1.5 rounded-full text-sm transition ${selectedCharacterIds.includes(char.id) || selectedCharacterIds.length === 0
+                                    onClick={() => setMentionChannel(!mentionChannel)}
+                                    className={`w-full px-3 py-2 rounded-lg text-sm font-medium transition ${mentionChannel
                                         ? 'bg-[var(--accent-primary)] text-white'
                                         : 'bg-[var(--bg-secondary)] text-[var(--text-secondary)]'
                                         }`}
                                 >
-                                    {char.isMain && '⭐ '}{char.name} ({char.role})
+                                    {mentionChannel ? '✓ Có nhắc kênh' : '✗ Không nhắc kênh'}
                                 </button>
-                            ))}
-                        </div>
-                        <p className="text-xs text-[var(--text-muted)] mt-2">
-                            {selectedCharacterIds.length === 0
-                                ? 'Sử dụng tất cả nhân vật'
-                                : `Đã chọn ${selectedCharacterIds.length} nhân vật`}
-                        </p>
+                                <p className="text-xs text-[var(--text-muted)] mt-1">
+                                    {mentionChannel ? `AI sẽ nhắc đến "${channel.name}" trong lời thoại` : 'Không nhắc tên kênh'}
+                                </p>
+                            </div>
 
-                        {/* AI Adapt Characters Option */}
-                        <div className="mt-3 pt-3 border-t border-[var(--border-color)]">
-                            <label className="flex items-center gap-3 cursor-pointer">
-                                <input
-                                    type="checkbox"
-                                    checked={adaptCharactersToScript}
-                                    onChange={(e) => setAdaptCharactersToScript(e.target.checked)}
-                                    className="w-4 h-4 rounded accent-[var(--accent-primary)]"
-                                />
-                                <div className="flex-1">
-                                    <span className="text-sm font-medium">🎭 AI tự điều chỉnh nhân vật theo kịch bản</span>
-                                    <p className="text-xs text-[var(--text-muted)]">
-                                        {adaptCharactersToScript
-                                            ? 'AI sẽ thay đổi trang phục, biểu cảm, vị trí... phù hợp với từng cảnh'
-                                            : 'Giữ nguyên mô tả nhân vật gốc trong mọi cảnh'}
-                                    </p>
-                                </div>
-                            </label>
-                        </div>
-                    </div>
-                )}
-
-                {/* Row 3: Channel Mention & CTA */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <div className="p-3 bg-[var(--bg-tertiary)] rounded-lg">
-                        <label className="block text-sm font-medium mb-2">Nhắc tên kênh trong script</label>
-                        <button
-                            onClick={() => setMentionChannel(!mentionChannel)}
-                            className={`w-full px-3 py-2 rounded-lg text-sm font-medium transition ${mentionChannel
-                                ? 'bg-[var(--accent-primary)] text-white'
-                                : 'bg-[var(--bg-secondary)] text-[var(--text-secondary)]'
-                                }`}
-                        >
-                            {mentionChannel ? '✓ Có nhắc kênh' : '✗ Không nhắc kênh'}
-                        </button>
-                        <p className="text-xs text-[var(--text-muted)] mt-1">
-                            {mentionChannel ? `AI sẽ nhắc đến "${channel.name}" trong lời thoại` : 'Không nhắc tên kênh'}
-                        </p>
-                    </div>
-
-                    <div className="p-3 bg-[var(--bg-tertiary)] rounded-lg">
-                        <label className="block text-sm font-medium mb-2">Call to Action (CTA)</label>
-                        <div className="flex gap-2 mb-2">
-                            <button
-                                onClick={() => setCtaMode('random')}
-                                className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition ${ctaMode === 'random'
-                                    ? 'bg-[var(--accent-primary)] text-white'
-                                    : 'bg-[var(--bg-secondary)] text-[var(--text-secondary)]'
-                                    }`}
-                            >
-                                🎲 Random
-                            </button>
-                            <button
-                                onClick={() => setCtaMode('select')}
-                                className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition ${ctaMode === 'select'
-                                    ? 'bg-[var(--accent-primary)] text-white'
-                                    : 'bg-[var(--bg-secondary)] text-[var(--text-secondary)]'
-                                    }`}
-                            >
-                                ✓ Chọn CTA
-                            </button>
-                        </div>
-                        {ctaMode === 'select' && (
-                            <div className="flex flex-wrap gap-1.5">
-                                {CTA_OPTIONS.map(cta => (
+                            <div className="p-3 bg-[var(--bg-tertiary)] rounded-lg">
+                                <label className="block text-sm font-medium mb-2">Call to Action (CTA)</label>
+                                <div className="flex gap-2 mb-2">
                                     <button
-                                        key={cta.id}
-                                        onClick={() => {
-                                            setSelectedCTAs(prev =>
-                                                prev.includes(cta.id)
-                                                    ? prev.filter(id => id !== cta.id)
-                                                    : [...prev, cta.id]
-                                            )
-                                        }}
-                                        className={`px-2 py-1 rounded text-xs transition ${selectedCTAs.includes(cta.id)
+                                        onClick={() => setCtaMode('random')}
+                                        className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition ${ctaMode === 'random'
                                             ? 'bg-[var(--accent-primary)] text-white'
-                                            : 'bg-[var(--bg-primary)] text-[var(--text-secondary)]'
+                                            : 'bg-[var(--bg-secondary)] text-[var(--text-secondary)]'
                                             }`}
                                     >
-                                        {cta.label}
+                                        🎲 Random
                                     </button>
-                                ))}
-                            </div>
-                        )}
-                    </div>
-                </div>
-
-                {/* Advanced Episode Features */}
-                <div className="mb-4 p-4 bg-gradient-to-r from-purple-900/20 to-indigo-900/20 rounded-lg border border-purple-500/30">
-                    <h4 className="text-sm font-semibold mb-3 flex items-center gap-2 text-purple-300">
-                        ⚡ Tính năng nâng cao
-                    </h4>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        {/* Visual Hook Layering */}
-                        <div className="flex items-center justify-between p-3 bg-[var(--bg-tertiary)] rounded-lg">
-                            <div>
-                                <p className="text-sm font-medium">🎬 Visual Hook (15 giây đầu)</p>
-                                <p className="text-xs text-[var(--text-muted)]">2 cảnh CGI/Macro ấn tượng mở đầu</p>
-                            </div>
-                            <button
-                                onClick={() => setVisualHookEnabled(!visualHookEnabled)}
-                                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition ${visualHookEnabled
-                                    ? 'bg-[var(--accent-primary)] text-white'
-                                    : 'bg-[var(--bg-secondary)] text-[var(--text-muted)]'
-                                    }`}
-                            >
-                                {visualHookEnabled ? 'ON' : 'OFF'}
-                            </button>
-                        </div>
-
-                        {/* Emotional Curve */}
-                        <div className="flex items-center justify-between p-3 bg-[var(--bg-tertiary)] rounded-lg">
-                            <div>
-                                <p className="text-sm font-medium">🎭 Emotional Curve</p>
-                                <p className="text-xs text-[var(--text-muted)]">Xen kẽ fast-cuts & slow-burn</p>
-                            </div>
-                            <button
-                                onClick={() => setEmotionalCurveEnabled(!emotionalCurveEnabled)}
-                                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition ${emotionalCurveEnabled
-                                    ? 'bg-[var(--accent-primary)] text-white'
-                                    : 'bg-[var(--bg-secondary)] text-[var(--text-muted)]'
-                                    }`}
-                            >
-                                {emotionalCurveEnabled ? 'ON' : 'OFF'}
-                            </button>
-                        </div>
-
-                        {/* Spatial Audio */}
-                        <div className="flex items-center justify-between p-3 bg-[var(--bg-tertiary)] rounded-lg">
-                            <div>
-                                <p className="text-sm font-medium">🔊 Spatial Audio 3D</p>
-                                <p className="text-xs text-[var(--text-muted)]">Âm thanh định hướng tự động</p>
-                            </div>
-                            <button
-                                onClick={() => setSpatialAudioEnabled(!spatialAudioEnabled)}
-                                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition ${spatialAudioEnabled
-                                    ? 'bg-[var(--accent-primary)] text-white'
-                                    : 'bg-[var(--bg-secondary)] text-[var(--text-muted)]'
-                                    }`}
-                            >
-                                {spatialAudioEnabled ? 'ON' : 'OFF'}
-                            </button>
-                        </div>
-
-                        {/* Music Mode */}
-                        <div className="p-3 bg-[var(--bg-tertiary)] rounded-lg">
-                            <p className="text-sm font-medium mb-2">🎵 Chế độ âm thanh</p>
-                            <div className="flex gap-2">
-                                <button
-                                    onClick={() => setMusicMode('with_music')}
-                                    className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition ${musicMode === 'with_music'
-                                        ? 'bg-[var(--accent-primary)] text-white'
-                                        : 'bg-[var(--bg-secondary)] text-[var(--text-muted)] hover:bg-[var(--bg-hover)]'
-                                        }`}
-                                >
-                                    🎶 Có nhạc nền
-                                </button>
-                                <button
-                                    onClick={() => setMusicMode('ambient_only')}
-                                    className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition ${musicMode === 'ambient_only'
-                                        ? 'bg-[var(--accent-primary)] text-white'
-                                        : 'bg-[var(--bg-secondary)] text-[var(--text-muted)] hover:bg-[var(--bg-hover)]'
-                                        }`}
-                                >
-                                    🔈 Chỉ âm thanh môi trường
-                                </button>
-                            </div>
-                            <p className="text-xs text-[var(--text-muted)] mt-2">
-                                {musicMode === 'with_music'
-                                    ? '✓ Có nhạc nền phù hợp với mood từng cảnh'
-                                    : '✓ Chỉ giữ âm thanh tự nhiên: tiếng bước chân, gió, mưa...'}
-                            </p>
-                        </div>
-
-                        {/* Dialogue Density */}
-                        <div className="p-3 bg-[var(--bg-tertiary)] rounded-lg">
-                            <p className="text-sm font-medium mb-2">💬 Mật độ lời thoại (từ/câu)</p>
-                            <div className="flex items-center gap-2">
-                                <input
-                                    type="number"
-                                    min="5"
-                                    max="30"
-                                    value={dialogueDensityMin}
-                                    onChange={(e) => setDialogueDensityMin(Math.max(5, parseInt(e.target.value) || 12))}
-                                    className="input-field w-16 text-center text-sm"
-                                />
-                                <span className="text-[var(--text-muted)]">–</span>
-                                <input
-                                    type="number"
-                                    min="10"
-                                    max="50"
-                                    value={dialogueDensityMax}
-                                    onChange={(e) => setDialogueDensityMax(Math.max(dialogueDensityMin + 1, parseInt(e.target.value) || 18))}
-                                    className="input-field w-16 text-center text-sm"
-                                />
-                                <span className="text-xs text-[var(--text-muted)]">từ</span>
+                                    <button
+                                        onClick={() => setCtaMode('select')}
+                                        className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition ${ctaMode === 'select'
+                                            ? 'bg-[var(--accent-primary)] text-white'
+                                            : 'bg-[var(--bg-secondary)] text-[var(--text-secondary)]'
+                                            }`}
+                                    >
+                                        ✓ Chọn CTA
+                                    </button>
+                                </div>
+                                {ctaMode === 'select' && (
+                                    <div className="flex flex-wrap gap-1.5">
+                                        {CTA_OPTIONS.map(cta => (
+                                            <button
+                                                key={cta.id}
+                                                onClick={() => {
+                                                    setSelectedCTAs(prev =>
+                                                        prev.includes(cta.id)
+                                                            ? prev.filter(id => id !== cta.id)
+                                                            : [...prev, cta.id]
+                                                    )
+                                                }}
+                                                className={`px-2 py-1 rounded text-xs transition ${selectedCTAs.includes(cta.id)
+                                                    ? 'bg-[var(--accent-primary)] text-white'
+                                                    : 'bg-[var(--bg-primary)] text-[var(--text-secondary)]'
+                                                    }`}
+                                            >
+                                                {cta.label}
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                         </div>
 
-                        {/* Voice Settings - Full Width */}
-                        <div className="p-3 bg-[var(--bg-tertiary)] rounded-lg md:col-span-2">
-                            <p className="text-sm font-medium mb-3">🎙️ Cài đặt giọng nói</p>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {/* Voice Gender */}
-                                <div>
-                                    <p className="text-xs text-[var(--text-muted)] mb-2">Giới tính giọng:</p>
+                        {/* Advanced Episode Features */}
+                        <div className="mb-4 p-4 bg-gradient-to-r from-purple-900/20 to-indigo-900/20 rounded-lg border border-purple-500/30">
+                            <h4 className="text-sm font-semibold mb-3 flex items-center gap-2 text-purple-300">
+                                ⚡ Tính năng nâng cao
+                            </h4>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                {/* Visual Hook Layering */}
+                                <div className="flex items-center justify-between p-3 bg-[var(--bg-tertiary)] rounded-lg">
+                                    <div>
+                                        <p className="text-sm font-medium">🎬 Visual Hook (15 giây đầu)</p>
+                                        <p className="text-xs text-[var(--text-muted)]">2 cảnh CGI/Macro ấn tượng mở đầu</p>
+                                    </div>
+                                    <button
+                                        onClick={() => setVisualHookEnabled(!visualHookEnabled)}
+                                        className={`px-3 py-1.5 rounded-lg text-sm font-medium transition ${visualHookEnabled
+                                            ? 'bg-[var(--accent-primary)] text-white'
+                                            : 'bg-[var(--bg-secondary)] text-[var(--text-muted)]'
+                                            }`}
+                                    >
+                                        {visualHookEnabled ? 'ON' : 'OFF'}
+                                    </button>
+                                </div>
+
+                                {/* Emotional Curve */}
+                                <div className="flex items-center justify-between p-3 bg-[var(--bg-tertiary)] rounded-lg">
+                                    <div>
+                                        <p className="text-sm font-medium">🎭 Emotional Curve</p>
+                                        <p className="text-xs text-[var(--text-muted)]">Xen kẽ fast-cuts & slow-burn</p>
+                                    </div>
+                                    <button
+                                        onClick={() => setEmotionalCurveEnabled(!emotionalCurveEnabled)}
+                                        className={`px-3 py-1.5 rounded-lg text-sm font-medium transition ${emotionalCurveEnabled
+                                            ? 'bg-[var(--accent-primary)] text-white'
+                                            : 'bg-[var(--bg-secondary)] text-[var(--text-muted)]'
+                                            }`}
+                                    >
+                                        {emotionalCurveEnabled ? 'ON' : 'OFF'}
+                                    </button>
+                                </div>
+
+                                {/* Spatial Audio */}
+                                <div className="flex items-center justify-between p-3 bg-[var(--bg-tertiary)] rounded-lg">
+                                    <div>
+                                        <p className="text-sm font-medium">🔊 Spatial Audio 3D</p>
+                                        <p className="text-xs text-[var(--text-muted)]">Âm thanh định hướng tự động</p>
+                                    </div>
+                                    <button
+                                        onClick={() => setSpatialAudioEnabled(!spatialAudioEnabled)}
+                                        className={`px-3 py-1.5 rounded-lg text-sm font-medium transition ${spatialAudioEnabled
+                                            ? 'bg-[var(--accent-primary)] text-white'
+                                            : 'bg-[var(--bg-secondary)] text-[var(--text-muted)]'
+                                            }`}
+                                    >
+                                        {spatialAudioEnabled ? 'ON' : 'OFF'}
+                                    </button>
+                                </div>
+
+                                {/* Music Mode */}
+                                <div className="p-3 bg-[var(--bg-tertiary)] rounded-lg">
+                                    <p className="text-sm font-medium mb-2">🎵 Chế độ âm thanh</p>
                                     <div className="flex gap-2">
                                         <button
-                                            onClick={() => setVoiceGender('auto')}
-                                            className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition ${voiceGender === 'auto'
+                                            onClick={() => setMusicMode('with_music')}
+                                            className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition ${musicMode === 'with_music'
                                                 ? 'bg-[var(--accent-primary)] text-white'
                                                 : 'bg-[var(--bg-secondary)] text-[var(--text-muted)] hover:bg-[var(--bg-hover)]'
                                                 }`}
                                         >
-                                            🤖 Tự động
+                                            🎶 Có nhạc nền
                                         </button>
                                         <button
-                                            onClick={() => setVoiceGender('male')}
-                                            className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition ${voiceGender === 'male'
-                                                ? 'bg-blue-500 text-white'
+                                            onClick={() => setMusicMode('ambient_only')}
+                                            className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition ${musicMode === 'ambient_only'
+                                                ? 'bg-[var(--accent-primary)] text-white'
                                                 : 'bg-[var(--bg-secondary)] text-[var(--text-muted)] hover:bg-[var(--bg-hover)]'
                                                 }`}
                                         >
-                                            👨 Nam
-                                        </button>
-                                        <button
-                                            onClick={() => setVoiceGender('female')}
-                                            className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition ${voiceGender === 'female'
-                                                ? 'bg-pink-500 text-white'
-                                                : 'bg-[var(--bg-secondary)] text-[var(--text-muted)] hover:bg-[var(--bg-hover)]'
-                                                }`}
-                                        >
-                                            👩 Nữ
+                                            🔈 Chỉ âm thanh môi trường
                                         </button>
                                     </div>
+                                    <p className="text-xs text-[var(--text-muted)] mt-2">
+                                        {musicMode === 'with_music'
+                                            ? '✓ Có nhạc nền phù hợp với mood từng cảnh'
+                                            : '✓ Chỉ giữ âm thanh tự nhiên: tiếng bước chân, gió, mưa...'}
+                                    </p>
                                 </div>
-                                {/* Voice Tone */}
-                                <div>
-                                    <p className="text-xs text-[var(--text-muted)] mb-2">Tone giọng nói:</p>
-                                    <select
-                                        value={voiceTone}
-                                        onChange={(e) => setVoiceTone(e.target.value as typeof voiceTone)}
-                                        className="input-field w-full text-sm"
-                                    >
-                                        <option value="auto">🤖 Tự động (AI chọn theo nội dung)</option>
-                                        <option value="warm">🌤️ Ấm áp - Thân thiện, gần gũi</option>
-                                        <option value="professional">💼 Chuyên nghiệp - Tin tức, giáo dục</option>
-                                        <option value="energetic">⚡ Năng động - Hào hứng, phấn khích</option>
-                                        <option value="calm">🧘 Điềm tĩnh - Thư giãn, mindfulness</option>
-                                        <option value="dramatic">🎭 Kịch tính - Story, suspense</option>
-                                    </select>
+
+                                {/* Dialogue Density */}
+                                <div className="p-3 bg-[var(--bg-tertiary)] rounded-lg">
+                                    <p className="text-sm font-medium mb-2">💬 Mật độ lời thoại (từ/câu)</p>
+                                    <div className="flex items-center gap-2">
+                                        <input
+                                            type="number"
+                                            min="5"
+                                            max="30"
+                                            value={dialogueDensityMin}
+                                            onChange={(e) => setDialogueDensityMin(Math.max(5, parseInt(e.target.value) || 12))}
+                                            className="input-field w-16 text-center text-sm"
+                                        />
+                                        <span className="text-[var(--text-muted)]">–</span>
+                                        <input
+                                            type="number"
+                                            min="10"
+                                            max="50"
+                                            value={dialogueDensityMax}
+                                            onChange={(e) => setDialogueDensityMax(Math.max(dialogueDensityMin + 1, parseInt(e.target.value) || 18))}
+                                            className="input-field w-16 text-center text-sm"
+                                        />
+                                        <span className="text-xs text-[var(--text-muted)]">từ</span>
+                                    </div>
+                                </div>
+
+                                {/* Voice Settings - Full Width */}
+                                <div className="p-3 bg-[var(--bg-tertiary)] rounded-lg md:col-span-2">
+                                    <p className="text-sm font-medium mb-3">🎙️ Cài đặt giọng nói</p>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        {/* Voice Gender */}
+                                        <div>
+                                            <p className="text-xs text-[var(--text-muted)] mb-2">Giới tính giọng:</p>
+                                            <div className="flex gap-2">
+                                                <button
+                                                    onClick={() => setVoiceGender('auto')}
+                                                    className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition ${voiceGender === 'auto'
+                                                        ? 'bg-[var(--accent-primary)] text-white'
+                                                        : 'bg-[var(--bg-secondary)] text-[var(--text-muted)] hover:bg-[var(--bg-hover)]'
+                                                        }`}
+                                                >
+                                                    🤖 Tự động
+                                                </button>
+                                                <button
+                                                    onClick={() => setVoiceGender('male')}
+                                                    className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition ${voiceGender === 'male'
+                                                        ? 'bg-blue-500 text-white'
+                                                        : 'bg-[var(--bg-secondary)] text-[var(--text-muted)] hover:bg-[var(--bg-hover)]'
+                                                        }`}
+                                                >
+                                                    👨 Nam
+                                                </button>
+                                                <button
+                                                    onClick={() => setVoiceGender('female')}
+                                                    className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition ${voiceGender === 'female'
+                                                        ? 'bg-pink-500 text-white'
+                                                        : 'bg-[var(--bg-secondary)] text-[var(--text-muted)] hover:bg-[var(--bg-hover)]'
+                                                        }`}
+                                                >
+                                                    👩 Nữ
+                                                </button>
+                                            </div>
+                                        </div>
+                                        {/* Voice Tone */}
+                                        <div>
+                                            <p className="text-xs text-[var(--text-muted)] mb-2">Tone giọng nói:</p>
+                                            <select
+                                                value={voiceTone}
+                                                onChange={(e) => setVoiceTone(e.target.value as typeof voiceTone)}
+                                                className="input-field w-full text-sm"
+                                            >
+                                                <option value="auto">🤖 Tự động (AI chọn theo nội dung)</option>
+                                                <option value="warm">🌤️ Ấm áp - Thân thiện, gần gũi</option>
+                                                <option value="professional">💼 Chuyên nghiệp - Tin tức, giáo dục</option>
+                                                <option value="energetic">⚡ Năng động - Hào hứng, phấn khích</option>
+                                                <option value="calm">🧘 Điềm tĩnh - Thư giãn, mindfulness</option>
+                                                <option value="dramatic">🎭 Kịch tính - Story, suspense</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <p className="text-xs text-[var(--text-muted)] mt-2">
+                                        {voiceGender === 'auto'
+                                            ? '✓ AI sẽ tự chọn giọng phù hợp với nội dung và phong cách kênh'
+                                            : `✓ Cố định giọng ${voiceGender === 'male' ? 'nam' : 'nữ'} xuyên suốt video`}
+                                    </p>
                                 </div>
                             </div>
-                            <p className="text-xs text-[var(--text-muted)] mt-2">
-                                {voiceGender === 'auto'
-                                    ? '✓ AI sẽ tự chọn giọng phù hợp với nội dung và phong cách kênh'
-                                    : `✓ Cố định giọng ${voiceGender === 'male' ? 'nam' : 'nữ'} xuyên suốt video`}
-                            </p>
                         </div>
-                    </div>
-                </div>
 
-                {/* Native Ad Insertion */}
-                <div className="mb-4 p-4 bg-gradient-to-r from-amber-900/20 to-orange-900/20 rounded-lg border border-amber-500/30">
-                    <div className="flex items-center justify-between mb-3">
-                        <h4 className="text-sm font-semibold flex items-center gap-2 text-amber-300">
-                            💰 Quảng cáo tự nhiên (Native Ads)
-                        </h4>
+                        {/* Native Ad Insertion */}
+                        <div className="mb-4 p-4 bg-gradient-to-r from-amber-900/20 to-orange-900/20 rounded-lg border border-amber-500/30">
+                            <div className="flex items-center justify-between mb-3">
+                                <h4 className="text-sm font-semibold flex items-center gap-2 text-amber-300">
+                                    💰 Quảng cáo tự nhiên (Native Ads)
+                                </h4>
+                                <button
+                                    onClick={() => setAdEnabled(!adEnabled)}
+                                    className={`px-3 py-1.5 rounded-lg text-sm font-medium transition ${adEnabled
+                                        ? 'bg-amber-500 text-white'
+                                        : 'bg-[var(--bg-secondary)] text-[var(--text-muted)]'
+                                        }`}
+                                >
+                                    {adEnabled ? 'ON' : 'OFF'}
+                                </button>
+                            </div>
+
+                            {adEnabled && (
+                                <div className="space-y-3">
+                                    {/* Product Info Text */}
+                                    <div>
+                                        <label className="block text-xs text-[var(--text-muted)] mb-1">
+                                            📝 Mô tả sản phẩm/dịch vụ
+                                        </label>
+                                        <textarea
+                                            placeholder="Nhập mô tả sản phẩm muốn quảng cáo trong video..."
+                                            value={adProductInfo}
+                                            onChange={(e) => setAdProductInfo(e.target.value)}
+                                            rows={3}
+                                            className="input-field w-full text-sm resize-none"
+                                        />
+                                    </div>
+
+                                    {/* Product Image URL + Analyze */}
+                                    <div>
+                                        <label className="block text-xs text-[var(--text-muted)] mb-1">
+                                            🖼️ URL hình ảnh sản phẩm (AI sẽ phân tích)
+                                        </label>
+                                        <div className="flex gap-2">
+                                            <input
+                                                type="url"
+                                                placeholder="https://example.com/product-image.jpg"
+                                                value={productImageUrl}
+                                                onChange={(e) => setProductImageUrl(e.target.value)}
+                                                className="input-field flex-1 text-sm"
+                                            />
+                                            <button
+                                                onClick={handleAnalyzeProduct}
+                                                disabled={isAnalyzingAdProduct || (!productImageUrl && !adProductInfo)}
+                                                className="btn-secondary px-3 flex items-center gap-1 text-sm"
+                                            >
+                                                {isAnalyzingAdProduct ? (
+                                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                                ) : (
+                                                    <>🔍 Phân tích</>
+                                                )}
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    {/* Product Link */}
+                                    <div>
+                                        <label className="block text-xs text-[var(--text-muted)] mb-1">
+                                            🔗 Link sản phẩm (URL mua hàng)
+                                        </label>
+                                        <input
+                                            type="url"
+                                            placeholder="https://shopee.vn/product-link"
+                                            value={productLink}
+                                            onChange={(e) => setProductLink(e.target.value)}
+                                            className="input-field w-full text-sm"
+                                        />
+                                    </div>
+
+                                    {/* Analyzed Result */}
+                                    {analyzedProduct && (
+                                        <div className="p-3 bg-[var(--bg-primary)] rounded-lg border border-amber-500/20">
+                                            <div className="flex items-start justify-between">
+                                                <div>
+                                                    <p className="font-medium text-amber-300 flex items-center gap-1">
+                                                        ✓ {analyzedProduct.name}
+                                                    </p>
+                                                    <p className="text-sm text-[var(--text-secondary)] mt-1">
+                                                        {analyzedProduct.description}
+                                                    </p>
+                                                    {analyzedProduct.features.length > 0 && (
+                                                        <div className="flex flex-wrap gap-1 mt-2">
+                                                            {analyzedProduct.features.slice(0, 3).map((f, i) => (
+                                                                <span key={i} className="text-xs bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded">
+                                                                    {f}
+                                                                </span>
+                                                            ))}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                <button
+                                                    onClick={() => setAnalyzedProduct(null)}
+                                                    className="text-xs text-[var(--text-muted)] hover:text-red-400"
+                                                >
+                                                    ✕
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Ad Styles Selection */}
+                                    <div>
+                                        <label className="block text-xs text-[var(--text-muted)] mb-2">
+                                            🎨 Chọn style quảng cáo (để trống = AI tự chọn đa dạng)
+                                        </label>
+                                        <div className="flex flex-wrap gap-1.5">
+                                            {AD_STYLES.map(style => (
+                                                <button
+                                                    key={style.id}
+                                                    onClick={() => {
+                                                        setSelectedAdStyles(prev =>
+                                                            prev.includes(style.id)
+                                                                ? prev.filter(s => s !== style.id)
+                                                                : [...prev, style.id]
+                                                        )
+                                                    }}
+                                                    className={`px-2 py-1 rounded text-xs transition ${selectedAdStyles.includes(style.id)
+                                                        ? 'bg-amber-500 text-white'
+                                                        : 'bg-[var(--bg-primary)] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]'
+                                                        }`}
+                                                    title={style.desc}
+                                                >
+                                                    {style.label}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    {/* Ad Scene Count */}
+                                    <div className="flex items-center gap-3">
+                                        <label className="text-xs text-[var(--text-muted)]">
+                                            📊 Số cảnh quảng cáo:
+                                        </label>
+                                        <div className="flex items-center gap-2">
+                                            <button
+                                                onClick={() => setAdSceneCount(Math.max(1, adSceneCount - 1))}
+                                                className="w-7 h-7 rounded bg-[var(--bg-primary)] hover:bg-[var(--bg-hover)] flex items-center justify-center"
+                                            >
+                                                -
+                                            </button>
+                                            <span className="w-8 text-center font-medium">{adSceneCount}</span>
+                                            <button
+                                                onClick={() => setAdSceneCount(Math.min(5, adSceneCount + 1))}
+                                                className="w-7 h-7 rounded bg-[var(--bg-primary)] hover:bg-[var(--bg-hover)] flex items-center justify-center"
+                                            >
+                                                +
+                                            </button>
+                                            <span className="text-xs text-[var(--text-muted)]">cảnh</span>
+                                        </div>
+                                    </div>
+
+                                    <p className="text-xs text-[var(--text-muted)]">
+                                        💡 {selectedAdStyles.length > 0
+                                            ? `Sẽ dùng ${selectedAdStyles.length} style đã chọn cho ${adSceneCount} cảnh quảng cáo`
+                                            : `AI sẽ tự chọn style đa dạng cho ${adSceneCount} cảnh quảng cáo`
+                                        }
+                                    </p>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Generate button */}
                         <button
-                            onClick={() => setAdEnabled(!adEnabled)}
-                            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition ${adEnabled
-                                ? 'bg-amber-500 text-white'
-                                : 'bg-[var(--bg-secondary)] text-[var(--text-muted)]'
-                                }`}
+                            onClick={handleGenerateEpisode}
+                            disabled={isGenerating}
+                            className="btn-primary flex items-center gap-2 w-full md:w-auto"
                         >
-                            {adEnabled ? 'ON' : 'OFF'}
+                            {isGenerating ? (
+                                <>
+                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                    AI đang tạo Episode...
+                                </>
+                            ) : (
+                                <>
+                                    <Sparkles className="w-4 h-4" />
+                                    Tạo Episode {selectedCategoryId
+                                        ? (channel.episodes.filter(e => e.categoryId === selectedCategoryId).length + 1)
+                                        : (channel.episodes.filter(e => !e.categoryId).length + 1)
+                                    }
+                                    {selectedCategoryId && categories.find(c => c.id === selectedCategoryId) && (
+                                        <span className="text-xs opacity-70">
+                                            ({categories.find(c => c.id === selectedCategoryId)?.name})
+                                        </span>
+                                    )}
+                                </>
+                            )}
                         </button>
                     </div>
-
-                    {adEnabled && (
-                        <div className="space-y-3">
-                            {/* Product Info Text */}
-                            <div>
-                                <label className="block text-xs text-[var(--text-muted)] mb-1">
-                                    📝 Mô tả sản phẩm/dịch vụ
-                                </label>
-                                <textarea
-                                    placeholder="Nhập mô tả sản phẩm muốn quảng cáo trong video..."
-                                    value={adProductInfo}
-                                    onChange={(e) => setAdProductInfo(e.target.value)}
-                                    rows={3}
-                                    className="input-field w-full text-sm resize-none"
-                                />
-                            </div>
-
-                            {/* Product Image URL + Analyze */}
-                            <div>
-                                <label className="block text-xs text-[var(--text-muted)] mb-1">
-                                    🖼️ URL hình ảnh sản phẩm (AI sẽ phân tích)
-                                </label>
-                                <div className="flex gap-2">
-                                    <input
-                                        type="url"
-                                        placeholder="https://example.com/product-image.jpg"
-                                        value={productImageUrl}
-                                        onChange={(e) => setProductImageUrl(e.target.value)}
-                                        className="input-field flex-1 text-sm"
-                                    />
-                                    <button
-                                        onClick={handleAnalyzeProduct}
-                                        disabled={isAnalyzingAdProduct || (!productImageUrl && !adProductInfo)}
-                                        className="btn-secondary px-3 flex items-center gap-1 text-sm"
-                                    >
-                                        {isAnalyzingAdProduct ? (
-                                            <Loader2 className="w-4 h-4 animate-spin" />
-                                        ) : (
-                                            <>🔍 Phân tích</>
-                                        )}
-                                    </button>
-                                </div>
-                            </div>
-
-                            {/* Product Link */}
-                            <div>
-                                <label className="block text-xs text-[var(--text-muted)] mb-1">
-                                    🔗 Link sản phẩm (URL mua hàng)
-                                </label>
-                                <input
-                                    type="url"
-                                    placeholder="https://shopee.vn/product-link"
-                                    value={productLink}
-                                    onChange={(e) => setProductLink(e.target.value)}
-                                    className="input-field w-full text-sm"
-                                />
-                            </div>
-
-                            {/* Analyzed Result */}
-                            {analyzedProduct && (
-                                <div className="p-3 bg-[var(--bg-primary)] rounded-lg border border-amber-500/20">
-                                    <div className="flex items-start justify-between">
-                                        <div>
-                                            <p className="font-medium text-amber-300 flex items-center gap-1">
-                                                ✓ {analyzedProduct.name}
-                                            </p>
-                                            <p className="text-sm text-[var(--text-secondary)] mt-1">
-                                                {analyzedProduct.description}
-                                            </p>
-                                            {analyzedProduct.features.length > 0 && (
-                                                <div className="flex flex-wrap gap-1 mt-2">
-                                                    {analyzedProduct.features.slice(0, 3).map((f, i) => (
-                                                        <span key={i} className="text-xs bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded">
-                                                            {f}
-                                                        </span>
-                                                    ))}
-                                                </div>
-                                            )}
-                                        </div>
-                                        <button
-                                            onClick={() => setAnalyzedProduct(null)}
-                                            className="text-xs text-[var(--text-muted)] hover:text-red-400"
-                                        >
-                                            ✕
-                                        </button>
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* Ad Styles Selection */}
-                            <div>
-                                <label className="block text-xs text-[var(--text-muted)] mb-2">
-                                    🎨 Chọn style quảng cáo (để trống = AI tự chọn đa dạng)
-                                </label>
-                                <div className="flex flex-wrap gap-1.5">
-                                    {AD_STYLES.map(style => (
-                                        <button
-                                            key={style.id}
-                                            onClick={() => {
-                                                setSelectedAdStyles(prev =>
-                                                    prev.includes(style.id)
-                                                        ? prev.filter(s => s !== style.id)
-                                                        : [...prev, style.id]
-                                                )
-                                            }}
-                                            className={`px-2 py-1 rounded text-xs transition ${selectedAdStyles.includes(style.id)
-                                                ? 'bg-amber-500 text-white'
-                                                : 'bg-[var(--bg-primary)] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]'
-                                                }`}
-                                            title={style.desc}
-                                        >
-                                            {style.label}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* Ad Scene Count */}
-                            <div className="flex items-center gap-3">
-                                <label className="text-xs text-[var(--text-muted)]">
-                                    📊 Số cảnh quảng cáo:
-                                </label>
-                                <div className="flex items-center gap-2">
-                                    <button
-                                        onClick={() => setAdSceneCount(Math.max(1, adSceneCount - 1))}
-                                        className="w-7 h-7 rounded bg-[var(--bg-primary)] hover:bg-[var(--bg-hover)] flex items-center justify-center"
-                                    >
-                                        -
-                                    </button>
-                                    <span className="w-8 text-center font-medium">{adSceneCount}</span>
-                                    <button
-                                        onClick={() => setAdSceneCount(Math.min(5, adSceneCount + 1))}
-                                        className="w-7 h-7 rounded bg-[var(--bg-primary)] hover:bg-[var(--bg-hover)] flex items-center justify-center"
-                                    >
-                                        +
-                                    </button>
-                                    <span className="text-xs text-[var(--text-muted)]">cảnh</span>
-                                </div>
-                            </div>
-
-                            <p className="text-xs text-[var(--text-muted)]">
-                                💡 {selectedAdStyles.length > 0
-                                    ? `Sẽ dùng ${selectedAdStyles.length} style đã chọn cho ${adSceneCount} cảnh quảng cáo`
-                                    : `AI sẽ tự chọn style đa dạng cho ${adSceneCount} cảnh quảng cáo`
-                                }
-                            </p>
-                        </div>
-                    )}
-                </div>
-
-                {/* Generate button */}
-                <button
-                    onClick={handleGenerateEpisode}
-                    disabled={isGenerating}
-                    className="btn-primary flex items-center gap-2 w-full md:w-auto"
-                >
-                    {isGenerating ? (
-                        <>
-                            <Loader2 className="w-4 h-4 animate-spin" />
-                            AI đang tạo Episode...
-                        </>
-                    ) : (
-                        <>
-                            <Sparkles className="w-4 h-4" />
-                            Tạo Episode {selectedCategoryId
-                                ? (channel.episodes.filter(e => e.categoryId === selectedCategoryId).length + 1)
-                                : (channel.episodes.filter(e => !e.categoryId).length + 1)
-                            }
-                            {selectedCategoryId && categories.find(c => c.id === selectedCategoryId) && (
-                                <span className="text-xs opacity-70">
-                                    ({categories.find(c => c.id === selectedCategoryId)?.name})
-                                </span>
-                            )}
-                        </>
-                    )}
-                </button>
-            </div>
+                </>
+            )}
 
             {/* Episodes List */}
             <div className="space-y-4">
@@ -4054,7 +4079,7 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                             className="glass-card overflow-hidden"
                         >
                             {/* Episode Header */}
-                            <div className="w-full flex items-center p-4 hover:bg-[var(--bg-hover)] transition-colors text-left gap-3">
+                            <div className="w-full flex items-center p-4 hover:bg-[var(--bg-hover)] transition-colors text-left gap-3 min-w-0">
                                 {/* Checkbox for bulk selection */}
                                 <input
                                     type="checkbox"
@@ -4099,9 +4124,9 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
 
                                 {/* Episode Content */}
                                 {expandedEpisode === episode.id && (
-                                    <div className="border-t border-[var(--border-subtle)]">
+                                    <div className="border-t border-[var(--border-subtle)] overflow-x-hidden">
                                         {episode.synopsis && (
-                                            <div className="px-4 py-3 bg-[var(--bg-tertiary)]">
+                                            <div className="px-4 py-3 bg-[var(--bg-tertiary)] break-words">
                                                 <p className="text-sm text-[var(--text-secondary)]">
                                                     {episode.synopsis}
                                                 </p>
