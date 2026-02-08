@@ -906,6 +906,138 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
         return warnings
     }
 
+    // Episode Analytics function
+    type EpisodeAnalytics = {
+        totalScenes: number
+        estimatedDuration: number
+        avgSceneDuration: number
+        structureBreakdown: {
+            intro: { count: number; percent: number }
+            content: { count: number; percent: number }
+            cta: { count: number; percent: number }
+        }
+        longestScene: EpisodeScene | null
+        shortestScene: EpisodeScene | null
+    }
+
+    const analyzeEpisode = (scenes: EpisodeScene[]): EpisodeAnalytics => {
+        if (scenes.length === 0) {
+            return {
+                totalScenes: 0,
+                estimatedDuration: 0,
+                avgSceneDuration: 0,
+                structureBreakdown: {
+                    intro: { count: 0, percent: 0 },
+                    content: { count: 0, percent: 0 },
+                    cta: { count: 0, percent: 0 }
+                },
+                longestScene: null,
+                shortestScene: null
+            }
+        }
+
+        const totalScenes = scenes.length
+        const estimatedDuration = scenes.reduce((sum, s) => sum + (s.duration || 8), 0)
+        const avgSceneDuration = estimatedDuration / totalScenes
+
+        // Structure breakdown: Intro (first 1-2), Content (middle), CTA (last 1-2)
+        const introCount = Math.min(2, Math.ceil(totalScenes * 0.15))
+        const ctaCount = Math.min(2, Math.ceil(totalScenes * 0.15))
+        const contentCount = totalScenes - introCount - ctaCount
+
+        const sortedByDuration = [...scenes].sort((a, b) => (b.duration || 8) - (a.duration || 8))
+
+        return {
+            totalScenes,
+            estimatedDuration,
+            avgSceneDuration: Math.round(avgSceneDuration * 10) / 10,
+            structureBreakdown: {
+                intro: { count: introCount, percent: Math.round((introCount / totalScenes) * 100) },
+                content: { count: contentCount, percent: Math.round((contentCount / totalScenes) * 100) },
+                cta: { count: ctaCount, percent: Math.round((ctaCount / totalScenes) * 100) }
+            },
+            longestScene: sortedByDuration[0] || null,
+            shortestScene: sortedByDuration[sortedByDuration.length - 1] || null
+        }
+    }
+
+    // Character Consistency Checker
+    type CharacterWarning = {
+        sceneId: string
+        sceneOrder: number
+        type: 'missing_host' | 'outfit_change' | 'appearance_mismatch'
+        message: string
+    }
+
+    const checkCharacterConsistency = (scenes: EpisodeScene[], characters: ChannelCharacter[]): CharacterWarning[] => {
+        const warnings: CharacterWarning[] = []
+
+        // Find main host character
+        const hostChar = characters.find(c => c.role === 'host' && c.isMain)
+        if (!hostChar) return warnings
+
+        const hostNameLower = hostChar.name.toLowerCase()
+        const hostClothing = hostChar.clothing?.toLowerCase() || ''
+        const hostAppearance = hostChar.appearance?.toLowerCase() || ''
+
+        for (const scene of scenes) {
+            const promptLower = scene.promptText?.toLowerCase() || ''
+
+            // Check if scene should have host but doesn't mention them
+            const mentionsHost = promptLower.includes(hostNameLower) ||
+                promptLower.includes('host') ||
+                promptLower.includes('người dẫn')
+
+            if (!mentionsHost && scene.order > 1 && scene.order < scenes.length) {
+                // Middle scenes should typically have host
+                // Skip this check - not all scenes need host
+            }
+
+            if (mentionsHost) {
+                // Check clothing consistency
+                if (hostClothing && hostClothing.length > 3) {
+                    const clothingKeywords = hostClothing.split(/[,\s]+/).filter(k => k.length > 3)
+                    const hasClothingMention = clothingKeywords.some(k => promptLower.includes(k))
+
+                    if (!hasClothingMention && promptLower.includes('wearing')) {
+                        warnings.push({
+                            sceneId: scene.id,
+                            sceneOrder: scene.order,
+                            type: 'outfit_change',
+                            message: `Scene ${scene.order}: Host outfit có thể khác với mô tả chuẩn`
+                        })
+                    }
+                }
+
+                // Check appearance consistency
+                if (hostAppearance && hostAppearance.length > 3) {
+                    const appearanceKeywords = hostAppearance.split(/[,\s]+/).filter(k => k.length > 3)
+                    const hasAppearanceMention = appearanceKeywords.some(k => promptLower.includes(k))
+
+                    if (!hasAppearanceMention) {
+                        // Soft warning - appearance should be consistent
+                        // Only warn if prompt has different appearance description
+                        const hasOtherAppearance = promptLower.includes('hair') ||
+                            promptLower.includes('face') ||
+                            promptLower.includes('tóc') ||
+                            promptLower.includes('mặt')
+
+                        if (hasOtherAppearance) {
+                            warnings.push({
+                                sceneId: scene.id,
+                                sceneOrder: scene.order,
+                                type: 'appearance_mismatch',
+                                message: `Scene ${scene.order}: Ngoại hình Host có thể không khớp với profile`
+                            })
+                        }
+                    }
+                }
+            }
+        }
+
+        return warnings
+    }
+
     // Custom content input
     const [customContent, setCustomContent] = useState('')
     const [contentUrl, setContentUrl] = useState('')
@@ -4138,6 +4270,61 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                                                 Xóa
                                             </button>
                                         </div>
+
+                                        {/* Episode Analytics Panel */}
+                                        {(() => {
+                                            const analytics = analyzeEpisode(episode.scenes)
+                                            return (
+                                                <div className="px-4 py-3 bg-gradient-to-r from-blue-500/10 to-purple-500/10 border-b border-[var(--border-subtle)]">
+                                                    <div className="flex items-center gap-2 mb-2">
+                                                        <span className="text-sm font-medium">📊 Episode Analytics</span>
+                                                    </div>
+                                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+                                                        <div className="bg-[var(--bg-tertiary)] rounded-lg p-2 text-center">
+                                                            <div className="text-lg font-bold text-[var(--accent-primary)]">{analytics.totalScenes}</div>
+                                                            <div className="text-xs text-[var(--text-muted)]">Scenes</div>
+                                                        </div>
+                                                        <div className="bg-[var(--bg-tertiary)] rounded-lg p-2 text-center">
+                                                            <div className="text-lg font-bold text-green-400">
+                                                                {Math.floor(analytics.estimatedDuration / 60)}:{String(analytics.estimatedDuration % 60).padStart(2, '0')}
+                                                            </div>
+                                                            <div className="text-xs text-[var(--text-muted)]">Est. Duration</div>
+                                                        </div>
+                                                        <div className="bg-[var(--bg-tertiary)] rounded-lg p-2 text-center">
+                                                            <div className="text-lg font-bold text-amber-400">{analytics.avgSceneDuration}s</div>
+                                                            <div className="text-xs text-[var(--text-muted)]">Avg/Scene</div>
+                                                        </div>
+                                                        <div className="bg-[var(--bg-tertiary)] rounded-lg p-2">
+                                                            <div className="text-xs text-[var(--text-muted)] mb-1">Structure</div>
+                                                            <div className="flex gap-1 text-xs">
+                                                                <span className="px-1.5 py-0.5 bg-blue-500/30 rounded text-blue-300">Intro {analytics.structureBreakdown.intro.percent}%</span>
+                                                                <span className="px-1.5 py-0.5 bg-purple-500/30 rounded text-purple-300">Content {analytics.structureBreakdown.content.percent}%</span>
+                                                                <span className="px-1.5 py-0.5 bg-pink-500/30 rounded text-pink-300">CTA {analytics.structureBreakdown.cta.percent}%</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )
+                                        })()}
+
+                                        {/* Character Consistency Warnings */}
+                                        {channel?.characters && channel.characters.length > 0 && (() => {
+                                            const charWarnings = checkCharacterConsistency(episode.scenes, channel.characters)
+                                            return charWarnings.length > 0 && (
+                                                <div className="px-4 py-2 bg-orange-500/10 border-b border-orange-500/30">
+                                                    <div className="flex items-center gap-2 text-orange-400 text-xs">
+                                                        <span className="text-base">🎭</span>
+                                                        <span className="font-medium">{charWarnings.length} cảnh báo Character</span>
+                                                    </div>
+                                                    <ul className="mt-1 text-xs text-orange-300/80">
+                                                        {charWarnings.slice(0, 3).map((w, i) => (
+                                                            <li key={i}>• {w.message}</li>
+                                                        ))}
+                                                        {charWarnings.length > 3 && <li>• ...và {charWarnings.length - 3} cảnh báo khác</li>}
+                                                    </ul>
+                                                </div>
+                                            )
+                                        })()}
 
                                         {/* Scenes with Quality Warnings */}
                                         {(() => {
