@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { authenticateApiRequest } from '@/lib/api-auth'
 import { prisma } from '@/lib/prisma'
+import { checkApiLimit, checkChannelLimit, incrementApiUsage } from '@/lib/subscription-guard'
 
 // GET: List all channels for authenticated user
 export async function GET(request: Request) {
@@ -8,6 +9,15 @@ export async function GET(request: Request) {
         const auth = await authenticateApiRequest(request)
         if (!auth) {
             return NextResponse.json({ error: 'Unauthorized. Provide x-api-key header or valid session.' }, { status: 401 })
+        }
+
+        // Check API limit for external API calls only
+        if (auth.method === 'api-key') {
+            const apiCheck = await checkApiLimit(auth.userId)
+            if (!apiCheck.allowed) {
+                return NextResponse.json({ error: apiCheck.error, code: 'LIMIT_EXCEEDED' }, { status: 403 })
+            }
+            await incrementApiUsage(auth.userId)
         }
 
         const channels = await prisma.channel.findMany({
@@ -44,6 +54,21 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
         }
 
+        // Check channel limit
+        const channelCheck = await checkChannelLimit(auth.userId)
+        if (!channelCheck.allowed) {
+            return NextResponse.json({ error: channelCheck.error, code: 'LIMIT_EXCEEDED' }, { status: 403 })
+        }
+
+        // Check API limit for external API calls only
+        if (auth.method === 'api-key') {
+            const apiCheck = await checkApiLimit(auth.userId)
+            if (!apiCheck.allowed) {
+                return NextResponse.json({ error: apiCheck.error, code: 'LIMIT_EXCEEDED' }, { status: 403 })
+            }
+            await incrementApiUsage(auth.userId)
+        }
+
         const body = await request.json()
         const { name, niche, description, dialogueLanguage } = body
 
@@ -78,3 +103,4 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: 'Failed to create channel' }, { status: 500 })
     }
 }
+

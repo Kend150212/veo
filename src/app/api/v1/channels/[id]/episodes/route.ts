@@ -4,6 +4,7 @@ import { getAIConfigFromSettings } from '@/lib/ai-config'
 import { generateText } from '@/lib/ai-story'
 import { prisma } from '@/lib/prisma'
 import { getStyleById } from '@/lib/channel-styles'
+import { checkApiLimit, checkEpisodeLimit, incrementApiUsage, incrementEpisodeUsage } from '@/lib/subscription-guard'
 
 interface SceneData {
     order: number
@@ -45,6 +46,15 @@ export async function GET(
                 error: 'Unauthorized',
                 message: 'Provide x-api-key header with valid API key'
             }, { status: 401 })
+        }
+
+        // Check API limit for external API calls only
+        if (auth.method === 'api-key') {
+            const apiCheck = await checkApiLimit(auth.userId)
+            if (!apiCheck.allowed) {
+                return NextResponse.json({ error: apiCheck.error, code: 'LIMIT_EXCEEDED' }, { status: 403 })
+            }
+            await incrementApiUsage(auth.userId)
         }
 
         const { id: channelId } = await params
@@ -98,6 +108,21 @@ export async function POST(
                 error: 'Unauthorized',
                 message: 'Provide x-api-key header with valid API key'
             }, { status: 401 })
+        }
+
+        // Check episode limit
+        const episodeCheck = await checkEpisodeLimit(auth.userId)
+        if (!episodeCheck.allowed) {
+            return NextResponse.json({ error: episodeCheck.error, code: 'LIMIT_EXCEEDED' }, { status: 403 })
+        }
+
+        // Check API limit for external API calls only
+        if (auth.method === 'api-key') {
+            const apiCheck = await checkApiLimit(auth.userId)
+            if (!apiCheck.allowed) {
+                return NextResponse.json({ error: apiCheck.error, code: 'LIMIT_EXCEEDED' }, { status: 403 })
+            }
+            await incrementApiUsage(auth.userId)
         }
 
         const { id: channelId } = await params

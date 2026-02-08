@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { motion } from 'framer-motion'
 import toast from 'react-hot-toast'
 import {
@@ -15,7 +16,10 @@ import {
     Check,
     X,
     Calendar,
-    Key
+    Key,
+    CreditCard,
+    Package,
+    ArrowRight
 } from 'lucide-react'
 
 interface UserData {
@@ -149,8 +153,43 @@ export default function AdminPage() {
                 <div className="glass-card p-4 text-center">
                     <Key className="w-6 h-6 mx-auto mb-2 text-green-400" />
                     <p className="text-2xl font-bold">{users.filter(u => u.hasApiKey).length}</p>
-                    <p className="text-xs text-[var(--text-muted)]">Có API Key</p>
+                    <p className="text-xs text-[var(--text-muted)]">API Keys</p>
                 </div>
+            </div>
+
+            {/* Admin Quick Links */}
+            <div className="grid grid-cols-2 gap-4 mb-6">
+                <Link
+                    href="/dashboard/admin/plans"
+                    className="glass-card p-4 flex items-center justify-between hover:border-purple-500/50 transition-all group"
+                >
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                            <Package className="w-5 h-5 text-white" />
+                        </div>
+                        <div>
+                            <p className="font-medium">Subscription Plans</p>
+                            <p className="text-sm text-[var(--text-muted)]">Configure pricing & features</p>
+                        </div>
+                    </div>
+                    <ArrowRight className="w-5 h-5 text-[var(--text-muted)] group-hover:text-purple-500 transition-colors" />
+                </Link>
+
+                <Link
+                    href="/dashboard/admin/payments"
+                    className="glass-card p-4 flex items-center justify-between hover:border-cyan-500/50 transition-all group"
+                >
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center">
+                            <CreditCard className="w-5 h-5 text-white" />
+                        </div>
+                        <div>
+                            <p className="font-medium">Payment Gateways</p>
+                            <p className="text-sm text-[var(--text-muted)]">Stripe & PayPal setup</p>
+                        </div>
+                    </div>
+                    <ArrowRight className="w-5 h-5 text-[var(--text-muted)] group-hover:text-cyan-500 transition-colors" />
+                </Link>
             </div>
 
             {/* Search */}

@@ -13,13 +13,15 @@ import {
     Menu,
     X,
     Tv,
-    Shield
+    Shield,
+    CreditCard
 } from 'lucide-react'
 import { useState } from 'react'
 
 const navItems = [
     { href: '/dashboard', label: 'Dashboard', labelVi: 'Tổng quan', icon: LayoutDashboard },
     { href: '/dashboard/channels', label: 'Channels', labelVi: 'Kênh YouTube', icon: Tv },
+    { href: '/dashboard/billing', label: 'Billing', labelVi: 'Thanh toán', icon: CreditCard },
     { href: '/dashboard/admin', label: 'Admin', labelVi: 'Quản lý Users', icon: Shield, adminOnly: true },
     { href: '/dashboard/settings', label: 'Settings', labelVi: 'Cài đặt', icon: Settings },
 ]

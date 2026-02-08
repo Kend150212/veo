@@ -23,6 +23,7 @@ model User {
   projects      Project[]
   channels      Channel[]
   settings      UserSettings?
+  subscription  Subscription?
 }
 
 model UserSettings {
@@ -342,4 +343,94 @@ model Product {
   
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
+}
+
+// =====================================================
+// SUBSCRIPTION & BILLING SYSTEM
+// =====================================================
+
+// Subscription Plans (Admin-configurable)
+model Plan {
+  id              String   @id @default(cuid())
+  name            String   // "Free", "Starter", "Pro", "Enterprise"
+  slug            String   @unique // "free", "starter", "pro", "enterprise"
+  description     String?
+  
+  // Pricing
+  priceMonthly    Float    @default(0)
+  priceYearly     Float    @default(0)
+  yearlyDiscount  Int      @default(0) // Percentage discount for annual
+  
+  // Limits
+  maxChannels     Int      @default(1)
+  maxEpisodesPerMonth Int  @default(5)
+  maxApiCalls     Int      @default(0) // 0 = no API access
+  
+  // Feature Flags (JSON string)
+  features        String   @default("{}") 
+  
+  // Display
+  isPopular       Boolean  @default(false)
+  sortOrder       Int      @default(0)
+  isActive        Boolean  @default(true)
+  
+  // External IDs (Stripe/PayPal)
+  stripePriceMonthly  String?
+  stripePriceYearly   String?
+  paypalPlanMonthly   String?
+  paypalPlanYearly    String?
+  
+  subscriptions   Subscription[]
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+// Payment Gateway Configuration
+model PaymentGateway {
+  id          String   @id @default(cuid())
+  name        String   @unique // "stripe", "paypal"
+  displayName String   // "Stripe", "PayPal"
+  isEnabled   Boolean  @default(false)
+  
+  // Encrypted credentials (JSON)
+  credentials String   @default("{}")
+  
+  // Settings
+  testMode    Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// User Subscription
+model Subscription {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  planId          String
+  plan            Plan     @relation(fields: [planId], references: [id])
+  
+  status          String   @default("active") // active, trialing, canceled, past_due, expired
+  billingCycle    String   @default("monthly") // monthly, yearly
+  
+  // Payment info
+  gateway         String?  // "stripe", "paypal"
+  externalId      String?  // Stripe/PayPal subscription ID
+  customerId      String?  // Stripe/PayPal customer ID
+  
+  // Dates
+  trialEndsAt     DateTime?
+  currentPeriodStart DateTime?
+  currentPeriodEnd   DateTime?
+  canceledAt      DateTime?
+  
+  // Usage tracking (reset monthly)
+  apiCallsUsed    Int      @default(0)
+  episodesCreated Int      @default(0)
+  usageResetAt    DateTime @default(now())
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }
