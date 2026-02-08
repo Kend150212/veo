@@ -14,7 +14,9 @@ import {
     X,
     Tv,
     Shield,
-    CreditCard
+    CreditCard,
+    Package,
+    Wallet
 } from 'lucide-react'
 import { useState } from 'react'
 
@@ -23,6 +25,8 @@ const navItems = [
     { href: '/dashboard/channels', label: 'Channels', labelVi: 'Kênh YouTube', icon: Tv },
     { href: '/dashboard/billing', label: 'Billing', labelVi: 'Thanh toán', icon: CreditCard },
     { href: '/dashboard/admin', label: 'Admin', labelVi: 'Quản lý Users', icon: Shield, adminOnly: true },
+    { href: '/dashboard/admin/plans', label: 'Plans', labelVi: 'Gói đăng ký', icon: Package, adminOnly: true },
+    { href: '/dashboard/admin/payments', label: 'Payments', labelVi: 'Cổng thanh toán', icon: Wallet, adminOnly: true },
     { href: '/dashboard/settings', label: 'Settings', labelVi: 'Cài đặt', icon: Settings },
 ]
 
