@@ -33,12 +33,36 @@ export default function DashboardLayout({
     const router = useRouter()
     const pathname = usePathname()
     const [sidebarOpen, setSidebarOpen] = useState(false)
+    const [isAdmin, setIsAdmin] = useState(false)
 
     useEffect(() => {
         if (status === 'unauthenticated') {
             router.push('/login')
         }
     }, [status, router])
+
+    // Fetch user role to show/hide admin menu
+    useEffect(() => {
+        async function checkAdminRole() {
+            try {
+                const res = await fetch('/api/user/profile')
+                if (res.ok) {
+                    const data = await res.json()
+                    setIsAdmin(data.user?.isAdmin || false)
+                }
+            } catch (e) {
+                console.error('Failed to check admin role:', e)
+            }
+        }
+        if (status === 'authenticated') {
+            checkAdminRole()
+        }
+    }, [status])
+
+    // Filter nav items based on admin status
+    const visibleNavItems = navItems.filter(item =>
+        !item.adminOnly || (item.adminOnly && isAdmin)
+    )
 
     if (status === 'loading') {
         return (
@@ -104,7 +128,7 @@ export default function DashboardLayout({
 
                     {/* Nav items */}
                     <nav className="flex-1 p-4 space-y-1">
-                        {navItems.map((item) => {
+                        {visibleNavItems.map((item) => {
                             const isActive = pathname === item.href
                             return (
                                 <Link
