@@ -1,6 +1,105 @@
 import { NextResponse } from 'next/server'
 import { authenticateApiRequest, isAdmin } from '@/lib/api-auth'
 import { prisma } from '@/lib/prisma'
+import Stripe from 'stripe'
+
+// Helper to get Stripe instance
+async function getStripe(): Promise<Stripe | null> {
+    try {
+        const gateway = await prisma.paymentGateway.findUnique({
+            where: { name: 'stripe' }
+        })
+        if (!gateway?.isEnabled) return null
+
+        const creds = JSON.parse(gateway.credentials || '{}')
+        if (!creds.secretKey) return null
+
+        return new Stripe(creds.secretKey)
+    } catch {
+        return null
+    }
+}
+
+// Auto-sync plan with Stripe
+async function syncPlanWithStripe(plan: {
+    id: string
+    name: string
+    slug: string
+    description: string | null
+    priceMonthly: number
+    priceYearly: number
+    stripeProductId: string | null
+    stripePriceMonthly: string | null
+    stripePriceYearly: string | null
+}): Promise<{
+    stripeProductId?: string
+    stripePriceMonthly?: string
+    stripePriceYearly?: string
+} | null> {
+    // Skip free plans
+    if (plan.priceMonthly === 0 && plan.priceYearly === 0) return null
+
+    const stripe = await getStripe()
+    if (!stripe) return null
+
+    try {
+        let productId = plan.stripeProductId
+
+        // Create or update product
+        if (!productId) {
+            const product = await stripe.products.create({
+                name: `Veo Prompt - ${plan.name}`,
+                description: plan.description || `${plan.name} subscription plan`,
+                metadata: {
+                    planId: plan.id,
+                    planSlug: plan.slug
+                }
+            })
+            productId = product.id
+        } else {
+            // Update existing product
+            await stripe.products.update(productId, {
+                name: `Veo Prompt - ${plan.name}`,
+                description: plan.description || `${plan.name} subscription plan`
+            })
+        }
+
+        // Create monthly price if needed
+        let monthlyPriceId = plan.stripePriceMonthly
+        if (!monthlyPriceId && plan.priceMonthly > 0) {
+            const price = await stripe.prices.create({
+                product: productId,
+                unit_amount: Math.round(plan.priceMonthly * 100),
+                currency: 'usd',
+                recurring: { interval: 'month' },
+                metadata: { planId: plan.id, billingCycle: 'monthly' }
+            })
+            monthlyPriceId = price.id
+        }
+
+        // Create yearly price if needed
+        let yearlyPriceId = plan.stripePriceYearly
+        if (!yearlyPriceId && plan.priceYearly > 0) {
+            const price = await stripe.prices.create({
+                product: productId,
+                unit_amount: Math.round(plan.priceYearly * 100),
+                currency: 'usd',
+                recurring: { interval: 'year' },
+                metadata: { planId: plan.id, billingCycle: 'yearly' }
+            })
+            yearlyPriceId = price.id
+        }
+
+        return {
+            stripeProductId: productId,
+            stripePriceMonthly: monthlyPriceId || undefined,
+            stripePriceYearly: yearlyPriceId || undefined
+        }
+    } catch (err) {
+        console.error('Stripe sync error:', err)
+        return null
+    }
+}
 
 /**
  * GET: List all plans (admin only for full details)
@@ -34,6 +133,7 @@ export async function GET(request: Request) {
 
 /**
  * POST: Create new plan (admin only)
+ * Auto-creates Stripe Product and Prices if Stripe is configured
  */
 export async function POST(request: Request) {
     try {
@@ -69,7 +169,8 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'Slug already exists' }, { status: 400 })
         }
 
-        const plan = await prisma.plan.create({
+        // Create plan in database
+        let plan = await prisma.plan.create({
             data: {
                 name,
                 slug,
@@ -87,12 +188,28 @@ export async function POST(request: Request) {
             }
         })
 
+        // Auto-sync with Stripe
+        const stripeData = await syncPlanWithStripe({
+            ...plan,
+            stripeProductId: null,
+            stripePriceMonthly: null,
+            stripePriceYearly: null
+        })
+
+        if (stripeData) {
+            plan = await prisma.plan.update({
+                where: { id: plan.id },
+                data: stripeData
+            })
+        }
+
         return NextResponse.json({
             success: true,
             plan: {
                 ...plan,
                 features: JSON.parse(plan.features)
-            }
+            },
+            stripeSync: !!stripeData
         }, { status: 201 })
     } catch (error) {
         console.error('Create plan error:', error)
@@ -102,6 +219,7 @@ export async function POST(request: Request) {
 
 /**
  * PUT: Update plan (admin only)
+ * Auto-syncs with Stripe if prices are missing
  */
 export async function PUT(request: Request) {
     try {
@@ -131,7 +249,8 @@ export async function PUT(request: Request) {
             stripePriceMonthly,
             stripePriceYearly,
             paypalPlanMonthly,
-            paypalPlanYearly
+            paypalPlanYearly,
+            syncStripe // Optional: force sync with Stripe
         } = body
 
         if (!id) {
@@ -160,17 +279,35 @@ export async function PUT(request: Request) {
             updateData.features = typeof features === 'string' ? features : JSON.stringify(features)
         }
 
-        const plan = await prisma.plan.update({
+        let plan = await prisma.plan.update({
             where: { id },
             data: updateData
         })
+
+        // Auto-sync with Stripe if requested or if prices are missing
+        const needsSync = syncStripe ||
+            (plan.priceMonthly > 0 && !plan.stripePriceMonthly) ||
+            (plan.priceYearly > 0 && !plan.stripePriceYearly)
+
+        let stripeSync = false
+        if (needsSync) {
+            const stripeData = await syncPlanWithStripe(plan)
+            if (stripeData) {
+                plan = await prisma.plan.update({
+                    where: { id: plan.id },
+                    data: stripeData
+                })
+                stripeSync = true
+            }
+        }
 
         return NextResponse.json({
             success: true,
             plan: {
                 ...plan,
                 features: JSON.parse(plan.features)
-            }
+            },
+            stripeSync
         })
     } catch (error) {
         console.error('Update plan error:', error)

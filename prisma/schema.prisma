@@ -375,6 +375,7 @@ model Plan {
   isActive        Boolean  @default(true)
   
   // External IDs (Stripe/PayPal)
+  stripeProductId     String?
   stripePriceMonthly  String?
   stripePriceYearly   String?
   paypalPlanMonthly   String?
