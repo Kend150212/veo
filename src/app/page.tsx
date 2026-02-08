@@ -24,18 +24,22 @@ import {
   Youtube,
   FileText,
   Palette,
-  Settings
+  Settings,
+  Globe,
+  ChevronDown
 } from 'lucide-react'
+import { useLanguage, languageNames, languageFlags, LanguageProvider } from '@/lib/i18n/language-context'
+import { Language } from '@/lib/i18n/translations'
 
 // Visual style showcase images
 const styleShowcase = [
-  { src: '/styles/style_cinematic_1769037598589.png', name: 'Cinematic', desc: 'Phong cách điện ảnh Hollywood' },
-  { src: '/styles/style_anime_1769037444802.png', name: 'Anime', desc: 'Hoạt hình Nhật Bản' },
-  { src: '/styles/style_pixar_3d_1769037478528.png', name: 'Pixar 3D', desc: 'Hoạt hình 3D cao cấp' },
-  { src: '/styles/style_watercolor_1769037679503.png', name: 'Watercolor', desc: 'Nghệ thuật màu nước' },
-  { src: '/styles/style_documentary_1769037613360.png', name: 'Documentary', desc: 'Phim tài liệu chân thực' },
-  { src: '/styles/style_comic_book_1769037547624.png', name: 'Comic Book', desc: 'Truyện tranh sống động' },
-]
+  { src: '/styles/style_cinematic_1769037598589.png', key: 'cinematic' },
+  { src: '/styles/style_anime_1769037444802.png', key: 'anime' },
+  { src: '/styles/style_pixar_3d_1769037478528.png', key: 'pixar3d' },
+  { src: '/styles/style_watercolor_1769037679503.png', key: 'watercolor' },
+  { src: '/styles/style_documentary_1769037613360.png', key: 'documentary' },
+  { src: '/styles/style_comic_book_1769037547624.png', key: 'comicBook' },
+] as const
 
 interface Plan {
   id: string
@@ -59,107 +63,54 @@ interface Plan {
   }
 }
 
-// Problems we solve
-const problems = [
-  {
-    icon: Clock,
-    problem: 'Mất hàng giờ viết prompt thủ công',
-    solution: 'AI tự động tạo prompt chi tiết trong 30 giây',
-  },
-  {
-    icon: Target,
-    problem: 'Prompt không nhất quán, kết quả lộn xộn',
-    solution: 'Template đã tối ưu cho từng visual style',
-  },
-  {
-    icon: Wand2,
-    problem: 'Không biết viết prompt như thế nào',
-    solution: 'Chỉ cần nhập ý tưởng, AI làm phần còn lại',
-  },
-]
+const featureIcons = [Layers, Film, LayoutList, Zap, Settings, Users]
+const workflowIcons = [FileText, Film, Palette, Youtube]
+const problemIcons = [Clock, Target, Wand2]
 
-// Workflow steps - what you get from one generation
-const workflow = [
-  {
-    step: 1,
-    icon: FileText,
-    title: 'Script hoàn chỉnh',
-    desc: 'Kịch bản chi tiết theo template kể chuyện chuyên nghiệp'
-  },
-  {
-    step: 2,
-    icon: Film,
-    title: '5-10 Scene Prompts',
-    desc: 'Mỗi scene có visual prompt, camera movement, lighting'
-  },
-  {
-    step: 3,
-    icon: Palette,
-    title: 'Visual Style nhất quán',
-    desc: 'Tất cả scenes đồng nhất về phong cách và màu sắc'
-  },
-  {
-    step: 4,
-    icon: Youtube,
-    title: 'YouTube Metadata',
-    desc: 'Title, description, tags tối ưu SEO sẵn sàng đăng'
-  },
-]
+// Language Selector Component
+function LanguageSelector() {
+  const { language, setLanguage } = useLanguage()
+  const [isOpen, setIsOpen] = useState(false)
 
-// Main features with detailed descriptions
-const features = [
-  {
-    icon: Layers,
-    titleVi: 'Tạo Prompt 1-Click',
-    description: 'Nhập tiêu đề video, chọn style, AI tự động tạo kịch bản và 5-10 scene prompts chi tiết. Tiết kiệm 3-5 giờ mỗi video.',
-    gradient: 'from-purple-500 to-pink-500',
-    highlight: 'Tiết kiệm 95% thời gian'
-  },
-  {
-    icon: Film,
-    titleVi: '20+ Visual Styles',
-    description: 'Từ Cinematic Hollywood đến Anime, Watercolor, Documentary. Mỗi style có template riêng đảm bảo kết quả chuyên nghiệp.',
-    gradient: 'from-cyan-500 to-blue-500',
-    highlight: 'Sẵn sàng cho Veo, Runway, Pika'
-  },
-  {
-    icon: LayoutList,
-    titleVi: 'Quản lý đa kênh',
-    description: 'Mỗi kênh YouTube có cấu hình riêng: characters, categories, tone of voice. Xuất video hàng loạt không cần setup lại.',
-    gradient: 'from-orange-500 to-red-500',
-    highlight: 'Agency-ready'
-  },
-  {
-    icon: Zap,
-    titleVi: 'API tự động hóa',
-    description: 'Kết nối với Make.com, Zapier, n8n. Tự động tạo episodes từ RSS feed, trending topics, hoặc schedule định kỳ.',
-    gradient: 'from-green-500 to-emerald-500',
-    highlight: 'Tự động 24/7'
-  },
-  {
-    icon: Settings,
-    titleVi: 'Template kể chuyện',
-    description: '10+ narrative templates: Mystery, Educational, Storytelling, Documentary... Mỗi loại có cấu trúc tối ưu riêng.',
-    gradient: 'from-indigo-500 to-purple-500',
-    highlight: 'Hook viewers từ giây đầu'
-  },
-  {
-    icon: Users,
-    titleVi: 'Nhân vật & Branding',
-    description: 'Tạo characters với tính cách, voice nhất quán. Logo, intro, outro được tích hợp tự động vào mỗi episode.',
-    gradient: 'from-pink-500 to-rose-500',
-    highlight: 'Brand identity mạnh'
-  }
-]
+  return (
+    <div className="relative">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[var(--bg-tertiary)] hover:bg-[var(--bg-hover)] transition-colors"
+      >
+        <Globe className="w-4 h-4" />
+        <span className="text-sm">{languageFlags[language]} {languageNames[language]}</span>
+        <ChevronDown className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+      </button>
 
-const stats = [
-  { value: '10K+', label: 'Prompts đã tạo' },
-  { value: '95%', label: 'Tiết kiệm thời gian' },
-  { value: '20+', label: 'Visual Styles' },
-  { value: '5-10', label: 'Scenes mỗi video' },
-]
+      {isOpen && (
+        <>
+          <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
+          <div className="absolute right-0 mt-2 py-2 w-40 bg-[var(--bg-secondary)] border border-[var(--border-subtle)] rounded-lg shadow-lg z-50">
+            {(['en', 'vi', 'es'] as Language[]).map((lang) => (
+              <button
+                key={lang}
+                onClick={() => {
+                  setLanguage(lang)
+                  setIsOpen(false)
+                }}
+                className={`w-full px-4 py-2 text-left text-sm hover:bg-[var(--bg-hover)] transition-colors flex items-center gap-2 ${language === lang ? 'text-purple-400' : ''
+                  }`}
+              >
+                <span>{languageFlags[lang]}</span>
+                <span>{languageNames[lang]}</span>
+                {language === lang && <Check className="w-4 h-4 ml-auto" />}
+              </button>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  )
+}
 
-export default function HomePage() {
+function HomePageContent() {
+  const { t } = useLanguage()
   const [plans, setPlans] = useState<Plan[]>([])
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly')
   const [currentSlide, setCurrentSlide] = useState(0)
@@ -184,6 +135,13 @@ export default function HomePage() {
   const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % styleShowcase.length)
   const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + styleShowcase.length) % styleShowcase.length)
 
+  const statsData = [
+    { value: '10K+', label: t.stats.prompts },
+    { value: '95%', label: t.stats.timeSaved },
+    { value: '20+', label: t.stats.styles },
+    { value: '5-10', label: t.stats.scenes },
+  ]
+
   return (
     <div className="min-h-screen overflow-hidden">
       {/* Animated Background */}
@@ -206,22 +164,23 @@ export default function HomePage() {
 
             <div className="hidden md:flex items-center gap-8">
               <Link href="#how-it-works" className="text-[var(--text-secondary)] hover:text-white transition-colors">
-                Cách hoạt động
+                {t.nav.howItWorks}
               </Link>
               <Link href="#features" className="text-[var(--text-secondary)] hover:text-white transition-colors">
-                Tính năng
+                {t.nav.features}
               </Link>
               <Link href="#pricing" className="text-[var(--text-secondary)] hover:text-white transition-colors">
-                Bảng giá
+                {t.nav.pricing}
               </Link>
             </div>
 
             <div className="flex items-center gap-3">
-              <Link href="/login" className="btn-secondary">
-                Đăng nhập
+              <LanguageSelector />
+              <Link href="/login" className="btn-secondary hidden sm:inline-flex">
+                {t.nav.login}
               </Link>
               <Link href="/register" className="btn-primary">
-                Dùng thử miễn phí
+                {t.nav.getStarted}
               </Link>
             </div>
           </nav>
@@ -236,38 +195,38 @@ export default function HomePage() {
             <div className="animate-fadeIn">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-purple-500/20 to-cyan-500/20 border border-purple-500/30 mb-6">
                 <Sparkles className="w-4 h-4 text-purple-400" />
-                <span className="text-sm text-purple-300">Công cụ #1 cho Google Veo, Runway, Pika</span>
+                <span className="text-sm text-purple-300">{t.hero.badge}</span>
               </div>
 
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
-                Tạo Video Prompt{' '}
+                {t.hero.title}{' '}
                 <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-400 to-cyan-400">
-                  Chỉ Với 1 Click
+                  {t.hero.titleHighlight}
                 </span>
               </h1>
 
               <p className="text-xl text-[var(--text-secondary)] mb-4 leading-relaxed">
-                <strong>Nhập tiêu đề video → Nhận kịch bản complete + 5-10 scene prompts</strong> với camera angles, lighting, visual style nhất quán.
+                <strong>{t.hero.subtitle}</strong>
               </p>
 
               <p className="text-lg text-[var(--text-muted)] mb-8">
-                Tiết kiệm 3-5 giờ mỗi video. Quản lý đa kênh YouTube. Tự động hóa với API.
+                {t.hero.description}
               </p>
 
               <div className="flex flex-wrap gap-4 mb-10">
                 <Link href="/register" className="btn-primary flex items-center gap-2 text-lg px-8 py-4 group">
-                  Tạo video đầu tiên miễn phí
+                  {t.hero.cta}
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </Link>
                 <Link href="#how-it-works" className="btn-secondary flex items-center gap-2 text-lg px-8 py-4">
                   <Play className="w-5 h-5" />
-                  Xem cách hoạt động
+                  {t.hero.ctaSecondary}
                 </Link>
               </div>
 
               {/* Stats */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                {stats.map((stat) => (
+                {statsData.map((stat) => (
                   <div key={stat.label} className="text-center md:text-left">
                     <div className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-cyan-400">
                       {stat.value}
@@ -283,20 +242,20 @@ export default function HomePage() {
               <div className="relative aspect-video rounded-2xl overflow-hidden border border-[var(--border-subtle)] shadow-2xl shadow-purple-500/20">
                 {styleShowcase.map((style, i) => (
                   <div
-                    key={style.name}
+                    key={style.key}
                     className={`absolute inset-0 transition-opacity duration-500 ${i === currentSlide ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
                   >
                     <Image
                       src={style.src}
-                      alt={style.name}
+                      alt={t.styleNames[style.key]}
                       fill
                       className="object-cover"
                       priority={i === 0}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
                     <div className="absolute bottom-4 left-4 right-4">
-                      <h3 className="text-xl font-bold mb-1">{style.name}</h3>
-                      <p className="text-sm text-white/70">{style.desc}</p>
+                      <h3 className="text-xl font-bold mb-1">{t.styleNames[style.key]}</h3>
+                      <p className="text-sm text-white/70">{t.styleDescs[style.key]}</p>
                     </div>
                   </div>
                 ))}
@@ -339,27 +298,30 @@ export default function HomePage() {
         <div className="container-app">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Không Còn Đau Đầu Với{' '}
+              {t.problems.title}{' '}
               <span className="bg-clip-text text-transparent bg-gradient-to-r from-red-400 to-orange-400">
-                Video Prompts
+                {t.problems.titleHighlight}
               </span>
             </h2>
           </div>
 
           <div className="grid md:grid-cols-3 gap-6">
-            {problems.map((item, index) => (
-              <div key={index} className="glass-card p-6 relative overflow-hidden">
-                <div className="flex items-start gap-4 mb-4">
-                  <div className="w-12 h-12 rounded-xl bg-red-500/20 flex items-center justify-center flex-shrink-0">
-                    <item.icon className="w-6 h-6 text-red-400" />
-                  </div>
-                  <div>
-                    <p className="text-red-400 line-through text-sm mb-1">{item.problem}</p>
-                    <p className="text-green-400 font-medium">{item.solution}</p>
+            {t.problems.items.map((item, index) => {
+              const Icon = problemIcons[index]
+              return (
+                <div key={index} className="glass-card p-6 relative overflow-hidden">
+                  <div className="flex items-start gap-4 mb-4">
+                    <div className="w-12 h-12 rounded-xl bg-red-500/20 flex items-center justify-center flex-shrink-0">
+                      <Icon className="w-6 h-6 text-red-400" />
+                    </div>
+                    <div>
+                      <p className="text-red-400 line-through text-sm mb-1">{item.problem}</p>
+                      <p className="text-green-400 font-medium">{item.solution}</p>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         </div>
       </section>
@@ -369,37 +331,40 @@ export default function HomePage() {
         <div className="container-app">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              1 Click Tạo Ra{' '}
+              {t.workflow.title}{' '}
               <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-cyan-400">
-                Toàn Bộ Nội Dung
+                {t.workflow.titleHighlight}
               </span>
             </h2>
             <p className="text-[var(--text-secondary)] max-w-2xl mx-auto">
-              Từ một tiêu đề video, hệ thống AI tự động tạo ra tất cả những gì bạn cần để sản xuất video hoàn chỉnh
+              {t.workflow.description}
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {workflow.map((item, index) => (
-              <div key={index} className="glass-card p-6 text-center relative group hover:border-purple-500/30 transition-all">
-                <div className="absolute -top-3 -left-3 w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-cyan-500 flex items-center justify-center text-sm font-bold">
-                  {item.step}
+            {t.workflow.steps.map((item, index) => {
+              const Icon = workflowIcons[index]
+              return (
+                <div key={index} className="glass-card p-6 text-center relative group hover:border-purple-500/30 transition-all">
+                  <div className="absolute -top-3 -left-3 w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-cyan-500 flex items-center justify-center text-sm font-bold">
+                    {index + 1}
+                  </div>
+                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500/20 to-cyan-500/20 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                    <Icon className="w-8 h-8 text-purple-400" />
+                  </div>
+                  <h3 className="font-bold text-lg mb-2">{item.title}</h3>
+                  <p className="text-sm text-[var(--text-secondary)]">{item.desc}</p>
                 </div>
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500/20 to-cyan-500/20 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-                  <item.icon className="w-8 h-8 text-purple-400" />
-                </div>
-                <h3 className="font-bold text-lg mb-2">{item.title}</h3>
-                <p className="text-sm text-[var(--text-secondary)]">{item.desc}</p>
-              </div>
-            ))}
+              )
+            })}
           </div>
 
           <div className="text-center mt-10">
             <p className="text-lg text-[var(--text-muted)] mb-6">
-              <strong className="text-white">Kết quả:</strong> Copy prompts → Paste vào Veo/Runway/Pika → Render video ngay
+              <strong className="text-white">{t.workflow.result}</strong>
             </p>
             <Link href="/register" className="btn-primary inline-flex items-center gap-2">
-              Thử ngay - Miễn phí
+              {t.workflow.cta}
               <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
@@ -411,31 +376,31 @@ export default function HomePage() {
         <div className="container-app">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              20+ Visual Styles{' '}
+              {t.styles.title}{' '}
               <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-cyan-400">
-                Đã Tối Ưu Sẵn
+                {t.styles.titleHighlight}
               </span>
             </h2>
             <p className="text-[var(--text-secondary)] max-w-2xl mx-auto">
-              Mỗi style có template prompts riêng, đảm bảo kết quả nhất quán và chuyên nghiệp. Không cần biết viết prompt.
+              {t.styles.description}
             </p>
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            {styleShowcase.map((style, index) => (
+            {styleShowcase.map((style) => (
               <div
-                key={style.name}
+                key={style.key}
                 className="group relative aspect-square rounded-xl overflow-hidden border border-[var(--border-subtle)] hover:border-purple-500/50 transition-all cursor-pointer"
               >
                 <Image
                   src={style.src}
-                  alt={style.name}
+                  alt={t.styleNames[style.key]}
                   fill
                   className="object-cover group-hover:scale-110 transition-transform duration-500"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                 <div className="absolute bottom-2 left-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <p className="text-sm font-medium">{style.name}</p>
+                  <p className="text-sm font-medium">{t.styleNames[style.key]}</p>
                 </div>
               </div>
             ))}
@@ -447,28 +412,39 @@ export default function HomePage() {
       <section id="features" className="relative z-10 py-20">
         <div className="container-app">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Tất Cả Tính Năng Bạn Cần</h2>
-            <p className="text-[var(--text-secondary)]">Từ tạo prompt đến quản lý kênh và tự động hóa</p>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">{t.features.title}</h2>
+            <p className="text-[var(--text-secondary)]">{t.features.description}</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {features.map((feature, index) => (
-              <div
-                key={index}
-                className="glass-card p-6 group hover:border-purple-500/30 transition-all"
-              >
-                <div className="flex items-start justify-between mb-4">
-                  <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${feature.gradient} bg-opacity-20 flex items-center justify-center group-hover:scale-110 transition-transform`}>
-                    <feature.icon className="w-7 h-7 text-white" />
+            {t.features.items.map((feature, index) => {
+              const Icon = featureIcons[index]
+              const gradients = [
+                'from-purple-500 to-pink-500',
+                'from-cyan-500 to-blue-500',
+                'from-orange-500 to-red-500',
+                'from-green-500 to-emerald-500',
+                'from-indigo-500 to-purple-500',
+                'from-pink-500 to-rose-500',
+              ]
+              return (
+                <div
+                  key={index}
+                  className="glass-card p-6 group hover:border-purple-500/30 transition-all"
+                >
+                  <div className="flex items-start justify-between mb-4">
+                    <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${gradients[index]} bg-opacity-20 flex items-center justify-center group-hover:scale-110 transition-transform`}>
+                      <Icon className="w-7 h-7 text-white" />
+                    </div>
+                    <span className="text-xs font-medium px-2 py-1 rounded-full bg-green-500/20 text-green-400">
+                      {feature.highlight}
+                    </span>
                   </div>
-                  <span className="text-xs font-medium px-2 py-1 rounded-full bg-green-500/20 text-green-400">
-                    {feature.highlight}
-                  </span>
+                  <h3 className="font-semibold text-lg mb-2">{feature.title}</h3>
+                  <p className="text-[var(--text-secondary)] text-sm leading-relaxed">{feature.description}</p>
                 </div>
-                <h3 className="font-semibold text-lg mb-2">{feature.titleVi}</h3>
-                <p className="text-[var(--text-secondary)] text-sm leading-relaxed">{feature.description}</p>
-              </div>
-            ))}
+              )
+            })}
           </div>
         </div>
       </section>
@@ -477,8 +453,8 @@ export default function HomePage() {
       <section id="pricing" className="relative z-10 py-20 bg-[var(--bg-secondary)]/50">
         <div className="container-app">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Bảng Giá Minh Bạch</h2>
-            <p className="text-[var(--text-secondary)] mb-8">Bắt đầu miễn phí, nâng cấp khi cần</p>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">{t.pricing.title}</h2>
+            <p className="text-[var(--text-secondary)] mb-8">{t.pricing.description}</p>
 
             <div className="inline-flex items-center gap-4 p-1 bg-[var(--bg-tertiary)] rounded-full">
               <button
@@ -486,21 +462,21 @@ export default function HomePage() {
                 className={`px-6 py-2 rounded-full text-sm font-medium transition-all ${billingCycle === 'monthly' ? 'bg-purple-600 text-white' : 'text-[var(--text-secondary)]'
                   }`}
               >
-                Hàng tháng
+                {t.pricing.monthly}
               </button>
               <button
                 onClick={() => setBillingCycle('yearly')}
                 className={`px-6 py-2 rounded-full text-sm font-medium transition-all flex items-center gap-2 ${billingCycle === 'yearly' ? 'bg-purple-600 text-white' : 'text-[var(--text-secondary)]'
                   }`}
               >
-                Hàng năm
+                {t.pricing.yearly}
                 <span className="text-xs bg-green-500 text-white px-2 py-0.5 rounded-full">-20%</span>
               </button>
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {plans.map((plan, index) => {
+            {plans.map((plan) => {
               const planFeatures = plan.features || {}
               const price = billingCycle === 'monthly' ? plan.priceMonthly : plan.priceYearly / 12
 
@@ -512,7 +488,7 @@ export default function HomePage() {
                 >
                   {plan.isPopular && (
                     <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-gradient-to-r from-purple-500 to-cyan-500 text-white text-xs font-medium rounded-full">
-                      Phổ biến nhất
+                      {t.pricing.mostPopular}
                     </div>
                   )}
 
@@ -521,30 +497,30 @@ export default function HomePage() {
 
                   <div className="mb-6">
                     <span className="text-4xl font-bold">
-                      {price === 0 ? 'Miễn phí' : `$${price.toFixed(0)}`}
+                      {price === 0 ? t.pricing.free : `$${price.toFixed(0)}`}
                     </span>
-                    {price > 0 && <span className="text-[var(--text-muted)]">/tháng</span>}
+                    {price > 0 && <span className="text-[var(--text-muted)]">{t.pricing.perMonth}</span>}
                   </div>
 
                   <ul className="space-y-3 mb-6">
                     <li className="flex items-center gap-2 text-sm">
                       <Check className="w-4 h-4 text-green-400" />
-                      {plan.maxChannels === -1 ? 'Không giới hạn' : plan.maxChannels} kênh YouTube
+                      {plan.maxChannels === -1 ? t.pricing.unlimited : plan.maxChannels} {t.pricing.channels}
                     </li>
                     <li className="flex items-center gap-2 text-sm">
                       <Check className="w-4 h-4 text-green-400" />
-                      {plan.maxEpisodesPerMonth === -1 ? 'Không giới hạn' : plan.maxEpisodesPerMonth} episodes/tháng
+                      {plan.maxEpisodesPerMonth === -1 ? t.pricing.unlimited : plan.maxEpisodesPerMonth} {t.pricing.episodes}
                     </li>
                     {plan.maxApiCalls > 0 && (
                       <li className="flex items-center gap-2 text-sm">
                         <Check className="w-4 h-4 text-green-400" />
-                        {plan.maxApiCalls === -1 ? 'Không giới hạn' : plan.maxApiCalls.toLocaleString()} API calls
+                        {plan.maxApiCalls === -1 ? t.pricing.unlimited : plan.maxApiCalls.toLocaleString()} {t.pricing.apiCalls}
                       </li>
                     )}
                     {planFeatures.prioritySupport && (
                       <li className="flex items-center gap-2 text-sm">
                         <Check className="w-4 h-4 text-green-400" />
-                        Hỗ trợ ưu tiên
+                        {t.pricing.prioritySupport}
                       </li>
                     )}
                   </ul>
@@ -556,7 +532,7 @@ export default function HomePage() {
                         : 'bg-[var(--bg-tertiary)] hover:bg-[var(--bg-hover)]'
                       }`}
                   >
-                    {plan.slug === 'free' ? 'Bắt đầu miễn phí' : 'Chọn gói này'}
+                    {plan.slug === 'free' ? t.pricing.startFree : t.pricing.choosePlan}
                     <ArrowRight className="w-4 h-4" />
                   </Link>
                 </div>
@@ -572,13 +548,13 @@ export default function HomePage() {
           <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-purple-600/20 via-pink-600/20 to-cyan-600/20 border border-purple-500/30 p-12 text-center">
             <div className="relative z-10">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                Sẵn Sàng Tăng Tốc Sản Xuất Video?
+                {t.cta.title}
               </h2>
               <p className="text-[var(--text-secondary)] mb-8 max-w-xl mx-auto">
-                Bắt đầu tạo video prompt chuyên nghiệp ngay hôm nay. Miễn phí, không cần thẻ tín dụng.
+                {t.cta.description}
               </p>
               <Link href="/register" className="btn-primary inline-flex items-center gap-2 text-lg px-10 py-4">
-                Tạo Video Đầu Tiên
+                {t.cta.button}
                 <ArrowRight className="w-5 h-5" />
               </Link>
             </div>
@@ -598,28 +574,28 @@ export default function HomePage() {
                 <span className="font-bold text-lg">Veo Prompt</span>
               </Link>
               <p className="text-sm text-[var(--text-muted)]">
-                Công cụ #1 tạo video prompt cho AI video generators.
+                {t.footer.tagline}
               </p>
             </div>
 
             <div>
-              <h4 className="font-semibold mb-4">Sản phẩm</h4>
+              <h4 className="font-semibold mb-4">{t.footer.product}</h4>
               <ul className="space-y-2 text-sm text-[var(--text-secondary)]">
-                <li><Link href="#features" className="hover:text-white transition-colors">Tính năng</Link></li>
+                <li><Link href="#features" className="hover:text-white transition-colors">{t.nav.features}</Link></li>
                 <li><Link href="#styles" className="hover:text-white transition-colors">Visual Styles</Link></li>
-                <li><Link href="#pricing" className="hover:text-white transition-colors">Bảng giá</Link></li>
+                <li><Link href="#pricing" className="hover:text-white transition-colors">{t.nav.pricing}</Link></li>
               </ul>
             </div>
 
             <div>
-              <h4 className="font-semibold mb-4">Hỗ trợ</h4>
+              <h4 className="font-semibold mb-4">{t.footer.support}</h4>
               <ul className="space-y-2 text-sm text-[var(--text-secondary)]">
-                <li><Link href="/public/api-docs.html" className="hover:text-white transition-colors">API Documentation</Link></li>
+                <li><Link href="/public/api-docs.html" className="hover:text-white transition-colors">{t.footer.apiDocs}</Link></li>
               </ul>
             </div>
 
             <div>
-              <h4 className="font-semibold mb-4">Liên hệ</h4>
+              <h4 className="font-semibold mb-4">{t.footer.contact}</h4>
               <p className="text-sm text-[var(--text-secondary)]">
                 support@veo.kendymarketing.com
               </p>
@@ -627,9 +603,9 @@ export default function HomePage() {
           </div>
 
           <div className="flex flex-col md:flex-row items-center justify-between pt-8 border-t border-[var(--border-subtle)] text-sm text-[var(--text-muted)]">
-            <span>© 2026 Veo Prompt. All rights reserved.</span>
+            <span>© 2026 Veo Prompt. {t.footer.rights}</span>
             <div className="flex items-center gap-6 mt-4 md:mt-0">
-              <span>Compatible: Veo, Runway, Pika, Kling</span>
+              <span>{t.footer.compatible}</span>
             </div>
           </div>
         </div>
@@ -645,5 +621,13 @@ export default function HomePage() {
         }
       `}</style>
     </div>
+  )
+}
+
+export default function HomePage() {
+  return (
+    <LanguageProvider>
+      <HomePageContent />
+    </LanguageProvider>
   )
 }
