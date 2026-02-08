@@ -40,7 +40,15 @@ interface Plan {
   maxEpisodesPerMonth: number
   maxApiCalls: number
   isPopular: boolean
-  features: string
+  features: {
+    prioritySupport?: boolean
+    apiAccess?: boolean
+    advancedCinematicStyles?: boolean
+    allNarrativeTemplates?: boolean
+    characterCustomization?: boolean
+    youtubeStrategies?: boolean
+    customIntegrations?: boolean
+  }
 }
 
 const features = [
