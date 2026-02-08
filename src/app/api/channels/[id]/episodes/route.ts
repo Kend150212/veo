@@ -2733,6 +2733,19 @@ Mark each scene with its type in promptText:
 4. Group related topics together, don't scatter them
 5. Scene numbers MUST be sequential (1, 2, 3... no gaps, no duplicates)
 
+🚨🚨🚨 CRITICAL FORMATTING QUALITY RULES - ĐỌC KỸ 🚨🚨🚨
+═══════════════════════════════════════════════════════
+❌ TUYỆT ĐỐI KHÔNG ĐƯỢC:
+1. [VOICEOVER...] CHỈ XUẤT HIỆN 1 LẦN trong mỗi promptText - KHÔNG LẶP LẠI 2 LẦN
+2. "LANGUAGE: Speak Vietnamese only" CHỈ XUẤT HIỆN 1 LẦN ở cuối - KHÔNG LẶP LẠI
+3. KHÔNG viết: [VOICEOVER...]. [VOICEOVER...]. ← SAI! Chỉ viết 1 lần!
+4. KHÔNG viết: LANGUAGE:... LANGUAGE:... ← SAI! Chỉ viết 1 lần ở cuối!
+
+✅ BẮT BUỘC VOICE TAG - GIỌNG NÓI NHẤT QUÁN:
+- Thêm "VOICE: ${voiceGender === 'male' ? 'Male voice (giọng nam)' : voiceGender === 'female' ? 'Female voice (giọng nữ)' : 'Consistent voice (giữ nguyên 1 giọng đã chọn)'}" vào CUỐI mỗi promptText
+- TẤT CẢ các scene PHẢI dùng CÙNG MỘT giọng (nam HOẶC nữ) - KHÔNG được xen kẽ
+- Nếu scene 1 dùng giọng nam, scene 2-50 cũng PHẢI dùng giọng nam
+
 ═══════════════════════════════════════
 SCENE FORMAT (EVERY SCENE MUST HAVE):
 ═══════════════════════════════════════
