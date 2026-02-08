@@ -3,46 +3,89 @@
 import { useSession } from 'next-auth/react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
+import { useEffect, useState } from 'react'
 import {
-    PenTool,
-    Library,
-    History,
+    Tv,
+    Play,
     TrendingUp,
     Sparkles,
-    ArrowRight
+    ArrowRight,
+    Plus,
+    Film
 } from 'lucide-react'
+
+interface ChannelStats {
+    totalChannels: number
+    totalEpisodes: number
+    totalScenes: number
+}
 
 export default function DashboardPage() {
     const { data: session } = useSession()
+    const [stats, setStats] = useState<ChannelStats>({ totalChannels: 0, totalEpisodes: 0, totalScenes: 0 })
+    const [loading, setLoading] = useState(true)
+
+    useEffect(() => {
+        async function fetchStats() {
+            try {
+                const res = await fetch('/api/channels')
+                if (res.ok) {
+                    const channels = await res.json()
+                    let totalEpisodes = 0
+                    let totalScenes = 0
+
+                    for (const channel of channels) {
+                        if (channel.episodes) {
+                            totalEpisodes += channel.episodes.length
+                            for (const ep of channel.episodes) {
+                                totalScenes += ep.scenes?.length || 0
+                            }
+                        }
+                    }
+
+                    setStats({
+                        totalChannels: channels.length,
+                        totalEpisodes,
+                        totalScenes
+                    })
+                }
+            } catch (error) {
+                console.error('Error fetching stats:', error)
+            } finally {
+                setLoading(false)
+            }
+        }
+        fetchStats()
+    }, [])
 
     const quickActions = [
         {
-            title: 'Tạo Prompt Mới',
-            description: 'Bắt đầu tạo prompt với Structured Builder',
-            icon: PenTool,
-            href: '/dashboard/builder',
+            title: 'Tạo Kênh Mới',
+            description: 'Bắt đầu với kênh YouTube mới',
+            icon: Plus,
+            href: '/dashboard/channels',
             gradient: 'from-purple-500 to-pink-500'
         },
         {
-            title: 'Duyệt Mẫu',
-            description: 'Chọn từ các template có sẵn',
-            icon: Library,
-            href: '/dashboard/templates',
+            title: 'Quản lý Kênh',
+            description: 'Xem và quản lý các kênh hiện có',
+            icon: Tv,
+            href: '/dashboard/channels',
             gradient: 'from-cyan-500 to-blue-500'
         },
         {
-            title: 'Xem Lịch Sử',
-            description: 'Các prompt đã tạo gần đây',
-            icon: History,
-            href: '/dashboard/history',
+            title: 'Tạo Episode',
+            description: 'Tạo tập mới cho kênh của bạn',
+            icon: Film,
+            href: '/dashboard/channels',
             gradient: 'from-orange-500 to-yellow-500'
         }
     ]
 
-    const stats = [
-        { label: 'Prompts đã tạo', value: '0', icon: PenTool },
-        { label: 'Templates sử dụng', value: '0', icon: Library },
-        { label: 'Lượt export', value: '0', icon: TrendingUp }
+    const statsData = [
+        { label: 'Kênh YouTube', value: loading ? '...' : stats.totalChannels.toString(), icon: Tv },
+        { label: 'Episodes', value: loading ? '...' : stats.totalEpisodes.toString(), icon: Play },
+        { label: 'Scenes', value: loading ? '...' : stats.totalScenes.toString(), icon: TrendingUp }
     ]
 
     return (
@@ -57,7 +100,7 @@ export default function DashboardPage() {
                     Xin chào, {session?.user?.name || 'bạn'}! 👋
                 </h1>
                 <p className="text-[var(--text-secondary)]">
-                    Chào mừng bạn đến với Veo Prompt Generator. Hãy bắt đầu tạo prompt video chuyên nghiệp.
+                    Quản lý kênh YouTube và tạo episodes chuyên nghiệp với AI.
                 </p>
             </motion.div>
 
@@ -68,7 +111,7 @@ export default function DashboardPage() {
                 transition={{ delay: 0.1 }}
                 className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8"
             >
-                {stats.map((stat, index) => (
+                {statsData.map((stat, index) => (
                     <div key={index} className="glass-card p-5">
                         <div className="flex items-center gap-4">
                             <div className="w-12 h-12 rounded-xl bg-[var(--bg-hover)] flex items-center justify-center">
@@ -129,12 +172,12 @@ export default function DashboardPage() {
                         <Sparkles className="w-5 h-5 text-white" />
                     </div>
                     <div>
-                        <h3 className="font-semibold mb-2">💡 Mẹo tạo prompt hiệu quả</h3>
+                        <h3 className="font-semibold mb-2">💡 Mẹo tạo video YouTube hiệu quả</h3>
                         <ul className="text-sm text-[var(--text-secondary)] space-y-1">
-                            <li>• <strong>Chi tiết hóa Subject:</strong> Mô tả kỹ đặc điểm, quần áo, biểu cảm</li>
-                            <li>• <strong>Sử dụng Camera:</strong> Chỉ định góc quay, chuyển động, lens</li>
-                            <li>• <strong>Thêm Negative Prompt:</strong> Tránh flickering, blurry, distorted</li>
-                            <li>• <strong>Giữ dưới 1500 ký tự:</strong> Prompt quá dài có thể bị cắt</li>
+                            <li>• <strong>Tạo Character Bible:</strong> Mô tả rõ host/nhân vật để giữ nhất quán</li>
+                            <li>• <strong>Chọn Visual Style:</strong> Đặt style chung cho toàn bộ kênh</li>
+                            <li>• <strong>Dùng Content Type phù hợp:</strong> Voice-over, Host dẫn, hoặc Narrative</li>
+                            <li>• <strong>Thiết lập Voice Settings:</strong> Chọn giọng nam/nữ và tone phù hợp</li>
                         </ul>
                     </div>
                 </div>
