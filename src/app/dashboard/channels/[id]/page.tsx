@@ -27,9 +27,8 @@ import {
     Wand2
 } from 'lucide-react'
 import toast from 'react-hot-toast'
-import { VISUAL_STYLES } from '@/lib/ai-story'
-import { CHANNEL_STYLES } from '@/lib/channel-styles'
-import StyleSelectorModal from '@/components/StyleSelectorModal'
+import { CHANNEL_STYLES, STYLE_CATEGORIES, getStylesByCategory } from '@/lib/channel-styles'
+import { getNarrativeTemplateSummaries } from '@/lib/narrative-templates'
 
 // Cinematic Film Styles for Hollywood mode
 const CINEMATIC_STYLES = [
@@ -342,6 +341,31 @@ const CONTENT_TYPE_INFO: Record<string, { name: string; description: string; ico
             '3. Click "Tạo ảnh" mỗi scene → Imagen 3 tạo ảnh',
             '4. Download ảnh → Dùng cho video AI'
         ]
+    },
+    'one_shot': {
+        name: 'One Shot',
+        description: 'Một cảnh quay liên tục không cắt, camera di chuyển từ siêu rộng đến cực macro',
+        icon: '🎥',
+        tips: [
+            'Single continuous shot - NO CUTS, seamless flow',
+            'Dynamic camera movement: slow for emotional, fast for action',
+            'Wide to macro transitions: ultra-wide establishing → extreme close-up details',
+            'Camera techniques: dolly, zoom, orbit, crane, tracking',
+            'Pacing varies with content: slow reveal, fast chase, gradual zoom',
+            'Create visual interest through framing and movement, not cuts'
+        ]
+    },
+    'narrative_storytelling': {
+        name: 'Kể Chuyện (B-roll Voiceover)',
+        description: 'Kể chuyện cá nhân, vấn đề xã hội với 100% B-roll - Phong cách Anh Dư Leo',
+        icon: '📖',
+        tips: [
+            'Hook mạnh: Tuyên bố kết quả ấn tượng ngay đầu',
+            'Giọng thân mật như đang tâm sự với người xem',
+            'Dùng số liệu cụ thể tăng độ tin cậy',
+            'Cấu trúc: Hook → Bối cảnh → Khó khăn → Kết quả → Lời khuyên',
+            '100% B-roll với voiceover, không có nhân vật xuất hiện'
+        ]
     }
 }
 
@@ -365,15 +389,6 @@ interface Episode {
     scenes: EpisodeScene[]
     categoryId: string | null
     metadata: string | null
-}
-
-interface ContinuityStyle {
-    id: string
-    name: string
-    palette: string
-    lighting: string
-    cameraStyle: string
-    visualStyle: string
 }
 
 interface EpisodeCategory {
@@ -457,10 +472,6 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
     const [selectedCharacterIds, setSelectedCharacterIds] = useState<string[]>([])
     const [adaptCharactersToScript, setAdaptCharactersToScript] = useState(false) // AI tự điều chỉnh nhân vật
     const [selectedStyleId, setSelectedStyleId] = useState<string>('')
-    const [showStyleModal, setShowStyleModal] = useState(false)
-    const [selectedContinuityStyleId, setSelectedContinuityStyleId] = useState<string>('')
-    const [continuityStyles, setContinuityStyles] = useState<ContinuityStyle[]>([])
-    const [defaultContinuityStyleId, setDefaultContinuityStyleId] = useState<string | null>(null)
     const [mentionChannel, setMentionChannel] = useState(false)
     const [ctaMode, setCtaMode] = useState<'random' | 'select'>('random')
     const [selectedCTAs, setSelectedCTAs] = useState<string[]>([])
@@ -468,7 +479,8 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
         'with_host' | 'voice_over' | 'broll_only' | 'host_dynamic_env' | 'host_storyteller' | 'cinematic_film' |
         'roast_comedy' | 'reaction_commentary' | 'asmr_satisfying' | 'horror_survival' | 'romance_drama' |
         'gen_z_meme' | 'educational_sassy' | 'mystery_detective' | 'breaking_4th_wall' | 'villain_origin' |
-        'underdog_triumph' | 'chaos_unhinged' | 'food_animation' | 'food_drama' | 'fashion_showcase'
+        'underdog_triumph' | 'chaos_unhinged' | 'food_animation' | 'food_drama' | 'fashion_showcase' | 'one_shot' |
+        'narrative_storytelling'
     >('with_host')
 
     // Fashion showcase product state
@@ -709,6 +721,12 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
     // Storyteller B-Roll option
     const [storytellerBrollEnabled, setStorytellerBrollEnabled] = useState(false)
 
+    // Narrative Storytelling options
+    const [narrativeTemplateId, setNarrativeTemplateId] = useState('personal-journey-broll')
+    const [narrativeTopic, setNarrativeTopic] = useState('')
+    const [narrativeKeyPoints, setNarrativeKeyPoints] = useState('')
+    const narrativeTemplates = getNarrativeTemplateSummaries()
+
     // Advanced Episode Features
     const [visualHookEnabled, setVisualHookEnabled] = useState(true)
     const [emotionalCurveEnabled, setEmotionalCurveEnabled] = useState(true)
@@ -794,33 +812,14 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
         fetchChannel()
     }, [id])
 
-    // Fetch continuity styles for this channel
-    const fetchContinuityStyles = async () => {
-        try {
-            const res = await fetch(`/api/channels/${id}/continuity-styles`)
-            const data = await res.json()
-            if (data.styles) {
-                setContinuityStyles(data.styles)
-                setDefaultContinuityStyleId(data.defaultStyleId)
-                // Auto-select default style
-                if (data.defaultStyleId && !selectedContinuityStyleId) {
-                    setSelectedContinuityStyleId(data.defaultStyleId)
-                }
-            }
-        } catch (error) {
-            console.error('Failed to fetch continuity styles:', error)
-        }
-    }
-
     const fetchChannel = async () => {
         try {
             const res = await fetch(`/api/channels/${id}`)
             const data = await res.json()
             if (data.channel) {
                 setChannel(data.channel)
-                // Fetch categories and continuity styles after channel loads
+                // Fetch categories after channel loads
                 fetchCategories()
-                fetchContinuityStyles()
             } else {
                 toast.error('Không tìm thấy kênh')
                 router.push('/dashboard/channels')
@@ -1138,8 +1137,11 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                     adSceneCount: adEnabled ? adSceneCount : 2,
                     // Storyteller B-Roll option
                     storytellerBrollEnabled: voiceOverMode === 'host_storyteller' ? storytellerBrollEnabled : false,
-                    // Continuity Style
-                    continuityStyleId: selectedContinuityStyleId || null
+                    // Narrative Storytelling options
+                    narrativeTemplateId: voiceOverMode === 'narrative_storytelling' ? narrativeTemplateId : null,
+                    narrativeKeyPoints: voiceOverMode === 'narrative_storytelling' && narrativeKeyPoints.trim()
+                        ? narrativeKeyPoints.split(',').map(s => s.trim()).filter(Boolean)
+                        : null
                 })
             })
 
@@ -1195,8 +1197,7 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                         musicMode,
                         dialogueDensityMin,
                         dialogueDensityMax,
-                        storytellerBrollEnabled: voiceOverMode === 'host_storyteller' ? storytellerBrollEnabled : false,
-                        continuityStyleId: selectedContinuityStyleId || null
+                        storytellerBrollEnabled: voiceOverMode === 'host_storyteller' ? storytellerBrollEnabled : false
                     })
                 })
 
@@ -1320,8 +1321,7 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                         musicMode,
                         dialogueDensityMin,
                         dialogueDensityMax,
-                        storytellerBrollEnabled: voiceOverMode === 'host_storyteller' ? storytellerBrollEnabled : false,
-                        continuityStyleId: selectedContinuityStyleId || null
+                        storytellerBrollEnabled: voiceOverMode === 'host_storyteller' ? storytellerBrollEnabled : false
                     })
                 })
 
@@ -2170,59 +2170,27 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
 
                     <div>
                         <label className="block text-sm font-medium mb-2">Visual Style</label>
-                        <button
-                            type="button"
-                            onClick={() => setShowStyleModal(true)}
-                            className="input-field w-full text-left flex items-center justify-between hover:border-[var(--accent-primary)] transition-colors"
+                        <select
+                            value={selectedStyleId}
+                            onChange={(e) => setSelectedStyleId(e.target.value)}
+                            className="input-field w-full"
                         >
-                            <span className="flex items-center gap-2">
-                                {selectedStyleId ? (
-                                    <>
-                                        {CHANNEL_STYLES.find(s => s.id === selectedStyleId)?.previewImage && (
-                                            <img
-                                                src={CHANNEL_STYLES.find(s => s.id === selectedStyleId)?.previewImage}
-                                                alt=""
-                                                className="w-8 h-8 rounded object-cover"
-                                            />
-                                        )}
-                                        {CHANNEL_STYLES.find(s => s.id === selectedStyleId)?.nameVi || selectedStyleId}
-                                    </>
-                                ) : (
-                                    <>🎨 Chọn Visual Style...</>
-                                )}
-                            </span>
-                            <ChevronDown className="w-4 h-4 text-gray-400" />
-                        </button>
-                        <StyleSelectorModal
-                            isOpen={showStyleModal}
-                            onClose={() => setShowStyleModal(false)}
-                            onSelect={(id) => setSelectedStyleId(id || '')}
-                            selectedStyleId={selectedStyleId}
-                        />
+                            <option value="">Mặc định kênh</option>
+                            {STYLE_CATEGORIES.filter(cat => cat.id !== 'all').map(category => {
+                                const styles = getStylesByCategory(category.id)
+                                if (styles.length === 0) return null
+                                return (
+                                    <optgroup key={category.id} label={category.name}>
+                                        {styles.map(style => (
+                                            <option key={style.id} value={style.id}>
+                                                {style.nameVi} - {style.descriptionVi}
+                                            </option>
+                                        ))}
+                                    </optgroup>
+                                )
+                            })}
+                        </select>
                     </div>
-
-                    {continuityStyles.length > 0 && (
-                        <div>
-                            <label className="block text-sm font-medium mb-2">🎬 Continuity Style</label>
-                            <select
-                                value={selectedContinuityStyleId}
-                                onChange={(e) => setSelectedContinuityStyleId(e.target.value)}
-                                className="input-field w-full"
-                            >
-                                <option value="">Không sử dụng</option>
-                                {continuityStyles.map(style => (
-                                    <option key={style.id} value={style.id}>
-                                        {style.name} {defaultContinuityStyleId === style.id ? '⭐' : ''}
-                                    </option>
-                                ))}
-                            </select>
-                            {selectedContinuityStyleId && (
-                                <p className="text-xs text-[var(--accent-primary)] mt-1">
-                                    ✓ Palette, lighting, camera sẽ được thêm vào prompts
-                                </p>
-                            )}
-                        </div>
-                    )}
 
                     <div>
                         <label className="block text-sm font-medium mb-2">Loại nội dung</label>
@@ -2237,7 +2205,7 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                                     'roast_comedy', 'reaction_commentary', 'horror_survival', 'romance_drama',
                                     'gen_z_meme', 'educational_sassy', 'mystery_detective', 'breaking_4th_wall',
                                     'villain_origin', 'underdog_triumph', 'chaos_unhinged', 'food_animation', 'food_drama',
-                                    'fashion_showcase', 'silent_life', 'virtual_companion', 'cozy_aesthetic'
+                                    'fashion_showcase', 'silent_life', 'virtual_companion', 'cozy_aesthetic', 'one_shot'
                                 ]
                                 setUseCharacters(characterModes.includes(mode))
 
@@ -2257,6 +2225,7 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                                 <option value="broll_only">🎬 B-Roll only (không lời)</option>
                                 <option value="host_dynamic_env">🌍 Host 100% + Môi trường động</option>
                                 <option value="host_storyteller">🎭 Host Kể Chuyện (Elements sinh động)</option>
+                                <option value="one_shot">🎥 One Shot (Một cảnh liên tục)</option>
                             </optgroup>
                             <optgroup label="🎬 Điện ảnh">
                                 <option value="cinematic_film">🎬 Điện Ảnh Hollywood</option>
@@ -2282,6 +2251,9 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                             </optgroup>
                             <optgroup label="🎧 Đặc biệt">
                                 <option value="asmr_satisfying">🎧 ASMR / Satisfying</option>
+                            </optgroup>
+                            <optgroup label="📖 Kể Chuyện / Storytelling">
+                                <option value="narrative_storytelling">📖 Kể Chuyện B-roll (Phong cách Anh Dư Leo)</option>
                             </optgroup>
                             <optgroup label="🌸 Slice of Life / Healing">
                                 <option value="silent_life">🌸 Silent Life (Cuộc sống thầm lặng)</option>
@@ -2765,6 +2737,68 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                                 <option value="calm">🧘 Điềm tĩnh, nhẹ nhàng</option>
                                 <option value="serious">📰 Nghiêm túc (tin tức)</option>
                             </select>
+                        </div>
+                    </div>
+                )}
+
+                {/* Narrative Storytelling Settings */}
+                {voiceOverMode === 'narrative_storytelling' && (
+                    <div className="mb-4 p-4 bg-gradient-to-r from-orange-500/10 to-amber-500/10 border border-orange-500/20 rounded-lg">
+                        <h4 className="font-medium mb-3 flex items-center gap-2">
+                            <span className="text-xl">📖</span>
+                            Kể Chuyện B-roll (Phong cách Anh Dư Leo)
+                        </h4>
+
+                        {/* Template Selection */}
+                        <div className="mb-3">
+                            <label className="block text-sm font-medium mb-2">Chọn template kể chuyện</label>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                {narrativeTemplates.map(template => (
+                                    <button
+                                        key={template.id}
+                                        onClick={() => setNarrativeTemplateId(template.id)}
+                                        className={`p-3 rounded-lg text-left transition ${narrativeTemplateId === template.id
+                                            ? 'bg-orange-500/20 border-2 border-orange-500'
+                                            : 'bg-[var(--bg-secondary)] border border-transparent hover:border-orange-500/50'
+                                            }`}
+                                    >
+                                        <div className="font-medium text-sm">{template.name}</div>
+                                        <div className="text-xs text-[var(--text-muted)] mt-1">{template.description}</div>
+                                        <div className="flex flex-wrap gap-1 mt-2">
+                                            {template.suitableFor.slice(0, 3).map((tag, i) => (
+                                                <span key={i} className="px-1.5 py-0.5 bg-orange-500/10 text-orange-400 text-xs rounded">
+                                                    {tag}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Key Points */}
+                        <div className="mb-3">
+                            <label className="block text-sm font-medium mb-2">Điểm chính cần đề cập (tuỳ chọn)</label>
+                            <input
+                                type="text"
+                                value={narrativeKeyPoints}
+                                onChange={(e) => setNarrativeKeyPoints(e.target.value)}
+                                placeholder="VD: Tiết kiệm, Đầu tư, Kiên nhẫn (phân cách bằng dấu phẩy)"
+                                className="input-field w-full"
+                            />
+                            <p className="text-xs text-[var(--text-muted)] mt-1">
+                                AI sẽ tự động tích hợp các điểm này vào kịch bản
+                            </p>
+                        </div>
+
+                        {/* Tips */}
+                        <div className="bg-[var(--bg-secondary)] p-3 rounded-lg">
+                            <p className="text-xs text-[var(--text-muted)] mb-2">💡 <strong>Mẹo:</strong></p>
+                            <ul className="text-xs text-[var(--text-muted)] space-y-1">
+                                <li>• Video sẽ 100% B-roll với voiceover kể chuyện</li>
+                                <li>• Nhập nội dung/topic chi tiết ở phần Nội dung bên dưới</li>
+                                <li>• AI sẽ tự động tạo cấu trúc Hook → Bối cảnh → Kết quả → Lời khuyên</li>
+                            </ul>
                         </div>
                     </div>
                 )}
