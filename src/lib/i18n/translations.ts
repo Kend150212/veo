@@ -13,40 +13,40 @@ export const translations = {
         // Hero
         hero: {
             badge: '#1 Tool for Google Veo, Runway, Pika',
-            title: 'Create Video Prompts',
-            titleHighlight: 'With Just 1 Click',
-            subtitle: 'Enter video title → Get complete script + 5-10 scene prompts with camera angles, lighting, consistent visual style.',
-            description: 'Save 3-5 hours per video. Manage multiple YouTube channels. Automate with API.',
+            title: 'AI Video Scripts',
+            titleHighlight: 'Fully Automated',
+            subtitle: 'AI analyzes your channel → Auto-generates scripts with 5-100+ scenes, emotional pacing, and complete YouTube Strategy.',
+            description: 'No manual input. Batch create episodes. Each with title, description, tags + 3 thumbnail prompts ready.',
             cta: 'Create Your First Video Free',
             ctaSecondary: 'See How It Works',
         },
         // Stats
         stats: {
             prompts: 'Prompts Created',
-            timeSaved: 'Time Saved',
-            styles: 'Visual Styles',
             scenes: 'Scenes per Video',
+            styles: 'Visual Styles',
+            batch: 'Batch Episodes',
         },
         // Problems
         problems: {
             title: 'No More Headaches With',
-            titleHighlight: 'Video Prompts',
+            titleHighlight: 'Video Production',
             items: [
-                { problem: 'Spending hours writing prompts manually', solution: 'AI creates detailed prompts in 30 seconds' },
-                { problem: 'Inconsistent prompts, messy results', solution: 'Templates optimized for each visual style' },
-                { problem: "Don't know how to write prompts", solution: 'Just enter your idea, AI does the rest' },
+                { problem: 'Writing scripts from scratch', solution: 'AI analyzes your channel & generates automatically' },
+                { problem: 'Inconsistent emotional pacing', solution: 'Smart emotion adjustment throughout the story' },
+                { problem: 'Creating videos one by one', solution: 'Batch create 10, 50, 100 episodes at once' },
             ],
         },
         // Workflow
         workflow: {
-            title: '1 Click Creates',
-            titleHighlight: 'Everything You Need',
-            description: 'From one video title, our AI automatically creates everything you need to produce a complete video',
+            title: 'What You Get From',
+            titleHighlight: 'Each Episode',
+            description: 'AI analyzes your channel niche, creates scripts tailored to your audience, with everything ready to produce',
             steps: [
-                { title: 'Complete Script', desc: 'Detailed screenplay using professional storytelling templates' },
-                { title: '5-10 Scene Prompts', desc: 'Each scene has visual prompt, camera movement, lighting' },
-                { title: 'Consistent Visual Style', desc: 'All scenes unified in style and color palette' },
-                { title: 'YouTube Metadata', desc: 'SEO-optimized title, description, tags ready to publish' },
+                { title: 'Complete Script', desc: 'Auto-generated from channel analysis or URL input' },
+                { title: '5-100+ Scene Prompts', desc: 'With smart emotional pacing & camera directions' },
+                { title: 'YouTube Strategy', desc: 'Title, description, tags optimized for your niche' },
+                { title: '3 Thumbnail Prompts', desc: 'Ready to generate eye-catching thumbnails' },
             ],
             result: 'Copy prompts → Paste into Veo/Runway/Pika → Render video instantly',
             cta: 'Try Now - Free',
@@ -60,37 +60,37 @@ export const translations = {
         // Features
         features: {
             title: 'All The Features You Need',
-            description: 'From prompt creation to channel management and automation',
+            description: 'From auto-generation to channel management and batch production',
             items: [
                 {
-                    title: '1-Click Prompt Creation',
-                    description: 'Enter video title, choose style, AI automatically creates script and 5-10 detailed scene prompts. Save 3-5 hours per video.',
-                    highlight: 'Save 95% time',
+                    title: 'Smart Channel Analysis',
+                    description: 'AI analyzes your channel niche, audience, and style. Generate scripts without any manual input - just click and go.',
+                    highlight: 'Zero input required',
                 },
                 {
-                    title: '20+ Visual Styles',
-                    description: 'From Hollywood Cinematic to Anime, Watercolor, Documentary. Each style has its own template ensuring professional results.',
-                    highlight: 'Ready for Veo, Runway, Pika',
+                    title: 'URL-to-Script',
+                    description: 'Paste any article/blog URL and AI transforms it into a complete video script with scenes and prompts.',
+                    highlight: 'Works with any content',
+                },
+                {
+                    title: 'Batch Episode Creation',
+                    description: 'Create 10, 50, or 100 episodes at once. Each with unique script, scenes, and full YouTube strategy.',
+                    highlight: 'Scale content fast',
+                },
+                {
+                    title: '5-100+ Scenes',
+                    description: 'Generate from 5 to 100+ scenes per video. AI adjusts emotional pacing throughout the story arc.',
+                    highlight: 'Smart emotion control',
+                },
+                {
+                    title: 'Complete YouTube Package',
+                    description: 'Each episode includes SEO title, description, tags, and 3 thumbnail prompts ready to generate.',
+                    highlight: '3 thumbnails included',
                 },
                 {
                     title: 'Multi-Channel Management',
-                    description: 'Each YouTube channel has separate config: characters, categories, tone of voice. Batch export videos without re-setup.',
+                    description: 'Manage unlimited channels with separate branding, characters, and tone. Perfect for agencies.',
                     highlight: 'Agency-ready',
-                },
-                {
-                    title: 'Automation API',
-                    description: 'Connect with Make.com, Zapier, n8n. Auto-create episodes from RSS feeds, trending topics, or scheduled tasks.',
-                    highlight: 'Automated 24/7',
-                },
-                {
-                    title: 'Storytelling Templates',
-                    description: '10+ narrative templates: Mystery, Educational, Storytelling, Documentary... Each has its own optimized structure.',
-                    highlight: 'Hook viewers from second one',
-                },
-                {
-                    title: 'Characters & Branding',
-                    description: 'Create characters with consistent personality and voice. Logo, intro, outro automatically integrated into each episode.',
-                    highlight: 'Strong brand identity',
                 },
             ],
         },
@@ -113,13 +113,13 @@ export const translations = {
         },
         // CTA
         cta: {
-            title: 'Ready to Speed Up Video Production?',
-            description: 'Start creating professional video prompts today. Free, no credit card required.',
+            title: 'Ready to Automate Video Production?',
+            description: 'Create professional video scripts automatically. Free, no credit card required.',
             button: 'Create Your First Video',
         },
         // Footer
         footer: {
-            tagline: '#1 tool for AI video prompt generation.',
+            tagline: '#1 tool for automated AI video script generation.',
             product: 'Product',
             support: 'Support',
             contact: 'Contact',
@@ -158,40 +158,40 @@ export const translations = {
         // Hero
         hero: {
             badge: 'Công cụ #1 cho Google Veo, Runway, Pika',
-            title: 'Tạo Video Prompt',
-            titleHighlight: 'Chỉ Với 1 Click',
-            subtitle: 'Nhập tiêu đề video → Nhận kịch bản complete + 5-10 scene prompts với camera angles, lighting, visual style nhất quán.',
-            description: 'Tiết kiệm 3-5 giờ mỗi video. Quản lý đa kênh YouTube. Tự động hóa với API.',
+            title: 'Tạo Kịch Bản Video',
+            titleHighlight: 'Tự Động Hoàn Toàn',
+            subtitle: 'AI phân tích kênh của bạn → Tự động tạo kịch bản với 5-100+ cảnh, điều chỉnh cảm xúc, và chiến lược YouTube hoàn chỉnh.',
+            description: 'Không cần nhập thủ công. Tạo episodes hàng loạt. Mỗi episode có title, description, tags + 3 thumbnail prompts.',
             cta: 'Tạo video đầu tiên miễn phí',
             ctaSecondary: 'Xem cách hoạt động',
         },
         // Stats
         stats: {
             prompts: 'Prompts đã tạo',
-            timeSaved: 'Tiết kiệm thời gian',
+            scenes: 'Cảnh mỗi video',
             styles: 'Visual Styles',
-            scenes: 'Scenes mỗi video',
+            batch: 'Tạo hàng loạt',
         },
         // Problems
         problems: {
             title: 'Không Còn Đau Đầu Với',
-            titleHighlight: 'Video Prompts',
+            titleHighlight: 'Sản Xuất Video',
             items: [
-                { problem: 'Mất hàng giờ viết prompt thủ công', solution: 'AI tự động tạo prompt chi tiết trong 30 giây' },
-                { problem: 'Prompt không nhất quán, kết quả lộn xộn', solution: 'Template đã tối ưu cho từng visual style' },
-                { problem: 'Không biết viết prompt như thế nào', solution: 'Chỉ cần nhập ý tưởng, AI làm phần còn lại' },
+                { problem: 'Viết kịch bản từ đầu', solution: 'AI phân tích kênh & tự động tạo kịch bản' },
+                { problem: 'Cảm xúc câu chuyện không nhất quán', solution: 'Tự động điều chỉnh cảm xúc theo story arc' },
+                { problem: 'Tạo video từng cái một', solution: 'Tạo hàng loạt 10, 50, 100 episodes cùng lúc' },
             ],
         },
         // Workflow
         workflow: {
-            title: '1 Click Tạo Ra',
-            titleHighlight: 'Toàn Bộ Nội Dung',
-            description: 'Từ một tiêu đề video, hệ thống AI tự động tạo ra tất cả những gì bạn cần để sản xuất video hoàn chỉnh',
+            title: 'Mỗi Episode',
+            titleHighlight: 'Bạn Nhận Được',
+            description: 'AI phân tích niche kênh, tạo kịch bản phù hợp với audience, với mọi thứ sẵn sàng sản xuất',
             steps: [
-                { title: 'Script hoàn chỉnh', desc: 'Kịch bản chi tiết theo template kể chuyện chuyên nghiệp' },
-                { title: '5-10 Scene Prompts', desc: 'Mỗi scene có visual prompt, camera movement, lighting' },
-                { title: 'Visual Style nhất quán', desc: 'Tất cả scenes đồng nhất về phong cách và màu sắc' },
-                { title: 'YouTube Metadata', desc: 'Title, description, tags tối ưu SEO sẵn sàng đăng' },
+                { title: 'Kịch bản hoàn chỉnh', desc: 'Tự động từ phân tích kênh hoặc nhập URL' },
+                { title: '5-100+ Scene Prompts', desc: 'Với điều chỉnh cảm xúc & camera directions' },
+                { title: 'YouTube Strategy', desc: 'Title, description, tags tối ưu cho niche' },
+                { title: '3 Thumbnail Prompts', desc: 'Sẵn sàng tạo thumbnails thu hút click' },
             ],
             result: 'Copy prompts → Paste vào Veo/Runway/Pika → Render video ngay',
             cta: 'Thử ngay - Miễn phí',
@@ -205,37 +205,37 @@ export const translations = {
         // Features
         features: {
             title: 'Tất Cả Tính Năng Bạn Cần',
-            description: 'Từ tạo prompt đến quản lý kênh và tự động hóa',
+            description: 'Từ tự động tạo đến quản lý kênh và sản xuất hàng loạt',
             items: [
                 {
-                    title: 'Tạo Prompt 1-Click',
-                    description: 'Nhập tiêu đề video, chọn style, AI tự động tạo kịch bản và 5-10 scene prompts chi tiết. Tiết kiệm 3-5 giờ mỗi video.',
-                    highlight: 'Tiết kiệm 95% thời gian',
+                    title: 'Phân tích kênh thông minh',
+                    description: 'AI phân tích niche, audience, và style kênh. Tạo kịch bản không cần nhập gì - chỉ click và làm.',
+                    highlight: 'Không cần nhập liệu',
                 },
                 {
-                    title: '20+ Visual Styles',
-                    description: 'Từ Cinematic Hollywood đến Anime, Watercolor, Documentary. Mỗi style có template riêng đảm bảo kết quả chuyên nghiệp.',
-                    highlight: 'Sẵn sàng cho Veo, Runway, Pika',
+                    title: 'URL thành kịch bản',
+                    description: 'Paste link bài viết/blog và AI chuyển đổi thành kịch bản video hoàn chỉnh với scenes và prompts.',
+                    highlight: 'Hoạt động với mọi nội dung',
+                },
+                {
+                    title: 'Tạo Episode hàng loạt',
+                    description: 'Tạo 10, 50, hoặc 100 episodes cùng lúc. Mỗi episode có kịch bản riêng, scenes, và YouTube strategy.',
+                    highlight: 'Scale nhanh chóng',
+                },
+                {
+                    title: '5-100+ Cảnh',
+                    description: 'Tạo từ 5 đến 100+ cảnh mỗi video. AI điều chỉnh cảm xúc theo diễn biến câu chuyện.',
+                    highlight: 'Điều khiển cảm xúc',
+                },
+                {
+                    title: 'Gói YouTube hoàn chỉnh',
+                    description: 'Mỗi episode bao gồm SEO title, description, tags, và 3 thumbnail prompts sẵn sàng tạo.',
+                    highlight: '3 thumbnails đi kèm',
                 },
                 {
                     title: 'Quản lý đa kênh',
-                    description: 'Mỗi kênh YouTube có cấu hình riêng: characters, categories, tone of voice. Xuất video hàng loạt không cần setup lại.',
+                    description: 'Quản lý không giới hạn kênh với branding, characters, và tone riêng. Hoàn hảo cho agencies.',
                     highlight: 'Agency-ready',
-                },
-                {
-                    title: 'API tự động hóa',
-                    description: 'Kết nối với Make.com, Zapier, n8n. Tự động tạo episodes từ RSS feed, trending topics, hoặc schedule định kỳ.',
-                    highlight: 'Tự động 24/7',
-                },
-                {
-                    title: 'Template kể chuyện',
-                    description: '10+ narrative templates: Mystery, Educational, Storytelling, Documentary... Mỗi loại có cấu trúc tối ưu riêng.',
-                    highlight: 'Hook viewers từ giây đầu',
-                },
-                {
-                    title: 'Nhân vật & Branding',
-                    description: 'Tạo characters với tính cách, voice nhất quán. Logo, intro, outro được tích hợp tự động vào mỗi episode.',
-                    highlight: 'Brand identity mạnh',
                 },
             ],
         },
@@ -258,13 +258,13 @@ export const translations = {
         },
         // CTA
         cta: {
-            title: 'Sẵn Sàng Tăng Tốc Sản Xuất Video?',
-            description: 'Bắt đầu tạo video prompt chuyên nghiệp ngay hôm nay. Miễn phí, không cần thẻ tín dụng.',
+            title: 'Sẵn Sàng Tự Động Hóa Sản Xuất Video?',
+            description: 'Tạo kịch bản video chuyên nghiệp tự động. Miễn phí, không cần thẻ tín dụng.',
             button: 'Tạo Video Đầu Tiên',
         },
         // Footer
         footer: {
-            tagline: 'Công cụ #1 tạo video prompt cho AI video generators.',
+            tagline: 'Công cụ #1 tự động tạo kịch bản video AI.',
             product: 'Sản phẩm',
             support: 'Hỗ trợ',
             contact: 'Liên hệ',
@@ -303,40 +303,40 @@ export const translations = {
         // Hero
         hero: {
             badge: 'Herramienta #1 para Google Veo, Runway, Pika',
-            title: 'Crea Prompts de Video',
-            titleHighlight: 'Con Solo 1 Click',
-            subtitle: 'Ingresa el título del video → Obtén guión completo + 5-10 prompts de escena con ángulos de cámara, iluminación, estilo visual consistente.',
-            description: 'Ahorra 3-5 horas por video. Gestiona múltiples canales de YouTube. Automatiza con API.',
+            title: 'Guiones de Video IA',
+            titleHighlight: 'Totalmente Automatizados',
+            subtitle: 'La IA analiza tu canal → Auto-genera guiones con 5-100+ escenas, ritmo emocional, y estrategia completa de YouTube.',
+            description: 'Sin entrada manual. Crea episodios en lote. Cada uno con título, descripción, etiquetas + 3 prompts de miniatura.',
             cta: 'Crea tu primer video gratis',
             ctaSecondary: 'Ver cómo funciona',
         },
         // Stats
         stats: {
             prompts: 'Prompts Creados',
-            timeSaved: 'Tiempo Ahorrado',
-            styles: 'Estilos Visuales',
             scenes: 'Escenas por Video',
+            styles: 'Estilos Visuales',
+            batch: 'Episodios en Lote',
         },
         // Problems
         problems: {
             title: 'Sin Más Dolores de Cabeza Con',
-            titleHighlight: 'Prompts de Video',
+            titleHighlight: 'Producción de Videos',
             items: [
-                { problem: 'Pasar horas escribiendo prompts manualmente', solution: 'IA crea prompts detallados en 30 segundos' },
-                { problem: 'Prompts inconsistentes, resultados desordenados', solution: 'Plantillas optimizadas para cada estilo visual' },
-                { problem: 'No saber cómo escribir prompts', solution: 'Solo ingresa tu idea, la IA hace el resto' },
+                { problem: 'Escribir guiones desde cero', solution: 'IA analiza tu canal y genera automáticamente' },
+                { problem: 'Ritmo emocional inconsistente', solution: 'Ajuste inteligente de emociones en toda la historia' },
+                { problem: 'Crear videos uno por uno', solution: 'Crear 10, 50, 100 episodios a la vez' },
             ],
         },
         // Workflow
         workflow: {
-            title: '1 Click Crea',
-            titleHighlight: 'Todo Lo Que Necesitas',
-            description: 'A partir de un título de video, nuestra IA crea automáticamente todo lo que necesitas para producir un video completo',
+            title: 'Lo Que Obtienes De',
+            titleHighlight: 'Cada Episodio',
+            description: 'La IA analiza el nicho de tu canal, crea guiones adaptados a tu audiencia, con todo listo para producir',
             steps: [
-                { title: 'Guión Completo', desc: 'Guión detallado usando plantillas profesionales de narración' },
-                { title: '5-10 Prompts de Escena', desc: 'Cada escena tiene prompt visual, movimiento de cámara, iluminación' },
-                { title: 'Estilo Visual Consistente', desc: 'Todas las escenas unificadas en estilo y paleta de colores' },
-                { title: 'Metadatos de YouTube', desc: 'Título, descripción, etiquetas optimizadas para SEO listas para publicar' },
+                { title: 'Guión Completo', desc: 'Auto-generado desde análisis de canal o entrada de URL' },
+                { title: '5-100+ Prompts de Escena', desc: 'Con ritmo emocional inteligente y direcciones de cámara' },
+                { title: 'Estrategia YouTube', desc: 'Título, descripción, etiquetas optimizadas para tu nicho' },
+                { title: '3 Prompts de Miniatura', desc: 'Listos para generar miniaturas atractivas' },
             ],
             result: 'Copia prompts → Pega en Veo/Runway/Pika → Renderiza video al instante',
             cta: 'Prueba Ahora - Gratis',
@@ -345,42 +345,42 @@ export const translations = {
         styles: {
             title: '20+ Estilos Visuales',
             titleHighlight: 'Pre-Optimizados',
-            description: 'Cada estilo tiene sus propias plantillas de prompts, garantizando resultados consistentes y profesionales. No se necesitan habilidades de escritura de prompts.',
+            description: 'Cada estilo tiene sus propias plantillas de prompts, garantizando resultados consistentes y profesionales.',
         },
         // Features
         features: {
             title: 'Todas Las Características Que Necesitas',
-            description: 'Desde creación de prompts hasta gestión de canales y automatización',
+            description: 'Desde auto-generación hasta gestión de canales y producción en lote',
             items: [
                 {
-                    title: 'Creación de Prompts 1-Click',
-                    description: 'Ingresa título de video, elige estilo, la IA crea automáticamente guión y 5-10 prompts de escena detallados. Ahorra 3-5 horas por video.',
-                    highlight: 'Ahorra 95% del tiempo',
+                    title: 'Análisis Inteligente de Canal',
+                    description: 'La IA analiza el nicho, audiencia, y estilo de tu canal. Genera guiones sin entrada manual - solo click.',
+                    highlight: 'Entrada cero requerida',
                 },
                 {
-                    title: '20+ Estilos Visuales',
-                    description: 'Desde Cinematográfico Hollywood hasta Anime, Acuarela, Documental. Cada estilo tiene su plantilla asegurando resultados profesionales.',
-                    highlight: 'Listo para Veo, Runway, Pika',
+                    title: 'URL a Guión',
+                    description: 'Pega cualquier URL de artículo/blog y la IA lo transforma en guión completo con escenas y prompts.',
+                    highlight: 'Funciona con cualquier contenido',
+                },
+                {
+                    title: 'Creación de Episodios en Lote',
+                    description: 'Crea 10, 50, o 100 episodios a la vez. Cada uno con guión único, escenas, y estrategia YouTube.',
+                    highlight: 'Escala contenido rápido',
+                },
+                {
+                    title: '5-100+ Escenas',
+                    description: 'Genera de 5 a 100+ escenas por video. La IA ajusta el ritmo emocional del arco narrativo.',
+                    highlight: 'Control de emociones inteligente',
+                },
+                {
+                    title: 'Paquete YouTube Completo',
+                    description: 'Cada episodio incluye título SEO, descripción, etiquetas, y 3 prompts de miniatura listos.',
+                    highlight: '3 miniaturas incluidas',
                 },
                 {
                     title: 'Gestión Multi-Canal',
-                    description: 'Cada canal de YouTube tiene configuración separada: personajes, categorías, tono de voz. Exportación masiva sin reconfiguración.',
+                    description: 'Gestiona canales ilimitados con branding, personajes, y tono separados. Perfecto para agencias.',
                     highlight: 'Listo para agencias',
-                },
-                {
-                    title: 'API de Automatización',
-                    description: 'Conecta con Make.com, Zapier, n8n. Crea episodios automáticamente desde feeds RSS, temas tendencia, o tareas programadas.',
-                    highlight: 'Automatizado 24/7',
-                },
-                {
-                    title: 'Plantillas de Narración',
-                    description: '10+ plantillas narrativas: Misterio, Educativo, Storytelling, Documental... Cada una con estructura optimizada.',
-                    highlight: 'Engancha desde el primer segundo',
-                },
-                {
-                    title: 'Personajes y Branding',
-                    description: 'Crea personajes con personalidad y voz consistentes. Logo, intro, outro integrados automáticamente en cada episodio.',
-                    highlight: 'Identidad de marca fuerte',
                 },
             ],
         },
@@ -403,13 +403,13 @@ export const translations = {
         },
         // CTA
         cta: {
-            title: '¿Listo para Acelerar la Producción de Videos?',
-            description: 'Comienza a crear prompts de video profesionales hoy. Gratis, sin tarjeta de crédito.',
+            title: '¿Listo para Automatizar la Producción de Videos?',
+            description: 'Crea guiones de video profesionales automáticamente. Gratis, sin tarjeta de crédito.',
             button: 'Crea Tu Primer Video',
         },
         // Footer
         footer: {
-            tagline: 'Herramienta #1 para generación de prompts de video con IA.',
+            tagline: 'Herramienta #1 para generación automática de guiones de video con IA.',
             product: 'Producto',
             support: 'Soporte',
             contact: 'Contacto',

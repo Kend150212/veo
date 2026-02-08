@@ -137,9 +137,9 @@ function HomePageContent() {
 
   const statsData = [
     { value: '10K+', label: t.stats.prompts },
-    { value: '95%', label: t.stats.timeSaved },
+    { value: '5-100+', label: t.stats.scenes },
     { value: '20+', label: t.stats.styles },
-    { value: '5-10', label: t.stats.scenes },
+    { value: '100', label: t.stats.batch },
   ]
 
   return (
@@ -528,8 +528,8 @@ function HomePageContent() {
                   <Link
                     href={plan.slug === 'free' ? '/register' : `/pricing?plan=${plan.slug}`}
                     className={`w-full py-3 rounded-xl font-medium transition-all flex items-center justify-center gap-2 ${plan.isPopular
-                        ? 'bg-gradient-to-r from-purple-500 to-cyan-500 text-white hover:opacity-90'
-                        : 'bg-[var(--bg-tertiary)] hover:bg-[var(--bg-hover)]'
+                      ? 'bg-gradient-to-r from-purple-500 to-cyan-500 text-white hover:opacity-90'
+                      : 'bg-[var(--bg-tertiary)] hover:bg-[var(--bg-hover)]'
                       }`}
                   >
                     {plan.slug === 'free' ? t.pricing.startFree : t.pricing.choosePlan}
