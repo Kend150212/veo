@@ -29,6 +29,7 @@ import {
 import toast from 'react-hot-toast'
 import { CHANNEL_STYLES, STYLE_CATEGORIES, getStylesByCategory } from '@/lib/channel-styles'
 import { getNarrativeTemplateSummaries } from '@/lib/narrative-templates'
+import StyleSelectorModal from '@/components/StyleSelectorModal'
 
 // Cinematic Film Styles for Hollywood mode
 const CINEMATIC_STYLES = [
@@ -484,6 +485,7 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
     const [selectedCharacterIds, setSelectedCharacterIds] = useState<string[]>([])
     const [adaptCharactersToScript, setAdaptCharactersToScript] = useState(false) // AI tự điều chỉnh nhân vật
     const [selectedStyleId, setSelectedStyleId] = useState<string>('')
+    const [showStyleModal, setShowStyleModal] = useState(false)
     const [mentionChannel, setMentionChannel] = useState(false)
     const [ctaMode, setCtaMode] = useState<'random' | 'select'>('random')
     const [selectedCTAs, setSelectedCTAs] = useState<string[]>([])
@@ -2184,26 +2186,35 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
 
                     <div>
                         <label className="block text-sm font-medium mb-2">Visual Style</label>
-                        <select
-                            value={selectedStyleId}
-                            onChange={(e) => setSelectedStyleId(e.target.value)}
-                            className="input-field w-full"
+                        <button
+                            type="button"
+                            onClick={() => setShowStyleModal(true)}
+                            className="input-field w-full text-left flex items-center justify-between hover:border-[var(--accent-primary)] transition-colors"
                         >
-                            <option value="">Mặc định kênh</option>
-                            {STYLE_CATEGORIES.filter(cat => cat.id !== 'all').map(category => {
-                                const styles = getStylesByCategory(category.id)
-                                if (styles.length === 0) return null
-                                return (
-                                    <optgroup key={category.id} label={category.name}>
-                                        {styles.map(style => (
-                                            <option key={style.id} value={style.id}>
-                                                {style.nameVi} - {style.descriptionVi}
-                                            </option>
-                                        ))}
-                                    </optgroup>
-                                )
-                            })}
-                        </select>
+                            <span className="flex items-center gap-2">
+                                {selectedStyleId ? (
+                                    <>
+                                        {CHANNEL_STYLES.find(s => s.id === selectedStyleId)?.previewImage && (
+                                            <img
+                                                src={CHANNEL_STYLES.find(s => s.id === selectedStyleId)?.previewImage}
+                                                alt=""
+                                                className="w-8 h-8 rounded object-cover"
+                                            />
+                                        )}
+                                        {CHANNEL_STYLES.find(s => s.id === selectedStyleId)?.nameVi || selectedStyleId}
+                                    </>
+                                ) : (
+                                    <>🎨 Chọn Visual Style...</>
+                                )}
+                            </span>
+                            <ChevronDown className="w-4 h-4 text-gray-400" />
+                        </button>
+                        <StyleSelectorModal
+                            isOpen={showStyleModal}
+                            onClose={() => setShowStyleModal(false)}
+                            onSelect={(id) => setSelectedStyleId(id || '')}
+                            selectedStyleId={selectedStyleId}
+                        />
                     </div>
 
                     <div>
