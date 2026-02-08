@@ -24,6 +24,7 @@ model User {
   channels      Channel[]
   settings      UserSettings?
   subscription  Subscription?
+  transactions  Transaction[]
 }
 
 model UserSettings {
@@ -434,4 +435,37 @@ model Subscription {
   
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+  
+  transactions    Transaction[]
 }
+
+// Payment Transactions
+model Transaction {
+  id              String   @id @default(cuid())
+  
+  // User info
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  subscriptionId  String?
+  subscription    Subscription? @relation(fields: [subscriptionId], references: [id])
+  
+  // Transaction details
+  type            String   // payment, refund, chargeback
+  status          String   // pending, completed, failed, refunded
+  amount          Float
+  currency        String   @default("USD")
+  
+  // Gateway info
+  gateway         String   // stripe, paypal
+  externalId      String?  // Stripe/PayPal payment ID
+  
+  // Additional info
+  description     String?
+  metadata        String   @default("{}")
+  errorMessage    String?
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
