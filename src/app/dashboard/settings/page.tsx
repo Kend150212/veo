@@ -11,7 +11,11 @@ import {
     EyeOff,
     CheckCircle,
     Globe,
-    Cpu
+    Cpu,
+    Copy,
+    Link,
+    RefreshCw,
+    Shield
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 
@@ -69,6 +73,150 @@ interface FormData {
     anthropicModel: string
     preferredAI: string
     language: string
+}
+
+// External API Key Section for Make.com/Zapier integration
+function ExternalApiKeySection() {
+    const [apiKey, setApiKey] = useState<string | null>(null)
+    const [loading, setLoading] = useState(true)
+    const [generating, setGenerating] = useState(false)
+
+    useEffect(() => {
+        fetchApiKey()
+    }, [])
+
+    const fetchApiKey = async () => {
+        try {
+            const res = await fetch('/api/v1/auth/api-key')
+            const data = await res.json()
+            setApiKey(data.hasApiKey ? data.apiKey : null)
+        } catch {
+            console.error('Failed to fetch API key')
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const generateApiKey = async () => {
+        setGenerating(true)
+        try {
+            const res = await fetch('/api/v1/auth/api-key', { method: 'POST' })
+            const data = await res.json()
+            if (data.apiKey) {
+                // Show full API key once for user to copy
+                setApiKey(data.apiKey)
+                toast.success('API Key mới đã được tạo! Hãy copy và lưu trữ an toàn.')
+            }
+        } catch {
+            toast.error('Không thể tạo API Key')
+        } finally {
+            setGenerating(false)
+        }
+    }
+
+    const revokeApiKey = async () => {
+        if (!confirm('Xác nhận xóa API Key? Tất cả automation sử dụng key này sẽ ngừng hoạt động.')) return
+        try {
+            await fetch('/api/v1/auth/api-key', { method: 'DELETE' })
+            setApiKey(null)
+            toast.success('Đã xóa API Key')
+        } catch {
+            toast.error('Không thể xóa API Key')
+        }
+    }
+
+    const copyToClipboard = () => {
+        if (apiKey) {
+            navigator.clipboard.writeText(apiKey)
+            toast.success('Đã copy API Key')
+        }
+    }
+
+    return (
+        <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="glass-card p-6 mb-6"
+        >
+            <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center">
+                    <Link className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                    <h2 className="font-semibold">External API Key</h2>
+                    <p className="text-sm text-[var(--text-secondary)]">Dùng cho Make.com, Zapier, n8n tự động hóa</p>
+                </div>
+            </div>
+
+            {loading ? (
+                <div className="flex items-center justify-center py-4">
+                    <Loader2 className="w-6 h-6 animate-spin" />
+                </div>
+            ) : (
+                <div className="space-y-4">
+                    {apiKey ? (
+                        <>
+                            <div className="flex items-center gap-2 bg-[var(--bg-tertiary)] p-3 rounded-lg">
+                                <code className="flex-1 text-sm font-mono">{apiKey}</code>
+                                <button
+                                    onClick={copyToClipboard}
+                                    className="p-2 hover:bg-[var(--bg-hover)] rounded-lg"
+                                    title="Copy"
+                                >
+                                    <Copy className="w-4 h-4" />
+                                </button>
+                            </div>
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={generateApiKey}
+                                    disabled={generating}
+                                    className="btn-secondary flex items-center gap-2"
+                                >
+                                    <RefreshCw className={`w-4 h-4 ${generating ? 'animate-spin' : ''}`} />
+                                    Tạo key mới
+                                </button>
+                                <button
+                                    onClick={revokeApiKey}
+                                    className="btn-secondary text-red-400 hover:bg-red-500/20"
+                                >
+                                    Xóa key
+                                </button>
+                            </div>
+                            <p className="text-xs text-[var(--text-muted)]">
+                                ⚠️ Key chỉ hiển thị đầy đủ khi mới tạo. Sau đó chỉ hiển thị phần cuối.
+                            </p>
+                        </>
+                    ) : (
+                        <>
+                            <p className="text-sm text-[var(--text-secondary)]">
+                                Chưa có API Key. Tạo key để sử dụng với Make.com, Zapier hoặc các tool automation khác.
+                            </p>
+                            <button
+                                onClick={generateApiKey}
+                                disabled={generating}
+                                className="btn-primary flex items-center gap-2"
+                            >
+                                {generating ? (
+                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                ) : (
+                                    <Key className="w-4 h-4" />
+                                )}
+                                Tạo API Key
+                            </button>
+                        </>
+                    )}
+
+                    <div className="mt-4 p-3 bg-[var(--bg-tertiary)] rounded-lg">
+                        <p className="text-xs text-[var(--text-muted)] mb-2">Sử dụng trong HTTP request:</p>
+                        <code className="text-xs block bg-[var(--bg-primary)] p-2 rounded">
+                            Header: x-api-key: YOUR_API_KEY
+                        </code>
+                    </div>
+                </div>
+            )}
+        </motion.div>
+    )
 }
 
 export default function SettingsPage() {
@@ -317,11 +465,14 @@ export default function SettingsPage() {
                 </div>
             </motion.div>
 
+            {/* External API Key Section */}
+            <ExternalApiKeySection />
+
             {/* Language Settings */}
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
+                transition={{ delay: 0.15 }}
                 className="glass-card p-6 mb-6"
             >
                 <div className="flex items-center gap-3 mb-6">
