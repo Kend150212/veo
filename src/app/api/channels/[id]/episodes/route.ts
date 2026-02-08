@@ -2199,6 +2199,134 @@ LANGUAGE: Speak Vietnamese only.
 - B-roll phải minh họa đúng nội dung đang kể
 - Cảm xúc lên xuống theo cấu trúc 8 phase`
             }
+        } else if (voiceOverMode === 'educational_explainer') {
+            // Educational Explainer mode (Lóng / Vietcetera style)
+            voiceOverInstr = `CONTENT TYPE: EDUCATIONAL EXPLAINER (Giải thích giáo dục - Phong cách Lóng)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+⚠️⚠️⚠️ QUAN TRỌNG - GIẢI THÍCH KIẾN THỨC BẰNG STORY + DATA ⚠️⚠️⚠️
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+- Video giải thích khái niệm, kiến thức theo cách dễ hiểu
+- Kết hợp STORY HOOK + DATA DRIVEN + PERSONAL EXPERIENCE
+- Giọng văn casual nhưng có cấu trúc logic rõ ràng
+- 100% B-roll minh họa với voiceover
+
+🎙️ GIỌNG VĂN ĐẶC TRƯNG (Phong cách Lóng):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ PHASE 1: STORY HOOK (5% - Scene 1-2)
+Mở đầu bằng câu chuyện thú vị, tình huống hài hước hoặc fairytale element:
+- "Một ngày đẹp trời, tôi đang [hành động] thì bỗng [sự kiện bất ngờ]..."
+- "[Nhân vật kỳ ảo như Ông Bụt/Thần Đèn] hiện lên và nói: '[câu hỏi/đề nghị]'"
+- "Bạn có bao giờ [tình huống phổ biến] rồi nhận ra [vấn đề thú vị]?"
+- "Mắt tôi sáng ngời khi biết [phát hiện bất ngờ]..."
+
+✅ PHASE 2: PROBLEM STATEMENT (5% - Scene 3)
+Đặt vấn đề, tạo sự tò mò:
+- "Nghe cứ như là mơ, liệu đây là vị cứu tinh hay cạm bẫy?"
+- "Thế giới ai lại cho ai thứ gì miễn phí bao giờ?"
+- "Và tôi là [tên kênh/host]. Video này sẽ giải đáp tất cả."
+
+✅ PHASE 3: DISCLAIMER (3% - Scene 4)
+Giới thiệu bản thân + disclaimer:
+- "Video này được nghiên cứu cũng như tổng hợp từ nhiều nguồn."
+- "Nếu có gì sai hoặc cần đính chính, các bạn hãy vui lòng comment xuống phía bên dưới."
+- "Tôi là [tên]. Đây là [tên kênh] - nơi [slogan kênh]."
+
+✅ PHASE 4: CONCEPT EXPLAIN (15% - Scene 5-9)
+Giải thích khái niệm cơ bản:
+- "Đầu tiên thì hãy tìm hiểu về [khái niệm] này đi."
+- "[Khái niệm tiếng Việt] còn được biết đến là [tên tiếng Anh]."
+- "Nghe có vẻ mới nhưng thật ra từ [năm/thời điểm] người ta đã [lịch sử]..."
+- "Nói đơn giản, đây là một kiểu [định nghĩa ngắn gọn, dễ hiểu]."
+- "Kiểu như [ví dụ cụ thể với con số]."
+
+✅ PHASE 5: HOW IT WORKS (15% - Scene 10-15)
+Cơ chế hoạt động chi tiết:
+- "Thế cơ chế là như nào? Có [số] nhân vật chính trong câu chuyện này."
+- "Khi bạn [hành động], thì [cơ chế] sẽ nhảy vào [làm gì]..."
+- "Thế thì làm sao để sử dụng được? Đơn giản thôi. [các bước]"
+- "Bên [quốc gia 1], [công ty] làm [cách 1]. Còn ở [quốc gia 2] thì [cách 2]."
+
+✅ PHASE 6: BENEFITS (15% - Scene 16-22) - CÓ DATA
+Lợi ích, ưu điểm với số liệu:
+- "Liệu bạn có thắc mắc tại sao [điều gì] lại vô cùng hot?"
+- "Đầu tiên phải nói đến [lợi ích 1]. Với [cái này], bạn không cần [hạn chế cũ]."
+- "Thứ hai là [lợi ích 2]. Ở thời đại mới này, [giải thích xu hướng]."
+- "Thứ ba là [lợi ích 3]. Chuẩn với câu nói [quote phổ biến]."
+- "Một khảo sát của [nguồn uy tín] cho thấy [data cụ thể]."
+- "[Quốc gia] dự kiến từ [số liệu nhỏ] lên [số liệu lớn] vào năm [năm]."
+
+✅ PHASE 7: RISKS/DOWNSIDES (15% - Scene 23-30) - CÓ DATA
+Rủi ro, nhược điểm với số liệu:
+- "Nhưng mà có gì mà lại ngon bổ rẻ cơ chứ? Đừng lo, tôi sẽ nói ở phần này."
+- "Đầu tiên phải kể đến việc [rủi ro 1]. [Giải thích cơ chế rủi ro]."
+- "Một khảo sát của [nguồn] cho thấy [data đáng lo ngại]%."
+- "[Tổ chức uy tín] cảnh báo: '[trích dẫn cảnh báo]'."
+- "Ma thứ hai là [rủi ro 2]. Nhiều chỗ quảng cáo [hứa hẹn] nhưng [thực tế]..."
+- "[Nguồn] ghi nhận [vấn đề] tăng [số]% trong [khoảng thời gian]."
+
+✅ PHASE 8: PERSONAL STORY (10% - Scene 31-35)
+Kinh nghiệm cá nhân của host:
+- "Với kinh nghiệm của một [vai trò], tôi có thể chia sẻ về câu chuyện của mình."
+- "Bản thân tôi cũng từng [trải nghiệm cá nhân liên quan]..."
+- "Và đây là một thứ được nhắc đến như [tham khảo sách/nguồn uy tín]."
+- "Cuối cùng là mặc dù [kết quả đạt được] nhưng trong tôi vẫn [bài học rút ra]."
+
+✅ PHASE 9: PRACTICAL TIPS (12% - Scene 36-42)
+Lời khuyên thực tiễn:
+- "Từng là một [vai trò], bản thân tôi cũng rút ra cho mình một vài kinh nghiệm quý báu."
+- "Đầu tiên là [tip 1]. Trước khi [hành động], hãy [lời khuyên cụ thể]."
+- "Hai là [tip 2]. [Giải thích tại sao quan trọng]."
+- "Ba là [tip 3]. [Ví dụ cụ thể]."
+- "Bốn là [tip 4]. [Cách thực hiện]."
+
+✅ PHASE 10: CTA CLOSING (5% - Scene cuối)
+Tổng kết + CTA:
+- "Thật ra thì [chủ đề] không xấu, thậm chí tôi còn cho rằng [góc nhìn tích cực]."
+- "Đó cũng là những gì mà tôi rút ra được từ [chủ đề]."
+- "Video này được chúng tôi tổng hợp từ nhiều nguồn. Nếu có gì sai, các bạn hãy comment bên dưới."
+- "Tôi là [tên]. Xin chào và hẹn gặp lại."
+
+🎬 CẤU TRÚC 10 PHASE BẮT BUỘC:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. STORY HOOK (5%): Câu chuyện/tình huống thú vị mở đầu
+2. PROBLEM STATEMENT (5%): Đặt vấn đề, câu hỏi cần giải đáp
+3. DISCLAIMER (3%): Giới thiệu bản thân + disclaimer
+4. CONCEPT EXPLAIN (15%): Giải thích khái niệm cơ bản
+5. HOW IT WORKS (15%): Cơ chế hoạt động chi tiết
+6. BENEFITS (15%): Lợi ích, ưu điểm (CÓ DATA)
+7. RISKS/DOWNSIDES (15%): Rủi ro, nhược điểm (CÓ DATA)
+8. PERSONAL STORY (10%): Kinh nghiệm cá nhân của host
+9. PRACTICAL TIPS (12%): Lời khuyên thực tiễn
+10. CTA CLOSING (5%): Tổng kết + CTA
+
+📸 PROMPTTEXT FORMAT (100% B-ROLL):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[VOICEOVER in Vietnamese: (lời giải thích theo giọng văn trên)]. PACING: (fast-cut/slow-burn/normal).
+[PHASE: (tên phase hiện tại)].
+[Mô tả hình ảnh B-roll chi tiết LIÊN QUAN đến nội dung đang giải thích].
+ENVIRONMENT: (bối cảnh).
+CAMERA: (góc quay, lens mm).
+LIGHTING: (ánh sáng).
+STYLE: (phong cách visual - infographic, documentary, cinematic, etc).
+MOOD: (tâm trạng của cảnh).
+SOUND: (ambient sound, music).
+LANGUAGE: Speak Vietnamese only.
+
+❌ TUYỆT ĐỐI KHÔNG:
+- KHÔNG bắt đầu bằng giới thiệu khô khan ("Hôm nay chúng ta sẽ tìm hiểu...")
+- KHÔNG liệt kê thông tin như đọc sách giáo khoa
+- KHÔNG thiếu data/thống kê trong phần Benefits và Risks
+- KHÔNG quên personal story và tips thực tiễn
+
+✅ BẮT BUỘC:
+- Mở đầu bằng STORY HOOK thú vị
+- Có DATA/thống kê/nghiên cứu cụ thể
+- Có so sánh quốc tế (Mỹ, Singapore, Việt Nam, etc.)
+- Có personal experience từ host
+- Kết thúc với tips và CTA rõ ràng
+- 100% B-roll với voiceover`
         } else {
             voiceOverInstr = `CONTENT TYPE: B-ROLL ONLY (pure visuals, no dialogue).
 - The "voiceover" field should be empty or minimal ambient text

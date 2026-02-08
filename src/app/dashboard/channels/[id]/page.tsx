@@ -366,6 +366,18 @@ const CONTENT_TYPE_INFO: Record<string, { name: string; description: string; ico
             'Cấu trúc: Hook → Bối cảnh → Khó khăn → Kết quả → Lời khuyên',
             '100% B-roll với voiceover, không có nhân vật xuất hiện'
         ]
+    },
+    'educational_explainer': {
+        name: 'Giải Thích Giáo Dục (Explainer)',
+        description: 'Giải thích kiến thức, khái niệm với data và story hook - Phong cách Lóng, Vietcetera',
+        icon: '🎓',
+        tips: [
+            'Hook bằng câu chuyện thú vị/fairytale element',
+            'Giải thích khái niệm từ cơ bản đến chi tiết',
+            'Dùng nhiều data, thống kê, so sánh quốc tế',
+            'Chia sẻ kinh nghiệm cá nhân xen kẽ',
+            'Kết thúc với tips thực tiễn và CTA'
+        ]
     }
 }
 
@@ -2256,6 +2268,7 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                             </optgroup>
                             <optgroup label="📖 Kể Chuyện / Storytelling">
                                 <option value="narrative_storytelling">📖 Kể Chuyện B-roll (Phong cách Anh Dư Leo)</option>
+                                <option value="educational_explainer">🎓 Giải Thích Giáo Dục (Phong cách Lóng)</option>
                             </optgroup>
                             <optgroup label="🌸 Slice of Life / Healing">
                                 <option value="silent_life">🌸 Silent Life (Cuộc sống thầm lặng)</option>
