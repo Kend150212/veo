@@ -75,8 +75,9 @@ export async function POST(
             adSceneCount = 2,
             // Storyteller B-Roll option
             storytellerBrollEnabled = false,
-            // Continuity Style
-            continuityStyleId = null
+            // Narrative Storytelling options
+            narrativeTemplateId = null,
+            narrativeKeyPoints = []
         } = await req.json()
 
         // CTA options
@@ -117,28 +118,10 @@ export async function POST(
             return NextResponse.json({ error: 'Chưa cấu hình API key' }, { status: 400 })
         }
 
+        // Get visual style - use selected or channel default
         const styleId = selectedStyleId || channel.visualStyleId
         const visualStyle = styleId ? getStyleById(styleId) : null
         const styleKeywords = visualStyle?.promptKeywords || channel.visualStyleKeywords || 'cinematic, professional'
-
-        // Get continuity style if specified
-        let continuityBlock = ''
-        if (continuityStyleId) {
-            const continuityStyle = await prisma.continuityStyle.findFirst({
-                where: { id: continuityStyleId, channelId: id }
-            })
-            if (continuityStyle) {
-                continuityBlock = `\nCONTINUITY: palette=${continuityStyle.palette}; lighting=${continuityStyle.lighting}; camera=${continuityStyle.cameraStyle}; style=${continuityStyle.visualStyle}${continuityStyle.environment ? `; environment=${continuityStyle.environment}` : ''}${continuityStyle.audioMood ? `; audio-mood=${continuityStyle.audioMood}` : ''}`
-            }
-        } else if (channel.defaultContinuityStyleId) {
-            // Use channel default if no specific style selected
-            const defaultStyle = await prisma.continuityStyle.findUnique({
-                where: { id: channel.defaultContinuityStyleId }
-            })
-            if (defaultStyle) {
-                continuityBlock = `\nCONTINUITY: palette=${defaultStyle.palette}; lighting=${defaultStyle.lighting}; camera=${defaultStyle.cameraStyle}; style=${defaultStyle.visualStyle}${defaultStyle.environment ? `; environment=${defaultStyle.environment}` : ''}${defaultStyle.audioMood ? `; audio-mood=${defaultStyle.audioMood}` : ''}`
-            }
-        }
 
         // Parse knowledge base
         let knowledgeBase: { episodeIdeas?: { title: string; synopsis: string }[] } = {}
@@ -2011,6 +1994,153 @@ VOICE: (dialogue)]
 - Include giá cả và khuyến mãi trong CTA
 - Model phải NHẤT QUÁN xuyên suốt`
             }
+        } else if (voiceOverMode === 'one_shot') {
+            voiceOverInstr = `CONTENT TYPE: ONE SHOT (Một cảnh quay liên tục không cắt)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎥 CONCEPT: Single continuous shot - NO CUTS, seamless flow
+- Toàn bộ video là MỘT CẢNH QUAY LIÊN TỤC
+- Camera di chuyển nhanh/chậm tùy theo nội dung
+- Có thể zoom từ không gian siêu rộng (ultra-wide) đến cực macro (extreme close-up)
+- Tạo sự hấp dẫn qua camera movement và framing, KHÔNG phải qua cắt cảnh
+
+🎬 CRITICAL RULES:
+1. SINGLE CONTINUOUS SHOT - Tất cả scenes phải kết nối liền mạch, KHÔNG có cut
+2. SEAMLESS TRANSITIONS - Mỗi scene tiếp nối scene trước một cách tự nhiên
+3. DYNAMIC CAMERA MOVEMENT - Camera di chuyển theo nội dung:
+   - Slow, smooth cho emotional moments
+   - Fast, dynamic cho action/excitement
+   - Gradual zoom cho reveals
+   - Quick whip pan cho transitions
+
+📹 CAMERA TECHNIQUES:
+- DOLLY: Camera di chuyển tới/lui theo track
+- ZOOM: Từ wide → close-up hoặc ngược lại
+- ORBIT: Camera quay quanh subject
+- CRANE: Camera nâng lên/hạ xuống
+- TRACKING: Camera theo dõi subject di chuyển
+- PUSH IN: Tiến gần vào subject
+- PULL OUT: Lùi xa ra khung cảnh rộng
+
+🎯 FRAMING TRANSITIONS:
+- Ultra-wide establishing shot → Medium shot → Close-up → Extreme macro
+- Hoặc ngược lại: Macro detail → Pull out to reveal full scene
+- Smooth, continuous movement - KHÔNG jump cut
+
+⚡ PACING BY CONTENT:
+- EMOTIONAL/DRAMATIC: Slow dolly, gradual zoom, smooth orbit
+- ACTION/EXCITEMENT: Fast tracking, quick whip pan, rapid push in
+- REVEAL/MYSTERY: Slow pull out, gradual reveal, suspenseful movement
+- INTIMATE/DETAIL: Slow push in to macro, gentle movement
+
+🎭 PROMPTTEXT FORMAT:
+[ONE SHOT CONTINUOUS. Starting from (wide/medium/close-up). Camera (movement type: dolly forward/zoom in/orbit/track/crane up). Transitioning to (next framing). Seamless flow, no cuts. Continuous movement. Ending at (final framing). VOICE: (dialogue if any)]
+
+📐 EXAMPLES:
+- "ONE SHOT. Ultra-wide establishing shot of city skyline. Camera dolly forward slowly, gradually zooming in. Transitioning through medium shot to close-up of character on rooftop. Smooth continuous movement, no cuts. VOICE: [dialogue]"
+- "ONE SHOT. Extreme macro of eye detail. Camera pulls out slowly, revealing face, then full body, then wide shot of environment. Seamless zoom out, continuous shot. VOICE: [dialogue]"
+- "ONE SHOT. Medium shot of character. Camera orbits around them while zooming in. Fast whip pan to reveal action behind. Continuous movement, no cuts. VOICE: [dialogue]"
+
+⚠️ CRITICAL REMINDERS:
+- MỖI scene phải bắt đầu từ điểm kết thúc của scene trước
+- KHÔNG có jump cuts, fade, dissolve - chỉ có camera movement
+- Tạo visual interest qua framing và movement, không qua editing
+- Pacing camera movement theo mood của nội dung`
+        } else if (voiceOverMode === 'narrative_storytelling') {
+            // Narrative Storytelling B-roll mode (Anh Dư Leo style)
+            const keyPointsText = narrativeKeyPoints && narrativeKeyPoints.length > 0
+                ? `Các điểm chính cần đề cập: ${narrativeKeyPoints.join(', ')}`
+                : ''
+
+            const templateName = narrativeTemplateId === 'social-commentary-broll'
+                ? 'Bình Luận Xã Hội (Social Commentary)'
+                : 'Hành Trình Cá Nhân (Personal Journey)'
+
+            voiceOverInstr = `CONTENT TYPE: NARRATIVE STORYTELLING B-ROLL (Kể chuyện B-roll - Phong cách Anh Dư Leo)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎯 TEMPLATE: ${templateName}
+${keyPointsText}
+
+⚠️⚠️⚠️ QUAN TRỌNG NHẤT - 100% B-ROLL, KHÔNG CÓ HOST/NHÂN VẬT TRÊN HÌNH ⚠️⚠️⚠️
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+- Video 100% là hình ảnh minh họa (B-roll), KHÔNG có người dẫn chương trình
+- Chỉ có GIỌNG KỂ CHUYỆN (voiceover) phủ lên hình ảnh
+- Hình ảnh B-roll phải LIÊN QUAN và minh họa cho nội dung đang kể
+- Phong cách tâm sự, chia sẻ như đang nói chuyện với bạn thân
+
+🎙️ GIỌNG VĂN KỂ CHUYỆN (CRITICAL - Phong cách Anh Dư Leo):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+KHÔNG viết kiểu TIN TỨC/GIÁO DỤC: "Một thay đổi chấn động vừa được công bố..."
+PHẢI viết kiểu TÂM SỰ/KỂ CHUYỆN cá nhân:
+
+✅ MẪU CÂU HOOK (Scene 1-2):
+- "8 năm, từ không có gì đến 30 lượng vàng. Nghe xong cái này là bảo đảm các bạn không còn nghèo nữa."
+- "Mấy em biết không? Hồi đó anh/chị lãnh lương chỉ có [X] mà giờ..."
+- "Nhiều người nhìn [thành quả] này, họ chắc nghĩ tao ăn may. Nhưng họ không biết..."
+- "Bạn có tin không? Từ [điểm xuất phát thấp] để đạt được [kết quả khủng] chỉ trong [thời gian]..."
+
+✅ PHẢN BÁC NGƯỜI NGHI NGỜ (Scene 3-5):
+- "Có người nói [phản bác]. Ờ thì cũng được thôi, nhưng để tao kể cho nghe..."
+- "Mấy đứa nghĩ tao nói xạo đúng không? Nhưng mà [bằng chứng/số liệu cụ thể]..."
+- "Ai nói [quan điểm sai] thì chưa hiểu, để tao giải thích..."
+
+✅ KỂ BỐI CẢNH/KHÓ KHĂN (Scene 6-12):
+- "Hồi đó, gia đình tao nghèo lắm. [Chi tiết cụ thể]..."
+- "Tao còn nhớ lúc [thời điểm], tao chỉ có [số tiền/hoàn cảnh] mà thôi..."
+- "Lúc khó khăn nhất là khi [mô tả cụ thể]..."
+- "Mấy em có biết cái cảm giác [cảm xúc tiêu cực] nó khó chịu như thế nào không?"
+
+✅ ĐIỂM CHUYỂN/BÀI HỌC (Scene 13-18):
+- "Rồi thì có một ngày, tao nhận ra [bài học]..."
+- "Đó là lúc tao quyết định [hành động thay đổi]..."
+- "Chính [sự kiện/người/điều gì] đã khiến tao thay đổi hoàn toàn..."
+
+✅ KẾT QUẢ/CHỨNG MINH (Scene 19-25):
+- "Và kết quả là [thành quả cụ thể với con số]..."
+- "Giờ đây, tao có thể [thành quả] mà không cần lo lắng..."
+- "Từ [điểm xuất phát] giờ đã có [kết quả], chỉ trong [thời gian]..."
+
+✅ LỜI KHUYÊN (Scene cuối):
+- "Nên là mấy em, nếu muốn [mục tiêu], thì [lời khuyên cụ thể]..."
+- "Điều quan trọng nhất là [bài học core]..."
+- "Nhớ nha, [khuyên nhẹ nhàng như bạn bè]..."
+
+🎬 CẤU TRÚC 8 PHASE BẮT BUỘC:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. HOOK (5%): Tuyên bố kết quả ấn tượng ngay đầu video
+2. SKEPTIC COUNTER (10%): Đối đầu người hoài nghi
+3. CONTEXT SETTING (15%): Bối cảnh, thông tin nền
+4. STRUGGLE JOURNEY (25%): Khó khăn, thách thức
+5. TURNING POINT (15%): Điểm chuyển, bài học
+6. RESULT PROOF (20%): Kết quả, chứng minh bằng số liệu
+7. PRACTICAL ADVICE (7%): Lời khuyên thực tiễn
+8. CTA CLOSING (3%): Kêu gọi hành động nhẹ nhàng
+
+📸 PROMPTTEXT FORMAT (100% B-ROLL):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[VOICEOVER in Vietnamese: (lời kể chuyện theo giọng văn trên)]. PACING: (fast-cut/slow-burn/normal).
+[Mô tả hình ảnh B-roll chi tiết LIÊN QUAN đến nội dung voiceover].
+ENVIRONMENT: (bối cảnh).
+CAMERA: (góc quay, lens mm).
+LIGHTING: (ánh sáng).
+STYLE: (phong cách visual - cinematic, documentary, etc).
+MOOD: (tâm trạng của cảnh).
+[SPATIAL_AUDIO: (âm thanh 3D nếu cần)].
+SOUND: (ambient sound, music).
+LANGUAGE: Speak Vietnamese only.
+
+❌ TUYỆT ĐỐI KHÔNG:
+- KHÔNG có host/người dẫn xuất hiện trên hình
+- KHÔNG viết giọng tin tức trang trọng ("Một thay đổi chấn động...")
+- KHÔNG dùng từ ngữ học thuật, phức tạp
+- KHÔNG liệt kê thông tin khô khan
+
+✅ BẮT BUỘC:
+- 100% B-roll với voiceover kể chuyện
+- Giọng văn thân mật như nói chuyện với bạn
+- Dùng số liệu cụ thể làm bằng chứng
+- B-roll phải minh họa đúng nội dung đang kể
+- Cảm xúc lên xuống theo cấu trúc 8 phase`
         } else {
             voiceOverInstr = `CONTENT TYPE: B-ROLL ONLY (pure visuals, no dialogue).
 - The "voiceover" field should be empty or minimal ambient text
@@ -2168,30 +2298,6 @@ Example: "[AD_INTEGRATION: testimonial] Host showing product with genuine smile.
 - Keep ad segments SHORT (1 scene each, not long pitches)
 ` : ''
 
-        // Get default background for channel
-        const defaultBackground = (channel as any).backgrounds?.find((bg: any) => bg.isDefault) || (channel as any).backgrounds?.[0]
-        const backgroundInstr = defaultBackground ? `
-🎬 BACKGROUND SETTING (MANDATORY - USE FOR ALL SCENES):
-═══════════════════════════════════════════════════════
-Background Name: "${defaultBackground.name}"
-${defaultBackground.description ? `Description: ${defaultBackground.description}` : ''}
-${defaultBackground.promptKeywords ? `Background Keywords: ${defaultBackground.promptKeywords}` : ''}
-
-⚠️ CRITICAL BACKGROUND RULES:
-- ALL scenes in this episode MUST use this SAME background setting
-- Include background description in EVERY scene's promptText
-- Background should be consistent throughout the episode
-- If background has specific visual elements (furniture, lighting, colors), mention them in each scene
-- Background creates the atmosphere and setting for the entire episode
-
-📝 BACKGROUND FORMAT IN PROMPTTEXT:
-Include background description at the START of each promptText:
-"[BACKGROUND: ${defaultBackground.promptKeywords || defaultBackground.name}] [rest of scene description]"
-
-Example:
-"[BACKGROUND: ${defaultBackground.promptKeywords || defaultBackground.name}] Character standing in the center, [action description]..."
-` : ''
-
         // Generate episode with YouTube content
         const fullPrompt = `Create Episode ${nextEpisodeNumber} with EXACTLY ${totalScenes} scenes for channel "${channel.name}"
 
@@ -2204,7 +2310,6 @@ ${characterBible || '(No host/characters for this episode)'}
 ${characterAdaptInstr}
 ${existingEpisodesSummary}
 ${customContentInstr}
-${backgroundInstr}
 
 🎬 ${voiceOverInstr}
 📢 CHANNEL MENTION: ${channelMentionInstr}
