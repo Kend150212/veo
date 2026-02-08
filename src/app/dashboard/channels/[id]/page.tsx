@@ -730,7 +730,7 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
 
     // Voice settings (for voice_over mode)
     const [voiceGender, setVoiceGender] = useState<'male' | 'female' | 'auto'>('auto')
-    const [voiceTone, setVoiceTone] = useState<'warm' | 'professional' | 'energetic' | 'calm' | 'serious'>('warm')
+    const [voiceTone, setVoiceTone] = useState<'auto' | 'warm' | 'professional' | 'energetic' | 'calm' | 'serious' | 'dramatic'>('auto')
 
     // Storyteller B-Roll option
     const [storytellerBrollEnabled, setStorytellerBrollEnabled] = useState(false)
@@ -749,6 +749,7 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
     const [musicMode, setMusicMode] = useState<'with_music' | 'ambient_only'>('with_music') // Nhạc nền hoặc chỉ âm thanh môi trường
     const [dialogueDensityMin, setDialogueDensityMin] = useState(12)
     const [dialogueDensityMax, setDialogueDensityMax] = useState(18)
+
 
     // Native Ad Insertion
     const [adEnabled, setAdEnabled] = useState(false)
@@ -3092,6 +3093,67 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                                 />
                                 <span className="text-xs text-[var(--text-muted)]">từ</span>
                             </div>
+                        </div>
+
+                        {/* Voice Settings - Full Width */}
+                        <div className="p-3 bg-[var(--bg-tertiary)] rounded-lg md:col-span-2">
+                            <p className="text-sm font-medium mb-3">🎙️ Cài đặt giọng nói</p>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {/* Voice Gender */}
+                                <div>
+                                    <p className="text-xs text-[var(--text-muted)] mb-2">Giới tính giọng:</p>
+                                    <div className="flex gap-2">
+                                        <button
+                                            onClick={() => setVoiceGender('auto')}
+                                            className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition ${voiceGender === 'auto'
+                                                ? 'bg-[var(--accent-primary)] text-white'
+                                                : 'bg-[var(--bg-secondary)] text-[var(--text-muted)] hover:bg-[var(--bg-hover)]'
+                                                }`}
+                                        >
+                                            🤖 Tự động
+                                        </button>
+                                        <button
+                                            onClick={() => setVoiceGender('male')}
+                                            className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition ${voiceGender === 'male'
+                                                ? 'bg-blue-500 text-white'
+                                                : 'bg-[var(--bg-secondary)] text-[var(--text-muted)] hover:bg-[var(--bg-hover)]'
+                                                }`}
+                                        >
+                                            👨 Nam
+                                        </button>
+                                        <button
+                                            onClick={() => setVoiceGender('female')}
+                                            className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition ${voiceGender === 'female'
+                                                ? 'bg-pink-500 text-white'
+                                                : 'bg-[var(--bg-secondary)] text-[var(--text-muted)] hover:bg-[var(--bg-hover)]'
+                                                }`}
+                                        >
+                                            👩 Nữ
+                                        </button>
+                                    </div>
+                                </div>
+                                {/* Voice Tone */}
+                                <div>
+                                    <p className="text-xs text-[var(--text-muted)] mb-2">Tone giọng nói:</p>
+                                    <select
+                                        value={voiceTone}
+                                        onChange={(e) => setVoiceTone(e.target.value as typeof voiceTone)}
+                                        className="input-field w-full text-sm"
+                                    >
+                                        <option value="auto">🤖 Tự động (AI chọn theo nội dung)</option>
+                                        <option value="warm">🌤️ Ấm áp - Thân thiện, gần gũi</option>
+                                        <option value="professional">💼 Chuyên nghiệp - Tin tức, giáo dục</option>
+                                        <option value="energetic">⚡ Năng động - Hào hứng, phấn khích</option>
+                                        <option value="calm">🧘 Điềm tĩnh - Thư giãn, mindfulness</option>
+                                        <option value="dramatic">🎭 Kịch tính - Story, suspense</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <p className="text-xs text-[var(--text-muted)] mt-2">
+                                {voiceGender === 'auto'
+                                    ? '✓ AI sẽ tự chọn giọng phù hợp với nội dung và phong cách kênh'
+                                    : `✓ Cố định giọng ${voiceGender === 'male' ? 'nam' : 'nữ'} xuyên suốt video`}
+                            </p>
                         </div>
                     </div>
                 </div>

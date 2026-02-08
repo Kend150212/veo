@@ -236,13 +236,27 @@ Trang phục, biểu cảm, phụ kiện phải GIỐNG HỆT nhau trong tất c
         // Voice settings mapping
         const voiceGenderLabel = voiceGender === 'male' ? 'Male voice (giọng nam)' : voiceGender === 'female' ? 'Female voice (giọng nữ)' : 'any gender voice'
         const toneMap: Record<string, string> = {
+            'auto': 'natural and appropriate for content',
             'warm': 'warm and friendly',
             'professional': 'professional and authoritative',
             'energetic': 'energetic and enthusiastic',
             'calm': 'calm and soothing',
-            'serious': 'serious and news-like'
+            'serious': 'serious and news-like',
+            'dramatic': 'dramatic and theatrical'
         }
-        const voiceToneLabel = toneMap[voiceTone] || 'warm and friendly'
+        const voiceToneLabel = toneMap[voiceTone] || 'natural and appropriate for content'
+
+        // Voice Consistency Rule - prevent alternating male/female voices
+        const voiceConsistencyRule = `
+🎙️ VOICE CONSISTENCY RULE (CỰC KỲ QUAN TRỌNG):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+${voiceGender === 'male' ? '👨 CỐ ĐỊNH GIỌNG NAM: Toàn bộ video chỉ dùng giọng nam.' :
+                voiceGender === 'female' ? '👩 CỐ ĐỊNH GIỌNG NỮ: Toàn bộ video chỉ dùng giọng nữ.' :
+                    '🤖 TỰ ĐỘNG: AI chọn 1 giọng phù hợp (NAM hoặc NỮ) rồi GIỮ NGUYÊN xuyên suốt video.'}
+- TUYỆT ĐỐI KHÔNG ĐƯỢC xen kẽ giọng nam/nữ giữa các scene
+- Tone giọng: ${voiceToneLabel}
+- Thêm "VOICE: ${voiceGender === 'male' ? 'Male voice (giọng nam)' : voiceGender === 'female' ? 'Female voice (giọng nữ)' : '[Giọng đã chọn]'}, ${voiceToneLabel}" vào cuối mỗi promptText
+`
 
         // Build voice over mode instruction
         let voiceOverInstr = ''
@@ -2121,6 +2135,8 @@ ${keyPointsText}
 - Host có cảm xúc, biểu cảm phong phú theo nội dung
 - Phong cách thân mật như đang tâm sự với bạn thân
 
+${voiceConsistencyRule}
+
 ${voiceStyleInstructions}
 
 📸 PROMPTTEXT FORMAT (HOST + STORY ELEMENTS):
@@ -2200,6 +2216,8 @@ LANGUAGE: Speak Vietnamese only. PACING: (fast-cut/slow-burn/normal).
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🎯 TEMPLATE: ${templateName}
 ${keyPointsText}
+
+${voiceConsistencyRule}
 
 ⚠️⚠️⚠️ QUAN TRỌNG NHẤT - 100% B-ROLL, KHÔNG CÓ HOST/NHÂN VẬT TRÊN HÌNH ⚠️⚠️⚠️
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -2285,6 +2303,7 @@ LANGUAGE: Speak Vietnamese only.
 - Giọng văn casual nhưng có cấu trúc logic rõ ràng
 - 100% B-roll minh họa với voiceover
 
+${voiceConsistencyRule}
 🎙️ GIỌNG VĂN ĐẶC TRƯNG (Phong cách Lóng):
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 

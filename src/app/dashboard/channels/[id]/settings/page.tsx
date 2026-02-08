@@ -17,14 +17,10 @@ import {
     AlertTriangle,
     Youtube,
     Link,
-    Image,
-    Upload,
-    X,
-    Star
+    Image
 } from 'lucide-react'
 import toast from 'react-hot-toast'
-import { CHANNEL_STYLES, getStyleById } from '@/lib/channel-styles'
-import ContinuityStyleManager from '@/components/ContinuityStyleManager'
+import { CHANNEL_STYLES, getStyleById, STYLE_CATEGORIES, getStylesByCategory } from '@/lib/channel-styles'
 
 interface Channel {
     id: string
@@ -63,19 +59,6 @@ export default function ChannelSettingsPage({ params }: { params: Promise<{ id: 
     const [thumbnailStyleId, setThumbnailStyleId] = useState('')
     const [dialogueLanguage, setDialogueLanguage] = useState('vi')
 
-    // Backgrounds
-    const [backgrounds, setBackgrounds] = useState<any[]>([])
-    const [isLoadingBackgrounds, setIsLoadingBackgrounds] = useState(false)
-    const [showBackgroundForm, setShowBackgroundForm] = useState(false)
-    const [editingBackground, setEditingBackground] = useState<any>(null)
-    const [newBackground, setNewBackground] = useState({
-        name: '',
-        description: '',
-        promptKeywords: '',
-        imageBase64: '',
-        isDefault: false
-    })
-
     // Thumbnail Styles
     const THUMBNAIL_STYLES = [
         { id: 'bold_minimal', name: '🎯 Bold Minimal', desc: 'Nền solid màu đậm, text lớn bold' },
@@ -95,147 +78,7 @@ export default function ChannelSettingsPage({ params }: { params: Promise<{ id: 
     useEffect(() => {
         fetchChannel()
         fetchYoutubeDefaults()
-        fetchBackgrounds()
     }, [id])
-
-    const fetchBackgrounds = async () => {
-        setIsLoadingBackgrounds(true)
-        try {
-            const res = await fetch(`/api/channels/${id}/backgrounds`)
-            const data = await res.json()
-            if (data.backgrounds) {
-                setBackgrounds(data.backgrounds)
-            }
-        } catch (error) {
-            console.error('Failed to fetch backgrounds:', error)
-            toast.error('Không thể tải danh sách bối cảnh')
-        } finally {
-            setIsLoadingBackgrounds(false)
-        }
-    }
-
-    const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0]
-        if (!file) return
-
-        if (!file.type.startsWith('image/')) {
-            toast.error('Vui lòng chọn file hình ảnh')
-            return
-        }
-
-        if (file.size > 5 * 1024 * 1024) {
-            toast.error('Kích thước file không được vượt quá 5MB')
-            return
-        }
-
-        const reader = new FileReader()
-        reader.onloadend = () => {
-            const base64 = reader.result as string
-            setNewBackground({ ...newBackground, imageBase64: base64 })
-        }
-        reader.readAsDataURL(file)
-    }
-
-    const handleSaveBackground = async () => {
-        if (!newBackground.name.trim()) {
-            toast.error('Vui lòng nhập tên bối cảnh')
-            return
-        }
-
-        try {
-            const url = editingBackground
-                ? `/api/channels/${id}/backgrounds`
-                : `/api/channels/${id}/backgrounds`
-            const method = editingBackground ? 'PUT' : 'POST'
-
-            const body = editingBackground
-                ? { backgroundId: editingBackground.id, ...newBackground }
-                : newBackground
-
-            const res = await fetch(url, {
-                method,
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(body)
-            })
-
-            if (!res.ok) {
-                throw new Error('Failed to save background')
-            }
-
-            toast.success(editingBackground ? 'Đã cập nhật bối cảnh' : 'Đã thêm bối cảnh')
-            setShowBackgroundForm(false)
-            setEditingBackground(null)
-            setNewBackground({
-                name: '',
-                description: '',
-                promptKeywords: '',
-                imageBase64: '',
-                isDefault: false
-            })
-            fetchBackgrounds()
-        } catch (error) {
-            console.error('Failed to save background:', error)
-            toast.error('Không thể lưu bối cảnh')
-        }
-    }
-
-    const handleDeleteBackground = async (backgroundId: string) => {
-        if (!confirm('Bạn có chắc muốn xóa bối cảnh này?')) return
-
-        try {
-            const res = await fetch(`/api/channels/${id}/backgrounds?backgroundId=${backgroundId}`, {
-                method: 'DELETE'
-            })
-
-            if (!res.ok) {
-                throw new Error('Failed to delete background')
-            }
-
-            toast.success('Đã xóa bối cảnh')
-            fetchBackgrounds()
-        } catch (error) {
-            console.error('Failed to delete background:', error)
-            toast.error('Không thể xóa bối cảnh')
-        }
-    }
-
-    const handleEditBackground = (bg: any) => {
-        setEditingBackground(bg)
-        setNewBackground({
-            name: bg.name,
-            description: bg.description || '',
-            promptKeywords: bg.promptKeywords || '',
-            imageBase64: bg.imageBase64 || '',
-            isDefault: bg.isDefault || false
-        })
-        setShowBackgroundForm(true)
-    }
-
-    const handleSetDefault = async (backgroundId: string) => {
-        try {
-            const bg = backgrounds.find(b => b.id === backgroundId)
-            if (!bg) return
-
-            const res = await fetch(`/api/channels/${id}/backgrounds`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    backgroundId,
-                    isDefault: true
-                })
-            })
-
-            if (!res.ok) {
-                throw new Error('Failed to set default')
-            }
-
-            toast.success('Đã đặt làm bối cảnh mặc định')
-            fetchBackgrounds()
-        } catch (error) {
-            console.error('Failed to set default:', error)
-            toast.error('Không thể đặt mặc định')
-        }
-    }
 
     const fetchYoutubeDefaults = async () => {
         try {
@@ -396,16 +239,21 @@ export default function ChannelSettingsPage({ params }: { params: Promise<{ id: 
                         className="input-field"
                     >
                         <option value="">-- Chọn style --</option>
-                        {CHANNEL_STYLES.map(style => (
-                            <option key={style.id} value={style.id}>
-                                {style.nameVi} - {style.descriptionVi}
-                            </option>
-                        ))}
+                        {STYLE_CATEGORIES.filter(cat => cat.id !== 'all').map(category => {
+                            const styles = getStylesByCategory(category.id)
+                            if (styles.length === 0) return null
+                            return (
+                                <optgroup key={category.id} label={category.name}>
+                                    {styles.map(style => (
+                                        <option key={style.id} value={style.id}>
+                                            {style.nameVi} - {style.descriptionVi}
+                                        </option>
+                                    ))}
+                                </optgroup>
+                            )
+                        })}
                     </select>
                 </div>
-
-                {/* Continuity Style */}
-                <ContinuityStyleManager channelId={id} />
 
                 {/* Characters */}
                 <div className="glass-card p-6">
@@ -450,247 +298,6 @@ export default function ChannelSettingsPage({ params }: { params: Promise<{ id: 
                             🇺🇸 English
                         </button>
                     </div>
-                </div>
-
-                {/* Backgrounds */}
-                <div className="glass-card p-6">
-                    <div className="flex items-center justify-between mb-4">
-                        <h3 className="font-semibold flex items-center gap-2">
-                            <Image className="w-4 h-4" />
-                            Bối cảnh (Backgrounds)
-                        </h3>
-                        <button
-                            onClick={() => {
-                                setShowBackgroundForm(true)
-                                setEditingBackground(null)
-                                setNewBackground({
-                                    name: '',
-                                    description: '',
-                                    promptKeywords: '',
-                                    imageBase64: '',
-                                    isDefault: false
-                                })
-                            }}
-                            className="px-3 py-1.5 text-sm bg-[var(--accent-primary)] text-white rounded-lg hover:opacity-90 transition flex items-center gap-2"
-                        >
-                            <Upload className="w-3 h-3" />
-                            Thêm bối cảnh
-                        </button>
-                    </div>
-                    <p className="text-sm text-[var(--text-muted)] mb-4">
-                        Tạo và quản lý các bối cảnh cho channel. Bối cảnh mặc định sẽ được sử dụng cho tất cả các episode.
-                    </p>
-
-                    {isLoadingBackgrounds ? (
-                        <div className="flex items-center justify-center py-8">
-                            <Loader2 className="w-5 h-5 animate-spin text-[var(--text-muted)]" />
-                        </div>
-                    ) : backgrounds.length === 0 ? (
-                        <div className="text-center py-8 text-[var(--text-muted)]">
-                            Chưa có bối cảnh nào. Nhấn "Thêm bối cảnh" để tạo bối cảnh đầu tiên.
-                        </div>
-                    ) : (
-                        <div className="space-y-3">
-                            {backgrounds.map((bg) => (
-                                <div
-                                    key={bg.id}
-                                    className={`p-4 rounded-lg border-2 ${bg.isDefault
-                                            ? 'border-[var(--accent-primary)] bg-[var(--accent-primary)]/10'
-                                            : 'border-[var(--bg-tertiary)] bg-[var(--bg-secondary)]'
-                                        }`}
-                                >
-                                    <div className="flex items-start gap-4">
-                                        {bg.imageUrl && (
-                                            <img
-                                                src={bg.imageUrl}
-                                                alt={bg.name}
-                                                className="w-20 h-20 object-cover rounded-lg"
-                                            />
-                                        )}
-                                        <div className="flex-1">
-                                            <div className="flex items-center gap-2 mb-1">
-                                                <h4 className="font-medium">{bg.name}</h4>
-                                                {bg.isDefault && (
-                                                    <span className="px-2 py-0.5 text-xs bg-[var(--accent-primary)] text-white rounded flex items-center gap-1">
-                                                        <Star className="w-3 h-3 fill-current" />
-                                                        Mặc định
-                                                    </span>
-                                                )}
-                                            </div>
-                                            {bg.description && (
-                                                <p className="text-sm text-[var(--text-muted)] mb-2">
-                                                    {bg.description}
-                                                </p>
-                                            )}
-                                            {bg.promptKeywords && (
-                                                <p className="text-xs text-[var(--text-secondary)] font-mono bg-[var(--bg-tertiary)] p-2 rounded">
-                                                    {bg.promptKeywords}
-                                                </p>
-                                            )}
-                                        </div>
-                                        <div className="flex gap-2">
-                                            {!bg.isDefault && (
-                                                <button
-                                                    onClick={() => handleSetDefault(bg.id)}
-                                                    className="p-2 text-[var(--text-muted)] hover:text-[var(--accent-primary)] transition"
-                                                    title="Đặt làm mặc định"
-                                                >
-                                                    <Star className="w-4 h-4" />
-                                                </button>
-                                            )}
-                                            <button
-                                                onClick={() => handleEditBackground(bg)}
-                                                className="p-2 text-[var(--text-muted)] hover:text-[var(--accent-primary)] transition"
-                                                title="Chỉnh sửa"
-                                            >
-                                                <Settings className="w-4 h-4" />
-                                            </button>
-                                            <button
-                                                onClick={() => handleDeleteBackground(bg.id)}
-                                                className="p-2 text-red-400 hover:text-red-300 transition"
-                                                title="Xóa"
-                                            >
-                                                <Trash2 className="w-4 h-4" />
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-
-                    {showBackgroundForm && (
-                        <div className="mt-6 p-4 bg-[var(--bg-tertiary)] rounded-lg border-2 border-[var(--accent-primary)]/30">
-                            <div className="flex items-center justify-between mb-4">
-                                <h4 className="font-medium">
-                                    {editingBackground ? 'Chỉnh sửa bối cảnh' : 'Thêm bối cảnh mới'}
-                                </h4>
-                                <button
-                                    onClick={() => {
-                                        setShowBackgroundForm(false)
-                                        setEditingBackground(null)
-                                        setNewBackground({
-                                            name: '',
-                                            description: '',
-                                            promptKeywords: '',
-                                            imageBase64: '',
-                                            isDefault: false
-                                        })
-                                    }}
-                                    className="p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
-                                >
-                                    <X className="w-4 h-4" />
-                                </button>
-                            </div>
-                            <div className="space-y-4">
-                                <div>
-                                    <label className="block text-sm font-medium mb-2">
-                                        Tên bối cảnh <span className="text-red-400">*</span>
-                                    </label>
-                                    <input
-                                        type="text"
-                                        value={newBackground.name}
-                                        onChange={(e) =>
-                                            setNewBackground({ ...newBackground, name: e.target.value })
-                                        }
-                                        placeholder="VD: Phòng khách, Studio, Ngoài trời..."
-                                        className="input-field"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium mb-2">Mô tả</label>
-                                    <textarea
-                                        value={newBackground.description}
-                                        onChange={(e) =>
-                                            setNewBackground({ ...newBackground, description: e.target.value })
-                                        }
-                                        placeholder="Mô tả chi tiết về bối cảnh..."
-                                        className="input-field min-h-[80px]"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium mb-2">
-                                        Prompt Keywords (cho AI)
-                                    </label>
-                                    <textarea
-                                        value={newBackground.promptKeywords}
-                                        onChange={(e) =>
-                                            setNewBackground({ ...newBackground, promptKeywords: e.target.value })
-                                        }
-                                        placeholder="VD: cozy living room, warm lighting, modern furniture, plants, bookshelf..."
-                                        className="input-field min-h-[80px] font-mono text-sm"
-                                    />
-                                    <p className="text-xs text-[var(--text-muted)] mt-1">
-                                        Keywords mô tả bối cảnh để AI sử dụng khi tạo prompt
-                                    </p>
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium mb-2">Hình ảnh</label>
-                                    <input
-                                        type="file"
-                                        accept="image/*"
-                                        onChange={handleImageUpload}
-                                        className="input-field"
-                                    />
-                                    {newBackground.imageBase64 && (
-                                        <div className="mt-2 relative">
-                                            <img
-                                                src={newBackground.imageBase64}
-                                                alt="Preview"
-                                                className="w-full max-w-xs h-40 object-cover rounded-lg"
-                                            />
-                                            <button
-                                                onClick={() =>
-                                                    setNewBackground({ ...newBackground, imageBase64: '' })
-                                                }
-                                                className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600"
-                                            >
-                                                <X className="w-4 h-4" />
-                                            </button>
-                                        </div>
-                                    )}
-                                </div>
-                                <div className="flex items-center gap-3">
-                                    <input
-                                        type="checkbox"
-                                        id="isDefault"
-                                        checked={newBackground.isDefault}
-                                        onChange={(e) =>
-                                            setNewBackground({ ...newBackground, isDefault: e.target.checked })
-                                        }
-                                        className="w-5 h-5 rounded"
-                                    />
-                                    <label htmlFor="isDefault" className="text-sm cursor-pointer">
-                                        Đặt làm bối cảnh mặc định (sẽ dùng cho tất cả episode)
-                                    </label>
-                                </div>
-                                <div className="flex gap-3">
-                                    <button
-                                        onClick={handleSaveBackground}
-                                        className="px-4 py-2 bg-[var(--accent-primary)] text-white rounded-lg hover:opacity-90 transition"
-                                    >
-                                        {editingBackground ? 'Cập nhật' : 'Thêm'}
-                                    </button>
-                                    <button
-                                        onClick={() => {
-                                            setShowBackgroundForm(false)
-                                            setEditingBackground(null)
-                                            setNewBackground({
-                                                name: '',
-                                                description: '',
-                                                promptKeywords: '',
-                                                imageBase64: '',
-                                                isDefault: false
-                                            })
-                                        }}
-                                        className="px-4 py-2 bg-[var(--bg-tertiary)] rounded-lg hover:bg-[var(--bg-hover)] transition"
-                                    >
-                                        Hủy
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    )}
                 </div>
 
                 {/* YouTube Defaults */}
@@ -769,14 +376,14 @@ export default function ChannelSettingsPage({ params }: { params: Promise<{ id: 
                                 key={style.id}
                                 onClick={() => setThumbnailStyleId(style.id)}
                                 className={`p-3 rounded-lg text-left text-sm transition ${thumbnailStyleId === style.id
-                                    ? 'bg-[var(--accent-primary)] text-white'
-                                    : 'bg-[var(--bg-tertiary)] hover:bg-[var(--bg-hover)]'
+                                        ? 'bg-[var(--accent-primary)] text-white'
+                                        : 'bg-[var(--bg-tertiary)] hover:bg-[var(--bg-hover)]'
                                     }`}
                             >
                                 <div className="font-medium">{style.name}</div>
                                 <div className={`text-xs mt-1 ${thumbnailStyleId === style.id
-                                    ? 'text-white/80'
-                                    : 'text-[var(--text-muted)]'
+                                        ? 'text-white/80'
+                                        : 'text-[var(--text-muted)]'
                                     }`}>{style.desc}</div>
                             </button>
                         ))}
