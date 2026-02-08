@@ -132,8 +132,9 @@ export async function POST(
 
         const nextEpisodeNumber = channel._count.episodes + 1
 
-        // Build character bible based on selection
+        // Build character bible based on selection - IMPROVED FORMAT for consistency
         let characterBible = ''
+        let characterTemplates = '' // Template để copy vào mỗi scene
         if (useCharacters && channel.characters.length > 0) {
             // Filter characters if specific ones selected
             const charsToUse = selectedCharacterIds.length > 0
@@ -141,10 +142,76 @@ export async function POST(
                 : channel.characters
 
             if (charsToUse.length > 0) {
-                characterBible = `\nCHARACTER BIBLE:\n${charsToUse.map((c: { name: string; role: string; fullDescription: string; personality: string | null }) => {
-                    const personalityInfo = c.personality ? ` | TÍNH CÁCH: ${c.personality}` : ''
-                    return `[${c.name}] - ${c.role}: ${c.fullDescription}${personalityInfo}`
-                }).join('\n')}`
+                // IMPROVED: Tạo Character Bible với format rõ ràng, có cấu trúc
+                characterBible = `\n═══════════════════════════════════════
+🎭 CHARACTER BIBLE (MANDATORY REFERENCE):
+═══════════════════════════════════════
+${charsToUse.map((c: { 
+                    name: string
+                    role: string
+                    fullDescription: string
+                    personality: string | null
+                    appearance?: string | null
+                    clothing?: string | null
+                    skinTone?: string | null
+                    faceDetails?: string | null
+                    hairDetails?: string | null
+                    gender?: string | null
+                    ageRange?: string | null
+                }) => {
+                    const personalityInfo = c.personality ? `\n  • TÍNH CÁCH: ${c.personality}` : ''
+                    const appearanceInfo = c.appearance ? `\n  • NGOẠI HÌNH: ${c.appearance}` : ''
+                    const clothingInfo = c.clothing ? `\n  • TRANG PHỤC MẶC ĐỊNH: ${c.clothing}` : ''
+                    const skinInfo = c.skinTone ? `\n  • MÀU DA: ${c.skinTone}` : ''
+                    const faceInfo = c.faceDetails ? `\n  • KHUÔN MẶT: ${c.faceDetails}` : ''
+                    const hairInfo = c.hairDetails ? `\n  • TÓC: ${c.hairDetails}` : ''
+                    const genderInfo = c.gender ? `\n  • GIỚI TÍNH: ${c.gender}` : ''
+                    const ageInfo = c.ageRange ? `\n  • ĐỘ TUỔI: ${c.ageRange}` : ''
+                    
+                    return `\n📌 NHÂN VẬT: ${c.name.toUpperCase()} (${c.role})
+  • MÔ TẢ ĐẦY ĐỦ: ${c.fullDescription}${personalityInfo}${appearanceInfo}${clothingInfo}${skinInfo}${faceInfo}${hairInfo}${genderInfo}${ageInfo}
+  
+  ⚠️ TEMPLATE BẮT BUỘC KHI MÔ TẢ ${c.name.toUpperCase()}:
+  [${c.name.toUpperCase()}: ${c.fullDescription}${c.appearance ? `, ${c.appearance}` : ''}${c.clothing && !adaptCharactersToScript ? `, ${c.clothing}` : ''}${c.skinTone ? `, da ${c.skinTone}` : ''}${c.faceDetails ? `, ${c.faceDetails}` : ''}${c.hairDetails ? `, ${c.hairDetails}` : ''}]
+  
+  ❌ KHÔNG BAO GIỜ VIẾT: [${c.name}] hoặc [${c.name.toUpperCase()}] một mình!
+  ✅ LUÔN LUÔN VIẾT: [${c.name.toUpperCase()}: ${c.fullDescription}...] với đầy đủ mô tả`
+                }).join('\n\n')}
+
+═══════════════════════════════════════
+⚠️⚠️⚠️ QUY TẮC VÀNG - ĐỌC KỸ:
+═══════════════════════════════════════
+1. MỖI SCENE có nhân vật xuất hiện → PHẢI copy TEMPLATE ở trên vào promptText
+2. KHÔNG được viết tắt, KHÔNG được bỏ sót chi tiết
+3. Video AI không nhớ scene trước → PHẢI lặp lại mô tả đầy đủ mỗi lần
+4. Nếu có 2+ nhân vật trong 1 scene → mô tả ĐẦY ĐỦ cả 2
+5. ${adaptCharactersToScript ? 'Có thể thay đổi trang phục/biểu cảm theo cảnh, NHƯNG giữ nguyên: màu da, màu mắt, kiểu tóc cơ bản, tuổi, giới tính' : 'GIỮ NGUYÊN 100% mô tả - KHÔNG thay đổi bất cứ gì'}
+═══════════════════════════════════════`
+
+                // Tạo character templates riêng để dễ reference
+                characterTemplates = charsToUse.map((c: { 
+                    name: string
+                    fullDescription: string
+                    appearance?: string | null
+                    clothing?: string | null
+                    skinTone?: string | null
+                    faceDetails?: string | null
+                    hairDetails?: string | null
+                }) => {
+                    const baseDesc = c.fullDescription
+                    const parts = []
+                    if (c.appearance) parts.push(c.appearance)
+                    if (c.skinTone) parts.push(`da ${c.skinTone}`)
+                    if (c.faceDetails) parts.push(c.faceDetails)
+                    if (c.hairDetails) parts.push(c.hairDetails)
+                    if (c.clothing && !adaptCharactersToScript) parts.push(c.clothing)
+                    
+                    const fullTemplate = parts.length > 0 
+                        ? `${baseDesc}, ${parts.join(', ')}`
+                        : baseDesc
+                    
+                    return `  "${c.name.toUpperCase()}": "[${c.name.toUpperCase()}: ${fullTemplate}]"`
+                }).join(',\n')
             }
         }
 
@@ -184,16 +251,26 @@ VÍ DỤ:
 - Cảnh mưa: "[LINH: 28 tuổi, tóc đen dài ướt sũng, da trắng, áo mưa trong suốt, mắt lo lắng, run rẩy]"
 - Cảnh tiệc: "[LINH: 28 tuổi, tóc đen dài búi cao, da trắng, đầm đỏ lộng lẫy, makeup glamorous, tự tin]"
 ` : (characterBible ? `
-🎭 CHARACTER CONSISTENCY MODE (STRICT):
+🎭 CHARACTER CONSISTENCY MODE (STRICT - KHÔNG THAY ĐỔI):
 ═══════════════════════════════════════
-KHÔNG được thay đổi bất kỳ chi tiết nào của nhân vật.
-Copy NGUYÊN VĂN mô tả từ CHARACTER BIBLE vào MỌI cảnh.
-Trang phục, biểu cảm, phụ kiện phải GIỐNG HỆT nhau trong tất cả các scene.
+🔴 QUY TẮC NGHIÊM NGẶT:
+- KHÔNG được thay đổi BẤT KỲ chi tiết nào của nhân vật
+- Copy NGUYÊN VĂN 100% mô tả từ CHARACTER BIBLE vào MỌI cảnh
+- Trang phục, biểu cảm, phụ kiện, vị trí PHẢI GIỐNG HỆT nhau trong TẤT CẢ scene
+- Màu da, màu mắt, kiểu tóc, tuổi, giới tính → GIỮ NGUYÊN 100%
+
+⚠️ TEMPLATE BẮT BUỘC:
+- Mỗi scene có nhân vật → Dùng EXACT template từ CHARACTER BIBLE
+- KHÔNG được tự ý thêm/bớt/sửa đổi bất cứ gì
+- Nếu scene có 2+ nhân vật → mô tả đầy đủ CẢ 2 với template riêng
 
 🎭 SỬ DỤNG TÍNH CÁCH (PERSONALITY):
 - Dialogue phải PHÙ HỢP với tính cách đã định nghĩa trong CHARACTER BIBLE
 - Hành động, phản ứng, cử chỉ phản ánh tính cách nhân vật
 - Giữ nhất quán cách nói, cách phản ứng xuyên suốt
+- NHƯNG: Ngoại hình, trang phục, phụ kiện → GIỮ NGUYÊN 100%
+
+❌ VI PHẠM = Episode bị REJECT và phải generate lại!
 ` : '')
 
         // Existing episodes (avoid duplication)
@@ -2843,9 +2920,33 @@ ${voiceOverMode === 'cinematic_film' ? `
 PROMPTTEXT FORMAT (EXACT):
 [VOICEOVER in ${dialogueLangLabel}: {voiceover text here}]. [${characterBible ? 'Character name: Full appearance description with clothing, expression, gesture' : 'Subject description'}]. ENVIRONMENT: {detailed location, set pieces, props}. CAMERA: {shot type}, {lens: 35mm/50mm/85mm}, {angle: eye-level/low/high}. LIGHTING: {type: soft/dramatic/natural}, {direction}, {color temperature}. STYLE: ${styleKeywords}. MOOD: {emotional tone}. AUDIO: {background sounds, music type}. LANGUAGE: Speak ${dialogueLangLabel} only.
 
+${characterTemplates ? `\n═══════════════════════════════════════
+📋 CHARACTER TEMPLATES - COPY EXACTLY:
+═══════════════════════════════════════
+${characterTemplates}
+
+⚠️ MỖI SCENE có nhân vật → DÙNG EXACT TEMPLATE ở trên!
+═══════════════════════════════════════\n` : ''}
+
 ═══════════════════════════════════════
 EXAMPLE OF PERFECT SCENE:
 ═══════════════════════════════════════
+${characterBible ? `\n✅ EXAMPLE WITH CHARACTER (CORRECT):
+{
+    "order": 7,
+    "title": "Host giải thích thu nhập",
+    "duration": 8,
+    "voiceover": "Thu nhập đa dạng. Thợ mới có lương cơ bản và tiền boa. Thợ lành nghề có thể kiếm từ 40,000 đến 70,000 đô la một năm.",
+    "promptText": "[VOICEOVER in Vietnamese: Thu nhập đa dạng. Thợ mới có lương cơ bản và tiền boa. Thợ lành nghề có thể kiếm từ 40,000 đến 70,000 đô la một năm.]. [${characterTemplates ? characterTemplates.split(',\n')[0].split(': ')[1] : 'CHARACTER_NAME: full description from CHARACTER BIBLE template'}]. ENVIRONMENT: Modern studio, clean background, professional setup. CAMERA: Medium shot, 50mm lens, eye-level. LIGHTING: Soft studio lighting, even illumination. STYLE: ${styleKeywords}. MOOD: Informative and professional. AUDIO: Clear voice, subtle background music. LANGUAGE: Speak Vietnamese only."
+}
+
+❌ WRONG EXAMPLE (DO NOT DO THIS):
+{
+    "promptText": "[VOICEOVER: ...]. [LEO_REAL] standing in studio. ..."
+    // ❌ THIẾU mô tả đầy đủ! Phải dùng template từ CHARACTER BIBLE!
+}
+
+` : `\n✅ EXAMPLE WITHOUT CHARACTER:
 {
     "order": 7,
     "title": "Thu nhập ngành nail",
@@ -2875,15 +2976,28 @@ ${voiceOverMode === 'cinematic_film' ? `
 10. ALL dialogue in ${dialogueLangLabel.toUpperCase()}
 11. Include VOICE tags: "VOICE: Male voice" or "VOICE: Female voice" matching character` : `1. VOICEOVER = What host SAYS (natural, conversational)
 2. PROMPTTEXT = Visual description for video AI (MUST include voiceover at start)
-3. ${characterBible ? `⚠️⚠️⚠️ CHARACTER DESCRIPTION - ABSOLUTELY MANDATORY:
-   - NEVER write just "[LEO_REAL]" or "[CHARACTER_NAME]" alone - this is WRONG!
-   - NEVER write "A character" or any generic descriptions
-   - ALWAYS include FULL DESCRIPTION every single time: [NAME: age, ethnicity, hair, outfit, accessories, expression, action]
-   - ✅ CORRECT: [LEO_REAL: 25yo Hispanic male, short curly black hair, wearing mustard yellow hoodie with 'LEO' on it, silver glasses. He is sitting on the couch reading a book]
-   - ❌ WRONG: [LEO_REAL] sitting on the couch
-   - ❌ WRONG: [LEO_REAL] standing in his apartment
-   - Copy the FULL character details from CHARACTER BIBLE into EVERY scene with that person
-   - The video AI cannot see previous scenes, so REPEAT full description EVERY time` : 'Use detailed visual subjects'}
+3. ${characterBible ? `⚠️⚠️⚠️ CHARACTER DESCRIPTION - ABSOLUTELY MANDATORY (READ THIS 3 TIMES):
+   
+   🔴 CRITICAL RULE: MỖI SCENE có nhân vật → PHẢI dùng EXACT TEMPLATE từ CHARACTER BIBLE
+   
+   ❌ TUYỆT ĐỐI KHÔNG VIẾT:
+   - "[LEO_REAL]" hoặc "[CHARACTER_NAME]" một mình
+   - "[LEO_REAL] sitting on couch" (thiếu mô tả)
+   - "A character" hoặc "The host" (quá chung chung)
+   - Bất kỳ mô tả ngắn gọn nào
+   
+   ✅ BẮT BUỘC PHẢI VIẾT (copy từ CHARACTER BIBLE):
+   - Dùng EXACT template: [TÊN_NHÂN_VẬT: mô tả đầy đủ từ CHARACTER BIBLE]
+   - Ví dụ: [LEO_REAL: 25yo Hispanic male, short curly black hair, wearing mustard yellow hoodie with 'LEO' on it, silver glasses. He is sitting on the couch reading a book]
+   
+   📋 CHECKLIST TRƯỚC KHI VIẾT MỖI SCENE:
+   □ Scene có nhân vật nào xuất hiện?
+   □ Đã copy FULL template từ CHARACTER BIBLE chưa?
+   □ Đã include TẤT CẢ chi tiết: tuổi, ngoại hình, trang phục, phụ kiện?
+   □ Nếu có 2+ nhân vật → đã mô tả đầy đủ CẢ 2 chưa?
+   
+   ⚠️ LƯU Ý: Video AI KHÔNG nhớ scene trước → PHẢI lặp lại mô tả đầy đủ mỗi scene!
+   ⚠️ Nếu vi phạm → Episode sẽ bị REJECT và phải generate lại!` : 'Use detailed visual subjects'}
 4. Mix Host scenes (60%) and B-Roll scenes (40%) for visual variety
 5. B-Roll scenes = NO character, pure visual/animation/graphics only
 6. Include SPECIFIC facts/numbers when discussing income, statistics
@@ -3021,6 +3135,32 @@ Generate ALL ${totalScenes} scenes. Return ONLY valid JSON.`
 
             console.log(`[Continue] Need ${remaining} more scenes from ${startFrom}`)
 
+            // Get character templates for continue prompt
+            let continueCharTemplates = ''
+            if (characterBible && channel.characters.length > 0) {
+                const charsToUse = selectedCharacterIds.length > 0
+                    ? channel.characters.filter((c: { id: string }) => selectedCharacterIds.includes(c.id))
+                    : channel.characters
+                
+                continueCharTemplates = charsToUse.map((c: { 
+                    name: string
+                    fullDescription: string
+                    appearance?: string | null
+                    clothing?: string | null
+                    skinTone?: string | null
+                    faceDetails?: string | null
+                    hairDetails?: string | null
+                }) => {
+                    const parts = [c.fullDescription]
+                    if (c.appearance) parts.push(c.appearance)
+                    if (c.skinTone) parts.push(`da ${c.skinTone}`)
+                    if (c.faceDetails) parts.push(c.faceDetails)
+                    if (c.hairDetails) parts.push(c.hairDetails)
+                    if (c.clothing && !adaptCharactersToScript) parts.push(c.clothing)
+                    return `[${c.name.toUpperCase()}: ${parts.join(', ')}]`
+                }).join('\n')
+            }
+
             const continuePrompt = `Continue Episode "${episodeData.title}" - generate scenes ${startFrom} to ${totalScenes}
 
 CONTEXT: ${episodeData.synopsis}
@@ -3029,12 +3169,26 @@ DIALOGUE: ${dialogueLangLabel.toUpperCase()} ONLY
 
 ${characterBible}
 
-⚠️⚠️⚠️ CRITICAL FORMAT RULES:
-1. NEVER write just "[LEO_REAL]" or "[CHARACTER_NAME]" alone - ALWAYS include FULL description
-2. ✅ CORRECT: [LEO_REAL: 25yo Hispanic male, short curly black hair, wearing mustard yellow hoodie with 'LEO' on it, silver glasses. He is doing something]
-3. ❌ WRONG: [LEO_REAL] doing something
-4. ❌ WRONG: INT. LOCATION screenplay format
-5. Each scene must have: [VOICEOVER in ${dialogueLangLabel}: text]. [Character with FULL description OR B-Roll visual]. ENVIRONMENT: X. CAMERA: X. LIGHTING: X. STYLE: X. MOOD: X. AUDIO: X.
+${continueCharTemplates ? `\n═══════════════════════════════════════
+📋 CHARACTER TEMPLATES - COPY EXACTLY:
+═══════════════════════════════════════
+${continueCharTemplates}
+
+⚠️ MỖI SCENE có nhân vật → DÙNG EXACT TEMPLATE ở trên!
+═══════════════════════════════════════\n` : ''}
+
+⚠️⚠️⚠️ CRITICAL FORMAT RULES (VIOLATION = REJECT):
+1. ❌ TUYỆT ĐỐI KHÔNG: "[CHARACTER_NAME]" một mình
+2. ✅ BẮT BUỘC: "[CHARACTER_NAME: FULL_DESCRIPTION_FROM_TEMPLATE]"
+3. ✅ CORRECT: ${continueCharTemplates ? continueCharTemplates.split('\n')[0] : '[LEO_REAL: 25yo Hispanic male, short curly black hair, wearing mustard yellow hoodie with \'LEO\' on it, silver glasses. He is doing something]'}
+4. ❌ WRONG: [LEO_REAL] doing something
+5. ❌ WRONG: INT. LOCATION screenplay format
+6. Each scene must have: [VOICEOVER in ${dialogueLangLabel}: text]. [Character with FULL description OR B-Roll visual]. ENVIRONMENT: X. CAMERA: X. LIGHTING: X. STYLE: X. MOOD: X. AUDIO: X.
+
+📋 CHECKLIST TRƯỚC MỖI SCENE:
+□ Đã check CHARACTER TEMPLATES ở trên chưa?
+□ Đã copy EXACT template vào promptText chưa?
+□ Nếu có 2+ nhân vật → đã mô tả đầy đủ cả 2 chưa?
 
 Generate ${remaining} more scenes (scene ${startFrom} to ${totalScenes}).
 Return JSON: {"scenes": [{"order": ${startFrom}, "title": "Scene Title", "voiceover": "what is said", "promptText": "FULL formatted prompt with character descriptions", "duration": 8}]}
@@ -3063,7 +3217,91 @@ Return ONLY valid JSON.`
             }, { status: 400 })
         }
 
-        console.log('[Final] Total scenes:', allScenes.length)
+            console.log('[Final] Total scenes:', allScenes.length)
+
+        // POST-PROCESSING: Validate and fix character consistency
+        if (characterBible && allScenes.length > 0) {
+            console.log('[Post-Process] Validating character descriptions...')
+            
+            // Extract character names from characterBible
+            const characterNames = channel.characters
+                .filter((c: { id: string }) => selectedCharacterIds.length === 0 || selectedCharacterIds.includes(c.id))
+                .map((c: { name: string }) => c.name.toUpperCase())
+            
+            // Get full character descriptions for reference
+            const characterRefs: Record<string, string> = {}
+            channel.characters
+                .filter((c: { id: string }) => selectedCharacterIds.length === 0 || selectedCharacterIds.includes(c.id))
+                .forEach((c: { 
+                    name: string
+                    fullDescription: string
+                    appearance?: string | null
+                    clothing?: string | null
+                    skinTone?: string | null
+                    faceDetails?: string | null
+                    hairDetails?: string | null
+                }) => {
+                    const parts = [c.fullDescription]
+                    if (c.appearance) parts.push(c.appearance)
+                    if (c.skinTone) parts.push(`da ${c.skinTone}`)
+                    if (c.faceDetails) parts.push(c.faceDetails)
+                    if (c.hairDetails) parts.push(c.hairDetails)
+                    if (c.clothing && !adaptCharactersToScript) parts.push(c.clothing)
+                    characterRefs[c.name.toUpperCase()] = parts.join(', ')
+                })
+            
+            // Fix each scene
+            allScenes.forEach((scene: SceneData) => {
+                if (!scene.promptText) return
+                
+                let fixedPrompt = scene.promptText
+                let wasFixed = false
+                
+                // Check for each character
+                characterNames.forEach((charName: string) => {
+                    const charRef = characterRefs[charName]
+                    if (!charRef) return
+                    
+                    // Pattern 1: Just [CHARACTER_NAME] or [CHARACTER_NAME] alone
+                    const pattern1 = new RegExp(`\\[${charName}\\]`, 'gi')
+                    if (pattern1.test(fixedPrompt)) {
+                        fixedPrompt = fixedPrompt.replace(pattern1, `[${charName}: ${charRef}]`)
+                        wasFixed = true
+                        console.log(`[Post-Process] Fixed: [${charName}] → [${charName}: ...]`)
+                    }
+                    
+                    // Pattern 2: [CHARACTER_NAME] followed by action but no description
+                    const pattern2 = new RegExp(`\\[${charName}\\]([^:])`, 'gi')
+                    if (pattern2.test(fixedPrompt)) {
+                        fixedPrompt = fixedPrompt.replace(pattern2, `[${charName}: ${charRef}]$1`)
+                        wasFixed = true
+                        console.log(`[Post-Process] Fixed: [${charName}] action → [${charName}: ...] action`)
+                    }
+                    
+                    // Pattern 3: Very short description (less than 20 chars after colon)
+                    const pattern3 = new RegExp(`\\[${charName}:\\s*([^\\]]{1,20})\\]`, 'gi')
+                    const match3 = fixedPrompt.match(pattern3)
+                    if (match3) {
+                        match3.forEach(match => {
+                            const desc = match.match(/\[.*?:\s*(.*?)\]/)?.[1] || ''
+                            // If description is too short or doesn't contain key details, replace
+                            if (desc.length < 30 || !desc.includes(charRef.split(',')[0].substring(0, 20))) {
+                                fixedPrompt = fixedPrompt.replace(match, `[${charName}: ${charRef}]`)
+                                wasFixed = true
+                                console.log(`[Post-Process] Fixed: Short description for ${charName}`)
+                            }
+                        })
+                    }
+                })
+                
+                if (wasFixed) {
+                    scene.promptText = fixedPrompt
+                    console.log(`[Post-Process] Fixed scene ${scene.order}`)
+                }
+            })
+            
+            console.log('[Post-Process] Character validation complete')
+        }
 
         // Save to database
         try {
