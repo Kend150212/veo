@@ -77,7 +77,8 @@ export async function POST(
             storytellerBrollEnabled = false,
             // Narrative Storytelling options
             narrativeTemplateId = null,
-            narrativeKeyPoints = []
+            narrativeKeyPoints = [],
+            narrativeWithHost = false
         } = await req.json()
 
         // CTA options
@@ -2056,18 +2057,8 @@ VOICE: (dialogue)]
                 ? 'Bình Luận Xã Hội (Social Commentary)'
                 : 'Hành Trình Cá Nhân (Personal Journey)'
 
-            voiceOverInstr = `CONTENT TYPE: NARRATIVE STORYTELLING B-ROLL (Kể chuyện B-roll - Phong cách Anh Dư Leo)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🎯 TEMPLATE: ${templateName}
-${keyPointsText}
-
-⚠️⚠️⚠️ QUAN TRỌNG NHẤT - 100% B-ROLL, KHÔNG CÓ HOST/NHÂN VẬT TRÊN HÌNH ⚠️⚠️⚠️
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-- Video 100% là hình ảnh minh họa (B-roll), KHÔNG có người dẫn chương trình
-- Chỉ có GIỌNG KỂ CHUYỆN (voiceover) phủ lên hình ảnh
-- Hình ảnh B-roll phải LIÊN QUAN và minh họa cho nội dung đang kể
-- Phong cách tâm sự, chia sẻ như đang nói chuyện với bạn thân
-
+            // Common voice style instructions (shared between both modes)
+            const voiceStyleInstructions = `
 🎙️ GIỌNG VĂN KỂ CHUYỆN (CRITICAL - Phong cách Anh Dư Leo):
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 KHÔNG viết kiểu TIN TỨC/GIÁO DỤC: "Một thay đổi chấn động vừa được công bố..."
@@ -2114,7 +2105,73 @@ PHẢI viết kiểu TÂM SỰ/KỂ CHUYỆN cá nhân:
 5. TURNING POINT (15%): Điểm chuyển, bài học
 6. RESULT PROOF (20%): Kết quả, chứng minh bằng số liệu
 7. PRACTICAL ADVICE (7%): Lời khuyên thực tiễn
-8. CTA CLOSING (3%): Kêu gọi hành động nhẹ nhàng
+8. CTA CLOSING (3%): Kêu gọi hành động nhẹ nhàng`
+
+            if (narrativeWithHost) {
+                // HOST-LED NARRATIVE MODE: Host appears on screen, telling the story
+                voiceOverInstr = `CONTENT TYPE: NARRATIVE STORYTELLING WITH HOST (Kể chuyện có nhân vật dẫn - Phong cách Anh Dư Leo)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎯 TEMPLATE: ${templateName}
+${keyPointsText}
+
+⚠️⚠️⚠️ CHẾ ĐỘ: CÓ HOST DẪN CHUYỆN TRÊN HÌNH ⚠️⚠️⚠️
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+- Host/nhân vật xuất hiện trên màn hình, NÓI TRỰC TIẾP với người xem
+- Kết hợp host + story elements minh họa xung quanh
+- Host có cảm xúc, biểu cảm phong phú theo nội dung
+- Phong cách thân mật như đang tâm sự với bạn thân
+
+${voiceStyleInstructions}
+
+📸 PROMPTTEXT FORMAT (HOST + STORY ELEMENTS):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[HOST trên màn hình: (mô tả chi tiết host - tuổi, giới tính, trang phục, biểu cảm, tư thế, đang làm gì)].
+[STORY ELEMENTS minh họa: (các yếu tố xuất hiện xung quanh host để minh họa nội dung - có thể là props, graphics, background thay đổi)].
+ENVIRONMENT: (bối cảnh - studio, nhà, quán cà phê, etc).
+CAMERA: (góc quay - medium shot, close-up, etc).
+LIGHTING: (ánh sáng - soft, dramatic, natural, etc).
+STYLE: (phong cách visual).
+MOOD: (tâm trạng của cảnh - tương đồng với nội dung đang kể).
+VOICE IN VIETNAMESE: [Lời nói TRỰC TIẾP của host - giọng văn kể chuyện như trên].
+LANGUAGE: Speak Vietnamese only. PACING: (fast-cut/slow-burn/normal).
+
+🎬 HƯỚNG DẪN CHO TỪNG PHASE:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📍 HOOK: Host nhìn thẳng camera, biểu cảm tự tin/bí ẩn, nói câu hook gây sốc
+📍 SKEPTIC COUNTER: Host cười nhẹ, gật đầu như biết người khác nghĩ gì, rồi phản bác
+📍 CONTEXT: Host kể lể với cảm xúc, có thể flashback hoặc story elements minh họa
+📍 STRUGGLE: Host tỏ vẻ khó khăn, biểu cảm buồn/stressed, story elements minh họa thách thức
+📍 TURNING POINT: Host tươi sáng lên, biểu cảm nhận ra điều gì đó quan trọng
+📍 RESULT: Host tự hào, khoe kết quả, có thể có props/graphics minh họa con số
+📍 ADVICE: Host thân mật, như đang khuyên bạn thân, biểu cảm chân thành
+📍 CTA: Host nói lời kết, cảm ơn, nhắc subscribe
+
+❌ TUYỆT ĐỐI KHÔNG:
+- KHÔNG viết giọng tin tức trang trọng
+- KHÔNG để host đứng yên không cảm xúc
+- KHÔNG thiếu story elements minh họa
+- KHÔNG liệt kê thông tin khô khan
+
+✅ BẮT BUỘC:
+- Host NHẤT QUÁN xuyên suốt tất cả scenes
+- Biểu cảm host THAY ĐỔI theo nội dung đang kể
+- Story elements LIÊN QUAN đến nội dung voiceover
+- Giọng văn thân mật, tự nhiên, có cảm xúc`
+            } else {
+                // B-ROLL ONLY MODE: 100% illustrative footage with voiceover
+                voiceOverInstr = `CONTENT TYPE: NARRATIVE STORYTELLING B-ROLL (Kể chuyện B-roll - Phong cách Anh Dư Leo)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎯 TEMPLATE: ${templateName}
+${keyPointsText}
+
+⚠️⚠️⚠️ QUAN TRỌNG NHẤT - 100% B-ROLL, KHÔNG CÓ HOST/NHÂN VẬT TRÊN HÌNH ⚠️⚠️⚠️
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+- Video 100% là hình ảnh minh họa (B-roll), KHÔNG có người dẫn chương trình
+- Chỉ có GIỌNG KỂ CHUYỆN (voiceover) phủ lên hình ảnh
+- Hình ảnh B-roll phải LIÊN QUAN và minh họa cho nội dung đang kể
+- Phong cách tâm sự, chia sẻ như đang nói chuyện với bạn thân
+
+${voiceStyleInstructions}
 
 📸 PROMPTTEXT FORMAT (100% B-ROLL):
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -2141,6 +2198,7 @@ LANGUAGE: Speak Vietnamese only.
 - Dùng số liệu cụ thể làm bằng chứng
 - B-roll phải minh họa đúng nội dung đang kể
 - Cảm xúc lên xuống theo cấu trúc 8 phase`
+            }
         } else {
             voiceOverInstr = `CONTENT TYPE: B-ROLL ONLY (pure visuals, no dialogue).
 - The "voiceover" field should be empty or minimal ambient text

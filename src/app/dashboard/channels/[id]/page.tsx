@@ -725,6 +725,7 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
     const [narrativeTemplateId, setNarrativeTemplateId] = useState('personal-journey-broll')
     const [narrativeTopic, setNarrativeTopic] = useState('')
     const [narrativeKeyPoints, setNarrativeKeyPoints] = useState('')
+    const [narrativeWithHost, setNarrativeWithHost] = useState(false) // false = 100% B-roll, true = có host dẫn chuyện
     const narrativeTemplates = getNarrativeTemplateSummaries()
 
     // Advanced Episode Features
@@ -1141,7 +1142,8 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                     narrativeTemplateId: voiceOverMode === 'narrative_storytelling' ? narrativeTemplateId : null,
                     narrativeKeyPoints: voiceOverMode === 'narrative_storytelling' && narrativeKeyPoints.trim()
                         ? narrativeKeyPoints.split(',').map(s => s.trim()).filter(Boolean)
-                        : null
+                        : null,
+                    narrativeWithHost: voiceOverMode === 'narrative_storytelling' ? narrativeWithHost : false
                 })
             })
 
@@ -2791,14 +2793,49 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                             </p>
                         </div>
 
-                        {/* Tips */}
+                        {/* Host Mode Toggle */}
+                        <div className="mb-3">
+                            <label className="block text-sm font-medium mb-2">Chế độ hiển thị</label>
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={() => setNarrativeWithHost(false)}
+                                    className={`flex-1 p-3 rounded-lg text-sm transition ${!narrativeWithHost
+                                        ? 'bg-orange-500/20 border-2 border-orange-500'
+                                        : 'bg-[var(--bg-secondary)] border border-transparent hover:border-orange-500/50'
+                                        }`}
+                                >
+                                    <div className="font-medium">🎬 100% B-roll</div>
+                                    <div className="text-xs text-[var(--text-muted)] mt-1">Chỉ hình minh họa + voiceover</div>
+                                </button>
+                                <button
+                                    onClick={() => setNarrativeWithHost(true)}
+                                    className={`flex-1 p-3 rounded-lg text-sm transition ${narrativeWithHost
+                                        ? 'bg-orange-500/20 border-2 border-orange-500'
+                                        : 'bg-[var(--bg-secondary)] border border-transparent hover:border-orange-500/50'
+                                        }`}
+                                >
+                                    <div className="font-medium">👤 Có Host dẫn chuyện</div>
+                                    <div className="text-xs text-[var(--text-muted)] mt-1">Host xuất hiện + kể chuyện</div>
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Tips - Dynamic based on host mode */}
                         <div className="bg-[var(--bg-secondary)] p-3 rounded-lg">
                             <p className="text-xs text-[var(--text-muted)] mb-2">💡 <strong>Mẹo:</strong></p>
-                            <ul className="text-xs text-[var(--text-muted)] space-y-1">
-                                <li>• Video sẽ 100% B-roll với voiceover kể chuyện</li>
-                                <li>• Nhập nội dung/topic chi tiết ở phần Nội dung bên dưới</li>
-                                <li>• AI sẽ tự động tạo cấu trúc Hook → Bối cảnh → Kết quả → Lời khuyên</li>
-                            </ul>
+                            {narrativeWithHost ? (
+                                <ul className="text-xs text-[var(--text-muted)] space-y-1">
+                                    <li>• Host sẽ xuất hiện trên màn hình, kể chuyện trực tiếp</li>
+                                    <li>• Story elements sẽ xuất hiện xung quanh host để minh họa</li>
+                                    <li>• Sử dụng nhân vật đã tạo sẵn hoặc AI tự generate</li>
+                                </ul>
+                            ) : (
+                                <ul className="text-xs text-[var(--text-muted)] space-y-1">
+                                    <li>• Video sẽ 100% B-roll với voiceover kể chuyện</li>
+                                    <li>• Nhập nội dung/topic chi tiết ở phần Nội dung bên dưới</li>
+                                    <li>• AI sẽ tự động tạo cấu trúc Hook → Bối cảnh → Kết quả → Lời khuyên</li>
+                                </ul>
+                            )}
                         </div>
                     </div>
                 )}
