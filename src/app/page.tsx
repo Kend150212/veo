@@ -16,17 +16,25 @@ import {
   Video,
   Star,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Clock,
+  Target,
+  Wand2,
+  LayoutList,
+  Youtube,
+  FileText,
+  Palette,
+  Settings
 } from 'lucide-react'
 
 // Visual style showcase images
 const styleShowcase = [
-  { src: '/styles/style_cinematic_1769037598589.png', name: 'Cinematic', desc: 'Phong cách điện ảnh chuyên nghiệp' },
+  { src: '/styles/style_cinematic_1769037598589.png', name: 'Cinematic', desc: 'Phong cách điện ảnh Hollywood' },
   { src: '/styles/style_anime_1769037444802.png', name: 'Anime', desc: 'Hoạt hình Nhật Bản' },
   { src: '/styles/style_pixar_3d_1769037478528.png', name: 'Pixar 3D', desc: 'Hoạt hình 3D cao cấp' },
   { src: '/styles/style_watercolor_1769037679503.png', name: 'Watercolor', desc: 'Nghệ thuật màu nước' },
-  { src: '/styles/style_documentary_1769037613360.png', name: 'Documentary', desc: 'Phong cách phim tài liệu' },
-  { src: '/styles/style_comic_book_1769037547624.png', name: 'Comic Book', desc: 'Phong cách truyện tranh' },
+  { src: '/styles/style_documentary_1769037613360.png', name: 'Documentary', desc: 'Phim tài liệu chân thực' },
+  { src: '/styles/style_comic_book_1769037547624.png', name: 'Comic Book', desc: 'Truyện tranh sống động' },
 ]
 
 interface Plan {
@@ -51,50 +59,104 @@ interface Plan {
   }
 }
 
+// Problems we solve
+const problems = [
+  {
+    icon: Clock,
+    problem: 'Mất hàng giờ viết prompt thủ công',
+    solution: 'AI tự động tạo prompt chi tiết trong 30 giây',
+  },
+  {
+    icon: Target,
+    problem: 'Prompt không nhất quán, kết quả lộn xộn',
+    solution: 'Template đã tối ưu cho từng visual style',
+  },
+  {
+    icon: Wand2,
+    problem: 'Không biết viết prompt như thế nào',
+    solution: 'Chỉ cần nhập ý tưởng, AI làm phần còn lại',
+  },
+]
+
+// Workflow steps - what you get from one generation
+const workflow = [
+  {
+    step: 1,
+    icon: FileText,
+    title: 'Script hoàn chỉnh',
+    desc: 'Kịch bản chi tiết theo template kể chuyện chuyên nghiệp'
+  },
+  {
+    step: 2,
+    icon: Film,
+    title: '5-10 Scene Prompts',
+    desc: 'Mỗi scene có visual prompt, camera movement, lighting'
+  },
+  {
+    step: 3,
+    icon: Palette,
+    title: 'Visual Style nhất quán',
+    desc: 'Tất cả scenes đồng nhất về phong cách và màu sắc'
+  },
+  {
+    step: 4,
+    icon: Youtube,
+    title: 'YouTube Metadata',
+    desc: 'Title, description, tags tối ưu SEO sẵn sàng đăng'
+  },
+]
+
+// Main features with detailed descriptions
 const features = [
   {
     icon: Layers,
-    titleVi: 'Công cụ tạo prompt',
-    description: 'Tạo prompt theo cấu trúc chuyên nghiệp với AI hỗ trợ',
-    gradient: 'from-purple-500 to-pink-500'
+    titleVi: 'Tạo Prompt 1-Click',
+    description: 'Nhập tiêu đề video, chọn style, AI tự động tạo kịch bản và 5-10 scene prompts chi tiết. Tiết kiệm 3-5 giờ mỗi video.',
+    gradient: 'from-purple-500 to-pink-500',
+    highlight: 'Tiết kiệm 95% thời gian'
   },
   {
     icon: Film,
-    titleVi: 'Thư viện Style',
-    description: '20+ visual styles từ Cinematic đến Anime, Watercolor',
-    gradient: 'from-cyan-500 to-blue-500'
+    titleVi: '20+ Visual Styles',
+    description: 'Từ Cinematic Hollywood đến Anime, Watercolor, Documentary. Mỗi style có template riêng đảm bảo kết quả chuyên nghiệp.',
+    gradient: 'from-cyan-500 to-blue-500',
+    highlight: 'Sẵn sàng cho Veo, Runway, Pika'
   },
   {
-    icon: Video,
-    titleVi: 'Tạo tập hoàn chỉnh',
-    description: 'Tự động tạo script, scene prompts và Youtube metadata',
-    gradient: 'from-orange-500 to-red-500'
+    icon: LayoutList,
+    titleVi: 'Quản lý đa kênh',
+    description: 'Mỗi kênh YouTube có cấu hình riêng: characters, categories, tone of voice. Xuất video hàng loạt không cần setup lại.',
+    gradient: 'from-orange-500 to-red-500',
+    highlight: 'Agency-ready'
   },
   {
     icon: Zap,
-    titleVi: 'Tích hợp API',
-    description: 'Kết nối với Make.com, Zapier và các automation tools',
-    gradient: 'from-green-500 to-emerald-500'
+    titleVi: 'API tự động hóa',
+    description: 'Kết nối với Make.com, Zapier, n8n. Tự động tạo episodes từ RSS feed, trending topics, hoặc schedule định kỳ.',
+    gradient: 'from-green-500 to-emerald-500',
+    highlight: 'Tự động 24/7'
   },
   {
-    icon: Shield,
-    titleVi: 'Bảo mật cao',
-    description: 'Dữ liệu được mã hóa, tuân thủ tiêu chuẩn bảo mật',
-    gradient: 'from-indigo-500 to-purple-500'
+    icon: Settings,
+    titleVi: 'Template kể chuyện',
+    description: '10+ narrative templates: Mystery, Educational, Storytelling, Documentary... Mỗi loại có cấu trúc tối ưu riêng.',
+    gradient: 'from-indigo-500 to-purple-500',
+    highlight: 'Hook viewers từ giây đầu'
   },
   {
     icon: Users,
-    titleVi: 'Làm việc nhóm',
-    description: 'Quản lý nhiều kênh và thành viên trong team',
-    gradient: 'from-pink-500 to-rose-500'
+    titleVi: 'Nhân vật & Branding',
+    description: 'Tạo characters với tính cách, voice nhất quán. Logo, intro, outro được tích hợp tự động vào mỗi episode.',
+    gradient: 'from-pink-500 to-rose-500',
+    highlight: 'Brand identity mạnh'
   }
 ]
 
 const stats = [
-  { value: '10K+', label: 'Video prompts' },
-  { value: '500+', label: 'Creators' },
+  { value: '10K+', label: 'Prompts đã tạo' },
+  { value: '95%', label: 'Tiết kiệm thời gian' },
   { value: '20+', label: 'Visual Styles' },
-  { value: '99.9%', label: 'Uptime' },
+  { value: '5-10', label: 'Scenes mỗi video' },
 ]
 
 export default function HomePage() {
@@ -111,7 +173,6 @@ export default function HomePage() {
       .catch(err => console.error('Failed to load plans:', err))
   }, [])
 
-  // Auto-rotate carousel
   useEffect(() => {
     if (!mounted) return
     const interval = setInterval(() => {
@@ -144,11 +205,11 @@ export default function HomePage() {
             </Link>
 
             <div className="hidden md:flex items-center gap-8">
+              <Link href="#how-it-works" className="text-[var(--text-secondary)] hover:text-white transition-colors">
+                Cách hoạt động
+              </Link>
               <Link href="#features" className="text-[var(--text-secondary)] hover:text-white transition-colors">
                 Tính năng
-              </Link>
-              <Link href="#styles" className="text-[var(--text-secondary)] hover:text-white transition-colors">
-                Visual Styles
               </Link>
               <Link href="#pricing" className="text-[var(--text-secondary)] hover:text-white transition-colors">
                 Bảng giá
@@ -160,7 +221,7 @@ export default function HomePage() {
                 Đăng nhập
               </Link>
               <Link href="/register" className="btn-primary">
-                Bắt đầu miễn phí
+                Dùng thử miễn phí
               </Link>
             </div>
           </nav>
@@ -168,36 +229,39 @@ export default function HomePage() {
       </header>
 
       {/* Hero Section */}
-      <section className="relative z-10 pt-20 pb-32">
+      <section className="relative z-10 pt-16 pb-24">
         <div className="container-app">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Left: Text Content */}
             <div className="animate-fadeIn">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-purple-500/20 to-cyan-500/20 border border-purple-500/30 mb-6">
                 <Sparkles className="w-4 h-4 text-purple-400" />
-                <span className="text-sm text-purple-300">Dành cho Google Veo AI</span>
+                <span className="text-sm text-purple-300">Công cụ #1 cho Google Veo, Runway, Pika</span>
               </div>
 
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
-                Tạo Video AI{' '}
+                Tạo Video Prompt{' '}
                 <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-400 to-cyan-400">
-                  Chuyên Nghiệp
+                  Chỉ Với 1 Click
                 </span>
               </h1>
 
-              <p className="text-xl text-[var(--text-secondary)] mb-8 leading-relaxed">
-                Nền tảng tạo prompt và quản lý nội dung video AI.
-                Từ ý tưởng đến episodes hoàn chỉnh trong vài phút với visual styles độc quyền.
+              <p className="text-xl text-[var(--text-secondary)] mb-4 leading-relaxed">
+                <strong>Nhập tiêu đề video → Nhận kịch bản complete + 5-10 scene prompts</strong> với camera angles, lighting, visual style nhất quán.
+              </p>
+
+              <p className="text-lg text-[var(--text-muted)] mb-8">
+                Tiết kiệm 3-5 giờ mỗi video. Quản lý đa kênh YouTube. Tự động hóa với API.
               </p>
 
               <div className="flex flex-wrap gap-4 mb-10">
                 <Link href="/register" className="btn-primary flex items-center gap-2 text-lg px-8 py-4 group">
-                  Bắt đầu miễn phí
+                  Tạo video đầu tiên miễn phí
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </Link>
-                <Link href="#styles" className="btn-secondary flex items-center gap-2 text-lg px-8 py-4">
+                <Link href="#how-it-works" className="btn-secondary flex items-center gap-2 text-lg px-8 py-4">
                   <Play className="w-5 h-5" />
-                  Xem Visual Styles
+                  Xem cách hoạt động
                 </Link>
               </div>
 
@@ -237,7 +301,6 @@ export default function HomePage() {
                   </div>
                 ))}
 
-                {/* Navigation */}
                 <button
                   onClick={prevSlide}
                   className="absolute left-2 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center bg-black/50 rounded-full hover:bg-black/70 transition-colors z-10"
@@ -251,7 +314,6 @@ export default function HomePage() {
                   <ChevronRight className="w-5 h-5" />
                 </button>
 
-                {/* Dots */}
                 <div className="absolute bottom-20 left-1/2 -translate-x-1/2 flex gap-2 z-10">
                   {styleShowcase.map((_, i) => (
                     <button
@@ -263,12 +325,83 @@ export default function HomePage() {
                 </div>
               </div>
 
-              {/* Floating Card */}
               <div className="absolute -top-4 -right-4 glass-card px-4 py-2 flex items-center gap-2 animate-bounce" style={{ animationDuration: '3s' }}>
                 <Star className="w-4 h-4 text-yellow-400" />
-                <span className="text-sm">AI-Powered</span>
+                <span className="text-sm font-medium">20+ Styles</span>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Problems We Solve */}
+      <section className="relative z-10 py-16 bg-gradient-to-b from-[var(--bg-secondary)]/50 to-transparent">
+        <div className="container-app">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              Không Còn Đau Đầu Với{' '}
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-red-400 to-orange-400">
+                Video Prompts
+              </span>
+            </h2>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-6">
+            {problems.map((item, index) => (
+              <div key={index} className="glass-card p-6 relative overflow-hidden">
+                <div className="flex items-start gap-4 mb-4">
+                  <div className="w-12 h-12 rounded-xl bg-red-500/20 flex items-center justify-center flex-shrink-0">
+                    <item.icon className="w-6 h-6 text-red-400" />
+                  </div>
+                  <div>
+                    <p className="text-red-400 line-through text-sm mb-1">{item.problem}</p>
+                    <p className="text-green-400 font-medium">{item.solution}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* How It Works - What You Get */}
+      <section id="how-it-works" className="relative z-10 py-20">
+        <div className="container-app">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              1 Click Tạo Ra{' '}
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-cyan-400">
+                Toàn Bộ Nội Dung
+              </span>
+            </h2>
+            <p className="text-[var(--text-secondary)] max-w-2xl mx-auto">
+              Từ một tiêu đề video, hệ thống AI tự động tạo ra tất cả những gì bạn cần để sản xuất video hoàn chỉnh
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {workflow.map((item, index) => (
+              <div key={index} className="glass-card p-6 text-center relative group hover:border-purple-500/30 transition-all">
+                <div className="absolute -top-3 -left-3 w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-cyan-500 flex items-center justify-center text-sm font-bold">
+                  {item.step}
+                </div>
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500/20 to-cyan-500/20 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                  <item.icon className="w-8 h-8 text-purple-400" />
+                </div>
+                <h3 className="font-bold text-lg mb-2">{item.title}</h3>
+                <p className="text-sm text-[var(--text-secondary)]">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="text-center mt-10">
+            <p className="text-lg text-[var(--text-muted)] mb-6">
+              <strong className="text-white">Kết quả:</strong> Copy prompts → Paste vào Veo/Runway/Pika → Render video ngay
+            </p>
+            <Link href="/register" className="btn-primary inline-flex items-center gap-2">
+              Thử ngay - Miễn phí
+              <ArrowRight className="w-4 h-4" />
+            </Link>
           </div>
         </div>
       </section>
@@ -280,11 +413,11 @@ export default function HomePage() {
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
               20+ Visual Styles{' '}
               <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-cyan-400">
-                Độc Quyền
+                Đã Tối Ưu Sẵn
               </span>
             </h2>
             <p className="text-[var(--text-secondary)] max-w-2xl mx-auto">
-              Thư viện style đa dạng từ Cinematic chuyên nghiệp đến Anime, Watercolor, Comic Book và nhiều hơn nữa
+              Mỗi style có template prompts riêng, đảm bảo kết quả nhất quán và chuyên nghiệp. Không cần biết viết prompt.
             </p>
           </div>
 
@@ -293,7 +426,6 @@ export default function HomePage() {
               <div
                 key={style.name}
                 className="group relative aspect-square rounded-xl overflow-hidden border border-[var(--border-subtle)] hover:border-purple-500/50 transition-all cursor-pointer"
-                style={{ animationDelay: `${index * 0.1}s` }}
               >
                 <Image
                   src={style.src}
@@ -308,13 +440,6 @@ export default function HomePage() {
               </div>
             ))}
           </div>
-
-          <div className="text-center mt-8">
-            <Link href="/register" className="btn-secondary inline-flex items-center gap-2">
-              Xem tất cả styles
-              <ArrowRight className="w-4 h-4" />
-            </Link>
-          </div>
         </div>
       </section>
 
@@ -322,8 +447,8 @@ export default function HomePage() {
       <section id="features" className="relative z-10 py-20">
         <div className="container-app">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Tính năng nổi bật</h2>
-            <p className="text-[var(--text-secondary)]">Mọi thứ bạn cần để tạo video AI chuyên nghiệp</p>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Tất Cả Tính Năng Bạn Cần</h2>
+            <p className="text-[var(--text-secondary)]">Từ tạo prompt đến quản lý kênh và tự động hóa</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -332,8 +457,13 @@ export default function HomePage() {
                 key={index}
                 className="glass-card p-6 group hover:border-purple-500/30 transition-all"
               >
-                <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${feature.gradient} bg-opacity-20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
-                  <feature.icon className="w-7 h-7 text-white" />
+                <div className="flex items-start justify-between mb-4">
+                  <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${feature.gradient} bg-opacity-20 flex items-center justify-center group-hover:scale-110 transition-transform`}>
+                    <feature.icon className="w-7 h-7 text-white" />
+                  </div>
+                  <span className="text-xs font-medium px-2 py-1 rounded-full bg-green-500/20 text-green-400">
+                    {feature.highlight}
+                  </span>
                 </div>
                 <h3 className="font-semibold text-lg mb-2">{feature.titleVi}</h3>
                 <p className="text-[var(--text-secondary)] text-sm leading-relaxed">{feature.description}</p>
@@ -347,10 +477,9 @@ export default function HomePage() {
       <section id="pricing" className="relative z-10 py-20 bg-[var(--bg-secondary)]/50">
         <div className="container-app">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Bảng giá minh bạch</h2>
-            <p className="text-[var(--text-secondary)] mb-8">Chọn gói phù hợp với nhu cầu của bạn</p>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Bảng Giá Minh Bạch</h2>
+            <p className="text-[var(--text-secondary)] mb-8">Bắt đầu miễn phí, nâng cấp khi cần</p>
 
-            {/* Billing Toggle */}
             <div className="inline-flex items-center gap-4 p-1 bg-[var(--bg-tertiary)] rounded-full">
               <button
                 onClick={() => setBillingCycle('monthly')}
@@ -380,7 +509,6 @@ export default function HomePage() {
                   key={plan.id}
                   className={`glass-card p-6 relative ${plan.isPopular ? 'border-purple-500 ring-2 ring-purple-500/20' : ''
                     }`}
-                  style={{ animationDelay: `${index * 0.1}s` }}
                 >
                   {plan.isPopular && (
                     <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-gradient-to-r from-purple-500 to-cyan-500 text-white text-xs font-medium rounded-full">
@@ -401,7 +529,7 @@ export default function HomePage() {
                   <ul className="space-y-3 mb-6">
                     <li className="flex items-center gap-2 text-sm">
                       <Check className="w-4 h-4 text-green-400" />
-                      {plan.maxChannels === -1 ? 'Không giới hạn' : plan.maxChannels} kênh
+                      {plan.maxChannels === -1 ? 'Không giới hạn' : plan.maxChannels} kênh YouTube
                     </li>
                     <li className="flex items-center gap-2 text-sm">
                       <Check className="w-4 h-4 text-green-400" />
@@ -424,8 +552,8 @@ export default function HomePage() {
                   <Link
                     href={plan.slug === 'free' ? '/register' : `/pricing?plan=${plan.slug}`}
                     className={`w-full py-3 rounded-xl font-medium transition-all flex items-center justify-center gap-2 ${plan.isPopular
-                      ? 'bg-gradient-to-r from-purple-500 to-cyan-500 text-white hover:opacity-90'
-                      : 'bg-[var(--bg-tertiary)] hover:bg-[var(--bg-hover)]'
+                        ? 'bg-gradient-to-r from-purple-500 to-cyan-500 text-white hover:opacity-90'
+                        : 'bg-[var(--bg-tertiary)] hover:bg-[var(--bg-hover)]'
                       }`}
                   >
                     {plan.slug === 'free' ? 'Bắt đầu miễn phí' : 'Chọn gói này'}
@@ -443,12 +571,14 @@ export default function HomePage() {
         <div className="container-app">
           <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-purple-600/20 via-pink-600/20 to-cyan-600/20 border border-purple-500/30 p-12 text-center">
             <div className="relative z-10">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">Sẵn sàng tạo video AI?</h2>
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">
+                Sẵn Sàng Tăng Tốc Sản Xuất Video?
+              </h2>
               <p className="text-[var(--text-secondary)] mb-8 max-w-xl mx-auto">
-                Tham gia cùng hàng trăm creators đang sử dụng Veo Prompt để tạo nội dung video chuyên nghiệp
+                Bắt đầu tạo video prompt chuyên nghiệp ngay hôm nay. Miễn phí, không cần thẻ tín dụng.
               </p>
               <Link href="/register" className="btn-primary inline-flex items-center gap-2 text-lg px-10 py-4">
-                Bắt đầu miễn phí ngay
+                Tạo Video Đầu Tiên
                 <ArrowRight className="w-5 h-5" />
               </Link>
             </div>
@@ -468,7 +598,7 @@ export default function HomePage() {
                 <span className="font-bold text-lg">Veo Prompt</span>
               </Link>
               <p className="text-sm text-[var(--text-muted)]">
-                Nền tảng tạo prompt và quản lý nội dung video AI hàng đầu.
+                Công cụ #1 tạo video prompt cho AI video generators.
               </p>
             </div>
 
@@ -499,9 +629,7 @@ export default function HomePage() {
           <div className="flex flex-col md:flex-row items-center justify-between pt-8 border-t border-[var(--border-subtle)] text-sm text-[var(--text-muted)]">
             <span>© 2026 Veo Prompt. All rights reserved.</span>
             <div className="flex items-center gap-6 mt-4 md:mt-0">
-              <span>Secure & Private</span>
-              <span>•</span>
-              <span>SQLite Database</span>
+              <span>Compatible: Veo, Runway, Pika, Kling</span>
             </div>
           </div>
         </div>
