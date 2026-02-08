@@ -2326,7 +2326,51 @@ LANGUAGE: Speak Vietnamese only.
 - Có so sánh quốc tế (Mỹ, Singapore, Việt Nam, etc.)
 - Có personal experience từ host
 - Kết thúc với tips và CTA rõ ràng
-- 100% B-roll với voiceover`
+- 100% B-roll với voiceover
+
+🎲 QUY TẮC ĐA DẠNG HÓA (VARIETY RULES) - QUAN TRỌNG:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⚠️ TUYỆT ĐỐI KHÔNG LẶP LẠI cùng một pattern/câu mẫu nhiều lần trong video!
+⚠️ Mỗi scene PHẢI có cách diễn đạt KHÁC NHAU, không rập khuôn!
+
+📌 OPENING HOOKS - Chọn NGẪU NHIÊN 1 trong các style sau cho mỗi video:
+1. STORY HOOK: "Một buổi sáng thứ hai, khi tôi đang [hành động]..."
+2. SHOCKING STAT: "Bạn có biết rằng [số liệu gây sốc] không?"
+3. QUESTION: "Điều gì sẽ xảy ra nếu [tình huống giả định]?"
+4. CONFESSION: "Thú thật là tôi từng [sai lầm/trải nghiệm]..."
+5. PAIN POINT: "90% người Việt đang mắc sai lầm này mà không hề biết..."
+6. FUTURE: "Đến năm 2030, [dự đoán tương lai] sẽ thay đổi hoàn toàn..."
+7. CONTROVERSY: "Có người nói [quan điểm gây tranh cãi], nhưng sự thật là..."
+8. URGENCY: "Nếu bạn không biết điều này, bạn có thể [hậu quả nghiêm trọng]..."
+
+📌 TRANSITION PHRASES - Đa dạng hóa, KHÔNG dùng lặp lại:
+- Thay vì "Đầu tiên... Thứ hai... Thứ ba..." → Dùng: "Bắt đầu với... Tiếp theo... Và cuối cùng..."
+- Thay vì "Nhưng mà..." → Dùng: "Tuy nhiên...", "Mặt khác...", "Có điều...", "Khoan đã..."
+- Thay vì "Liệu bạn có thắc mắc..." → Dùng: "Câu hỏi đặt ra là...", "Vấn đề ở đây là...", "Điều thú vị là..."
+- Thay vì "Thật ra thì..." → Dùng: "Sự thật là...", "Nhìn sâu hơn...", "Nếu để ý kỹ..."
+
+📌 SCENE-TO-SCENE VARIETY:
+- Mỗi scene PHẢI có CẤU TRÚC CÂU khác nhau (câu hỏi, câu khẳng định, câu cảm thán xen kẽ)
+- Độ dài câu THAY ĐỔI: Câu ngắn gọn xen kẽ câu giải thích dài
+- Thỉnh thoảng dùng câu KHÔNG HOÀN CHỈNH để tạo suspense: "Và rồi... điều không ngờ xảy ra."
+- Xen kẽ giữa nói TRỰC TIẾP đến người xem và kể chuyện ngôi thứ ba
+
+📌 EMOTIONAL VARIETY:
+- Scene nghiêm túc → Scene nhẹ nhàng/hài hước → Scene data nặng → Scene cá nhân
+- Không nên có 3 scene liên tiếp cùng một mood
+- Dùng pause/silence hiệu quả: "Và điều đó nghĩa là... [beat] ...mọi thứ thay đổi."
+
+📌 CÁC CÂU NÊN TRÁNH LẶP LẠI:
+❌ "Một ngày đẹp trời..." (chỉ dùng 1 lần nếu cần)
+❌ "Liệu bạn có thắc mắc..." (chỉ dùng 1 lần)
+❌ "Đầu tiên phải nói đến..." (thay đổi cách diễn đạt)
+❌ "Với kinh nghiệm của..." (chỉ dùng 1 lần)
+❌ "Video này được tổng hợp..." (chỉ ở cuối video)
+
+📌 OUTPUT RULE:
+- Scanner qua toàn bộ script trước khi hoàn thành
+- Nếu thấy cùng một cụm từ xuất hiện hơn 2 lần → BẮT BUỘC phải viết lại với cách diễn đạt khác
+- Mỗi scene nên có "personality" riêng, không được generic`
         } else {
             voiceOverInstr = `CONTENT TYPE: B-ROLL ONLY (pure visuals, no dialogue).
 - The "voiceover" field should be empty or minimal ambient text
