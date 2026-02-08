@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { useSession } from 'next-auth/react'
 import { motion } from 'framer-motion'
 import toast from 'react-hot-toast'
 import {
@@ -47,19 +48,41 @@ const credentialFields: Record<string, { label: string; fields: { key: string; l
 
 export default function PaymentGatewaysPage() {
     const router = useRouter()
+    const { data: session, status } = useSession()
     const [gateways, setGateways] = useState<PaymentGateway[]>([])
     const [loading, setLoading] = useState(true)
     const [saving, setSaving] = useState<string | null>(null)
     const [testing, setTesting] = useState<string | null>(null)
     const [showSecrets, setShowSecrets] = useState<Record<string, boolean>>({})
     const [formData, setFormData] = useState<Record<string, Record<string, string>>>({})
+    const [error, setError] = useState<string | null>(null)
+
+    // Check admin access
+    useEffect(() => {
+        if (status === 'loading') return
+        if (!session) {
+            router.push('/login')
+            return
+        }
+        if ((session?.user as { role?: string })?.role !== 'admin') {
+            router.push('/dashboard')
+            return
+        }
+    }, [session, status, router])
 
     const fetchGateways = async () => {
         try {
-            const res = await fetch('/api/admin/gateways')
+            setError(null)
+            const res = await fetch('/api/admin/gateways', {
+                credentials: 'include'
+            })
             if (res.status === 403) {
                 router.push('/dashboard')
                 return
+            }
+            if (!res.ok) {
+                const data = await res.json()
+                throw new Error(data.error || 'Failed to load gateways')
             }
             const data = await res.json()
             setGateways(data.gateways || [])
@@ -70,8 +93,9 @@ export default function PaymentGatewaysPage() {
                 initial[g.name] = { ...g.credentials }
             }
             setFormData(initial)
-        } catch (error) {
-            console.error('Error:', error)
+        } catch (err) {
+            console.error('Error:', err)
+            setError(err instanceof Error ? err.message : 'Failed to load gateways')
             toast.error('Failed to load gateways')
         } finally {
             setLoading(false)
@@ -79,8 +103,10 @@ export default function PaymentGatewaysPage() {
     }
 
     useEffect(() => {
-        fetchGateways()
-    }, [])
+        if (status !== 'loading' && (session?.user as { role?: string })?.role === 'admin') {
+            fetchGateways()
+        }
+    }, [session, status])
 
     const handleSave = async (gateway: PaymentGateway) => {
         setSaving(gateway.name)
@@ -153,10 +179,25 @@ export default function PaymentGatewaysPage() {
         }))
     }
 
-    if (loading) {
+    if (loading || status === 'loading') {
         return (
             <div className="flex items-center justify-center min-h-[400px]">
                 <Loader2 className="w-8 h-8 animate-spin text-purple-500" />
+            </div>
+        )
+    }
+
+    if (error) {
+        return (
+            <div className="max-w-4xl mx-auto">
+                <div className="glass-card p-6 text-center">
+                    <AlertTriangle className="w-12 h-12 text-yellow-500 mx-auto mb-4" />
+                    <h2 className="text-lg font-semibold mb-2">Failed to Load</h2>
+                    <p className="text-[var(--text-secondary)] mb-4">{error}</p>
+                    <button onClick={fetchGateways} className="btn-primary">
+                        Try Again
+                    </button>
+                </div>
             </div>
         )
     }
@@ -185,8 +226,8 @@ export default function PaymentGatewaysPage() {
                             <div className="flex items-center justify-between mb-6">
                                 <div className="flex items-center gap-3">
                                     <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${gateway.name === 'stripe'
-                                            ? 'bg-gradient-to-br from-indigo-500 to-purple-600'
-                                            : 'bg-gradient-to-br from-blue-500 to-cyan-500'
+                                        ? 'bg-gradient-to-br from-indigo-500 to-purple-600'
+                                        : 'bg-gradient-to-br from-blue-500 to-cyan-500'
                                         }`}>
                                         <CreditCard className="w-6 h-6 text-white" />
                                     </div>
