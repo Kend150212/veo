@@ -6,6 +6,23 @@ import { useRouter } from 'next/navigation'
 import { use } from 'react'
 import { motion } from 'framer-motion'
 import {
+    DndContext,
+    closestCenter,
+    KeyboardSensor,
+    PointerSensor,
+    useSensor,
+    useSensors,
+    DragEndEvent
+} from '@dnd-kit/core'
+import {
+    arrayMove,
+    SortableContext,
+    sortableKeyboardCoordinates,
+    useSortable,
+    verticalListSortingStrategy
+} from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
+import {
     ArrowLeft,
     Plus,
     Film,
@@ -24,7 +41,10 @@ import {
     Globe,
     RefreshCw,
     Trash2,
-    Wand2
+    Wand2,
+    GripVertical,
+    AlertTriangle,
+    X
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { CHANNEL_STYLES, STYLE_CATEGORIES, getStylesByCategory } from '@/lib/channel-styles'
@@ -389,6 +409,7 @@ interface EpisodeScene {
     promptText: string
     duration: number
     hookType: string | null
+    generatedImageUrl?: string | null
 }
 
 interface Episode {
@@ -804,6 +825,86 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
     // Bulk selection for episodes
     const [selectedEpisodeIds, setSelectedEpisodeIds] = useState<string[]>([])
     const [showBulkMoveModal, setShowBulkMoveModal] = useState(false)
+
+    // Scene Editor states
+    const [editingSceneData, setEditingSceneData] = useState<{
+        episodeId: string
+        scene: EpisodeScene
+    } | null>(null)
+    const [sceneEditorTitle, setSceneEditorTitle] = useState('')
+    const [sceneEditorPromptText, setSceneEditorPromptText] = useState('')
+    const [sceneEditorDuration, setSceneEditorDuration] = useState(8)
+    const [savingScene, setSavingScene] = useState(false)
+    const [deletingSceneId, setDeletingSceneId] = useState<string | null>(null)
+
+    // Add New Scene states
+    const [addingSceneToEpisode, setAddingSceneToEpisode] = useState<string | null>(null)
+    const [newSceneContext, setNewSceneContext] = useState('')
+    const [newScenePosition, setNewScenePosition] = useState(0)
+    const [addingSceneWithAI, setAddingSceneWithAI] = useState(false)
+
+    // Quality warnings type
+    type QualityWarning = {
+        type: 'duplicate' | 'prompt_long' | 'filler'
+        sceneIds: string[]
+        message: string
+    }
+
+    // Drag-drop sensors
+    const sensors = useSensors(
+        useSensor(PointerSensor),
+        useSensor(KeyboardSensor, {
+            coordinateGetter: sortableKeyboardCoordinates,
+        })
+    )
+
+    // Quality check function
+    const analyzeSceneQuality = (scenes: EpisodeScene[]): QualityWarning[] => {
+        const warnings: QualityWarning[] = []
+
+        // 1. Duplicate content detection (simplified - check for same voiceover)
+        for (let i = 0; i < scenes.length; i++) {
+            for (let j = i + 1; j < scenes.length; j++) {
+                const text1 = scenes[i].promptText.toLowerCase()
+                const text2 = scenes[j].promptText.toLowerCase()
+                // Check if VOICEOVER content is duplicated
+                const vo1 = text1.match(/\[voiceover[^\]]*:\s*([^\]]+)\]/i)?.[1] || ''
+                const vo2 = text2.match(/\[voiceover[^\]]*:\s*([^\]]+)\]/i)?.[1] || ''
+                if (vo1 && vo2 && vo1.length > 20 && vo1 === vo2) {
+                    warnings.push({
+                        type: 'duplicate',
+                        sceneIds: [scenes[i].id, scenes[j].id],
+                        message: `Scene ${scenes[i].order} và ${scenes[j].order} có nội dung trùng lặp`
+                    })
+                }
+            }
+        }
+
+        // 2. PromptText too long (>2000 chars suggests redundancy)
+        for (const scene of scenes) {
+            if ((scene.promptText?.length || 0) > 2000) {
+                warnings.push({
+                    type: 'prompt_long',
+                    sceneIds: [scene.id],
+                    message: `Scene ${scene.order}: PromptText quá dài (${scene.promptText.length} ký tự, nên <2000)`
+                })
+            }
+        }
+
+        // 3. Sparse/filler content detection
+        const fillerPhrases = ['như đã nói', 'như vậy đó', 'tóm lại là', 'nói chung là']
+        for (const scene of scenes) {
+            if (fillerPhrases.some(p => scene.promptText?.toLowerCase().includes(p))) {
+                warnings.push({
+                    type: 'filler',
+                    sceneIds: [scene.id],
+                    message: `Scene ${scene.order}: Có thể là scene thừa/lấp chỗ`
+                })
+            }
+        }
+
+        return warnings
+    }
 
     // Custom content input
     const [customContent, setCustomContent] = useState('')
@@ -1669,6 +1770,134 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
         }
     }
 
+    // Scene Editor handlers
+    const handleOpenSceneEditor = (episodeId: string, scene: EpisodeScene) => {
+        setEditingSceneData({ episodeId, scene })
+        setSceneEditorTitle(scene.title || '')
+        setSceneEditorPromptText(scene.promptText)
+        setSceneEditorDuration(scene.duration)
+    }
+
+    const handleSaveScene = async () => {
+        if (!editingSceneData) return
+        setSavingScene(true)
+        try {
+            const res = await fetch(`/api/channels/${id}/episodes/${editingSceneData.episodeId}/scenes`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    sceneId: editingSceneData.scene.id,
+                    title: sceneEditorTitle,
+                    promptText: sceneEditorPromptText,
+                    duration: sceneEditorDuration
+                })
+            })
+            if (res.ok) {
+                toast.success('Đã lưu scene!')
+                setEditingSceneData(null)
+                fetchChannel()
+            } else {
+                const err = await res.json()
+                toast.error(err.error || 'Lỗi lưu scene')
+            }
+        } catch {
+            toast.error('Lỗi lưu scene')
+        } finally {
+            setSavingScene(false)
+        }
+    }
+
+    const handleDeleteScene = async (episodeId: string, sceneId: string) => {
+        if (!confirm('Xóa scene này? Không thể hoàn tác.')) return
+        setDeletingSceneId(sceneId)
+        try {
+            const res = await fetch(`/api/channels/${id}/episodes/${episodeId}/scenes?sceneId=${sceneId}`, {
+                method: 'DELETE'
+            })
+            if (res.ok) {
+                toast.success('Đã xóa scene!')
+                fetchChannel()
+            } else {
+                const err = await res.json()
+                toast.error(err.error || 'Lỗi xóa scene')
+            }
+        } catch {
+            toast.error('Lỗi xóa scene')
+        } finally {
+            setDeletingSceneId(null)
+        }
+    }
+
+    const handleAddSceneWithAI = async (episodeId: string) => {
+        if (!newSceneContext.trim()) {
+            toast.error('Nhập mô tả cho scene mới')
+            return
+        }
+        setAddingSceneWithAI(true)
+        try {
+            const res = await fetch(`/api/channels/${id}/episodes/${episodeId}/scenes`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    useAI: true,
+                    context: newSceneContext,
+                    insertAtOrder: newScenePosition || undefined
+                })
+            })
+            if (res.ok) {
+                toast.success('Đã tạo scene mới!')
+                setAddingSceneToEpisode(null)
+                setNewSceneContext('')
+                setNewScenePosition(0)
+                fetchChannel()
+            } else {
+                const err = await res.json()
+                toast.error(err.error || 'Lỗi tạo scene')
+            }
+        } catch {
+            toast.error('Lỗi tạo scene')
+        } finally {
+            setAddingSceneWithAI(false)
+        }
+    }
+
+    const handleDragEnd = async (event: DragEndEvent, episodeId: string, scenes: EpisodeScene[]) => {
+        const { active, over } = event
+        if (!over || active.id === over.id) return
+
+        const oldIndex = scenes.findIndex(s => s.id === active.id)
+        const newIndex = scenes.findIndex(s => s.id === over.id)
+
+        if (oldIndex === -1 || newIndex === -1) return
+
+        const reorderedScenes = arrayMove(scenes, oldIndex, newIndex)
+
+        // Update order values
+        const updates = reorderedScenes.map((scene, index) => ({
+            id: scene.id,
+            order: index + 1
+        }))
+
+        try {
+            const res = await fetch(`/api/channels/${id}/episodes/${episodeId}/scenes`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    reorder: true,
+                    scenes: updates
+                })
+            })
+            if (res.ok) {
+                toast.success('Đã sắp xếp lại scenes!')
+                fetchChannel()
+            } else {
+                toast.error('Lỗi sắp xếp scenes')
+            }
+        } catch {
+            toast.error('Lỗi sắp xếp scenes')
+        }
+    }
+
     const handleDeleteEpisode = async (episodeId: string) => {
         if (!confirm('Xóa episode này? Không thể hoàn tác.')) return
         setActionLoading(episodeId)
@@ -1689,6 +1918,129 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
         } finally {
             setActionLoading(null)
         }
+    }
+
+    // Sortable Scene Card Component
+    const SortableSceneCard = ({
+        scene,
+        episodeId,
+        warnings,
+        onEdit,
+        onDelete,
+        onGenerateImage,
+        isDeleting,
+        isGeneratingImage,
+        downloadImage
+    }: {
+        scene: EpisodeScene
+        episodeId: string
+        warnings: QualityWarning[]
+        onEdit: () => void
+        onDelete: () => void
+        onGenerateImage: () => void
+        isDeleting: boolean
+        isGeneratingImage: boolean
+        downloadImage: (url: string, filename: string) => void
+    }) => {
+        const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: scene.id })
+
+        const style = {
+            transform: CSS.Transform.toString(transform),
+            transition,
+            opacity: isDragging ? 0.5 : 1,
+        }
+
+        return (
+            <div
+                ref={setNodeRef}
+                style={style}
+                className={`px-4 py-3 border-b border-[var(--border-subtle)] last:border-0 ${isDragging ? 'bg-[var(--bg-tertiary)]' : ''}`}
+            >
+                <div className="flex items-center gap-2 mb-2">
+                    {/* Drag Handle */}
+                    <button
+                        {...attributes}
+                        {...listeners}
+                        className="cursor-grab active:cursor-grabbing p-1 hover:bg-[var(--bg-tertiary)] rounded text-[var(--text-muted)]"
+                        title="Kéo để sắp xếp"
+                    >
+                        <GripVertical className="w-4 h-4" />
+                    </button>
+
+                    <span className="font-medium text-sm flex-1">
+                        Scene {scene.order}: {scene.title}
+                        {warnings.length > 0 && (
+                            <span className="ml-2 text-yellow-400" title={warnings.map(w => w.message).join('\n')}>
+                                ⚠️
+                            </span>
+                        )}
+                    </span>
+
+                    <div className="flex items-center gap-1">
+                        <span className="text-xs text-[var(--text-muted)]">{scene.duration}s</span>
+
+                        {/* Edit Button */}
+                        <button
+                            onClick={onEdit}
+                            className="p-1 hover:bg-[var(--bg-tertiary)] rounded text-[var(--text-muted)] hover:text-[var(--accent-primary)]"
+                            title="Chỉnh sửa scene"
+                        >
+                            <Edit2 className="w-3.5 h-3.5" />
+                        </button>
+
+                        {/* Delete Button */}
+                        <button
+                            onClick={onDelete}
+                            disabled={isDeleting}
+                            className="p-1 hover:bg-red-500/20 rounded text-[var(--text-muted)] hover:text-red-400 disabled:opacity-50"
+                            title="Xóa scene"
+                        >
+                            {isDeleting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
+                        </button>
+
+                        {/* Generate Image Button */}
+                        <button
+                            onClick={onGenerateImage}
+                            disabled={isGeneratingImage}
+                            className="px-2 py-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 disabled:opacity-50 rounded text-xs text-white flex items-center gap-1"
+                            title="Tạo ảnh bằng Google Imagen 3"
+                        >
+                            {isGeneratingImage ? (
+                                <><Loader2 className="w-3 h-3 animate-spin" /> Đang tạo...</>
+                            ) : (
+                                <>🖼️ Tạo ảnh</>
+                            )}
+                        </button>
+                    </div>
+                </div>
+
+                <pre className="text-xs text-[var(--text-secondary)] whitespace-pre-wrap bg-[var(--bg-primary)] rounded p-2 mono max-h-32 overflow-y-auto">
+                    {scene.promptText}
+                </pre>
+
+                {/* Show generated image if exists */}
+                {scene.generatedImageUrl && (
+                    <div className="mt-2 p-2 bg-[var(--bg-tertiary)] rounded">
+                        <div className="flex items-center justify-between mb-2">
+                            <span className="text-xs text-green-400">✅ Ảnh đã tạo</span>
+                            <button
+                                onClick={() => downloadImage(scene.generatedImageUrl!, `scene-${scene.order}.png`)}
+                                className="text-xs text-purple-400 hover:text-purple-300 flex items-center gap-1"
+                            >
+                                ⬇️ Download
+                            </button>
+                        </div>
+                        <img
+                            src={scene.generatedImageUrl}
+                            alt={`Scene ${scene.order}`}
+                            className="max-h-40 rounded mx-auto cursor-pointer"
+                            onClick={() => window.open(scene.generatedImageUrl!, '_blank')}
+                            title="Click để xem ảnh lớn"
+                        />
+                    </div>
+                )}
+            </div>
+        )
     }
 
     if (isLoading) {
@@ -3787,68 +4139,102 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                                             </button>
                                         </div>
 
-                                        {/* Scenes */}
-                                        <div className="max-h-[400px] overflow-y-auto">
-                                            {episode.scenes.map(scene => (
-                                                <div key={scene.id} className="px-4 py-3 border-b border-[var(--border-subtle)] last:border-0">
-                                                    <div className="flex items-center justify-between mb-2">
-                                                        <span className="font-medium text-sm">
-                                                            Scene {scene.order}: {scene.title}
-                                                        </span>
-                                                        <div className="flex items-center gap-2">
-                                                            <span className="text-xs text-[var(--text-muted)]">
-                                                                {scene.duration}s
-                                                            </span>
-                                                            {/* Generate Image Button */}
-                                                            <button
-                                                                onClick={() => handleGenerateSceneImage(scene.id, scene.promptText)}
-                                                                disabled={generatingImageForScene === scene.id}
-                                                                className="px-2 py-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 disabled:opacity-50 rounded text-xs text-white flex items-center gap-1"
-                                                                title="Tạo ảnh bằng Google Imagen 3"
-                                                            >
-                                                                {generatingImageForScene === scene.id ? (
-                                                                    <>
-                                                                        <Loader2 className="w-3 h-3 animate-spin" />
-                                                                        Đang tạo...
-                                                                    </>
-                                                                ) : (
-                                                                    <>
-                                                                        🖼️ Tạo ảnh
-                                                                    </>
-                                                                )}
-                                                            </button>
-                                                        </div>
+                                        {/* Scenes with Quality Warnings */}
+                                        {(() => {
+                                            const warnings = analyzeSceneQuality(episode.scenes)
+                                            return warnings.length > 0 && (
+                                                <div className="px-4 py-2 bg-yellow-500/10 border-b border-yellow-500/30">
+                                                    <div className="flex items-center gap-2 text-yellow-400 text-xs">
+                                                        <AlertTriangle className="w-4 h-4" />
+                                                        <span className="font-medium">{warnings.length} cảnh báo chất lượng</span>
                                                     </div>
-                                                    <pre className="text-xs text-[var(--text-secondary)] whitespace-pre-wrap bg-[var(--bg-primary)] rounded p-2 mono">
-                                                        {scene.promptText}
-                                                    </pre>
-
-                                                    {/* Show generated image if exists */}
-                                                    {(scene as { generatedImageUrl?: string }).generatedImageUrl && (
-                                                        <div className="mt-2 p-2 bg-[var(--bg-tertiary)] rounded">
-                                                            <div className="flex items-center justify-between mb-2">
-                                                                <span className="text-xs text-green-400">✅ Ảnh đã tạo</span>
-                                                                <button
-                                                                    onClick={() => downloadImage(
-                                                                        (scene as { generatedImageUrl?: string }).generatedImageUrl!,
-                                                                        `scene-${scene.order}.png`
-                                                                    )}
-                                                                    className="text-xs text-purple-400 hover:text-purple-300 flex items-center gap-1"
-                                                                >
-                                                                    ⬇️ Download
-                                                                </button>
-                                                            </div>
-                                                            <img
-                                                                src={(scene as { generatedImageUrl?: string }).generatedImageUrl}
-                                                                alt={`Scene ${scene.order}`}
-                                                                className="max-h-40 rounded mx-auto cursor-pointer"
-                                                                onClick={() => window.open((scene as { generatedImageUrl?: string }).generatedImageUrl!, '_blank')}
-                                                                title="Click để xem ảnh lớn"
-                                                            />
-                                                        </div>
-                                                    )}
+                                                    <ul className="mt-1 text-xs text-yellow-300/80">
+                                                        {warnings.slice(0, 3).map((w, i) => (
+                                                            <li key={i}>• {w.message}</li>
+                                                        ))}
+                                                        {warnings.length > 3 && <li>• ...và {warnings.length - 3} cảnh báo khác</li>}
+                                                    </ul>
                                                 </div>
-                                            ))}
+                                            )
+                                        })()}
+
+                                        {/* Scenes with Drag-Drop */}
+                                        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={(e) => handleDragEnd(e, episode.id, episode.scenes)}>
+                                            <SortableContext items={episode.scenes.map(s => s.id)} strategy={verticalListSortingStrategy}>
+                                                <div className="max-h-[400px] overflow-y-auto">
+                                                    {episode.scenes.map(scene => {
+                                                        const sceneWarnings = analyzeSceneQuality(episode.scenes).filter(w => w.sceneIds.includes(scene.id))
+                                                        return (
+                                                            <SortableSceneCard
+                                                                key={scene.id}
+                                                                scene={scene}
+                                                                episodeId={episode.id}
+                                                                warnings={sceneWarnings}
+                                                                onEdit={() => handleOpenSceneEditor(episode.id, scene)}
+                                                                onDelete={() => handleDeleteScene(episode.id, scene.id)}
+                                                                onGenerateImage={() => handleGenerateSceneImage(scene.id, scene.promptText)}
+                                                                isDeleting={deletingSceneId === scene.id}
+                                                                isGeneratingImage={generatingImageForScene === scene.id}
+                                                                downloadImage={downloadImage}
+                                                            />
+                                                        )
+                                                    })}
+                                                </div>
+                                            </SortableContext>
+                                        </DndContext>
+
+                                        {/* Add Scene Button */}
+                                        <div className="px-4 py-3 border-t border-[var(--border-subtle)]">
+                                            {addingSceneToEpisode === episode.id ? (
+                                                <div className="space-y-2">
+                                                    <textarea
+                                                        value={newSceneContext}
+                                                        onChange={(e) => setNewSceneContext(e.target.value)}
+                                                        placeholder="Mô tả nội dung scene mới (AI sẽ tạo dựa vào context các scene xung quanh)"
+                                                        className="input-field text-sm h-20"
+                                                    />
+                                                    <div className="flex items-center gap-2">
+                                                        <select
+                                                            value={newScenePosition}
+                                                            onChange={(e) => setNewScenePosition(Number(e.target.value))}
+                                                            className="input-field text-sm flex-1"
+                                                        >
+                                                            <option value={0}>Thêm vào cuối</option>
+                                                            {episode.scenes.map(s => (
+                                                                <option key={s.id} value={s.order}>Trước Scene {s.order}</option>
+                                                            ))}
+                                                        </select>
+                                                        <button
+                                                            onClick={() => handleAddSceneWithAI(episode.id)}
+                                                            disabled={addingSceneWithAI}
+                                                            className="btn-primary text-sm flex items-center gap-1"
+                                                        >
+                                                            {addingSceneWithAI ? (
+                                                                <><Loader2 className="w-4 h-4 animate-spin" /> Đang tạo...</>
+                                                            ) : (
+                                                                <><Wand2 className="w-4 h-4" /> Tạo với AI</>
+                                                            )}
+                                                        </button>
+                                                        <button
+                                                            onClick={() => {
+                                                                setAddingSceneToEpisode(null)
+                                                                setNewSceneContext('')
+                                                            }}
+                                                            className="btn-secondary text-sm"
+                                                        >
+                                                            Hủy
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <button
+                                                    onClick={() => setAddingSceneToEpisode(episode.id)}
+                                                    className="w-full py-2 border-2 border-dashed border-[var(--border-subtle)] hover:border-[var(--accent-primary)] rounded-lg text-sm text-[var(--text-muted)] hover:text-[var(--accent-primary)] flex items-center justify-center gap-2 transition-colors"
+                                                >
+                                                    <Plus className="w-4 h-4" />
+                                                    Thêm Scene mới (AI)
+                                                </button>
+                                            )}
                                         </div>
                                     </div>
                                 )}
@@ -4151,6 +4537,81 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                                     <>
                                         🚀 Tạo {bulkEpisodes.length} Episodes
                                     </>
+                                )}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Scene Editor Modal */}
+            {editingSceneData && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-[var(--bg-secondary)] rounded-xl max-w-3xl w-full max-h-[90vh] overflow-hidden">
+                        <div className="p-6 border-b border-[var(--border-subtle)]">
+                            <div className="flex items-center justify-between">
+                                <h2 className="text-xl font-bold flex items-center gap-2">
+                                    ✏️ Chỉnh sửa Scene {editingSceneData.scene.order}
+                                </h2>
+                                <button
+                                    onClick={() => setEditingSceneData(null)}
+                                    className="p-2 hover:bg-[var(--bg-tertiary)] rounded-lg"
+                                >
+                                    <X className="w-5 h-5" />
+                                </button>
+                            </div>
+                        </div>
+                        <div className="p-6 space-y-4 max-h-[60vh] overflow-y-auto">
+                            <div>
+                                <label className="block text-sm font-medium mb-1">Tiêu đề Scene</label>
+                                <input
+                                    type="text"
+                                    value={sceneEditorTitle}
+                                    onChange={(e) => setSceneEditorTitle(e.target.value)}
+                                    placeholder="VD: Opening Hook"
+                                    className="input-field"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium mb-1">
+                                    PromptText <span className="text-xs text-[var(--text-muted)]">({sceneEditorPromptText.length} ký tự)</span>
+                                </label>
+                                <textarea
+                                    value={sceneEditorPromptText}
+                                    onChange={(e) => setSceneEditorPromptText(e.target.value)}
+                                    placeholder="[VOICEOVER in Vietnamese: ...]. ..."
+                                    className="input-field font-mono text-sm h-64"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium mb-1">Thời lượng (giây)</label>
+                                <input
+                                    type="number"
+                                    value={sceneEditorDuration}
+                                    onChange={(e) => setSceneEditorDuration(Number(e.target.value))}
+                                    min={3}
+                                    max={30}
+                                    className="input-field w-24"
+                                />
+                            </div>
+                        </div>
+                        <div className="p-6 border-t border-[var(--border-subtle)] flex justify-end gap-3">
+                            <button
+                                onClick={() => setEditingSceneData(null)}
+                                disabled={savingScene}
+                                className="btn-secondary"
+                            >
+                                Hủy
+                            </button>
+                            <button
+                                onClick={handleSaveScene}
+                                disabled={savingScene}
+                                className="btn-primary flex items-center gap-2"
+                            >
+                                {savingScene ? (
+                                    <><Loader2 className="w-4 h-4 animate-spin" /> Đang lưu...</>
+                                ) : (
+                                    <><Check className="w-4 h-4" /> Lưu thay đổi</>
                                 )}
                             </button>
                         </div>
