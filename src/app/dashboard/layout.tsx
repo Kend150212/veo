@@ -12,13 +12,15 @@ import {
     Sparkles,
     Menu,
     X,
-    Tv
+    Tv,
+    Shield
 } from 'lucide-react'
 import { useState } from 'react'
 
 const navItems = [
     { href: '/dashboard', label: 'Dashboard', labelVi: 'Tổng quan', icon: LayoutDashboard },
     { href: '/dashboard/channels', label: 'Channels', labelVi: 'Kênh YouTube', icon: Tv },
+    { href: '/dashboard/admin', label: 'Admin', labelVi: 'Quản lý Users', icon: Shield, adminOnly: true },
     { href: '/dashboard/settings', label: 'Settings', labelVi: 'Cài đặt', icon: Settings },
 ]
 

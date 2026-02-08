@@ -213,6 +213,16 @@ function ExternalApiKeySection() {
                             Header: x-api-key: YOUR_API_KEY
                         </code>
                     </div>
+
+                    <a
+                        href="/api-docs.html"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-4 btn-secondary flex items-center gap-2 w-fit"
+                    >
+                        <Link className="w-4 h-4" />
+                        Xem API Documentation
+                    </a>
                 </div>
             )}
         </motion.div>
