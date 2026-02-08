@@ -111,18 +111,58 @@ export async function PUT(request: Request) {
         }
 
         const body = await request.json()
-        const { id, features, ...updateData } = body
+
+        // Extract only valid update fields, filter out computed fields
+        const {
+            id,
+            name,
+            slug,
+            description,
+            priceMonthly,
+            priceYearly,
+            yearlyDiscount,
+            maxChannels,
+            maxEpisodesPerMonth,
+            maxApiCalls,
+            features,
+            isPopular,
+            sortOrder,
+            isActive,
+            stripePriceMonthly,
+            stripePriceYearly,
+            paypalPlanMonthly,
+            paypalPlanYearly
+        } = body
 
         if (!id) {
             return NextResponse.json({ error: 'Plan ID required' }, { status: 400 })
         }
 
+        // Build update data with only defined values
+        const updateData: Record<string, unknown> = {}
+        if (name !== undefined) updateData.name = name
+        if (slug !== undefined) updateData.slug = slug
+        if (description !== undefined) updateData.description = description
+        if (priceMonthly !== undefined) updateData.priceMonthly = priceMonthly
+        if (priceYearly !== undefined) updateData.priceYearly = priceYearly
+        if (yearlyDiscount !== undefined) updateData.yearlyDiscount = yearlyDiscount
+        if (maxChannels !== undefined) updateData.maxChannels = maxChannels
+        if (maxEpisodesPerMonth !== undefined) updateData.maxEpisodesPerMonth = maxEpisodesPerMonth
+        if (maxApiCalls !== undefined) updateData.maxApiCalls = maxApiCalls
+        if (isPopular !== undefined) updateData.isPopular = isPopular
+        if (sortOrder !== undefined) updateData.sortOrder = sortOrder
+        if (isActive !== undefined) updateData.isActive = isActive
+        if (stripePriceMonthly !== undefined) updateData.stripePriceMonthly = stripePriceMonthly
+        if (stripePriceYearly !== undefined) updateData.stripePriceYearly = stripePriceYearly
+        if (paypalPlanMonthly !== undefined) updateData.paypalPlanMonthly = paypalPlanMonthly
+        if (paypalPlanYearly !== undefined) updateData.paypalPlanYearly = paypalPlanYearly
+        if (features !== undefined) {
+            updateData.features = typeof features === 'string' ? features : JSON.stringify(features)
+        }
+
         const plan = await prisma.plan.update({
             where: { id },
-            data: {
-                ...updateData,
-                ...(features ? { features: JSON.stringify(features) } : {})
-            }
+            data: updateData
         })
 
         return NextResponse.json({
