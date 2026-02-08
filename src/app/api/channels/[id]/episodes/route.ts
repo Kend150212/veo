@@ -2156,7 +2156,44 @@ LANGUAGE: Speak Vietnamese only. PACING: (fast-cut/slow-burn/normal).
 - Host NHẤT QUÁN xuyên suốt tất cả scenes
 - Biểu cảm host THAY ĐỔI theo nội dung đang kể
 - Story elements LIÊN QUAN đến nội dung voiceover
-- Giọng văn thân mật, tự nhiên, có cảm xúc`
+- Giọng văn thân mật, tự nhiên, có cảm xúc
+
+🎲 QUY TẮC ĐA DẠNG HÓA (VARIETY RULES) - PHONG CÁCH ANH DƯ LEO:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⚠️ KHÔNG LẶP LẠI cùng một câu mẫu/pattern nhiều lần!
+⚠️ Mỗi scene PHẢI có cách kể chuyện KHÁC NHAU!
+
+📌 HOOK VARIATIONS - Chọn 1 style PHÙ HỢP với nội dung:
+1. KHOÁC LÁC: "X năm, từ [điểm thấp] đến [thành tựu khủng]..."
+2. THÁCH THỨC: "Mấy đứa nghĩ tao nói xạo đúng không? Để kể cho nghe..."
+3. BÍ MẬT: "Có một điều mà ít ai biết về [chủ đề]..."
+4. CÂU HỎI: "Bạn có tin được không? Từ [A] mà giờ [B]..."
+5. PHẢN BÁC: "Ai cũng nói [sai lầm phổ biến], nhưng họ lầm to..."
+6. TÂM SỰ: "Hồi đó tao cũng từng [hoàn cảnh khó khăn]..."
+7. SỐC: "[Sự thật gây sốc] - Nghe xong chắc nhiều người không tin..."
+8. CẢNH BÁO: "Nếu bạn đang [sai lầm], dừng lại ngay..."
+
+📌 TRANSITION PHRASES - Tránh lặp lại:
+- Thay "Hồi đó..." → "Lúc ấy...", "Ngày xưa...", "Thời điểm đó..."
+- Thay "Rồi thì..." → "Và rồi...", "Cho đến khi...", "Đến một ngày..."
+- Thay "Nên là mấy em..." → "Vậy nên...", "Thế là...", "Từ đó..."
+- Thay "Nhiều người nghĩ..." → "Có người bảo...", "Ai cũng tưởng...", "Thiên hạ đồn..."
+
+📌 EMOTIONAL JOURNEY VARIETY:
+- Không nên có 3 scene liên tiếp cùng một cảm xúc
+- Xen kẽ: Tự tin → Khiêm tốn → Khó khăn → Vượt qua → Tự hào
+- Dùng im lặng/pause hiệu quả giữa các đoạn cao trào
+
+📌 CÁC CỤM TỪ CHỈ DÙNG 1 LẦN:
+❌ "8 năm từ không có gì..." (chỉ ở hook)
+❌ "Mấy đứa nghĩ tao nói xạo..." (chỉ 1 lần)
+❌ "Hồi đó gia đình tao nghèo..." (chỉ 1 lần)
+❌ "Với kinh nghiệm của..." (chỉ 1 lần)
+
+📌 HOST BEHAVIOR VARIETY:
+- Biểu cảm PHẢI thay đổi theo nội dung (không cứng nhắc)
+- Xen kẽ: nhìn camera → nhìn sang bên → nhìn xuống → nhìn lên
+- Gesture tay thay đổi: chỉ, xòe, nắm, đưa lên...`
             } else {
                 // B-ROLL ONLY MODE: 100% illustrative footage with voiceover
                 voiceOverInstr = `CONTENT TYPE: NARRATIVE STORYTELLING B-ROLL (Kể chuyện B-roll - Phong cách Anh Dư Leo)
@@ -2197,7 +2234,44 @@ LANGUAGE: Speak Vietnamese only.
 - Giọng văn thân mật như nói chuyện với bạn
 - Dùng số liệu cụ thể làm bằng chứng
 - B-roll phải minh họa đúng nội dung đang kể
-- Cảm xúc lên xuống theo cấu trúc 8 phase`
+- Cảm xúc lên xuống theo cấu trúc 8 phase
+
+🎲 QUY TẮC ĐA DẠNG HÓA (VARIETY RULES) - PHONG CÁCH ANH DƯ LEO:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⚠️ KHÔNG LẶP LẠI cùng một câu mẫu/pattern nhiều lần!
+⚠️ Mỗi scene PHẢI có cách kể chuyện KHÁC NHAU!
+
+📌 HOOK VARIATIONS - Chọn 1 style PHÙ HỢP với nội dung:
+1. KHOÁC LÁC: "X năm, từ [điểm thấp] đến [thành tựu khủng]..."
+2. THÁCH THỨC: "Mấy đứa nghĩ tao nói xạo đúng không? Để kể cho nghe..."
+3. BÍ MẬT: "Có một điều mà ít ai biết về [chủ đề]..."
+4. CÂU HỎI: "Bạn có tin được không? Từ [A] mà giờ [B]..."
+5. PHẢN BÁC: "Ai cũng nói [sai lầm phổ biến], nhưng họ lầm to..."
+6. TÂM SỰ: "Hồi đó tao cũng từng [hoàn cảnh khó khăn]..."
+7. SỐC: "[Sự thật gây sốc] - Nghe xong chắc nhiều người không tin..."
+8. CẢNH BÁO: "Nếu bạn đang [sai lầm], dừng lại ngay..."
+
+📌 TRANSITION PHRASES - Tránh lặp lại:
+- Thay "Hồi đó..." → "Lúc ấy...", "Ngày xưa...", "Thời điểm đó..."
+- Thay "Rồi thì..." → "Và rồi...", "Cho đến khi...", "Đến một ngày..."
+- Thay "Nên là mấy em..." → "Vậy nên...", "Thế là...", "Từ đó..."
+- Thay "Nhiều người nghĩ..." → "Có người bảo...", "Ai cũng tưởng...", "Thiên hạ đồn..."
+
+📌 EMOTIONAL JOURNEY VARIETY:
+- Không nên có 3 scene liên tiếp cùng một cảm xúc
+- Xen kẽ: Tự tin → Khiêm tốn → Khó khăn → Vượt qua → Tự hào
+- Dùng im lặng/pause hiệu quả giữa các đoạn cao trào
+
+📌 CÁC CỤM TỪ CHỈ DÙNG 1 LẦN:
+❌ "8 năm từ không có gì..." (chỉ ở hook)
+❌ "Mấy đứa nghĩ tao nói xạo..." (chỉ 1 lần)
+❌ "Hồi đó gia đình tao nghèo..." (chỉ 1 lần)
+❌ "Với kinh nghiệm của..." (chỉ 1 lần)
+
+📌 B-ROLL VARIETY:
+- Không dùng cùng loại shot 2 lần liên tiếp
+- Xen kẽ: wide shot → close-up → macro → tracking
+- Góc quay thay đổi: low angle, eye level, high angle, aerial`
             }
         } else if (voiceOverMode === 'educational_explainer') {
             // Educational Explainer mode (Lóng / Vietcetera style)
