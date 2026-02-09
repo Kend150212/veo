@@ -3434,9 +3434,25 @@ Return ONLY valid JSON.`
                             const visualPrompt = scene.promptText || 'Scene visual description'
                             // Add language specification for voiceover
                             const langTag = dialogueLang === 'en' ? 'English' : 'Vietnamese'
-                            const fullPrompt = voiceContent
-                                ? `[VOICEOVER in ${langTag}: ${voiceContent}]. ${visualPrompt}. LANGUAGE: Speak ${langTag} only.`
-                                : visualPrompt
+
+                            // Check if promptText already has VOICEOVER or LANGUAGE tags to prevent duplicates
+                            const hasVoiceover = visualPrompt.includes('[VOICEOVER') || visualPrompt.includes('[SCENE TYPE:')
+                            const hasLanguage = visualPrompt.includes('LANGUAGE:')
+
+                            // For cinematic_film_script mode, don't add VOICEOVER wrapper since it uses character dialogue
+                            const isCinematicScript = voiceOverMode === 'cinematic_film_script' || voiceOverMode === 'cinematic_film'
+
+                            let fullPrompt: string
+                            if (isCinematicScript || hasVoiceover) {
+                                // Don't add VOICEOVER wrapper - AI already formatted correctly or uses character dialogue
+                                fullPrompt = hasLanguage ? visualPrompt : `${visualPrompt}. LANGUAGE: Speak ${langTag} only.`
+                            } else if (voiceContent && !hasVoiceover) {
+                                // Standard mode: add VOICEOVER wrapper only if not present
+                                const languageSuffix = hasLanguage ? '' : `. LANGUAGE: Speak ${langTag} only.`
+                                fullPrompt = `[VOICEOVER in ${langTag}: ${voiceContent}]. ${visualPrompt}${languageSuffix}`
+                            } else {
+                                fullPrompt = hasLanguage ? visualPrompt : `${visualPrompt}. LANGUAGE: Speak ${langTag} only.`
+                            }
 
                             return {
                                 order: scene.order || index + 1,
