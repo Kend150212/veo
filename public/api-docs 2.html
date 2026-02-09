@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Veo API Documentation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #111118;
+            --bg-tertiary: #1a1a24;
+            --bg-code: #0d1117;
+            --text-primary: #e4e4e7;
+            --text-secondary: #a1a1aa;
+            --text-muted: #71717a;
+            --accent: #6366f1;
+            --accent-light: #818cf8;
+            --border: #27272a;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --error: #ef4444;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+        
+        /* Header */
+        header {
+            background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+            border-bottom: 1px solid var(--border);
+            padding: 48px 0;
+        }
+        
+        header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        header p {
+            color: var(--text-secondary);
+            font-size: 1.125rem;
+        }
+        
+        .version {
+            display: inline-block;
+            background: var(--accent);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 12px;
+        }
+        
+        /* Navigation */
+        nav {
+            position: sticky;
+            top: 0;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            z-index: 100;
+            padding: 16px 0;
+        }
+        
+        nav ul {
+            display: flex;
+            gap: 24px;
+            list-style: none;
+        }
+        
+        nav a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        
+        nav a:hover {
+            color: var(--accent-light);
+        }
+        
+        /* Main content */
+        main {
+            padding: 48px 0;
+        }
+        
+        section {
+            margin-bottom: 64px;
+        }
+        
+        h2 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin-bottom: 24px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 32px 0 16px;
+            color: var(--accent-light);
+        }
+        
+        p {
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+        
+        /* Endpoint cards */
+        .endpoint {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin-bottom: 24px;
+            overflow: hidden;
+        }
+        
+        .endpoint-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 20px;
+            background: var(--bg-tertiary);
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .method {
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .method.get { background: #22c55e20; color: var(--success); }
+        .method.post { background: #6366f120; color: var(--accent-light); }
+        .method.put { background: #f59e0b20; color: var(--warning); }
+        .method.delete { background: #ef444420; color: var(--error); }
+        
+        .endpoint-path {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+        }
+        
+        .endpoint-body {
+            padding: 20px;
+        }
+        
+        .endpoint-desc {
+            margin-bottom: 20px;
+        }
+        
+        /* Code blocks */
+        pre {
+            background: var(--bg-code);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            overflow-x: auto;
+            margin: 16px 0;
+        }
+        
+        code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--text-primary);
+        }
+        
+        .code-inline {
+            background: var(--bg-tertiary);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+        }
+        
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+        }
+        
+        th, td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        th {
+            background: var(--bg-tertiary);
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        td {
+            color: var(--text-secondary);
+        }
+        
+        .required {
+            color: var(--error);
+            font-size: 0.75rem;
+        }
+        
+        .optional {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+        }
+        
+        /* Auth section */
+        .auth-box {
+            background: linear-gradient(135deg, var(--accent)10 0%, var(--bg-secondary) 100%);
+            border: 1px solid var(--accent);
+            border-radius: 12px;
+            padding: 24px;
+            margin: 24px 0;
+        }
+        
+        .auth-box h3 {
+            color: var(--accent-light);
+            margin-top: 0;
+        }
+        
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        
+        .tab {
+            padding: 8px 16px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 0.875rem;
+        }
+        
+        .tab.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+        
+        /* Footer */
+        footer {
+            padding: 32px 0;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Veo API <span class="version">v1.0</span></h1>
+            <p>REST API for automated video episode generation with AI</p>
+        </div>
+    </header>
+    
+    <nav>
+        <div class="container">
+            <ul>
+                <li><a href="#authentication">Authentication</a></li>
+                <li><a href="#channels">Channels</a></li>
+                <li><a href="#episodes">Episodes</a></li>
+                <li><a href="#styles">Styles</a></li>
+                <li><a href="#examples">Examples</a></li>
+            </ul>
+        </div>
+    </nav>
+    
+    <main class="container">
+        <!-- Authentication -->
+        <section id="authentication">
+            <h2>Authentication</h2>
+            <p>All API requests require authentication using an API key. Generate your API key from the Settings page in your dashboard.</p>
+            
+            <div class="auth-box">
+                <h3>🔑 API Key Header</h3>
+                <p>Include your API key in the request header:</p>
+                <pre><code>x-api-key: veo_your_api_key_here</code></pre>
+            </div>
+            
+            <h3>Base URL</h3>
+            <pre><code>https://your-domain.com/api/v1</code></pre>
+        </section>
+        
+        <!-- Channels -->
+        <section id="channels">
+            <h2>Channels</h2>
+            <p>Manage your video channels. Each channel can have multiple episodes, characters, and visual styles.</p>
+            
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <code class="endpoint-path">/channels</code>
+                </div>
+                <div class="endpoint-body">
+                    <p class="endpoint-desc">List all channels for the authenticated user.</p>
+                    <h4>Response</h4>
+                    <pre><code>{
+  "channels": [
+    {
+      "id": "clx...",
+      "name": "My Channel",
+      "niche": "Educational content about space",
+      "characters": [...],
+      "_count": { "episodes": 10, "characters": 3 }
+    }
+  ],
+  "meta": { "total": 1 }
+}</code></pre>
+                </div>
+            </div>
+            
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <code class="endpoint-path">/channels</code>
+                </div>
+                <div class="endpoint-body">
+                    <p class="endpoint-desc">Create a new channel.</p>
+                    <h4>Request Body</h4>
+                    <table>
+                        <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+                        <tr><td>name <span class="required">required</span></td><td>string</td><td>Channel name</td></tr>
+                        <tr><td>niche <span class="required">required</span></td><td>string</td><td>Channel niche/topic description</td></tr>
+                        <tr><td>description <span class="optional">optional</span></td><td>string</td><td>Detailed channel description</td></tr>
+                        <tr><td>dialogueLanguage <span class="optional">optional</span></td><td>string</td><td>"vi" or "en" (default: "vi")</td></tr>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <code class="endpoint-path">/channels/{id}</code>
+                </div>
+                <div class="endpoint-body">
+                    <p class="endpoint-desc">Get channel details including all episodes and characters.</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Episodes -->
+        <section id="episodes">
+            <h2>Episodes</h2>
+            <p>Create and manage video episodes. Each episode contains multiple scenes with AI-generated prompts for video generation tools like Veo or Sora.</p>
+            
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <code class="endpoint-path">/channels/{id}/episodes</code>
+                </div>
+                <div class="endpoint-body">
+                    <p class="endpoint-desc">List all episodes for a channel with their scenes.</p>
+                </div>
+            </div>
+            
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <code class="endpoint-path">/channels/{id}/episodes</code>
+                </div>
+                <div class="endpoint-body">
+                    <p class="endpoint-desc">Create a new episode with AI-generated content. The AI will generate a complete video script with scenes, prompts, and optional YouTube metadata.</p>
+                    
+                    <h4>Request Body</h4>
+                    <table>
+                        <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+                        <tr><td>topicIdea <span class="required">required</span></td><td>string</td><td>Main topic or title for the episode (e.g., "The Mystery of Black Holes")</td></tr>
+                        <tr><td>customContent <span class="optional">optional</span></td><td>string</td><td>Pre-scraped content to base the episode on (e.g., article text)</td></tr>
+                        <tr><td>totalScenes <span class="optional">optional</span></td><td>number</td><td>Number of scenes to generate (default: 10, range: 5-20)</td></tr>
+                        <tr><td>cinematicStyle <span class="optional">optional</span></td><td>string</td><td>Visual style: "cinematic_documentary", "psychological_drama", "sitcom_comedy", etc.</td></tr>
+                        <tr><td>voiceOverMode <span class="optional">optional</span></td><td>string</td><td>"with_host" | "narrator_only" | "no_voice"</td></tr>
+                        <tr><td>voiceGender <span class="optional">optional</span></td><td>string</td><td>"auto" | "male" | "female"</td></tr>
+                        <tr><td>voiceTone <span class="optional">optional</span></td><td>string</td><td>"warm" | "energetic" | "calm" | "mysterious" | "professional"</td></tr>
+                        <tr><td>useCharacters <span class="optional">optional</span></td><td>boolean</td><td>Include channel's characters (default: true)</td></tr>
+                        <tr><td>selectedCharacterIds <span class="optional">optional</span></td><td>string[]</td><td>Specific character IDs to include</td></tr>
+                        <tr><td>categoryId <span class="optional">optional</span></td><td>string</td><td>Category ID for episode organization</td></tr>
+                        <tr><td>generateYoutubeStrategies <span class="optional">optional</span></td><td>boolean</td><td>Generate YouTube titles, description, tags (default: true)</td></tr>
+                        <tr><td>narrativeTemplateId <span class="optional">optional</span></td><td>string</td><td>"storytelling" | "documentary" | "tutorial" | "review" | "vlog"</td></tr>
+                    </table>
+                    
+                    <h4>Response</h4>
+                    <pre><code>{
+  "success": true,
+  "episode": {
+    "id": "clx...",
+    "title": "The Fascinating Mystery of Black Holes",
+    "synopsis": "Explore the cosmic phenomena...",
+    "scenesCount": 10,
+    "scenes": [
+      {
+        "order": 1,
+        "title": "Opening Hook",
+        "promptText": "[VOICEOVER: Deep, mysterious tone] What happens when you fall into a black hole? ENVIRONMENT: Vast space with swirling galaxy...",
+        "voiceover": "What happens when you cross the event horizon...",
+        "duration": 8
+      }
+    ],
+    "youtubeStrategies": {
+      "titles": ["What Really Happens Inside a Black Hole?", ...],
+      "description": "In this video, we explore...",
+      "tags": ["black hole", "space", "physics", ...]
+    }
+  }
+}</code></pre>
+                </div>
+            </div>
+            
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method delete">DELETE</span>
+                    <code class="endpoint-path">/channels/{id}/episodes?episodeId={episodeId}</code>
+                </div>
+                <div class="endpoint-body">
+                    <p class="endpoint-desc">Delete an episode and all its scenes.</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Styles -->
+        <section id="styles">
+            <h2>Styles & Options</h2>
+            
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <code class="endpoint-path">/styles</code>
+                </div>
+                <div class="endpoint-body">
+                    <p class="endpoint-desc">Get all available cinematic styles, content types, and configuration options.</p>
+                    <pre><code>{
+  "cinematicStyles": [
+    { "id": "cinematic_documentary", "name": "Cinematic Documentary" },
+    { "id": "psychological_drama", "name": "Psychological Drama" },
+    { "id": "sitcom_comedy", "name": "Sitcom / Narrative Comedy" },
+    { "id": "mystery_horror", "name": "Mystery Horror" },
+    ...
+  ],
+  "contentTypes": [...],
+  "narrativeTemplates": [...],
+  "voiceOverModes": [...],
+  "voiceGenders": ["auto", "male", "female"],
+  "voiceTones": ["warm", "energetic", "calm", "mysterious", "professional"]
+}</code></pre>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Examples -->
+        <section id="examples">
+            <h2>Integration Examples</h2>
+            
+            <h3>cURL</h3>
+            <pre><code># Create an episode
+curl -X POST https://your-domain.com/api/v1/channels/YOUR_CHANNEL_ID/episodes \
+  -H "Content-Type: application/json" \
+  -H "x-api-key: veo_your_api_key" \
+  -d '{
+    "topicIdea": "10 Amazing Facts About the Ocean",
+    "totalScenes": 12,
+    "cinematicStyle": "cinematic_documentary",
+    "voiceTone": "energetic"
+  }'</code></pre>
+            
+            <h3>Make.com / Zapier HTTP Module</h3>
+            <pre><code>Method: POST
+URL: https://your-domain.com/api/v1/channels/{channelId}/episodes
+
+Headers:
+  Content-Type: application/json
+  x-api-key: {{your_api_key}}
+
+Body (JSON):
+{
+  "topicIdea": "{{scraped_title}}",
+  "customContent": "{{scraped_content}}",
+  "totalScenes": 10,
+  "generateYoutubeStrategies": true
+}</code></pre>
+            
+            <h3>Python</h3>
+            <pre><code>import requests
+
+response = requests.post(
+    "https://your-domain.com/api/v1/channels/YOUR_CHANNEL_ID/episodes",
+    headers={
+        "Content-Type": "application/json",
+        "x-api-key": "veo_your_api_key"
+    },
+    json={
+        "topicIdea": "The Science of Dreams",
+        "totalScenes": 10,
+        "cinematicStyle": "psychological_drama",
+        "voiceTone": "mysterious"
+    }
+)
+
+episode = response.json()
+print(f"Created episode: {episode['episode']['title']}")</code></pre>
+            
+            <h3>JavaScript / Node.js</h3>
+            <pre><code>const response = await fetch(
+  'https://your-domain.com/api/v1/channels/YOUR_CHANNEL_ID/episodes',
+  {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': 'veo_your_api_key'
+    },
+    body: JSON.stringify({
+      topicIdea: 'Secrets of Ancient Civilizations',
+      totalScenes: 15,
+      cinematicStyle: 'cinematic_documentary',
+      narrativeTemplateId: 'documentary'
+    })
+  }
+);
+
+const { episode } = await response.json();
+console.log('Created:', episode.title);</code></pre>
+        </section>
+    </main>
+    
+    <footer>
+        <div class="container">
+            <p>Veo API Documentation &copy; 2024</p>
+        </div>
+    </footer>
+</body>
+</html>

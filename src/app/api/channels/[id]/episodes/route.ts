@@ -1385,7 +1385,7 @@ Video phải đạt chất lượng ĐIỆN ẢNH THẬT SỰ - KHÔNG MƠ HỒ!
 - Voice tags: "VOICE: Male voice" or "VOICE: Female voice" for dialogue scenes
 - For silent scenes: voiceover field = "(Không có lời)" or description of music/sound only`
         } else if (voiceOverMode === 'cinematic_film_script') {
-            // Professional Movie Script Mode - Natural dialogue, AI decides which scenes need dialogue
+            // Professional Movie Script Mode - CHARACTER DIALOGUE (not voice-over), Cut transitions
             const dialogueLang = 'Vietnamese' // Default to Vietnamese
 
             // Camera Style Map
@@ -1416,105 +1416,131 @@ Video phải đạt chất lượng ĐIỆN ẢNH THẬT SỰ - KHÔNG MƠ HỒ!
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 🎬 MỤC TIÊU: Tạo kịch bản phim chuyên nghiệp như Netflix/Hollywood
-Chất lượng 8K ULTRA HD, lời thoại TỰ NHIÊN, không phải scene nào cũng cần thoại!
+Chất lượng 8K ULTRA HD, LỜI THOẠI NHÂN VẬT THẬT (không dùng voice-over narrator)!
 
 📊 YÊU CẦU: TẠO CHÍNH XÁC ${cinematicSceneCount || 8} SCENES
+
+═══════════════════════════════════════
+🚨🚨🚨 CRITICAL - KHÔNG DÙNG VOICE-OVER 🚨🚨🚨
+═══════════════════════════════════════
+⛔ TUYỆT ĐỐI KHÔNG VIẾT:
+- [VOICEOVER: ...] - SAI! Đây không phải documentary
+- [NARRATOR: ...] - SAI! Không có người kể chuyện
+- "Tonight we dive into..." - SAI! Đây là giọng narrator
+
+✅ THAY VÀO ĐÓ, VIẾT LỜI THOẠI NHÂN VẬT THẬT:
+- JACK (giọng căng thẳng): "Chúng ta chỉ có 5 phút. Di chuyển!"
+- ROSE (thì thầm, sợ hãi): "Tao nghe thấy tiếng bước chân..."
+- (Im lặng - tiếng mưa rơi, thở gấp, tiếng súng xa)
+
+═══════════════════════════════════════
+🎬 TRANSITIONS - CHỈ DÙNG CUT-TO-CUT
+═══════════════════════════════════════
+⛔ KHÔNG DÙNG:
+- Morphing transitions (cảm giác giả, rẻ tiền)
+- Smooth blend between scenes
+- Dissolve effects
+- Match cuts quá phức tạp
+
+✅ CHỈ DÙNG CUT ĐƠN GIẢN:
+- CUT TO: [Scene mới]
+- HARD CUT (cắt đột ngột cho impact)
+- SMASH CUT (cắt giữa action)
+- TIME CUT (cùng location, khác thời gian)
+- Jump trong logic câu chuyện phải RÕ RÀNG
 
 ═══════════════════════════════════════
 📷 GÓC MÁY CAMERA ĐƯỢC CHỌN:
 ═══════════════════════════════════════
 ${selectedCameraStylesText}
 
-⚠️ ÁP DỤNG các góc máy này xen kẽ trong suốt kịch bản, chọn góc phù hợp theo mood của từng scene.
+⚠️ ÁP DỤNG các góc máy này xen kẽ trong suốt kịch bản.
 
 ═══════════════════════════════════════
-📜 QUY TẮC LỜI THOẠI (DIALOGUE RULES):
+📜 QUY TẮC LỜI THOẠI (CHARACTER DIALOGUE):
 ═══════════════════════════════════════
-⚠️ AI TỰ QUYẾT ĐỊNH scene nào cần thoại dựa trên:
+⚠️ AI TỰ QUYẾT ĐỊNH scene nào cần thoại:
 
-✅ SCENE CẦN THOẠI:
-- Conflict/xung đột giữa nhân vật
-- Revelation/tiết lộ thông tin quan trọng
-- Emotional confrontation/đối mặt cảm xúc
-- Character introduction với tính cách đặc trưng
+✅ SCENE CẦN THOẠI NHÂN VẬT:
+- Conflict/xung đột trực tiếp
+- Revelation/tiết lộ thông tin
+- Emotional confrontation
+- Character introduction
 - Plot twist reveals
 
-❌ SCENE KHÔNG CẦN THOẠI (IM LẶNG LÀ VÀNG):
-- Establishing shots (thiết lập bối cảnh)
-- Emotional processing (nhân vật suy tư)
-- Action sequences (hành động nhanh)
-- Transition scenes (chuyển cảnh)
-- Visual storytelling (kể chuyện bằng hình ảnh)
-- Suspense building (xây dựng hồi hộp)
+❌ SCENE IM LẶNG (KHÔNG CÓ LỜI):
+- Establishing shots
+- Action sequences
+- Suspense building
+- Visual storytelling thuần túy
 - Aftermath/hậu quả
 
-💬 KHI VIẾT THOẠI:
-- Mỗi nhân vật có GIỌNG NÓI RIÊNG (vocabulary, rhythm, accent)
-- Subtext > Direct statement (ẩn ý quan trọng hơn nói thẳng)
-- KHÔNG exposition dump - thông tin phải tự nhiên
-- Dialogue phải reveal CHARACTER, không chỉ thông tin
-- Realistic rhythm: interruptions, trailing off, silence
+💬 FORMAT LỜI THOẠI ĐÚNG:
+- TÊN_NHÂN_VẬT (trạng thái/emotion): "Lời thoại..."
+- Ví dụ: JACK (thì thầm, căng thẳng): "Họ đã tìm thấy chúng ta."
+- Ví dụ: ROSE (hét lên, tuyệt vọng): "KHÔNG!"
 
 🎯 TỶ LỆ KHUYẾN NGHỊ:
-- 40% scenes có thoại
-- 30% scenes im lặng hoàn toàn (environmental sound only)
-- 30% scenes có minimal dialogue hoặc single line
+- 40% scenes có dialogue nhân vật
+- 30% scenes im lặng hoàn toàn (ambient sound only)
+- 30% scenes có 1-2 câu thoại ngắn
+
+═══════════════════════════════════════
+🎭 MÔ TẢ NHÂN VẬT CHI TIẾT (BẮT BUỘC):
+═══════════════════════════════════════
+MỖI nhân vật PHẢI mô tả ĐẦY ĐỦ trong MỖI scene:
+
+📌 TEMPLATE MÔ TẢ:
+[TÊN]: [Tuổi], [Ethnicity/race], [Kiểu da/face shape], [MẮT: màu, hình dáng], [TÓC: kiểu, màu, dài/ngắn], [CHIỀU CAO/DÁNG], [TRANG PHỤC: chi tiết cụ thể màu sắc, chất liệu], [PHỤ KIỆN], [VẾT THƯƠNG/ĐẶC ĐIỂM nếu có], [BIỂU CẢM HIỆN TẠI], [HÀNH ĐỘNG CỤ THỂ đang làm]
+
+📌 VÍ DỤ ĐÚNG (CHI TIẾT):
+"JACK: 35 tuổi, Caucasian, da rám nắng với sẹo trên má trái, mắt xanh sắc lạnh, tóc đen ngắn military cut lấm bụi, cao 1m85 vạm vỡ, mặc tactical vest đen carbon-fiber có vết đạn mới, quần cargo khaki bám máu, đeo dao combat bên hông, mặt căng thẳng đổ mồ hôi, đang nạp đạn cho khẩu M4 trong khi quỳ gối sau bức tường đổ."
+
+⛔ VÍ DỤ SAI (THIẾU CHI TIẾT):
+"JACK: Người đàn ông mặc đồ đen, đang cầm súng."
 
 ═══════════════════════════════════════
 🎨 VISUAL RULES - 8K CINEMATIC:
 ═══════════════════════════════════════
 📸 CAMERA & QUALITY:
 - 8K ULTRA HD photorealistic
-- Camera chuyên nghiệp: ARRI Alexa, RED, Panavision
+- Cinema camera: ARRI Alexa, RED, Panavision
 - Anamorphic lens, shallow depth of field
-- NO FILTERS, NO OVERLAYS - video sạch 100%
+- NO FILTERS, NO OVERLAYS - clean image
 
-🌈 AUTO COLOR GRADING (theo cảm xúc scene):
-- WARM AMBER: Hy vọng, hạnh phúc, chiến thắng
-- COOL TEAL/BLUE: Nguy hiểm, buồn bã, cô đơn
-- GOLDEN: Khoảnh khắc thiêng liêng, tình yêu
-- DESATURATED: Shock, trauma, mất mát
-- HIGH CONTRAST: Tension, thriller moments
-- NEUTRAL: Đời thường, chân thực
+🌈 AUTO COLOR GRADING:
+- WARM AMBER: Hy vọng, hạnh phúc
+- COOL TEAL/BLUE: Nguy hiểm, buồn
+- DESATURATED: Shock, trauma
+- HIGH CONTRAST: Tension, thriller
 
 ═══════════════════════════════════════
 📝 FORMAT MỖI SCENE:
 ═══════════════════════════════════════
-SCENE [X]: [Tên scene]
+SCENE [X]: [Tên ngắn gọn]
+[TRANSITION: CUT TO hoặc HARD CUT hoặc SMASH CUT]
 
 🎬 PROMPTTEXT:
-"[8K cinematic, photorealistic. NHÂ VẬT: (mô tả đầy đủ). HÀNH ĐỘNG: (đang làm gì). ENVIRONMENT: (bối cảnh chi tiết). CAMERA: (angle, movement). LIGHTING: (auto color grade phù hợp emotion). ATMOSPHERE: (mood). NO FILTERS, clean image.]";
+"[8K cinematic, photorealistic. NHÂN VẬT: (mô tả ĐẦY ĐỦ theo template). HÀNH ĐỘNG: (đang làm gì cụ thể). ENVIRONMENT: (bối cảnh). CAMERA: (angle, movement). LIGHTING: (auto color grade). NO FILTERS.]"
 
-📖 VOICEOVER:
-[NẾU CÓ THOẠI]:
-"VOICE (NHÂN_VẬT - tone/emotion): Nội dung lời thoại tự nhiên..."
+📖 VOICEOVER (thực chất là DIALOGUE):
+[NẾU CÓ LỜI THOẠI]:
+"TÊN_NHÂN_VẬT (emotion): Lời thoại tự nhiên bằng ${dialogueLang}..."
 
-[NẾU KHÔNG CÓ THOẠI]:
-"(Im lặng - Ambient sound: tiếng mưa rơi, tiếng gió, tiếng bước chân...)"
-HOẶC
-"(Musical score - Emotional orchestral building tension...)"
-
-═══════════════════════════════════════
-🎭 CHARACTER CONSISTENCY (BẮT BUỘC):
-═══════════════════════════════════════
-MỖI nhân vật PHẢI mô tả ĐẦY ĐỦ trong MỖI scene:
-[TÊN: tuổi, ethnicity, DA, MẶT, TÓC, DÁNG, TRANG PHỤC, PHỤ KIỆN, BIỂU CẢM, TƯ THẾ]
-
-⚠️ KHÔNG BAO GIỜ viết: "Jack như thường lệ" hay "Rose với outfit hôm nay"
-✅ LUÔN LUÔN viết: Mô tả đầy đủ chi tiết từ đầu đến cuối
+[NẾU IM LẶNG]:
+"(Im lặng - Ambient: tiếng mưa, bước chân, súng...)"
+hoặc
+"(Musical score - Emotional orchestra...)"
 
 ═══════════════════════════════════════
-🎬 SCENE PACING & RHYTHM:
+🎬 PACING & LOGIC:
 ═══════════════════════════════════════
-- Alternate: Action scene → Quiet scene → Dialogue scene
-- Build tension gradually, release in key moments
-- Silent moments BEFORE major revelations
-- Dialogue scenes followed by silent reaction scenes
-- Let images tell the story when words aren't needed
-
-📝 All dialogue in ${dialogueLang}
-- Voice tags: "VOICE (CHARACTER - emotion): dialogue..."
-- For silent: "(Im lặng - sound description...)" or "(Musical score...)"`
+- Mỗi scene CHỈ CÓ MỘT mục đích - không overload
+- Logic chuyển cảnh PHẢI rõ ràng
+- KHÔNG nhảy cóc vô lý giữa locations
+- Action → Quiet → Dialogue → Action (rhythm)
+- Build tension dần → release at key moments
+- End với powerful IMAGE, often silent`
         } else if (voiceOverMode === 'roast_comedy') {
             voiceOverInstr = `CONTENT TYPE: ROAST COMEDY - PROVOCATIVE (Chọc tức khán giả - CỰC KỲ VIRAL!)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
