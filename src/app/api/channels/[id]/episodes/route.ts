@@ -1519,20 +1519,41 @@ MỖI nhân vật PHẢI mô tả ĐẦY ĐỦ trong MỖI scene:
 ═══════════════════════════════════════
 📝 FORMAT MỖI SCENE:
 ═══════════════════════════════════════
-SCENE [X]: [Tên ngắn gọn]
-[TRANSITION: CUT TO hoặc HARD CUT hoặc SMASH CUT]
+[SCENE TYPE: (type)]. PACING: (fast-cut/slow-burn/normal).
+[NẾU CÓ DIALOGUE - BẮT BUỘC VIẾT LỜI THOẠI]:
+[CHARACTER_NAME (emotion/trạng thái): "Lời thoại thực sự bằng ${dialogueLang}..."]
 
-🎬 PROMPTTEXT:
-"[8K cinematic, photorealistic. NHÂN VẬT: (mô tả ĐẦY ĐỦ theo template). HÀNH ĐỘNG: (đang làm gì cụ thể). ENVIRONMENT: (bối cảnh). CAMERA: (angle, movement). LIGHTING: (auto color grade). NO FILTERS.]"
+🎬 PROMPTTEXT FORMAT:
+"[SCENE TYPE: X]. PACING: X. [DIALOGUE nếu có]. [MÔ TẢ NHÂN VẬT ĐẦY ĐỦ]. HÀNH ĐỘNG: X. ENVIRONMENT: X. CAMERA: X. LIGHTING: X. STYLE: X. MOOD: X."
 
-📖 VOICEOVER (thực chất là DIALOGUE):
-[NẾU CÓ LỜI THOẠI]:
-"TÊN_NHÂN_VẬT (emotion): Lời thoại tự nhiên bằng ${dialogueLang}..."
+═══════════════════════════════════════
+🎭 VÍ DỤ DIALOGUE SCENE (BẮT BUỘC CÓ LỜI THOẠI):
+═══════════════════════════════════════
+✅ ĐÚNG:
+"[SCENE TYPE: DIALOGUE]. PACING: normal. [KAEL (whispered, tense): 'They've breached the perimeter. We have maybe two minutes before they find us.']. KAEL: 32, East Asian, cybernetic amber eye glowing, black tactical vest... ENVIRONMENT: Dark corridor..."
 
-[NẾU IM LẶNG]:
-"(Im lặng - Ambient: tiếng mưa, bước chân, súng...)"
-hoặc
-"(Musical score - Emotional orchestra...)"
+⛔ SAI (THIẾU LỜI THOẠI):
+"[SCENE TYPE: DIALOGUE]. PACING: normal. [KAEL is standing in the room]. KAEL: 32, East Asian..."
+↑ DIALOGUE scene nhưng KHÔNG CÓ lời thoại thực sự!
+
+═══════════════════════════════════════
+📖 DIALOGUE QUALITY RULES (CINEMATIC):
+═══════════════════════════════════════
+LỜI THOẠI PHẢI:
+✓ SUBTEXT - Nói một đằng, ý một nẻo (như phim thật)
+✓ CONFLICT - Mỗi câu thoại phải có tension/mục đích
+✓ CHARACTER VOICE - Mỗi nhân vật có cách nói riêng
+✓ BREVITY - Ngắn gọn, súc tích (không dài dòng)
+✓ SHOW DON'T TELL - Không giải thích trực tiếp
+
+VÍ DỤ DIALOGUE HAY:
+- "I didn't come here to negotiate." (Subtext: threat)
+- "You look just like her..." (Subtext: loss, memory)
+- "Run. Now." (Brevity, urgency)
+
+VÍ DỤ DIALOGUE DỞ:
+- "I am angry because you betrayed me." (Too direct)
+- "Let me explain everything that happened..." (Too expository)
 
 ═══════════════════════════════════════
 🎬 PACING & LOGIC:
@@ -1543,6 +1564,7 @@ hoặc
 - Action → Quiet → Dialogue → Action (rhythm)
 - Build tension dần → release at key moments
 - End với powerful IMAGE, often silent`
+
         } else if (voiceOverMode === 'roast_comedy') {
             voiceOverInstr = `CONTENT TYPE: ROAST COMEDY - PROVOCATIVE (Chọc tức khán giả - CỰC KỲ VIRAL!)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
