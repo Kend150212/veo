@@ -11,7 +11,7 @@ export interface ChannelStyle {
     hasCharacters: boolean  // Style có hỗ trợ nhân vật không
     suggestedCharCount: number  // Số nhân vật AI đề xuất
     previewImage?: string  // Path to preview image
-    category: 'illustration' | 'cartoon' | 'realistic' | 'artistic' | 'minimalist' | 'edutainment' | 'fashion'
+    category: 'illustration' | 'cartoon' | 'realistic' | 'artistic' | 'minimalist' | 'edutainment' | 'fashion' | 'cinematic_movie'
 }
 
 // Comprehensive list of styles - AI determined variety
@@ -525,6 +525,98 @@ export const CHANNEL_STYLES: ChannelStyle[] = [
         suggestedCharCount: 1,
         previewImage: 'https://cdn1.sharemyimage.com/smi/2026/02/02/style_tiktok_viral_1769985644285.jpeg',
         category: 'fashion'
+    },
+
+    // === CINEMATIC MOVIE CATEGORY === (Phim Điện Ảnh 8K - Netflix Quality)
+    {
+        id: 'cinematic-fantasy-epic',
+        name: 'Fantasy Epic',
+        nameVi: 'Phim Thần Thoại Sử Thi',
+        description: '8K epic fantasy like Lord of the Rings, Journey to the West',
+        descriptionVi: 'Phim thần thoại sử thi 8K như Tây Du Ký, Chúa Nhẫn',
+        promptKeywords: `8K ULTRA HD CINEMATIC, epic fantasy adventure film quality,
+            COLOR GRADING: warm amber and teal, golden hour dramatic lighting, rich saturated colors,
+            CAMERA: ARRI Alexa 65, anamorphic lens, shallow depth of field, epic wide establishing shots,
+            LIGHTING: dramatic natural light, volumetric god rays, atmospheric haze,
+            STYLE: photorealistic, mythical scale, production design of $200M+ blockbuster,
+            NO FILTERS: clean image, no overlays, no vignette, no color filters applied,
+            AUTO COLOR MATCH: adjust color palette to match scene mood - warm for hope, cool for danger, golden for victory`,
+        hasCharacters: true,
+        suggestedCharCount: 4,
+        previewImage: '/images/styles/cinematic_fantasy_epic.png',
+        category: 'cinematic_movie'
+    },
+    {
+        id: 'cinematic-scifi-matrix',
+        name: 'Sci-Fi Cyberpunk',
+        nameVi: 'Phim Khoa Học Viễn Tưởng',
+        description: '8K sci-fi like Matrix, Blade Runner with iconic green/teal tones',
+        descriptionVi: 'Phim khoa học viễn tưởng 8K phong cách Matrix, Blade Runner',
+        promptKeywords: `8K ULTRA HD CINEMATIC, sci-fi cyberpunk film quality,
+            COLOR GRADING: distinctive green-tinted like Matrix OR teal-orange like Blade Runner - auto-match to scene,
+            CAMERA: Sony Venice, ultra-wide anamorphic, neon light reflections on wet surfaces,
+            LIGHTING: neon glow, rain-slicked streets, high contrast shadows, film noir aesthetic,
+            STYLE: photorealistic, futuristic dystopia, production design quality,
+            NO FILTERS: clean image, no overlays, color grading only via lighting and environment,
+            AUTO COLOR MATCH: green-tint for digital/virtual scenes, teal-orange for urban night, cold blue for tech environments`,
+        hasCharacters: true,
+        suggestedCharCount: 2,
+        previewImage: '/images/styles/cinematic_scifi_matrix.png',
+        category: 'cinematic_movie'
+    },
+    {
+        id: 'cinematic-action-hero',
+        name: 'Superhero Action',
+        nameVi: 'Phim Siêu Anh Hùng',
+        description: '8K heroic action like Marvel/DC with vibrant saturated colors',
+        descriptionVi: 'Phim siêu anh hùng hành động 8K phong cách Marvel/DC',
+        promptKeywords: `8K ULTRA HD CINEMATIC, superhero blockbuster film quality,
+            COLOR GRADING: vibrant saturated colors, blue-orange complementary contrast, high dynamic range,
+            CAMERA: RED Komodo 6K, dynamic camera movement, dramatic angles, lens flares,
+            LIGHTING: explosive dramatic lighting, rim lights, backlit hero shots, volumetric debris,
+            STYLE: photorealistic, epic scale action, VFX-ready clean plates,
+            NO FILTERS: clean image, no overlays, color grading via practical and post lighting,
+            AUTO COLOR MATCH: saturated warm for heroic moments, desaturated for gritty scenes, high contrast for action`,
+        hasCharacters: true,
+        suggestedCharCount: 3,
+        previewImage: '/images/styles/cinematic_action_hero.png',
+        category: 'cinematic_movie'
+    },
+    {
+        id: 'cinematic-drama-emotional',
+        name: 'Emotional Drama',
+        nameVi: 'Phim Tâm Lý Tình Cảm',
+        description: '8K intimate drama like Parasite, Nomadland with natural muted colors',
+        descriptionVi: 'Phim tâm lý tình cảm 8K như Parasite, Nomadland',
+        promptKeywords: `8K ULTRA HD CINEMATIC, award-winning drama film quality,
+            COLOR GRADING: natural muted earthy tones, subtle desaturation, film grain texture,
+            CAMERA: ARRI Alexa Mini, intimate close-ups, handheld feel, natural focus pulls,
+            LIGHTING: soft diffused natural light, window light, practical lighting sources,
+            STYLE: photorealistic, intimate human moments, raw emotional authenticity,
+            NO FILTERS: clean image, no overlays, naturalistic color grading only,
+            AUTO COLOR MATCH: warm tones for tender moments, cool desaturated for sadness, neutral for contemplation`,
+        hasCharacters: true,
+        suggestedCharCount: 2,
+        previewImage: '/images/styles/cinematic_drama_emotional.png',
+        category: 'cinematic_movie'
+    },
+    {
+        id: 'cinematic-thriller-dark',
+        name: 'Psychological Thriller',
+        nameVi: 'Phim Kinh Dị Tâm Lý',
+        description: '8K suspense thriller like Se7en, Gone Girl with dark moody atmosphere',
+        descriptionVi: 'Phim kinh dị tâm lý 8K như Se7en, Gone Girl',
+        promptKeywords: `8K ULTRA HD CINEMATIC, psychological thriller film quality,
+            COLOR GRADING: dark moody teal and orange, high contrast, deep blacks, desaturated,
+            CAMERA: Panavision Millennium DXL2, noir cinematography, silhouettes, dutch angles,
+            LIGHTING: dramatic chiaroscuro, single source lighting, shadows hiding details, rain on window,
+            STYLE: photorealistic, atmospheric tension, David Fincher aesthetic,
+            NO FILTERS: clean image, no overlays, mood created through lighting and color grading,
+            AUTO COLOR MATCH: cold teal for dread, warm amber for false safety, desaturated for shock reveals`,
+        hasCharacters: true,
+        suggestedCharCount: 2,
+        previewImage: '/images/styles/cinematic_thriller_dark.png',
+        category: 'cinematic_movie'
     }
 ]
 
@@ -557,7 +649,8 @@ export const STYLE_CATEGORIES = [
     { id: 'realistic', name: 'Thực tế', nameEn: 'Realistic' },
     { id: 'artistic', name: 'Nghệ thuật', nameEn: 'Artistic' },
     { id: 'minimalist', name: 'Tối giản', nameEn: 'Minimalist' },
-    { id: 'fashion', name: 'Thời trang / Social', nameEn: 'Fashion / Social' }
+    { id: 'fashion', name: 'Thời trang / Social', nameEn: 'Fashion / Social' },
+    { id: 'cinematic_movie', name: 'Phim Điện Ảnh 8K', nameEn: 'Cinematic Movie 8K' }
 ]
 
 // Fashion Background Options

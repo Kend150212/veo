@@ -994,6 +994,128 @@ Hành động tốc độ cao, xe đẹp, và FAMILY!
 
 📝 PROMPTTEXT FORMAT:
 "[SCENE TYPE: race/chase/heist/stunt]. [VEHICLE: specific car with color, modifications]. [DRIVER: full description, expression of focus/determination]. [ACTION: specific driving move - drift, NOS boost, jump]. CAMERA: [low angle/interior/tracking/drone], speed lines. LIGHTING: night neon/tunnel strobe/fire glow. VFX: motion blur, NOS flames, tire smoke. STYLE: Fast & Furious, street racing, high octane. PACING: FAST-CUT, adrenaline pumping."`
+                },
+                'fantasy_epic_8k': {
+                    name: 'Fantasy Epic 8K (Phim Thần Thoại Sử Thi)',
+                    keywords: '8K ULTRA HD, epic fantasy adventure, Journey to the West style, Lord of the Rings scale, ARRI Alexa 65, anamorphic lens, warm amber and teal color grading, golden hour dramatic lighting, mythical scope, volumetric god rays, atmospheric haze, NO FILTERS clean image, AUTO COLOR: warm for hope cool for danger golden for victory',
+                    guidance: `🏔️ FANTASY EPIC 8K STYLE (Tây Du Ký / Chúa Nhẫn):
+═══════════════════════════════════════
+Phim thần thoại sử thi chất lượng NETFLIX/HBO 8K!
+
+🎨 COLOR GRADING (AUTO-MATCH TO SCENE):
+- WARM AMBER: Cảnh chiến thắng, hy vọng, anh hùng
+- COOL TEAL: Cảnh nguy hiểm, đối đầu, thử thách
+- GOLDEN: Cảnh thần thánh, giác ngộ, phép thuật
+- DEEP BLUE: Cảnh đêm, bí ẩn, thế giới thần linh
+
+🎥 CAMERA STYLE:
+- 8K ULTRA HD photorealistic
+- ARRI Alexa 65, anamorphic lens
+- Epic wide establishing shots cho cảnh hoành tráng
+- Shallow depth of field cho intimate moments
+- Crane/Drone cho sweeping epic landscapes
+
+💡 LIGHTING:
+- Volumetric god rays xuyên qua rừng/mây
+- Golden hour backlit hero shots
+- Atmospheric haze cho chiều sâu
+- Practical lights từ đuốc, lửa, phép thuật
+
+⚠️ MANDATORY:
+- NO FILTERS, NO OVERLAYS - video sạch 100%
+- Color grading CHỈ qua lighting và environment
+- Mô tả nhân vật ĐẦY ĐỦ mỗi scene
+- Scale hoành tráng như phim $200M+
+
+🎭 SCENE TYPES:
+1. HERO INTRODUCTION: Nhân vật chính xuất hiện hoành tráng
+2. JOURNEY: Đường hành trình qua cảnh quan hùng vĩ
+3. CONFRONTATION: Đối đầu với thế lực đen tối
+4. TRAINING: Tu luyện, trưởng thành
+5. BATTLE: Chiến đấu epic với phép thuật
+6. TRIUMPH: Chiến thắng, giác ngộ`
+                },
+                'emotional_drama_8k': {
+                    name: 'Emotional Drama 8K (Phim Tâm Lý Tình Cảm)',
+                    keywords: '8K ULTRA HD, award-winning drama, Parasite style, Nomadland aesthetic, ARRI Alexa Mini, natural muted earthy tones, subtle desaturation, film grain texture, intimate close-ups, soft diffused natural light, NO FILTERS clean image, AUTO COLOR: warm for tender cool for sadness neutral for contemplation',
+                    guidance: `🎭 EMOTIONAL DRAMA 8K STYLE (Parasite / Nomadland):
+═══════════════════════════════════════
+Phim tâm lý tình cảm đạt giải Oscar chất lượng 8K!
+
+🎨 COLOR GRADING (AUTO-MATCH TO EMOTION):
+- WARM TONES: Khoảnh khắc dịu dàng, hạnh phúc, ấm áp
+- COOL DESATURATED: Nỗi buồn, cô đơn, mất mát
+- NEUTRAL: Chiêm nghiệm, suy tư, quyết định
+- MUTED EARTHY: Cuộc sống thường nhật, chân thực
+
+🎥 CAMERA STYLE:
+- 8K ULTRA HD photorealistic
+- ARRI Alexa Mini, intimate feel
+- Close-ups cho biểu cảm cảm xúc
+- Handheld nhẹ cho sự chân thực
+- Natural focus pulls
+
+💡 LIGHTING:
+- Soft diffused natural light
+- Window light cho morning scenes
+- Practical lighting sources
+- Naturalistic, không theatrical
+
+⚠️ MANDATORY:
+- NO FILTERS, NO OVERLAYS - video sạch 100%
+- Color grading naturalistic
+- LET EMOTION BREATHE - không rush
+- Raw emotional authenticity
+
+🎭 SCENE TYPES:
+1. INTIMATE MOMENT: Khoảnh khắc riêng tư sâu lắng
+2. CONFRONTATION: Đối mặt cảm xúc, truth reveals
+3. LOSS: Mất mát, đau khổ, than khóc
+4. REFLECTION: Chiêm nghiệm, nhìn lại cuộc đời
+5. RECONCILIATION: Hòa giải, tha thứ
+6. HOPE: Tia hy vọng nhỏ nhoi`
+                },
+                'psychological_thriller_8k': {
+                    name: 'Psychological Thriller 8K (Phim Kinh Dị Tâm Lý)',
+                    keywords: '8K ULTRA HD, psychological thriller, Se7en style, Gone Girl aesthetic, David Fincher cinematography, teal and orange high contrast, deep blacks, noir lighting, chiaroscuro dramatic shadows, rain on window, silhouettes, dutch angles, NO FILTERS clean image, AUTO COLOR: cold teal for dread warm amber false safety desaturated for shock',
+                    guidance: `🕵️ PSYCHOLOGICAL THRILLER 8K STYLE (Se7en / Gone Girl):
+═══════════════════════════════════════
+Phim kinh dị tâm lý David Fincher chất lượng 8K!
+
+🎨 COLOR GRADING (AUTO-MATCH TO TENSION):
+- COLD TEAL: Sợ hãi, nguy hiểm đang rình rập
+- WARM AMBER: An toàn giả tạo, trước bão táp
+- DESATURATED: Shock reveals, twist endings
+- HIGH CONTRAST: Đen sâu, ánh sáng sắc lẹm
+
+🎥 CAMERA STYLE:
+- 8K ULTRA HD photorealistic
+- Panavision Millennium DXL2
+- Dutch angles tạo bất ổn
+- Slow push-ins xây dựng tension
+- Long takes giữ người xem hồi hộp
+- Silhouettes ẩn giấu mối đe dọa
+
+💡 LIGHTING:
+- Chiaroscuro dramatic (sáng tối mạnh)
+- Single source lighting
+- Shadows che giấu chi tiết
+- Rain on window reflections
+- Practical lights theatrical
+
+⚠️ MANDATORY:
+- NO FILTERS, NO OVERLAYS - video sạch 100%
+- Mood TẠO QUA lighting và color grading
+- BUILD TENSION slowly
+- David Fincher aesthetic precision
+
+🎭 SCENE TYPES:
+1. SETUP: Thiết lập bình thường giả tạo
+2. DISCOVERY: Phát hiện điều bất thường
+3. INVESTIGATION: Đào sâu bí ẩn
+4. CAT AND MOUSE: Rượt đuổi tâm lý
+5. REVELATION: Twist shocking
+6. CLIMAX: Đối mặt cuối cùng`
                 }
             }
 
