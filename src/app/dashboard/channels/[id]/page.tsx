@@ -1383,16 +1383,19 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                         analysis: productAnalysis
                     } : null,
                     cinematicStyle: voiceOverMode === 'cinematic_film' ? cinematicStyle : null,
+                    // Cinematic Film Script specific options
+                    cinematicCameraStyles: voiceOverMode === 'cinematic_film_script' ? cinematicCameraStyles : null,
+                    cinematicSceneCount: voiceOverMode === 'cinematic_film_script' ? cinematicSceneCount : null,
                     voiceGender: voiceOverMode === 'voice_over' ? voiceGender : 'auto',
                     voiceTone: voiceOverMode === 'voice_over' ? voiceTone : 'warm',
                     categoryId: selectedCategoryId,
                     // Advanced Episode Features
-                    visualHookEnabled,
-                    emotionalCurveEnabled,
+                    visualHookEnabled: voiceOverMode !== 'cinematic_film_script' ? visualHookEnabled : false,
+                    emotionalCurveEnabled: voiceOverMode !== 'cinematic_film_script' ? emotionalCurveEnabled : false,
                     spatialAudioEnabled,
                     musicMode,
-                    dialogueDensityMin,
-                    dialogueDensityMax,
+                    dialogueDensityMin: voiceOverMode !== 'cinematic_film_script' ? dialogueDensityMin : null,
+                    dialogueDensityMax: voiceOverMode !== 'cinematic_film_script' ? dialogueDensityMax : null,
                     // Native Ad Insertion
                     adEnabled,
                     productInfo: adEnabled ? adProductInfo : null,

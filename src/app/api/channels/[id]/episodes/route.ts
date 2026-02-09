@@ -55,6 +55,8 @@ export async function POST(
             customContent = null,
             voiceOverMode = 'with_host',
             cinematicStyle = null, // Cinematic film style (cinematic_documentary, psychological_drama, etc.)
+            cinematicCameraStyles = [], // Camera styles for cinematic_film_script mode
+            cinematicSceneCount = 8, // Scene count for cinematic_film_script mode
             voiceGender = 'auto',
             voiceTone = 'warm',
             categoryId = null,
@@ -1386,11 +1388,44 @@ Video phải đạt chất lượng ĐIỆN ẢNH THẬT SỰ - KHÔNG MƠ HỒ!
             // Professional Movie Script Mode - Natural dialogue, AI decides which scenes need dialogue
             const dialogueLang = 'Vietnamese' // Default to Vietnamese
 
+            // Camera Style Map
+            const cameraStyleMap: Record<string, { name: string, desc: string }> = {
+                'one_shot': { name: 'One Shot', desc: 'Cảnh liên tục không cắt, camera di chuyển mượt mà' },
+                'tracking': { name: 'Tracking Shot', desc: 'Camera theo chân nhân vật, dolly hoặc steadicam' },
+                'drone_aerial': { name: 'Drone/Flycam', desc: 'Góc cao bay lượn, establishing shots hoành tráng' },
+                'macro_zoom': { name: 'Macro/Siêu Zoom', desc: 'Chi tiết cực cận, texture và micro-expressions' },
+                'dutch_angle': { name: 'Dutch Angle', desc: 'Góc nghiêng tạo cảm giác bất ổn, tension' },
+                'handheld': { name: 'Handheld', desc: 'Camera cầm tay, shaky realistic storytelling' },
+                'steadicam': { name: 'Steadicam', desc: 'Camera ổn định di chuyển mượt, professional feel' },
+                'crane_jib': { name: 'Crane/Jib', desc: 'Di chuyển từ cao xuống thấp hoặc ngược lại' },
+                'focus_pull': { name: 'Focus Pull', desc: 'Chuyển focus giữa subjects, reveal moments' },
+                'slow_motion': { name: 'Slow Motion', desc: 'Làm chậm kịch tính cho emotional impact' },
+                'pov': { name: 'POV', desc: 'Góc nhìn first-person từ mắt nhân vật' },
+                'dynamic_angles': { name: 'Dynamic Mix', desc: 'AI tự chọn góc máy phù hợp theo mood scene' },
+            }
+
+            // Generate selected camera styles text
+            const selectedCameraStylesText = (cinematicCameraStyles && cinematicCameraStyles.length > 0)
+                ? cinematicCameraStyles.map((cs: string) => {
+                    const style = cameraStyleMap[cs]
+                    return style ? `• ${style.name}: ${style.desc}` : null
+                }).filter(Boolean).join('\n')
+                : '• Dynamic Mix: AI tự chọn góc máy phù hợp'
+
             voiceOverInstr = `CONTENT TYPE: KỊCH BẢN PHIM ĐIỆN ẢNH 8K (Professional Movie Screenplay)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 🎬 MỤC TIÊU: Tạo kịch bản phim chuyên nghiệp như Netflix/Hollywood
 Chất lượng 8K ULTRA HD, lời thoại TỰ NHIÊN, không phải scene nào cũng cần thoại!
+
+📊 YÊU CẦU: TẠO CHÍNH XÁC ${cinematicSceneCount || 8} SCENES
+
+═══════════════════════════════════════
+📷 GÓC MÁY CAMERA ĐƯỢC CHỌN:
+═══════════════════════════════════════
+${selectedCameraStylesText}
+
+⚠️ ÁP DỤNG các góc máy này xen kẽ trong suốt kịch bản, chọn góc phù hợp theo mood của từng scene.
 
 ═══════════════════════════════════════
 📜 QUY TẮC LỜI THOẠI (DIALOGUE RULES):
