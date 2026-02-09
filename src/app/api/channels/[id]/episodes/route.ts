@@ -2071,6 +2071,58 @@ VOICE: (dialogue)]
                 ? 'Bình Luận Xã Hội (Social Commentary)'
                 : 'Hành Trình Cá Nhân (Personal Journey)'
 
+            // Build host template from CHARACTER BIBLE or create default instruction
+            let hostTemplateSection = ''
+            if (narrativeWithHost) {
+                if (characterBible && useCharacters && channel.characters.length > 0) {
+                    // Use first selected character as host
+                    const hostChar = selectedCharacterIds.length > 0
+                        ? channel.characters.find((c: { id: string }) => selectedCharacterIds.includes(c.id))
+                        : channel.characters[0]
+
+                    if (hostChar) {
+                        const hostName = hostChar.name.toUpperCase()
+                        const hostDesc = hostChar.fullDescription
+                        const hostPersonality = hostChar.personality ? `\n💭 TÍNH CÁCH: ${hostChar.personality}` : ''
+                        hostTemplateSection = `
+🎭 HOST CHARACTER TEMPLATE (COPY NGUYÊN VĂN vào MỌI scene có host):
+═══════════════════════════════════════
+📋 HOST: [${hostName}: ${hostDesc}]${hostPersonality}
+
+⚠️ QUY TẮC BẮT BUỘC:
+- COPY NGUYÊN VĂN template trên vào MỌI scene có host xuất hiện
+- Chỉ THÊM hành động/biểu cảm/tư thế SAU mô tả cố định
+- KHÔNG thay đổi: tuổi, giới tính, trang phục cơ bản, đặc điểm nhận dạng
+
+✅ VÍ DỤ ĐÚNG: [${hostName}: ${hostDesc}, đang cười và nhìn thẳng vào camera]
+❌ VÍ DỤ SAI: [Host: A young man...] hoặc [${hostName}] sitting in studio
+═══════════════════════════════════════`
+                    }
+                }
+
+                // If no character bible, create instruction for AI to generate consistent host
+                if (!hostTemplateSection) {
+                    hostTemplateSection = `
+🎭 HOST CHARACTER - AI PHẢI TẠO VÀ GIỮ NHẤT QUÁN:
+═══════════════════════════════════════
+⚠️ QUAN TRỌNG: Kênh chưa có nhân vật, AI phải:
+
+1️⃣ TẠO MỘT host ở Scene 1 với MÔ TẢ ĐẦY ĐỦ:
+   [TÊN: tuổi, giới tính, dân tộc, da, tóc (màu+kiểu), trang phục chi tiết, phụ kiện]
+   VD: [LEO: 28 tuổi, nam, Việt Nam, da ngăm, tóc đen ngắn, đeo kính gọng đen, áo hoodie xám có logo CREATOR, quần jeans xanh đậm]
+
+2️⃣ COPY NGUYÊN VĂN mô tả này vào TẤT CẢ các scene tiếp theo
+
+3️⃣ CHỈ THÊM hành động/biểu cảm khác nhau cho mỗi scene:
+   ✅ Scene 1: [LEO: ...full description..., đang ngồi trong studio, nhìn camera tự tin]
+   ✅ Scene 5: [LEO: ...full description..., đứng dậy, vẻ mặt nghiêm túc]
+
+❌ SAI: [Host: A young man...] - Quá chung chung!
+❌ SAI: [LEO] sitting in studio - Thiếu mô tả đầy đủ!
+═══════════════════════════════════════`
+                }
+            }
+
             // Common voice style instructions (shared between both modes)
             const voiceStyleInstructions = `
 🎙️ GIỌNG VĂN KỂ CHUYỆN (CRITICAL - Phong cách Anh Dư Leo):
@@ -2137,11 +2189,13 @@ ${keyPointsText}
 
 ${voiceConsistencyRule}
 
+${hostTemplateSection}
+
 ${voiceStyleInstructions}
 
 📸 PROMPTTEXT FORMAT (HOST + STORY ELEMENTS):
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-[HOST trên màn hình: (mô tả chi tiết host - tuổi, giới tính, trang phục, biểu cảm, tư thế, đang làm gì)].
+⚠️ HOST: COPY NGUYÊN VĂN template từ HOST CHARACTER TEMPLATE ở trên + thêm hành động/biểu cảm phù hợp scene
 [STORY ELEMENTS minh họa: (các yếu tố xuất hiện xung quanh host để minh họa nội dung - có thể là props, graphics, background thay đổi)].
 ENVIRONMENT: (bối cảnh - studio, nhà, quán cà phê, etc).
 CAMERA: (góc quay - medium shot, close-up, etc).
