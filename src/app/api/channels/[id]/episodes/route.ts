@@ -1517,6 +1517,61 @@ MỖI nhân vật PHẢI mô tả ĐẦY ĐỦ trong MỖI scene:
 - HIGH CONTRAST: Tension, thriller
 
 ═══════════════════════════════════════
+🚨 VISUAL CONTINUITY LOGIC (CRITICAL):
+═══════════════════════════════════════
+⚠️ PROBLEM: AI thường tạo hình ảnh vô logic như:
+- Cửa có 2 tay cầm
+- Người đang ở ngoài tự nhiên đi ra từ trong
+- Đồ vật xuất hiện/biến mất vô lý
+- Trang phục/vết thương thay đổi giữa các cảnh
+
+✅ BẮT BUỘC TUÂN THEO:
+
+📍 CHARACTER POSITION TRACKING:
+Mỗi scene PHẢI ghi rõ VỊ TRÍ của TỪNG nhân vật:
+- "KAEL đứng BÊN TRÁI cửa, LYRA đứng BÊN PHẢI"
+- "KAEL từ TRONG phòng bước RA ngoài hành lang"
+- "LYRA vẫn ở vị trí CŨ từ scene trước"
+
+📍 ENTRY/EXIT LOGIC:
+- Nhân vật PHẢI có lý do để xuất hiện/biến mất
+- Ghi rõ: "KAEL enters FROM the left door" hoặc "LYRA exits THROUGH the window"
+- KHÔNG để nhân vật tự nhiên xuất hiện/biến mất
+
+📍 OBJECT CONSISTENCY:
+- Cửa: CHỈ 1 tay cầm, mô tả rõ kiểu (round handle, lever handle, push bar)
+- Vũ khí: Ghi rõ loại (Glock 19, not just "gun")
+- Xe: Ghi rõ model nếu có (Tesla Model S, not just "car")
+- Quần áo: PHẢI giữ nguyên trong cùng sequence trừ khi có lý do thay đổi
+
+📍 SPATIAL AWARENESS:
+- Mô tả vị trí camera so với nhân vật
+- "Camera facing KAEL from his LEFT side"
+- "LYRA visible in BACKGROUND, 5 meters behind KAEL"
+
+═══════════════════════════════════════
+📋 STRUCTURED SCENE FORMAT (JSON-LIKE):
+═══════════════════════════════════════
+Mỗi scene PHẢI có các elements sau theo thứ tự:
+
+1. [SCENE_TYPE]: COLD OPEN / DIALOGUE / ACTION / etc.
+2. [PACING]: slow-burn / normal / fast-cut
+3. [LOCATION]: Cụ thể (INT. WAREHOUSE - GROUND FLOOR / EXT. ROOFTOP - NIGHT)
+4. [TIME]: Same as previous / 5 minutes later / Next morning
+5. [CHARACTERS_PRESENT]: Liệt kê TẤT CẢ nhân vật có mặt và VỊ TRÍ
+6. [CHARACTER_IN_FOCUS]: Nhân vật chính của scene này
+7. [DIALOGUE]: Nếu có
+8. [ACTION]: Mô tả hành động cụ thể
+9. [PROPS]: Đồ vật quan trọng trong scene (specific details)
+10. [CAMERA]: Shot type, angle, movement
+11. [LIGHTING]: Type, direction, color
+12. [MOOD]: Emotional tone
+13. [AUDIO]: Ambient sounds, music type
+
+VÍ DỤ SCENE CHI TIẾT:
+"[SCENE TYPE: DIALOGUE]. [PACING: normal]. [LOCATION: INT. SAFEHOUSE KITCHEN - NIGHT]. [TIME: Continuous from previous scene]. [CHARACTERS: KAEL standing LEFT of table, LYRA seated RIGHT side]. [FOCUS: KAEL]. [KAEL (quietly): 'The drive contains everything they need to destroy us.']. KAEL: 32, cybernetic amber eye, black tactical vest with visible scratches from earlier fight... [PROPS: Wooden table with SINGLE steel mug, the RED DATA CHIP glowing beside it]. [CAMERA: Medium two-shot, 50mm lens, eye-level]. [LIGHTING: Warm tungsten from ceiling lamp, casting shadows]. [MOOD: Grave, conspiratorial]. [AUDIO: Clock ticking, distant rain]."
+
+═══════════════════════════════════════
 📝 FORMAT MỖI SCENE:
 ═══════════════════════════════════════
 [SCENE TYPE: (type)]. PACING: (fast-cut/slow-burn/normal).
