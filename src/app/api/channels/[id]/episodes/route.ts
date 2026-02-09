@@ -221,11 +221,13 @@ Trang phục, biểu cảm, phụ kiện phải GIỐNG HỆT nhau trong tất c
 
         // Build CTA instruction
         let ctaInstruction = ''
-        if (ctaMode === 'random') {
-            ctaInstruction = 'Include 1-2 natural CTAs (subscribe, like, comment, share) at appropriate moments in the script.'
+        if (ctaMode === 'disabled') {
+            ctaInstruction = 'NO CTA at all - this is a cinematic/film style content without any subscribe, like, or comment prompts.'
+        } else if (ctaMode === 'random') {
+            ctaInstruction = 'Include 1-2 natural CTAs (subscribe, like, comment, share) at RANDOM positions (25-60% through video) - NOT fixed at 40%.'
         } else if (selectedCTAs.length > 0) {
             const ctaTexts = selectedCTAs.map((id: string) => CTA_MAP[id] || id).join(', ')
-            ctaInstruction = `Include these specific CTAs naturally in the script: ${ctaTexts}`
+            ctaInstruction = `Include these specific CTAs naturally in the script at random positions: ${ctaTexts}`
         } else {
             ctaInstruction = 'No CTA needed in this episode.'
         }
@@ -2982,7 +2984,7 @@ ${adInsertionInstr}
 ═══════════════════════════════════════
 EPISODE STRUCTURE (MUST FOLLOW EXACTLY):
 ═══════════════════════════════════════
-${voiceOverMode === 'cinematic_film' ? `
+${voiceOverMode === 'cinematic_film' || voiceOverMode === 'cinematic_film_script' ? `
 🎬 HOLLYWOOD 3-ACT STRUCTURE FOR ${totalScenes} SCENES:
 This is a FILM, not a YouTube video. Follow Hollywood screenplay conventions:
 
@@ -3057,7 +3059,7 @@ Mark each scene with its type in promptText:
 📌 SCENE BREAKDOWN FOR ${totalScenes} SCENES:
 • Opening (Scene 1-3): Host intro + Hook + Preview ALL topics
 • Topic Sections (Remaining scenes minus 5): Distribute EVENLY across ALL topics from input
-• Mid-CTA (1 scene at ~40%): "Subscribe if learning!" 
+• Mid-CTA (1 scene at random position 25-60%): "Subscribe if enjoying!" (AI picks natural moment) 
 • Summary (2-3 scenes): Quick recap KEY POINTS from EACH topic
 • Closing CTA (Final 2 scenes): Comment question + Goodbye`}
 

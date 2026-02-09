@@ -522,7 +522,7 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
     const [selectedStyleId, setSelectedStyleId] = useState<string>('')
     const [showStyleModal, setShowStyleModal] = useState(false)
     const [mentionChannel, setMentionChannel] = useState(false)
-    const [ctaMode, setCtaMode] = useState<'random' | 'select'>('random')
+    const [ctaMode, setCtaMode] = useState<'random' | 'select' | 'disabled'>('random')
     const [selectedCTAs, setSelectedCTAs] = useState<string[]>([])
     const [voiceOverMode, setVoiceOverMode] = useState<
         'with_host' | 'voice_over' | 'broll_only' | 'host_dynamic_env' | 'host_storyteller' | 'cinematic_film' |
@@ -3480,6 +3480,15 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                                             }`}
                                     >
                                         ✓ Chọn CTA
+                                    </button>
+                                    <button
+                                        onClick={() => setCtaMode('disabled')}
+                                        className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition ${ctaMode === 'disabled'
+                                            ? 'bg-red-500 text-white'
+                                            : 'bg-[var(--bg-secondary)] text-[var(--text-secondary)]'
+                                            }`}
+                                    >
+                                        🚫 Tắt CTA
                                     </button>
                                 </div>
                                 {ctaMode === 'select' && (
