@@ -3958,978 +3958,976 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                                 )}
                             </button>
                         </div>
-                    </>
-            )}
 
-                    {/* Episodes List */}
-                    <div className="space-y-4">
-                        <h3 className="font-semibold flex items-center gap-2">
-                            <Film className="w-5 h-5" />
-                            Episodes ({channel.episodes.length})
-                            <button
-                                onClick={() => setShowCategoryModal(true)}
-                                className="ml-auto px-3 py-1 text-xs rounded-full bg-[var(--bg-tertiary)] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] flex items-center gap-1"
-                            >
-                                <Plus className="w-3 h-3" /> Danh mục
-                            </button>
-                        </h3>
-
-                        {/* Category Filter Tabs */}
-                        {categories.length > 0 && (
-                            <div className="flex flex-wrap gap-2 mb-4">
-                                <button
-                                    onClick={() => setFilterCategoryId(null)}
-                                    className={`px-3 py-1.5 rounded-full text-sm transition ${filterCategoryId === null
-                                        ? 'bg-[var(--accent-primary)] text-white'
-                                        : 'bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]'
-                                        }`}
-                                >
-                                    📁 Tất cả ({channel.episodes.length})
-                                </button>
-                                {categories.map(cat => {
-                                    const count = channel.episodes.filter(e => e.categoryId === cat.id).length
-                                    return (
-                                        <button
-                                            key={cat.id}
-                                            onClick={() => setFilterCategoryId(cat.id)}
-                                            className={`px-3 py-1.5 rounded-full text-sm transition flex items-center gap-1 ${filterCategoryId === cat.id
-                                                ? 'text-white'
-                                                : 'bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]'
-                                                }`}
-                                            style={filterCategoryId === cat.id ? { backgroundColor: cat.color } : {}}
-                                        >
-                                            <span className="w-2 h-2 rounded-full" style={{ backgroundColor: cat.color }} />
-                                            {cat.name} ({count})
-                                        </button>
-                                    )
-                                })}
-                                <button
-                                    onClick={() => setFilterCategoryId('uncategorized')}
-                                    className={`px-3 py-1.5 rounded-full text-sm transition ${filterCategoryId === 'uncategorized'
-                                        ? 'bg-gray-500 text-white'
-                                        : 'bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]'
-                                        }`}
-                                >
-                                    📂 Chưa phân loại ({channel.episodes.filter(e => !e.categoryId).length})
-                                </button>
+                        {/* Episodes List */}
+                        <div className="space-y-4">
+                            <h3 className="font-semibold flex items-center gap-2">
+                                <Film className="w-5 h-5" />
+                                Episodes ({channel.episodes.length})
                                 <button
                                     onClick={() => setShowCategoryModal(true)}
-                                    className="px-3 py-1.5 rounded-full text-sm bg-[var(--bg-tertiary)] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] flex items-center gap-1"
+                                    className="ml-auto px-3 py-1 text-xs rounded-full bg-[var(--bg-tertiary)] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] flex items-center gap-1"
                                 >
                                     <Plus className="w-3 h-3" /> Danh mục
                                 </button>
-                            </div>
-                        )}
+                            </h3>
 
-                        {/* Category Management Modal */}
-                        {showCategoryModal && (
-                            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-                                <div className="glass-card p-6 max-w-md w-full mx-4">
-                                    <h3 className="text-lg font-semibold mb-4">📁 Quản lý Danh mục</h3>
-
-                                    {/* Create new category */}
-                                    <div className="flex gap-2 mb-4">
-                                        <input
-                                            type="text"
-                                            value={newCategoryName}
-                                            onChange={(e) => setNewCategoryName(e.target.value)}
-                                            placeholder="Tên danh mục mới..."
-                                            className="input-field flex-1"
-                                        />
-                                        <input
-                                            type="color"
-                                            value={newCategoryColor}
-                                            onChange={(e) => setNewCategoryColor(e.target.value)}
-                                            className="w-10 h-10 rounded cursor-pointer"
-                                        />
-                                        <button onClick={handleCreateCategory} className="btn-primary px-4">
-                                            <Plus className="w-4 h-4" />
-                                        </button>
-                                    </div>
-
-                                    {/* List categories */}
-                                    <div className="space-y-2 max-h-60 overflow-y-auto">
-                                        {categories.map(cat => (
-                                            <div key={cat.id} className="flex items-center justify-between p-2 bg-[var(--bg-secondary)] rounded">
-                                                <div className="flex items-center gap-2">
-                                                    <span className="w-4 h-4 rounded" style={{ backgroundColor: cat.color }} />
-                                                    <span>{cat.name}</span>
-                                                    <span className="text-xs text-[var(--text-muted)]">
-                                                        ({cat._count?.episodes || 0} episodes)
-                                                    </span>
-                                                </div>
-                                                <button
-                                                    onClick={() => handleDeleteCategory(cat.id)}
-                                                    className="text-red-400 hover:text-red-300 p-1"
-                                                >
-                                                    <Trash2 className="w-4 h-4" />
-                                                </button>
-                                            </div>
-                                        ))}
-                                        {categories.length === 0 && (
-                                            <p className="text-[var(--text-muted)] text-center py-4">
-                                                Chưa có danh mục nào
-                                            </p>
-                                        )}
-                                    </div>
-
+                            {/* Category Filter Tabs */}
+                            {categories.length > 0 && (
+                                <div className="flex flex-wrap gap-2 mb-4">
                                     <button
-                                        onClick={() => setShowCategoryModal(false)}
-                                        className="btn-secondary w-full mt-4"
+                                        onClick={() => setFilterCategoryId(null)}
+                                        className={`px-3 py-1.5 rounded-full text-sm transition ${filterCategoryId === null
+                                            ? 'bg-[var(--accent-primary)] text-white'
+                                            : 'bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]'
+                                            }`}
                                     >
-                                        Đóng
+                                        📁 Tất cả ({channel.episodes.length})
                                     </button>
-                                </div>
-                            </div>
-                        )}
-
-                        {/* Bulk Move Modal */}
-                        {showBulkMoveModal && (
-                            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-                                <div className="glass-card p-6 max-w-md w-full mx-4">
-                                    <h3 className="text-lg font-semibold mb-4">📁 Di chuyển {selectedEpisodeIds.length} episode</h3>
-
-                                    <div className="space-y-2">
-                                        <button
-                                            onClick={() => handleBulkMove(null)}
-                                            className="w-full p-3 text-left bg-[var(--bg-secondary)] hover:bg-[var(--bg-hover)] rounded flex items-center gap-2"
-                                        >
-                                            📂 Chưa phân loại
-                                        </button>
-                                        {categories.map(cat => (
+                                    {categories.map(cat => {
+                                        const count = channel.episodes.filter(e => e.categoryId === cat.id).length
+                                        return (
                                             <button
                                                 key={cat.id}
-                                                onClick={() => handleBulkMove(cat.id)}
-                                                className="w-full p-3 text-left bg-[var(--bg-secondary)] hover:bg-[var(--bg-hover)] rounded flex items-center gap-2"
+                                                onClick={() => setFilterCategoryId(cat.id)}
+                                                className={`px-3 py-1.5 rounded-full text-sm transition flex items-center gap-1 ${filterCategoryId === cat.id
+                                                    ? 'text-white'
+                                                    : 'bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]'
+                                                    }`}
+                                                style={filterCategoryId === cat.id ? { backgroundColor: cat.color } : {}}
                                             >
-                                                <span className="w-4 h-4 rounded" style={{ backgroundColor: cat.color }} />
-                                                {cat.name}
+                                                <span className="w-2 h-2 rounded-full" style={{ backgroundColor: cat.color }} />
+                                                {cat.name} ({count})
                                             </button>
-                                        ))}
-                                    </div>
-
+                                        )
+                                    })}
                                     <button
-                                        onClick={() => setShowBulkMoveModal(false)}
-                                        className="btn-secondary w-full mt-4"
+                                        onClick={() => setFilterCategoryId('uncategorized')}
+                                        className={`px-3 py-1.5 rounded-full text-sm transition ${filterCategoryId === 'uncategorized'
+                                            ? 'bg-gray-500 text-white'
+                                            : 'bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]'
+                                            }`}
                                     >
-                                        Hủy
+                                        📂 Chưa phân loại ({channel.episodes.filter(e => !e.categoryId).length})
+                                    </button>
+                                    <button
+                                        onClick={() => setShowCategoryModal(true)}
+                                        className="px-3 py-1.5 rounded-full text-sm bg-[var(--bg-tertiary)] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] flex items-center gap-1"
+                                    >
+                                        <Plus className="w-3 h-3" /> Danh mục
                                     </button>
                                 </div>
-                            </div>
-                        )}
+                            )}
 
-                        {/* Bulk Action Bar */}
-                        {selectedEpisodeIds.length > 0 && (
-                            <div className="flex items-center gap-3 p-3 mb-4 bg-[var(--accent-primary)]/20 border border-[var(--accent-primary)]/30 rounded-lg">
-                                <span className="text-sm font-medium">
-                                    Đã chọn {selectedEpisodeIds.length} episode
-                                </span>
-                                <button
-                                    onClick={() => setShowBulkMoveModal(true)}
-                                    className="px-3 py-1.5 text-sm bg-[var(--accent-primary)] text-white rounded hover:opacity-90 flex items-center gap-1"
-                                >
-                                    📁 Di chuyển
-                                </button>
-                                <button
-                                    onClick={handleBulkDelete}
-                                    className="px-3 py-1.5 text-sm bg-red-500 text-white rounded hover:opacity-90 flex items-center gap-1"
-                                >
-                                    <Trash2 className="w-3 h-3" /> Xóa
-                                </button>
-                                <button
-                                    onClick={() => setSelectedEpisodeIds([])}
-                                    className="px-3 py-1.5 text-sm bg-[var(--bg-secondary)] text-[var(--text-secondary)] rounded hover:bg-[var(--bg-hover)]"
-                                >
-                                    Bỏ chọn
-                                </button>
-                            </div>
-                        )}
+                            {/* Category Management Modal */}
+                            {showCategoryModal && (
+                                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                                    <div className="glass-card p-6 max-w-md w-full mx-4">
+                                        <h3 className="text-lg font-semibold mb-4">📁 Quản lý Danh mục</h3>
 
-                        {/* Select All Button */}
-                        {channel.episodes.length > 0 && selectedEpisodeIds.length === 0 && (
-                            <div className="mb-4">
-                                <button
-                                    onClick={selectAllEpisodes}
-                                    className="text-sm text-[var(--text-secondary)] hover:text-white flex items-center gap-1"
-                                >
-                                    ☑️ Chọn tất cả
-                                </button>
-                            </div>
-                        )}
+                                        {/* Create new category */}
+                                        <div className="flex gap-2 mb-4">
+                                            <input
+                                                type="text"
+                                                value={newCategoryName}
+                                                onChange={(e) => setNewCategoryName(e.target.value)}
+                                                placeholder="Tên danh mục mới..."
+                                                className="input-field flex-1"
+                                            />
+                                            <input
+                                                type="color"
+                                                value={newCategoryColor}
+                                                onChange={(e) => setNewCategoryColor(e.target.value)}
+                                                className="w-10 h-10 rounded cursor-pointer"
+                                            />
+                                            <button onClick={handleCreateCategory} className="btn-primary px-4">
+                                                <Plus className="w-4 h-4" />
+                                            </button>
+                                        </div>
 
-                        {channel.episodes.length === 0 ? (
-                            <div className="glass-card p-8 text-center">
-                                <Film className="w-12 h-12 text-[var(--text-muted)] mx-auto mb-3" />
-                                <p className="text-[var(--text-secondary)]">
-                                    Chưa có episode nào. Tạo episode đầu tiên!
-                                </p>
-                            </div>
-                        ) : (
-                            (filterCategoryId === null
-                                ? channel.episodes
-                                : filterCategoryId === 'uncategorized'
-                                    ? channel.episodes.filter(e => !e.categoryId)
-                                    : channel.episodes.filter(e => e.categoryId === filterCategoryId)
-                            ).map((episode, index) => (
-                                <motion.div
-                                    key={episode.id}
-                                    initial={{ opacity: 0, y: 10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: index * 0.05 }}
-                                    className="glass-card overflow-hidden"
-                                >
-                                    {/* Episode Header */}
-                                    <div className="w-full flex items-center p-4 hover:bg-[var(--bg-hover)] transition-colors text-left gap-3 min-w-0">
-                                        {/* Checkbox for bulk selection */}
-                                        <input
-                                            type="checkbox"
-                                            checked={selectedEpisodeIds.includes(episode.id)}
-                                            onChange={() => toggleEpisodeSelection(episode.id)}
-                                            className="w-5 h-5 rounded accent-[var(--accent-primary)] cursor-pointer"
-                                            onClick={(e) => e.stopPropagation()}
-                                        />
-                                        <button
-                                            onClick={() => setExpandedEpisode(
-                                                expandedEpisode === episode.id ? null : episode.id
-                                            )}
-                                            className="flex-1 flex items-center justify-between text-left"
-                                        >
-                                            <div className="flex items-center gap-3">
-                                                <span className="w-10 h-10 rounded-lg bg-gradient-to-br from-[var(--accent-primary)] to-purple-500 flex items-center justify-center text-white font-bold">
-                                                    {index + 1}
-                                                </span>
-                                                <div>
-                                                    <p className="font-medium">{episode.title}</p>
-                                                    <p className="text-xs text-[var(--text-muted)]">
-                                                        {episode.scenes.length} scenes • {episode.status}
-                                                        {episode.categoryId && categories.find(c => c.id === episode.categoryId) && (
-                                                            <span
-                                                                className="ml-2 px-2 py-0.5 rounded text-[10px]"
-                                                                style={{
-                                                                    backgroundColor: categories.find(c => c.id === episode.categoryId)?.color + '30',
-                                                                    color: categories.find(c => c.id === episode.categoryId)?.color
-                                                                }}
-                                                            >
-                                                                {categories.find(c => c.id === episode.categoryId)?.name}
-                                                            </span>
-                                                        )}
-                                                    </p>
+                                        {/* List categories */}
+                                        <div className="space-y-2 max-h-60 overflow-y-auto">
+                                            {categories.map(cat => (
+                                                <div key={cat.id} className="flex items-center justify-between p-2 bg-[var(--bg-secondary)] rounded">
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="w-4 h-4 rounded" style={{ backgroundColor: cat.color }} />
+                                                        <span>{cat.name}</span>
+                                                        <span className="text-xs text-[var(--text-muted)]">
+                                                            ({cat._count?.episodes || 0} episodes)
+                                                        </span>
+                                                    </div>
+                                                    <button
+                                                        onClick={() => handleDeleteCategory(cat.id)}
+                                                        className="text-red-400 hover:text-red-300 p-1"
+                                                    >
+                                                        <Trash2 className="w-4 h-4" />
+                                                    </button>
                                                 </div>
-                                            </div>
-                                            {expandedEpisode === episode.id
-                                                ? <ChevronDown className="w-5 h-5" />
-                                                : <ChevronRight className="w-5 h-5" />
-                                            }
-                                        </button>
+                                            ))}
+                                            {categories.length === 0 && (
+                                                <p className="text-[var(--text-muted)] text-center py-4">
+                                                    Chưa có danh mục nào
+                                                </p>
+                                            )}
+                                        </div>
 
-                                        {/* Episode Content */}
-                                        {expandedEpisode === episode.id && (
-                                            <div className="border-t border-[var(--border-subtle)] overflow-x-hidden">
-                                                {episode.synopsis && (
-                                                    <div className="px-4 py-3 bg-[var(--bg-tertiary)] break-words">
-                                                        <p className="text-sm text-[var(--text-secondary)]">
-                                                            {episode.synopsis}
+                                        <button
+                                            onClick={() => setShowCategoryModal(false)}
+                                            className="btn-secondary w-full mt-4"
+                                        >
+                                            Đóng
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Bulk Move Modal */}
+                            {showBulkMoveModal && (
+                                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                                    <div className="glass-card p-6 max-w-md w-full mx-4">
+                                        <h3 className="text-lg font-semibold mb-4">📁 Di chuyển {selectedEpisodeIds.length} episode</h3>
+
+                                        <div className="space-y-2">
+                                            <button
+                                                onClick={() => handleBulkMove(null)}
+                                                className="w-full p-3 text-left bg-[var(--bg-secondary)] hover:bg-[var(--bg-hover)] rounded flex items-center gap-2"
+                                            >
+                                                📂 Chưa phân loại
+                                            </button>
+                                            {categories.map(cat => (
+                                                <button
+                                                    key={cat.id}
+                                                    onClick={() => handleBulkMove(cat.id)}
+                                                    className="w-full p-3 text-left bg-[var(--bg-secondary)] hover:bg-[var(--bg-hover)] rounded flex items-center gap-2"
+                                                >
+                                                    <span className="w-4 h-4 rounded" style={{ backgroundColor: cat.color }} />
+                                                    {cat.name}
+                                                </button>
+                                            ))}
+                                        </div>
+
+                                        <button
+                                            onClick={() => setShowBulkMoveModal(false)}
+                                            className="btn-secondary w-full mt-4"
+                                        >
+                                            Hủy
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Bulk Action Bar */}
+                            {selectedEpisodeIds.length > 0 && (
+                                <div className="flex items-center gap-3 p-3 mb-4 bg-[var(--accent-primary)]/20 border border-[var(--accent-primary)]/30 rounded-lg">
+                                    <span className="text-sm font-medium">
+                                        Đã chọn {selectedEpisodeIds.length} episode
+                                    </span>
+                                    <button
+                                        onClick={() => setShowBulkMoveModal(true)}
+                                        className="px-3 py-1.5 text-sm bg-[var(--accent-primary)] text-white rounded hover:opacity-90 flex items-center gap-1"
+                                    >
+                                        📁 Di chuyển
+                                    </button>
+                                    <button
+                                        onClick={handleBulkDelete}
+                                        className="px-3 py-1.5 text-sm bg-red-500 text-white rounded hover:opacity-90 flex items-center gap-1"
+                                    >
+                                        <Trash2 className="w-3 h-3" /> Xóa
+                                    </button>
+                                    <button
+                                        onClick={() => setSelectedEpisodeIds([])}
+                                        className="px-3 py-1.5 text-sm bg-[var(--bg-secondary)] text-[var(--text-secondary)] rounded hover:bg-[var(--bg-hover)]"
+                                    >
+                                        Bỏ chọn
+                                    </button>
+                                </div>
+                            )}
+
+                            {/* Select All Button */}
+                            {channel.episodes.length > 0 && selectedEpisodeIds.length === 0 && (
+                                <div className="mb-4">
+                                    <button
+                                        onClick={selectAllEpisodes}
+                                        className="text-sm text-[var(--text-secondary)] hover:text-white flex items-center gap-1"
+                                    >
+                                        ☑️ Chọn tất cả
+                                    </button>
+                                </div>
+                            )}
+
+                            {channel.episodes.length === 0 ? (
+                                <div className="glass-card p-8 text-center">
+                                    <Film className="w-12 h-12 text-[var(--text-muted)] mx-auto mb-3" />
+                                    <p className="text-[var(--text-secondary)]">
+                                        Chưa có episode nào. Tạo episode đầu tiên!
+                                    </p>
+                                </div>
+                            ) : (
+                                (filterCategoryId === null
+                                    ? channel.episodes
+                                    : filterCategoryId === 'uncategorized'
+                                        ? channel.episodes.filter(e => !e.categoryId)
+                                        : channel.episodes.filter(e => e.categoryId === filterCategoryId)
+                                ).map((episode, index) => (
+                                    <motion.div
+                                        key={episode.id}
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: index * 0.05 }}
+                                        className="glass-card overflow-hidden"
+                                    >
+                                        {/* Episode Header */}
+                                        <div className="w-full flex items-center p-4 hover:bg-[var(--bg-hover)] transition-colors text-left gap-3 min-w-0">
+                                            {/* Checkbox for bulk selection */}
+                                            <input
+                                                type="checkbox"
+                                                checked={selectedEpisodeIds.includes(episode.id)}
+                                                onChange={() => toggleEpisodeSelection(episode.id)}
+                                                className="w-5 h-5 rounded accent-[var(--accent-primary)] cursor-pointer"
+                                                onClick={(e) => e.stopPropagation()}
+                                            />
+                                            <button
+                                                onClick={() => setExpandedEpisode(
+                                                    expandedEpisode === episode.id ? null : episode.id
+                                                )}
+                                                className="flex-1 flex items-center justify-between text-left"
+                                            >
+                                                <div className="flex items-center gap-3">
+                                                    <span className="w-10 h-10 rounded-lg bg-gradient-to-br from-[var(--accent-primary)] to-purple-500 flex items-center justify-center text-white font-bold">
+                                                        {index + 1}
+                                                    </span>
+                                                    <div>
+                                                        <p className="font-medium">{episode.title}</p>
+                                                        <p className="text-xs text-[var(--text-muted)]">
+                                                            {episode.scenes.length} scenes • {episode.status}
+                                                            {episode.categoryId && categories.find(c => c.id === episode.categoryId) && (
+                                                                <span
+                                                                    className="ml-2 px-2 py-0.5 rounded text-[10px]"
+                                                                    style={{
+                                                                        backgroundColor: categories.find(c => c.id === episode.categoryId)?.color + '30',
+                                                                        color: categories.find(c => c.id === episode.categoryId)?.color
+                                                                    }}
+                                                                >
+                                                                    {categories.find(c => c.id === episode.categoryId)?.name}
+                                                                </span>
+                                                            )}
                                                         </p>
+                                                    </div>
+                                                </div>
+                                                {expandedEpisode === episode.id
+                                                    ? <ChevronDown className="w-5 h-5" />
+                                                    : <ChevronRight className="w-5 h-5" />
+                                                }
+                                            </button>
+
+                                            {/* Episode Content */}
+                                            {expandedEpisode === episode.id && (
+                                                <div className="border-t border-[var(--border-subtle)] overflow-x-hidden">
+                                                    {episode.synopsis && (
+                                                        <div className="px-4 py-3 bg-[var(--bg-tertiary)] break-words">
+                                                            <p className="text-sm text-[var(--text-secondary)]">
+                                                                {episode.synopsis}
+                                                            </p>
+                                                        </div>
+                                                    )}
+
+                                                    {/* YouTube Strategies - Toggle Section */}
+                                                    {showYoutubeStrategies === episode.id && (() => {
+                                                        const metadata = episode.metadata ? JSON.parse(episode.metadata) : null
+                                                        const strategies = metadata?.youtubeStrategies
+                                                        if (!strategies) return null
+
+                                                        return (
+                                                            <div className="px-4 py-3 border-b border-[var(--border-subtle)]">
+                                                                <h4 className="text-sm font-semibold mb-3 flex items-center gap-2">
+                                                                    📺 YouTube Strategies
+                                                                </h4>
+                                                                <div className="space-y-4">
+                                                                    {/* 3 Titles */}
+                                                                    {strategies.titles?.length > 0 && (
+                                                                        <div>
+                                                                            <p className="text-xs text-[var(--text-muted)] mb-1">📝 Titles (3 options)</p>
+                                                                            <div className="space-y-1">
+                                                                                {strategies.titles.map((title: string, i: number) => (
+                                                                                    <div key={i} className="flex items-center gap-2 bg-[var(--bg-tertiary)] p-2 rounded text-sm">
+                                                                                        <span className="flex-1">{title}</span>
+                                                                                        <button
+                                                                                            onClick={() => {
+                                                                                                navigator.clipboard.writeText(title)
+                                                                                                toast.success('Đã copy title!')
+                                                                                            }}
+                                                                                            className="p-1 hover:bg-[var(--bg-hover)] rounded"
+                                                                                        >
+                                                                                            <Copy className="w-3 h-3" />
+                                                                                        </button>
+                                                                                    </div>
+                                                                                ))}
+                                                                            </div>
+                                                                        </div>
+                                                                    )}
+
+                                                                    {/* Description */}
+                                                                    {strategies.description && (
+                                                                        <div>
+                                                                            <p className="text-xs text-[var(--text-muted)] mb-1">📄 Description</p>
+                                                                            <div className="relative bg-[var(--bg-tertiary)] p-2 rounded text-sm">
+                                                                                <p className="text-[var(--text-secondary)] whitespace-pre-wrap text-xs">{strategies.description}</p>
+                                                                                <button
+                                                                                    onClick={() => {
+                                                                                        navigator.clipboard.writeText(strategies.description)
+                                                                                        toast.success('Đã copy description!')
+                                                                                    }}
+                                                                                    className="absolute top-2 right-2 p-1 hover:bg-[var(--bg-hover)] rounded"
+                                                                                >
+                                                                                    <Copy className="w-3 h-3" />
+                                                                                </button>
+                                                                            </div>
+                                                                        </div>
+                                                                    )}
+
+                                                                    {/* Tags */}
+                                                                    {strategies.tags?.length > 0 && (
+                                                                        <div>
+                                                                            <div className="flex items-center justify-between mb-1">
+                                                                                <p className="text-xs text-[var(--text-muted)]">🏷️ Tags ({strategies.tags.length})</p>
+                                                                                <button
+                                                                                    onClick={() => {
+                                                                                        navigator.clipboard.writeText(strategies.tags.join(', '))
+                                                                                        toast.success('Đã copy tags!')
+                                                                                    }}
+                                                                                    className="text-xs text-[var(--accent-primary)] hover:underline"
+                                                                                >
+                                                                                    Copy all
+                                                                                </button>
+                                                                            </div>
+                                                                            <div className="flex flex-wrap gap-1">
+                                                                                {strategies.tags.map((tag: string, i: number) => (
+                                                                                    <span key={i} className="text-xs bg-[var(--bg-tertiary)] px-2 py-0.5 rounded">
+                                                                                        {tag}
+                                                                                    </span>
+                                                                                ))}
+                                                                            </div>
+                                                                        </div>
+                                                                    )}
+
+                                                                    {/* 3 Thumbnails */}
+                                                                    {strategies.thumbnails?.length > 0 && (
+                                                                        <div>
+                                                                            <p className="text-xs text-[var(--text-muted)] mb-1">🖼️ Thumbnail Prompts (3 options)</p>
+                                                                            <div className="space-y-1">
+                                                                                {strategies.thumbnails.map((thumb: string, i: number) => (
+                                                                                    <div key={i} className="flex items-start gap-2 bg-[var(--bg-tertiary)] p-2 rounded text-xs">
+                                                                                        <span className="flex-1 text-[var(--text-secondary)]">{thumb}</span>
+                                                                                        <button
+                                                                                            onClick={() => {
+                                                                                                navigator.clipboard.writeText(thumb)
+                                                                                                toast.success('Đã copy thumbnail prompt!')
+                                                                                            }}
+                                                                                            className="p-1 hover:bg-[var(--bg-hover)] rounded shrink-0"
+                                                                                        >
+                                                                                            <Copy className="w-3 h-3" />
+                                                                                        </button>
+                                                                                    </div>
+                                                                                ))}
+                                                                            </div>
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+                                                            </div>
+                                                        )
+                                                    })()}
+
+                                                    {/* Actions */}
+                                                    <div className="px-4 py-2 flex gap-2 flex-wrap border-b border-[var(--border-subtle)]">
+                                                        <button
+                                                            onClick={() => setShowYoutubeStrategies(
+                                                                showYoutubeStrategies === episode.id ? null : episode.id
+                                                            )}
+                                                            className={`text-sm flex items-center gap-1 px-3 py-1.5 rounded-lg transition ${showYoutubeStrategies === episode.id
+                                                                ? 'bg-red-500 text-white'
+                                                                : 'bg-red-500/20 text-red-400 hover:bg-red-500/30'
+                                                                }`}
+                                                        >
+                                                            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                                                                <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+                                                            </svg>
+                                                            YouTube
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleCopyEpisode(episode)}
+                                                            className="btn-secondary text-sm flex items-center gap-1"
+                                                        >
+                                                            {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+                                                            Copy All
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleTranslateEpisode(episode.id, channel.dialogueLanguage === 'vi' ? 'en' : 'vi')}
+                                                            disabled={actionLoading === episode.id}
+                                                            className="btn-secondary text-sm flex items-center gap-1"
+                                                        >
+                                                            {actionLoading === episode.id ? (
+                                                                <Loader2 className="w-3 h-3 animate-spin" />
+                                                            ) : (
+                                                                <Globe className="w-3 h-3" />
+                                                            )}
+                                                            Dịch sang {channel.dialogueLanguage === 'vi' ? 'EN' : 'VI'}
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleRegenerateEpisode(episode.id)}
+                                                            disabled={actionLoading === episode.id}
+                                                            className="btn-secondary text-sm flex items-center gap-1"
+                                                        >
+                                                            {actionLoading === episode.id ? (
+                                                                <Loader2 className="w-3 h-3 animate-spin" />
+                                                            ) : (
+                                                                <RefreshCw className="w-3 h-3" />
+                                                            )}
+                                                            Tạo lại
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleDeleteEpisode(episode.id)}
+                                                            disabled={actionLoading === episode.id}
+                                                            className="btn-secondary text-sm flex items-center gap-1 text-red-400 hover:bg-red-500/20"
+                                                        >
+                                                            <Trash2 className="w-3 h-3" />
+                                                            Xóa
+                                                        </button>
+                                                    </div>
+
+                                                    {/* Episode Analytics Panel */}
+                                                    {(() => {
+                                                        const analytics = analyzeEpisode(episode.scenes)
+                                                        return (
+                                                            <div className="px-4 py-3 bg-gradient-to-r from-blue-500/10 to-purple-500/10 border-b border-[var(--border-subtle)]">
+                                                                <div className="flex items-center gap-2 mb-2">
+                                                                    <span className="text-sm font-medium">📊 Episode Analytics</span>
+                                                                </div>
+                                                                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+                                                                    <div className="bg-[var(--bg-tertiary)] rounded-lg p-2 text-center">
+                                                                        <div className="text-lg font-bold text-[var(--accent-primary)]">{analytics.totalScenes}</div>
+                                                                        <div className="text-xs text-[var(--text-muted)]">Scenes</div>
+                                                                    </div>
+                                                                    <div className="bg-[var(--bg-tertiary)] rounded-lg p-2 text-center">
+                                                                        <div className="text-lg font-bold text-green-400">
+                                                                            {Math.floor(analytics.estimatedDuration / 60)}:{String(analytics.estimatedDuration % 60).padStart(2, '0')}
+                                                                        </div>
+                                                                        <div className="text-xs text-[var(--text-muted)]">Est. Duration</div>
+                                                                    </div>
+                                                                    <div className="bg-[var(--bg-tertiary)] rounded-lg p-2 text-center">
+                                                                        <div className="text-lg font-bold text-amber-400">{analytics.avgSceneDuration}s</div>
+                                                                        <div className="text-xs text-[var(--text-muted)]">Avg/Scene</div>
+                                                                    </div>
+                                                                    <div className="bg-[var(--bg-tertiary)] rounded-lg p-2">
+                                                                        <div className="text-xs text-[var(--text-muted)] mb-1">Structure</div>
+                                                                        <div className="flex gap-1 text-xs">
+                                                                            <span className="px-1.5 py-0.5 bg-blue-500/30 rounded text-blue-300">Intro {analytics.structureBreakdown.intro.percent}%</span>
+                                                                            <span className="px-1.5 py-0.5 bg-purple-500/30 rounded text-purple-300">Content {analytics.structureBreakdown.content.percent}%</span>
+                                                                            <span className="px-1.5 py-0.5 bg-pink-500/30 rounded text-pink-300">CTA {analytics.structureBreakdown.cta.percent}%</span>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        )
+                                                    })()}
+
+                                                    {/* Character Consistency Warnings */}
+                                                    {channel?.characters && channel.characters.length > 0 && (() => {
+                                                        const charWarnings = checkCharacterConsistency(episode.scenes, channel.characters)
+                                                        return charWarnings.length > 0 && (
+                                                            <div className="px-4 py-2 bg-orange-500/10 border-b border-orange-500/30">
+                                                                <div className="flex items-center gap-2 text-orange-400 text-xs">
+                                                                    <span className="text-base">🎭</span>
+                                                                    <span className="font-medium">{charWarnings.length} cảnh báo Character</span>
+                                                                </div>
+                                                                <ul className="mt-1 text-xs text-orange-300/80">
+                                                                    {charWarnings.slice(0, 3).map((w, i) => (
+                                                                        <li key={i}>• {w.message}</li>
+                                                                    ))}
+                                                                    {charWarnings.length > 3 && <li>• ...và {charWarnings.length - 3} cảnh báo khác</li>}
+                                                                </ul>
+                                                            </div>
+                                                        )
+                                                    })()}
+
+                                                    {/* Scenes with Quality Warnings */}
+                                                    {(() => {
+                                                        const warnings = analyzeSceneQuality(episode.scenes)
+                                                        return warnings.length > 0 && (
+                                                            <div className="px-4 py-2 bg-yellow-500/10 border-b border-yellow-500/30">
+                                                                <div className="flex items-center gap-2 text-yellow-400 text-xs">
+                                                                    <AlertTriangle className="w-4 h-4" />
+                                                                    <span className="font-medium">{warnings.length} cảnh báo chất lượng</span>
+                                                                </div>
+                                                                <ul className="mt-1 text-xs text-yellow-300/80">
+                                                                    {warnings.slice(0, 3).map((w, i) => (
+                                                                        <li key={i}>• {w.message}</li>
+                                                                    ))}
+                                                                    {warnings.length > 3 && <li>• ...và {warnings.length - 3} cảnh báo khác</li>}
+                                                                </ul>
+                                                            </div>
+                                                        )
+                                                    })()}
+
+                                                    {/* Scenes with Drag-Drop */}
+                                                    <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={(e) => handleDragEnd(e, episode.id, episode.scenes)}>
+                                                        <SortableContext items={episode.scenes.map(s => s.id)} strategy={verticalListSortingStrategy}>
+                                                            <div className="max-h-[400px] overflow-y-auto">
+                                                                {episode.scenes.map(scene => {
+                                                                    const sceneWarnings = analyzeSceneQuality(episode.scenes).filter(w => w.sceneIds.includes(scene.id))
+                                                                    return (
+                                                                        <SortableSceneCard
+                                                                            key={scene.id}
+                                                                            scene={scene}
+                                                                            episodeId={episode.id}
+                                                                            warnings={sceneWarnings}
+                                                                            onEdit={() => handleOpenSceneEditor(episode.id, scene)}
+                                                                            onDelete={() => handleDeleteScene(episode.id, scene.id)}
+                                                                            onGenerateImage={() => handleGenerateSceneImage(scene.id, scene.promptText)}
+                                                                            isDeleting={deletingSceneId === scene.id}
+                                                                            isGeneratingImage={generatingImageForScene === scene.id}
+                                                                            downloadImage={downloadImage}
+                                                                        />
+                                                                    )
+                                                                })}
+                                                            </div>
+                                                        </SortableContext>
+                                                    </DndContext>
+
+                                                    {/* Add Scene Button */}
+                                                    <div className="px-4 py-3 border-t border-[var(--border-subtle)]">
+                                                        {addingSceneToEpisode === episode.id ? (
+                                                            <div className="space-y-2">
+                                                                <textarea
+                                                                    value={newSceneContext}
+                                                                    onChange={(e) => setNewSceneContext(e.target.value)}
+                                                                    placeholder="Mô tả nội dung scene mới (AI sẽ tạo dựa vào context các scene xung quanh)"
+                                                                    className="input-field text-sm h-20"
+                                                                />
+                                                                <div className="flex items-center gap-2">
+                                                                    <select
+                                                                        value={newScenePosition}
+                                                                        onChange={(e) => setNewScenePosition(Number(e.target.value))}
+                                                                        className="input-field text-sm flex-1"
+                                                                    >
+                                                                        <option value={0}>Thêm vào cuối</option>
+                                                                        {episode.scenes.map(s => (
+                                                                            <option key={s.id} value={s.order}>Trước Scene {s.order}</option>
+                                                                        ))}
+                                                                    </select>
+                                                                    <button
+                                                                        onClick={() => handleAddSceneWithAI(episode.id)}
+                                                                        disabled={addingSceneWithAI}
+                                                                        className="btn-primary text-sm flex items-center gap-1"
+                                                                    >
+                                                                        {addingSceneWithAI ? (
+                                                                            <><Loader2 className="w-4 h-4 animate-spin" /> Đang tạo...</>
+                                                                        ) : (
+                                                                            <><Wand2 className="w-4 h-4" /> Tạo với AI</>
+                                                                        )}
+                                                                    </button>
+                                                                    <button
+                                                                        onClick={() => {
+                                                                            setAddingSceneToEpisode(null)
+                                                                            setNewSceneContext('')
+                                                                        }}
+                                                                        className="btn-secondary text-sm"
+                                                                    >
+                                                                        Hủy
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        ) : (
+                                                            <button
+                                                                onClick={() => setAddingSceneToEpisode(episode.id)}
+                                                                className="w-full py-2 border-2 border-dashed border-[var(--border-subtle)] hover:border-[var(--accent-primary)] rounded-lg text-sm text-[var(--text-muted)] hover:text-[var(--accent-primary)] flex items-center justify-center gap-2 transition-colors"
+                                                            >
+                                                                <Plus className="w-4 h-4" />
+                                                                Thêm Scene mới (AI)
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </motion.div>
+                                ))
+                            )}
+                        </div>
+
+                        {/* Bulk Create Modal */}
+                        {showBulkCreate && (
+                            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+                                <div className="bg-[var(--bg-secondary)] rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                                    <div className="p-6 border-b border-[var(--border-subtle)]">
+                                        <div className="flex items-center justify-between">
+                                            <h2 className="text-xl font-bold flex items-center gap-2">
+                                                📦 Bulk Create Episodes
+                                            </h2>
+                                            <button
+                                                onClick={() => {
+                                                    setShowBulkCreate(false)
+                                                    setBulkEpisodes([])
+                                                }}
+                                                className="p-2 hover:bg-[var(--bg-tertiary)] rounded-lg"
+                                                disabled={bulkGenerating}
+                                            >
+                                                ✕
+                                            </button>
+                                        </div>
+                                        <p className="text-sm text-[var(--text-muted)] mt-1">
+                                            Thêm nhiều mô tả episode và tạo hàng loạt
+                                        </p>
+                                    </div>
+
+                                    <div className="p-6 space-y-4">
+                                        {/* Mode Toggle */}
+                                        <div className="flex bg-[var(--bg-tertiary)] rounded-lg p-1">
+                                            <button
+                                                onClick={() => {
+                                                    setBulkMode('manual')
+                                                    setBulkEpisodes([])
+                                                }}
+                                                className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition ${bulkMode === 'manual'
+                                                    ? 'bg-[var(--accent-primary)] text-white'
+                                                    : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                                                    }`}
+                                                disabled={bulkGenerating}
+                                            >
+                                                ✍️ Nhập thủ công
+                                            </button>
+                                            <button
+                                                onClick={() => {
+                                                    setBulkMode('auto')
+                                                    setBulkEpisodes([])
+                                                }}
+                                                className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition ${bulkMode === 'auto'
+                                                    ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white'
+                                                    : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                                                    }`}
+                                                disabled={bulkGenerating}
+                                            >
+                                                🤖 AI Tự động
+                                            </button>
+                                        </div>
+
+                                        {/* AUTO MODE */}
+                                        {bulkMode === 'auto' && (
+                                            <div className="space-y-4 p-4 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-lg border border-purple-500/20">
+                                                <div>
+                                                    <label className="block text-sm font-medium mb-2">🎯 Chủ đề chính (Series)</label>
+                                                    <input
+                                                        type="text"
+                                                        value={autoMainTopic}
+                                                        onChange={(e) => setAutoMainTopic(e.target.value)}
+                                                        placeholder="VD: 10 bí mật thành công của người giàu, Hành trình học tiếng Anh..."
+                                                        className="input-field w-full"
+                                                        disabled={bulkGenerating || autoGeneratingIdeas}
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="block text-sm font-medium mb-2">📊 Số Episode cần tạo</label>
+                                                    <div className="flex items-center gap-3">
+                                                        <input
+                                                            type="range"
+                                                            min={2}
+                                                            max={20}
+                                                            value={autoEpisodeCount}
+                                                            onChange={(e) => setAutoEpisodeCount(parseInt(e.target.value))}
+                                                            className="flex-1"
+                                                            disabled={bulkGenerating || autoGeneratingIdeas}
+                                                        />
+                                                        <span className="text-lg font-bold text-[var(--accent-primary)] w-8 text-center">
+                                                            {autoEpisodeCount}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <button
+                                                    onClick={handleAutoGenerateIdeas}
+                                                    disabled={!autoMainTopic.trim() || autoGeneratingIdeas || bulkGenerating}
+                                                    className="w-full py-2.5 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg font-medium hover:opacity-90 transition disabled:opacity-50 flex items-center justify-center gap-2"
+                                                >
+                                                    {autoGeneratingIdeas ? (
+                                                        <>
+                                                            <Loader2 className="w-4 h-4 animate-spin" />
+                                                            Đang tạo ý tưởng...
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            🧠 Tạo {autoEpisodeCount} Ý tưởng Episode
+                                                        </>
+                                                    )}
+                                                </button>
+
+                                                {autoCategoryName && (
+                                                    <div className="p-3 bg-[var(--bg-tertiary)] rounded-lg">
+                                                        <p className="text-xs text-[var(--text-muted)]">📁 Danh mục sẽ được tạo:</p>
+                                                        <p className="font-medium">{autoCategoryName}</p>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
+
+                                        {/* MANUAL MODE */}
+                                        {bulkMode === 'manual' && (
+                                            <>
+                                                {/* Category Selector */}
+                                                <div>
+                                                    <label className="block text-sm font-medium mb-2">📁 Danh mục mặc định</label>
+                                                    <select
+                                                        value={bulkCategoryId}
+                                                        onChange={(e) => setBulkCategoryId(e.target.value)}
+                                                        className="input-field w-full"
+                                                        disabled={bulkGenerating}
+                                                    >
+                                                        <option value="">Chưa phân loại</option>
+                                                        {categories.map(cat => (
+                                                            <option key={cat.id} value={cat.id}>{cat.name}</option>
+                                                        ))}
+                                                    </select>
+                                                </div>
+
+                                                {/* Add Episode Form */}
+                                                <div>
+                                                    <label className="block text-sm font-medium mb-2">📝 Mô tả Episode mới</label>
+                                                    <div className="flex gap-2">
+                                                        <textarea
+                                                            value={bulkNewDescription}
+                                                            onChange={(e) => setBulkNewDescription(e.target.value)}
+                                                            placeholder="Nhập mô tả nội dung cho episode... (VD: 10 cách kiếm tiền online, Bí mật thành công...)"
+                                                            className="input-field flex-1 min-h-[80px]"
+                                                            disabled={bulkGenerating}
+                                                        />
+                                                    </div>
+                                                    <button
+                                                        onClick={() => {
+                                                            if (bulkNewDescription.trim()) {
+                                                                setBulkEpisodes([...bulkEpisodes, {
+                                                                    description: bulkNewDescription.trim(),
+                                                                    categoryId: bulkCategoryId
+                                                                }])
+                                                                setBulkNewDescription('')
+                                                            }
+                                                        }}
+                                                        disabled={!bulkNewDescription.trim() || bulkGenerating}
+                                                        className="mt-2 px-4 py-2 bg-[var(--accent-primary)] text-white rounded-lg text-sm font-medium hover:opacity-90 transition disabled:opacity-50"
+                                                    >
+                                                        ➕ Thêm Episode
+                                                    </button>
+                                                </div>
+
+                                                {/* Episodes List */}
+                                                {bulkEpisodes.length > 0 && (
+                                                    <div>
+                                                        <label className="block text-sm font-medium mb-2">
+                                                            📋 Danh sách Episodes ({bulkEpisodes.length})
+                                                        </label>
+                                                        <div className="space-y-2 max-h-[200px] overflow-y-auto">
+                                                            {bulkEpisodes.map((ep, i) => (
+                                                                <div key={i} className="flex items-start gap-2 bg-[var(--bg-tertiary)] p-3 rounded-lg">
+                                                                    <span className="text-sm font-bold text-[var(--accent-primary)]">
+                                                                        #{i + 1}
+                                                                    </span>
+                                                                    <div className="flex-1">
+                                                                        <p className="text-sm">{ep.description}</p>
+                                                                        {ep.categoryId && (
+                                                                            <span className="text-xs text-[var(--text-muted)]">
+                                                                                📁 {categories.find(c => c.id === ep.categoryId)?.name}
+                                                                            </span>
+                                                                        )}
+                                                                    </div>
+                                                                    <button
+                                                                        onClick={() => {
+                                                                            setBulkEpisodes(bulkEpisodes.filter((_, idx) => idx !== i))
+                                                                        }}
+                                                                        disabled={bulkGenerating}
+                                                                        className="text-red-400 hover:text-red-300 p-1"
+                                                                    >
+                                                                        🗑️
+                                                                    </button>
+                                                                </div>
+                                                            ))}
+                                                        </div>
                                                     </div>
                                                 )}
 
-                                                {/* YouTube Strategies - Toggle Section */}
-                                                {showYoutubeStrategies === episode.id && (() => {
-                                                    const metadata = episode.metadata ? JSON.parse(episode.metadata) : null
-                                                    const strategies = metadata?.youtubeStrategies
-                                                    if (!strategies) return null
-
-                                                    return (
-                                                        <div className="px-4 py-3 border-b border-[var(--border-subtle)]">
-                                                            <h4 className="text-sm font-semibold mb-3 flex items-center gap-2">
-                                                                📺 YouTube Strategies
-                                                            </h4>
-                                                            <div className="space-y-4">
-                                                                {/* 3 Titles */}
-                                                                {strategies.titles?.length > 0 && (
-                                                                    <div>
-                                                                        <p className="text-xs text-[var(--text-muted)] mb-1">📝 Titles (3 options)</p>
-                                                                        <div className="space-y-1">
-                                                                            {strategies.titles.map((title: string, i: number) => (
-                                                                                <div key={i} className="flex items-center gap-2 bg-[var(--bg-tertiary)] p-2 rounded text-sm">
-                                                                                    <span className="flex-1">{title}</span>
-                                                                                    <button
-                                                                                        onClick={() => {
-                                                                                            navigator.clipboard.writeText(title)
-                                                                                            toast.success('Đã copy title!')
-                                                                                        }}
-                                                                                        className="p-1 hover:bg-[var(--bg-hover)] rounded"
-                                                                                    >
-                                                                                        <Copy className="w-3 h-3" />
-                                                                                    </button>
-                                                                                </div>
-                                                                            ))}
-                                                                        </div>
-                                                                    </div>
-                                                                )}
-
-                                                                {/* Description */}
-                                                                {strategies.description && (
-                                                                    <div>
-                                                                        <p className="text-xs text-[var(--text-muted)] mb-1">📄 Description</p>
-                                                                        <div className="relative bg-[var(--bg-tertiary)] p-2 rounded text-sm">
-                                                                            <p className="text-[var(--text-secondary)] whitespace-pre-wrap text-xs">{strategies.description}</p>
-                                                                            <button
-                                                                                onClick={() => {
-                                                                                    navigator.clipboard.writeText(strategies.description)
-                                                                                    toast.success('Đã copy description!')
-                                                                                }}
-                                                                                className="absolute top-2 right-2 p-1 hover:bg-[var(--bg-hover)] rounded"
-                                                                            >
-                                                                                <Copy className="w-3 h-3" />
-                                                                            </button>
-                                                                        </div>
-                                                                    </div>
-                                                                )}
-
-                                                                {/* Tags */}
-                                                                {strategies.tags?.length > 0 && (
-                                                                    <div>
-                                                                        <div className="flex items-center justify-between mb-1">
-                                                                            <p className="text-xs text-[var(--text-muted)]">🏷️ Tags ({strategies.tags.length})</p>
-                                                                            <button
-                                                                                onClick={() => {
-                                                                                    navigator.clipboard.writeText(strategies.tags.join(', '))
-                                                                                    toast.success('Đã copy tags!')
-                                                                                }}
-                                                                                className="text-xs text-[var(--accent-primary)] hover:underline"
-                                                                            >
-                                                                                Copy all
-                                                                            </button>
-                                                                        </div>
-                                                                        <div className="flex flex-wrap gap-1">
-                                                                            {strategies.tags.map((tag: string, i: number) => (
-                                                                                <span key={i} className="text-xs bg-[var(--bg-tertiary)] px-2 py-0.5 rounded">
-                                                                                    {tag}
-                                                                                </span>
-                                                                            ))}
-                                                                        </div>
-                                                                    </div>
-                                                                )}
-
-                                                                {/* 3 Thumbnails */}
-                                                                {strategies.thumbnails?.length > 0 && (
-                                                                    <div>
-                                                                        <p className="text-xs text-[var(--text-muted)] mb-1">🖼️ Thumbnail Prompts (3 options)</p>
-                                                                        <div className="space-y-1">
-                                                                            {strategies.thumbnails.map((thumb: string, i: number) => (
-                                                                                <div key={i} className="flex items-start gap-2 bg-[var(--bg-tertiary)] p-2 rounded text-xs">
-                                                                                    <span className="flex-1 text-[var(--text-secondary)]">{thumb}</span>
-                                                                                    <button
-                                                                                        onClick={() => {
-                                                                                            navigator.clipboard.writeText(thumb)
-                                                                                            toast.success('Đã copy thumbnail prompt!')
-                                                                                        }}
-                                                                                        className="p-1 hover:bg-[var(--bg-hover)] rounded shrink-0"
-                                                                                    >
-                                                                                        <Copy className="w-3 h-3" />
-                                                                                    </button>
-                                                                                </div>
-                                                                            ))}
-                                                                        </div>
-                                                                    </div>
-                                                                )}
-                                                            </div>
+                                                {/* Progress */}
+                                                {bulkGenerating && (
+                                                    <div className="bg-[var(--bg-tertiary)] p-4 rounded-lg">
+                                                        <div className="flex items-center justify-between mb-2">
+                                                            <span className="text-sm font-medium">Đang tạo...</span>
+                                                            <span className="text-sm text-[var(--accent-primary)]">
+                                                                {bulkProgress.current}/{bulkProgress.total}
+                                                            </span>
                                                         </div>
-                                                    )
-                                                })()}
-
-                                                {/* Actions */}
-                                                <div className="px-4 py-2 flex gap-2 flex-wrap border-b border-[var(--border-subtle)]">
-                                                    <button
-                                                        onClick={() => setShowYoutubeStrategies(
-                                                            showYoutubeStrategies === episode.id ? null : episode.id
-                                                        )}
-                                                        className={`text-sm flex items-center gap-1 px-3 py-1.5 rounded-lg transition ${showYoutubeStrategies === episode.id
-                                                            ? 'bg-red-500 text-white'
-                                                            : 'bg-red-500/20 text-red-400 hover:bg-red-500/30'
-                                                            }`}
-                                                    >
-                                                        <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-                                                            <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
-                                                        </svg>
-                                                        YouTube
-                                                    </button>
-                                                    <button
-                                                        onClick={() => handleCopyEpisode(episode)}
-                                                        className="btn-secondary text-sm flex items-center gap-1"
-                                                    >
-                                                        {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
-                                                        Copy All
-                                                    </button>
-                                                    <button
-                                                        onClick={() => handleTranslateEpisode(episode.id, channel.dialogueLanguage === 'vi' ? 'en' : 'vi')}
-                                                        disabled={actionLoading === episode.id}
-                                                        className="btn-secondary text-sm flex items-center gap-1"
-                                                    >
-                                                        {actionLoading === episode.id ? (
-                                                            <Loader2 className="w-3 h-3 animate-spin" />
-                                                        ) : (
-                                                            <Globe className="w-3 h-3" />
-                                                        )}
-                                                        Dịch sang {channel.dialogueLanguage === 'vi' ? 'EN' : 'VI'}
-                                                    </button>
-                                                    <button
-                                                        onClick={() => handleRegenerateEpisode(episode.id)}
-                                                        disabled={actionLoading === episode.id}
-                                                        className="btn-secondary text-sm flex items-center gap-1"
-                                                    >
-                                                        {actionLoading === episode.id ? (
-                                                            <Loader2 className="w-3 h-3 animate-spin" />
-                                                        ) : (
-                                                            <RefreshCw className="w-3 h-3" />
-                                                        )}
-                                                        Tạo lại
-                                                    </button>
-                                                    <button
-                                                        onClick={() => handleDeleteEpisode(episode.id)}
-                                                        disabled={actionLoading === episode.id}
-                                                        className="btn-secondary text-sm flex items-center gap-1 text-red-400 hover:bg-red-500/20"
-                                                    >
-                                                        <Trash2 className="w-3 h-3" />
-                                                        Xóa
-                                                    </button>
-                                                </div>
-
-                                                {/* Episode Analytics Panel */}
-                                                {(() => {
-                                                    const analytics = analyzeEpisode(episode.scenes)
-                                                    return (
-                                                        <div className="px-4 py-3 bg-gradient-to-r from-blue-500/10 to-purple-500/10 border-b border-[var(--border-subtle)]">
-                                                            <div className="flex items-center gap-2 mb-2">
-                                                                <span className="text-sm font-medium">📊 Episode Analytics</span>
-                                                            </div>
-                                                            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
-                                                                <div className="bg-[var(--bg-tertiary)] rounded-lg p-2 text-center">
-                                                                    <div className="text-lg font-bold text-[var(--accent-primary)]">{analytics.totalScenes}</div>
-                                                                    <div className="text-xs text-[var(--text-muted)]">Scenes</div>
-                                                                </div>
-                                                                <div className="bg-[var(--bg-tertiary)] rounded-lg p-2 text-center">
-                                                                    <div className="text-lg font-bold text-green-400">
-                                                                        {Math.floor(analytics.estimatedDuration / 60)}:{String(analytics.estimatedDuration % 60).padStart(2, '0')}
-                                                                    </div>
-                                                                    <div className="text-xs text-[var(--text-muted)]">Est. Duration</div>
-                                                                </div>
-                                                                <div className="bg-[var(--bg-tertiary)] rounded-lg p-2 text-center">
-                                                                    <div className="text-lg font-bold text-amber-400">{analytics.avgSceneDuration}s</div>
-                                                                    <div className="text-xs text-[var(--text-muted)]">Avg/Scene</div>
-                                                                </div>
-                                                                <div className="bg-[var(--bg-tertiary)] rounded-lg p-2">
-                                                                    <div className="text-xs text-[var(--text-muted)] mb-1">Structure</div>
-                                                                    <div className="flex gap-1 text-xs">
-                                                                        <span className="px-1.5 py-0.5 bg-blue-500/30 rounded text-blue-300">Intro {analytics.structureBreakdown.intro.percent}%</span>
-                                                                        <span className="px-1.5 py-0.5 bg-purple-500/30 rounded text-purple-300">Content {analytics.structureBreakdown.content.percent}%</span>
-                                                                        <span className="px-1.5 py-0.5 bg-pink-500/30 rounded text-pink-300">CTA {analytics.structureBreakdown.cta.percent}%</span>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    )
-                                                })()}
-
-                                                {/* Character Consistency Warnings */}
-                                                {channel?.characters && channel.characters.length > 0 && (() => {
-                                                    const charWarnings = checkCharacterConsistency(episode.scenes, channel.characters)
-                                                    return charWarnings.length > 0 && (
-                                                        <div className="px-4 py-2 bg-orange-500/10 border-b border-orange-500/30">
-                                                            <div className="flex items-center gap-2 text-orange-400 text-xs">
-                                                                <span className="text-base">🎭</span>
-                                                                <span className="font-medium">{charWarnings.length} cảnh báo Character</span>
-                                                            </div>
-                                                            <ul className="mt-1 text-xs text-orange-300/80">
-                                                                {charWarnings.slice(0, 3).map((w, i) => (
-                                                                    <li key={i}>• {w.message}</li>
-                                                                ))}
-                                                                {charWarnings.length > 3 && <li>• ...và {charWarnings.length - 3} cảnh báo khác</li>}
-                                                            </ul>
-                                                        </div>
-                                                    )
-                                                })()}
-
-                                                {/* Scenes with Quality Warnings */}
-                                                {(() => {
-                                                    const warnings = analyzeSceneQuality(episode.scenes)
-                                                    return warnings.length > 0 && (
-                                                        <div className="px-4 py-2 bg-yellow-500/10 border-b border-yellow-500/30">
-                                                            <div className="flex items-center gap-2 text-yellow-400 text-xs">
-                                                                <AlertTriangle className="w-4 h-4" />
-                                                                <span className="font-medium">{warnings.length} cảnh báo chất lượng</span>
-                                                            </div>
-                                                            <ul className="mt-1 text-xs text-yellow-300/80">
-                                                                {warnings.slice(0, 3).map((w, i) => (
-                                                                    <li key={i}>• {w.message}</li>
-                                                                ))}
-                                                                {warnings.length > 3 && <li>• ...và {warnings.length - 3} cảnh báo khác</li>}
-                                                            </ul>
-                                                        </div>
-                                                    )
-                                                })()}
-
-                                                {/* Scenes with Drag-Drop */}
-                                                <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={(e) => handleDragEnd(e, episode.id, episode.scenes)}>
-                                                    <SortableContext items={episode.scenes.map(s => s.id)} strategy={verticalListSortingStrategy}>
-                                                        <div className="max-h-[400px] overflow-y-auto">
-                                                            {episode.scenes.map(scene => {
-                                                                const sceneWarnings = analyzeSceneQuality(episode.scenes).filter(w => w.sceneIds.includes(scene.id))
-                                                                return (
-                                                                    <SortableSceneCard
-                                                                        key={scene.id}
-                                                                        scene={scene}
-                                                                        episodeId={episode.id}
-                                                                        warnings={sceneWarnings}
-                                                                        onEdit={() => handleOpenSceneEditor(episode.id, scene)}
-                                                                        onDelete={() => handleDeleteScene(episode.id, scene.id)}
-                                                                        onGenerateImage={() => handleGenerateSceneImage(scene.id, scene.promptText)}
-                                                                        isDeleting={deletingSceneId === scene.id}
-                                                                        isGeneratingImage={generatingImageForScene === scene.id}
-                                                                        downloadImage={downloadImage}
-                                                                    />
-                                                                )
-                                                            })}
-                                                        </div>
-                                                    </SortableContext>
-                                                </DndContext>
-
-                                                {/* Add Scene Button */}
-                                                <div className="px-4 py-3 border-t border-[var(--border-subtle)]">
-                                                    {addingSceneToEpisode === episode.id ? (
-                                                        <div className="space-y-2">
-                                                            <textarea
-                                                                value={newSceneContext}
-                                                                onChange={(e) => setNewSceneContext(e.target.value)}
-                                                                placeholder="Mô tả nội dung scene mới (AI sẽ tạo dựa vào context các scene xung quanh)"
-                                                                className="input-field text-sm h-20"
+                                                        <div className="w-full bg-[var(--bg-primary)] rounded-full h-2">
+                                                            <div
+                                                                className="bg-gradient-to-r from-purple-500 to-pink-500 h-2 rounded-full transition-all"
+                                                                style={{ width: `${(bulkProgress.current / bulkProgress.total) * 100}%` }}
                                                             />
-                                                            <div className="flex items-center gap-2">
-                                                                <select
-                                                                    value={newScenePosition}
-                                                                    onChange={(e) => setNewScenePosition(Number(e.target.value))}
-                                                                    className="input-field text-sm flex-1"
-                                                                >
-                                                                    <option value={0}>Thêm vào cuối</option>
-                                                                    {episode.scenes.map(s => (
-                                                                        <option key={s.id} value={s.order}>Trước Scene {s.order}</option>
-                                                                    ))}
-                                                                </select>
-                                                                <button
-                                                                    onClick={() => handleAddSceneWithAI(episode.id)}
-                                                                    disabled={addingSceneWithAI}
-                                                                    className="btn-primary text-sm flex items-center gap-1"
-                                                                >
-                                                                    {addingSceneWithAI ? (
-                                                                        <><Loader2 className="w-4 h-4 animate-spin" /> Đang tạo...</>
-                                                                    ) : (
-                                                                        <><Wand2 className="w-4 h-4" /> Tạo với AI</>
-                                                                    )}
-                                                                </button>
-                                                                <button
-                                                                    onClick={() => {
-                                                                        setAddingSceneToEpisode(null)
-                                                                        setNewSceneContext('')
-                                                                    }}
-                                                                    className="btn-secondary text-sm"
-                                                                >
-                                                                    Hủy
-                                                                </button>
-                                                            </div>
                                                         </div>
-                                                    ) : (
-                                                        <button
-                                                            onClick={() => setAddingSceneToEpisode(episode.id)}
-                                                            className="w-full py-2 border-2 border-dashed border-[var(--border-subtle)] hover:border-[var(--accent-primary)] rounded-lg text-sm text-[var(--text-muted)] hover:text-[var(--accent-primary)] flex items-center justify-center gap-2 transition-colors"
-                                                        >
-                                                            <Plus className="w-4 h-4" />
-                                                            Thêm Scene mới (AI)
-                                                        </button>
-                                                    )}
+                                                    </div>
+                                                )}
+                                            </>
+                                        )}
+
+                                        {/* Episodes List (for both modes) */}
+                                        {bulkEpisodes.length > 0 && (
+                                            <div>
+                                                <label className="block text-sm font-medium mb-2">
+                                                    📋 Danh sách Episodes ({bulkEpisodes.length})
+                                                </label>
+                                                <div className="space-y-2 max-h-[200px] overflow-y-auto">
+                                                    {bulkEpisodes.map((ep, i) => (
+                                                        <div key={i} className="flex items-start gap-2 bg-[var(--bg-tertiary)] p-3 rounded-lg">
+                                                            <span className="text-sm font-bold text-[var(--accent-primary)]">
+                                                                #{i + 1}
+                                                            </span>
+                                                            <div className="flex-1">
+                                                                <p className="text-sm">{ep.description}</p>
+                                                            </div>
+                                                            <button
+                                                                onClick={() => {
+                                                                    setBulkEpisodes(bulkEpisodes.filter((_, idx) => idx !== i))
+                                                                }}
+                                                                disabled={bulkGenerating}
+                                                                className="text-red-400 hover:text-red-300 p-1"
+                                                            >
+                                                                🗑️
+                                                            </button>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {/* Progress */}
+                                        {bulkGenerating && (
+                                            <div className="bg-[var(--bg-tertiary)] p-4 rounded-lg">
+                                                <div className="flex items-center justify-between mb-2">
+                                                    <span className="text-sm font-medium">Đang tạo...</span>
+                                                    <span className="text-sm text-[var(--accent-primary)]">
+                                                        {bulkProgress.current}/{bulkProgress.total}
+                                                    </span>
+                                                </div>
+                                                <div className="w-full bg-[var(--bg-primary)] rounded-full h-2">
+                                                    <div
+                                                        className="bg-gradient-to-r from-purple-500 to-pink-500 h-2 rounded-full transition-all"
+                                                        style={{ width: `${(bulkProgress.current / bulkProgress.total) * 100}%` }}
+                                                    />
                                                 </div>
                                             </div>
                                         )}
                                     </div>
-                                </motion.div>
-                            ))
-                        )}
-                    </div>
 
-                    {/* Bulk Create Modal */}
-                    {showBulkCreate && (
-                        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                            <div className="bg-[var(--bg-secondary)] rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-                                <div className="p-6 border-b border-[var(--border-subtle)]">
-                                    <div className="flex items-center justify-between">
-                                        <h2 className="text-xl font-bold flex items-center gap-2">
-                                            📦 Bulk Create Episodes
-                                        </h2>
+                                    {/* Footer */}
+                                    <div className="p-6 border-t border-[var(--border-subtle)] flex gap-3">
                                         <button
                                             onClick={() => {
                                                 setShowBulkCreate(false)
                                                 setBulkEpisodes([])
+                                                setAutoMainTopic('')
+                                                setAutoCategoryName('')
                                             }}
-                                            className="p-2 hover:bg-[var(--bg-tertiary)] rounded-lg"
                                             disabled={bulkGenerating}
+                                            className="flex-1 py-2 bg-[var(--bg-tertiary)] rounded-lg font-medium hover:bg-[var(--bg-hover)] transition"
                                         >
-                                            ✕
-                                        </button>
-                                    </div>
-                                    <p className="text-sm text-[var(--text-muted)] mt-1">
-                                        Thêm nhiều mô tả episode và tạo hàng loạt
-                                    </p>
-                                </div>
-
-                                <div className="p-6 space-y-4">
-                                    {/* Mode Toggle */}
-                                    <div className="flex bg-[var(--bg-tertiary)] rounded-lg p-1">
-                                        <button
-                                            onClick={() => {
-                                                setBulkMode('manual')
-                                                setBulkEpisodes([])
-                                            }}
-                                            className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition ${bulkMode === 'manual'
-                                                ? 'bg-[var(--accent-primary)] text-white'
-                                                : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
-                                                }`}
-                                            disabled={bulkGenerating}
-                                        >
-                                            ✍️ Nhập thủ công
+                                            Hủy
                                         </button>
                                         <button
-                                            onClick={() => {
-                                                setBulkMode('auto')
-                                                setBulkEpisodes([])
-                                            }}
-                                            className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition ${bulkMode === 'auto'
-                                                ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white'
-                                                : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
-                                                }`}
-                                            disabled={bulkGenerating}
+                                            onClick={handleBulkGenerateWithCategory}
+                                            disabled={bulkEpisodes.length === 0 || bulkGenerating}
+                                            className="flex-1 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg font-medium hover:opacity-90 transition disabled:opacity-50 flex items-center justify-center gap-2"
                                         >
-                                            🤖 AI Tự động
+                                            {bulkGenerating ? (
+                                                <>
+                                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                                    Đang tạo...
+                                                </>
+                                            ) : (
+                                                <>
+                                                    🚀 Tạo {bulkEpisodes.length} Episodes
+                                                </>
+                                            )}
                                         </button>
                                     </div>
-
-                                    {/* AUTO MODE */}
-                                    {bulkMode === 'auto' && (
-                                        <div className="space-y-4 p-4 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-lg border border-purple-500/20">
-                                            <div>
-                                                <label className="block text-sm font-medium mb-2">🎯 Chủ đề chính (Series)</label>
-                                                <input
-                                                    type="text"
-                                                    value={autoMainTopic}
-                                                    onChange={(e) => setAutoMainTopic(e.target.value)}
-                                                    placeholder="VD: 10 bí mật thành công của người giàu, Hành trình học tiếng Anh..."
-                                                    className="input-field w-full"
-                                                    disabled={bulkGenerating || autoGeneratingIdeas}
-                                                />
-                                            </div>
-                                            <div>
-                                                <label className="block text-sm font-medium mb-2">📊 Số Episode cần tạo</label>
-                                                <div className="flex items-center gap-3">
-                                                    <input
-                                                        type="range"
-                                                        min={2}
-                                                        max={20}
-                                                        value={autoEpisodeCount}
-                                                        onChange={(e) => setAutoEpisodeCount(parseInt(e.target.value))}
-                                                        className="flex-1"
-                                                        disabled={bulkGenerating || autoGeneratingIdeas}
-                                                    />
-                                                    <span className="text-lg font-bold text-[var(--accent-primary)] w-8 text-center">
-                                                        {autoEpisodeCount}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                            <button
-                                                onClick={handleAutoGenerateIdeas}
-                                                disabled={!autoMainTopic.trim() || autoGeneratingIdeas || bulkGenerating}
-                                                className="w-full py-2.5 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg font-medium hover:opacity-90 transition disabled:opacity-50 flex items-center justify-center gap-2"
-                                            >
-                                                {autoGeneratingIdeas ? (
-                                                    <>
-                                                        <Loader2 className="w-4 h-4 animate-spin" />
-                                                        Đang tạo ý tưởng...
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        🧠 Tạo {autoEpisodeCount} Ý tưởng Episode
-                                                    </>
-                                                )}
-                                            </button>
-
-                                            {autoCategoryName && (
-                                                <div className="p-3 bg-[var(--bg-tertiary)] rounded-lg">
-                                                    <p className="text-xs text-[var(--text-muted)]">📁 Danh mục sẽ được tạo:</p>
-                                                    <p className="font-medium">{autoCategoryName}</p>
-                                                </div>
-                                            )}
-                                        </div>
-                                    )}
-
-                                    {/* MANUAL MODE */}
-                                    {bulkMode === 'manual' && (
-                                        <>
-                                            {/* Category Selector */}
-                                            <div>
-                                                <label className="block text-sm font-medium mb-2">📁 Danh mục mặc định</label>
-                                                <select
-                                                    value={bulkCategoryId}
-                                                    onChange={(e) => setBulkCategoryId(e.target.value)}
-                                                    className="input-field w-full"
-                                                    disabled={bulkGenerating}
-                                                >
-                                                    <option value="">Chưa phân loại</option>
-                                                    {categories.map(cat => (
-                                                        <option key={cat.id} value={cat.id}>{cat.name}</option>
-                                                    ))}
-                                                </select>
-                                            </div>
-
-                                            {/* Add Episode Form */}
-                                            <div>
-                                                <label className="block text-sm font-medium mb-2">📝 Mô tả Episode mới</label>
-                                                <div className="flex gap-2">
-                                                    <textarea
-                                                        value={bulkNewDescription}
-                                                        onChange={(e) => setBulkNewDescription(e.target.value)}
-                                                        placeholder="Nhập mô tả nội dung cho episode... (VD: 10 cách kiếm tiền online, Bí mật thành công...)"
-                                                        className="input-field flex-1 min-h-[80px]"
-                                                        disabled={bulkGenerating}
-                                                    />
-                                                </div>
-                                                <button
-                                                    onClick={() => {
-                                                        if (bulkNewDescription.trim()) {
-                                                            setBulkEpisodes([...bulkEpisodes, {
-                                                                description: bulkNewDescription.trim(),
-                                                                categoryId: bulkCategoryId
-                                                            }])
-                                                            setBulkNewDescription('')
-                                                        }
-                                                    }}
-                                                    disabled={!bulkNewDescription.trim() || bulkGenerating}
-                                                    className="mt-2 px-4 py-2 bg-[var(--accent-primary)] text-white rounded-lg text-sm font-medium hover:opacity-90 transition disabled:opacity-50"
-                                                >
-                                                    ➕ Thêm Episode
-                                                </button>
-                                            </div>
-
-                                            {/* Episodes List */}
-                                            {bulkEpisodes.length > 0 && (
-                                                <div>
-                                                    <label className="block text-sm font-medium mb-2">
-                                                        📋 Danh sách Episodes ({bulkEpisodes.length})
-                                                    </label>
-                                                    <div className="space-y-2 max-h-[200px] overflow-y-auto">
-                                                        {bulkEpisodes.map((ep, i) => (
-                                                            <div key={i} className="flex items-start gap-2 bg-[var(--bg-tertiary)] p-3 rounded-lg">
-                                                                <span className="text-sm font-bold text-[var(--accent-primary)]">
-                                                                    #{i + 1}
-                                                                </span>
-                                                                <div className="flex-1">
-                                                                    <p className="text-sm">{ep.description}</p>
-                                                                    {ep.categoryId && (
-                                                                        <span className="text-xs text-[var(--text-muted)]">
-                                                                            📁 {categories.find(c => c.id === ep.categoryId)?.name}
-                                                                        </span>
-                                                                    )}
-                                                                </div>
-                                                                <button
-                                                                    onClick={() => {
-                                                                        setBulkEpisodes(bulkEpisodes.filter((_, idx) => idx !== i))
-                                                                    }}
-                                                                    disabled={bulkGenerating}
-                                                                    className="text-red-400 hover:text-red-300 p-1"
-                                                                >
-                                                                    🗑️
-                                                                </button>
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                </div>
-                                            )}
-
-                                            {/* Progress */}
-                                            {bulkGenerating && (
-                                                <div className="bg-[var(--bg-tertiary)] p-4 rounded-lg">
-                                                    <div className="flex items-center justify-between mb-2">
-                                                        <span className="text-sm font-medium">Đang tạo...</span>
-                                                        <span className="text-sm text-[var(--accent-primary)]">
-                                                            {bulkProgress.current}/{bulkProgress.total}
-                                                        </span>
-                                                    </div>
-                                                    <div className="w-full bg-[var(--bg-primary)] rounded-full h-2">
-                                                        <div
-                                                            className="bg-gradient-to-r from-purple-500 to-pink-500 h-2 rounded-full transition-all"
-                                                            style={{ width: `${(bulkProgress.current / bulkProgress.total) * 100}%` }}
-                                                        />
-                                                    </div>
-                                                </div>
-                                            )}
-                                        </>
-                                    )}
-
-                                    {/* Episodes List (for both modes) */}
-                                    {bulkEpisodes.length > 0 && (
-                                        <div>
-                                            <label className="block text-sm font-medium mb-2">
-                                                📋 Danh sách Episodes ({bulkEpisodes.length})
-                                            </label>
-                                            <div className="space-y-2 max-h-[200px] overflow-y-auto">
-                                                {bulkEpisodes.map((ep, i) => (
-                                                    <div key={i} className="flex items-start gap-2 bg-[var(--bg-tertiary)] p-3 rounded-lg">
-                                                        <span className="text-sm font-bold text-[var(--accent-primary)]">
-                                                            #{i + 1}
-                                                        </span>
-                                                        <div className="flex-1">
-                                                            <p className="text-sm">{ep.description}</p>
-                                                        </div>
-                                                        <button
-                                                            onClick={() => {
-                                                                setBulkEpisodes(bulkEpisodes.filter((_, idx) => idx !== i))
-                                                            }}
-                                                            disabled={bulkGenerating}
-                                                            className="text-red-400 hover:text-red-300 p-1"
-                                                        >
-                                                            🗑️
-                                                        </button>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    {/* Progress */}
-                                    {bulkGenerating && (
-                                        <div className="bg-[var(--bg-tertiary)] p-4 rounded-lg">
-                                            <div className="flex items-center justify-between mb-2">
-                                                <span className="text-sm font-medium">Đang tạo...</span>
-                                                <span className="text-sm text-[var(--accent-primary)]">
-                                                    {bulkProgress.current}/{bulkProgress.total}
-                                                </span>
-                                            </div>
-                                            <div className="w-full bg-[var(--bg-primary)] rounded-full h-2">
-                                                <div
-                                                    className="bg-gradient-to-r from-purple-500 to-pink-500 h-2 rounded-full transition-all"
-                                                    style={{ width: `${(bulkProgress.current / bulkProgress.total) * 100}%` }}
-                                                />
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-
-                                {/* Footer */}
-                                <div className="p-6 border-t border-[var(--border-subtle)] flex gap-3">
-                                    <button
-                                        onClick={() => {
-                                            setShowBulkCreate(false)
-                                            setBulkEpisodes([])
-                                            setAutoMainTopic('')
-                                            setAutoCategoryName('')
-                                        }}
-                                        disabled={bulkGenerating}
-                                        className="flex-1 py-2 bg-[var(--bg-tertiary)] rounded-lg font-medium hover:bg-[var(--bg-hover)] transition"
-                                    >
-                                        Hủy
-                                    </button>
-                                    <button
-                                        onClick={handleBulkGenerateWithCategory}
-                                        disabled={bulkEpisodes.length === 0 || bulkGenerating}
-                                        className="flex-1 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg font-medium hover:opacity-90 transition disabled:opacity-50 flex items-center justify-center gap-2"
-                                    >
-                                        {bulkGenerating ? (
-                                            <>
-                                                <Loader2 className="w-4 h-4 animate-spin" />
-                                                Đang tạo...
-                                            </>
-                                        ) : (
-                                            <>
-                                                🚀 Tạo {bulkEpisodes.length} Episodes
-                                            </>
-                                        )}
-                                    </button>
                                 </div>
                             </div>
-                        </div>
-                    )}
+                        )}
 
-                    {/* Scene Editor Modal */}
-                    {editingSceneData && (
-                        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                            <div className="bg-[var(--bg-secondary)] rounded-xl max-w-3xl w-full max-h-[90vh] overflow-hidden">
-                                <div className="p-6 border-b border-[var(--border-subtle)]">
-                                    <div className="flex items-center justify-between">
-                                        <h2 className="text-xl font-bold flex items-center gap-2">
-                                            ✏️ Chỉnh sửa Scene {editingSceneData.scene.order}
-                                        </h2>
+                        {/* Scene Editor Modal */}
+                        {editingSceneData && (
+                            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+                                <div className="bg-[var(--bg-secondary)] rounded-xl max-w-3xl w-full max-h-[90vh] overflow-hidden">
+                                    <div className="p-6 border-b border-[var(--border-subtle)]">
+                                        <div className="flex items-center justify-between">
+                                            <h2 className="text-xl font-bold flex items-center gap-2">
+                                                ✏️ Chỉnh sửa Scene {editingSceneData.scene.order}
+                                            </h2>
+                                            <button
+                                                onClick={() => setEditingSceneData(null)}
+                                                className="p-2 hover:bg-[var(--bg-tertiary)] rounded-lg"
+                                            >
+                                                <X className="w-5 h-5" />
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div className="p-6 space-y-4 max-h-[60vh] overflow-y-auto">
+                                        <div>
+                                            <label className="block text-sm font-medium mb-1">Tiêu đề Scene</label>
+                                            <input
+                                                type="text"
+                                                value={sceneEditorTitle}
+                                                onChange={(e) => setSceneEditorTitle(e.target.value)}
+                                                placeholder="VD: Opening Hook"
+                                                className="input-field"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium mb-1">
+                                                PromptText <span className="text-xs text-[var(--text-muted)]">({sceneEditorPromptText.length} ký tự)</span>
+                                            </label>
+                                            <textarea
+                                                value={sceneEditorPromptText}
+                                                onChange={(e) => setSceneEditorPromptText(e.target.value)}
+                                                placeholder="[VOICEOVER in Vietnamese: ...]. ..."
+                                                className="input-field font-mono text-sm h-64"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium mb-1">Thời lượng (giây)</label>
+                                            <input
+                                                type="number"
+                                                value={sceneEditorDuration}
+                                                onChange={(e) => setSceneEditorDuration(Number(e.target.value))}
+                                                min={3}
+                                                max={30}
+                                                className="input-field w-24"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="p-6 border-t border-[var(--border-subtle)] flex justify-end gap-3">
                                         <button
                                             onClick={() => setEditingSceneData(null)}
-                                            className="p-2 hover:bg-[var(--bg-tertiary)] rounded-lg"
+                                            disabled={savingScene}
+                                            className="btn-secondary"
                                         >
-                                            <X className="w-5 h-5" />
+                                            Hủy
+                                        </button>
+                                        <button
+                                            onClick={handleSaveScene}
+                                            disabled={savingScene}
+                                            className="btn-primary flex items-center gap-2"
+                                        >
+                                            {savingScene ? (
+                                                <><Loader2 className="w-4 h-4 animate-spin" /> Đang lưu...</>
+                                            ) : (
+                                                <><Check className="w-4 h-4" /> Lưu thay đổi</>
+                                            )}
                                         </button>
                                     </div>
                                 </div>
-                                <div className="p-6 space-y-4 max-h-[60vh] overflow-y-auto">
-                                    <div>
-                                        <label className="block text-sm font-medium mb-1">Tiêu đề Scene</label>
-                                        <input
-                                            type="text"
-                                            value={sceneEditorTitle}
-                                            onChange={(e) => setSceneEditorTitle(e.target.value)}
-                                            placeholder="VD: Opening Hook"
-                                            className="input-field"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium mb-1">
-                                            PromptText <span className="text-xs text-[var(--text-muted)]">({sceneEditorPromptText.length} ký tự)</span>
-                                        </label>
-                                        <textarea
-                                            value={sceneEditorPromptText}
-                                            onChange={(e) => setSceneEditorPromptText(e.target.value)}
-                                            placeholder="[VOICEOVER in Vietnamese: ...]. ..."
-                                            className="input-field font-mono text-sm h-64"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium mb-1">Thời lượng (giây)</label>
-                                        <input
-                                            type="number"
-                                            value={sceneEditorDuration}
-                                            onChange={(e) => setSceneEditorDuration(Number(e.target.value))}
-                                            min={3}
-                                            max={30}
-                                            className="input-field w-24"
-                                        />
-                                    </div>
-                                </div>
-                                <div className="p-6 border-t border-[var(--border-subtle)] flex justify-end gap-3">
-                                    <button
-                                        onClick={() => setEditingSceneData(null)}
-                                        disabled={savingScene}
-                                        className="btn-secondary"
-                                    >
-                                        Hủy
-                                    </button>
-                                    <button
-                                        onClick={handleSaveScene}
-                                        disabled={savingScene}
-                                        className="btn-primary flex items-center gap-2"
-                                    >
-                                        {savingScene ? (
-                                            <><Loader2 className="w-4 h-4 animate-spin" /> Đang lưu...</>
-                                        ) : (
-                                            <><Check className="w-4 h-4" /> Lưu thay đổi</>
-                                        )}
-                                    </button>
-                                </div>
                             </div>
-                        </div>
-                    )}
-                </div>
-            )
+                        )}
+                    </div>
+                    )
 }
