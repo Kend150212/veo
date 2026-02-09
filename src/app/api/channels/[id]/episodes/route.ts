@@ -1559,17 +1559,83 @@ Mỗi scene PHẢI có các elements sau theo thứ tự:
 3. [LOCATION]: Cụ thể (INT. WAREHOUSE - GROUND FLOOR / EXT. ROOFTOP - NIGHT)
 4. [TIME]: Same as previous / 5 minutes later / Next morning
 5. [CHARACTERS_PRESENT]: Liệt kê TẤT CẢ nhân vật có mặt và VỊ TRÍ
-6. [CHARACTER_IN_FOCUS]: Nhân vật chính của scene này
-7. [DIALOGUE]: Nếu có
-8. [ACTION]: Mô tả hành động cụ thể
-9. [PROPS]: Đồ vật quan trọng trong scene (specific details)
-10. [CAMERA]: Shot type, angle, movement
-11. [LIGHTING]: Type, direction, color
-12. [MOOD]: Emotional tone
-13. [AUDIO]: Ambient sounds, music type
+6. [CHARACTER_IN_FOCUS]: Nhân vật camera đang tập trung
 
-VÍ DỤ SCENE CHI TIẾT:
-"[SCENE TYPE: DIALOGUE]. [PACING: normal]. [LOCATION: INT. SAFEHOUSE KITCHEN - NIGHT]. [TIME: Continuous from previous scene]. [CHARACTERS: KAEL standing LEFT of table, LYRA seated RIGHT side]. [FOCUS: KAEL]. [KAEL (quietly): 'The drive contains everything they need to destroy us.']. KAEL: 32, cybernetic amber eye, black tactical vest with visible scratches from earlier fight... [PROPS: Wooden table with SINGLE steel mug, the RED DATA CHIP glowing beside it]. [CAMERA: Medium two-shot, 50mm lens, eye-level]. [LIGHTING: Warm tungsten from ceiling lamp, casting shadows]. [MOOD: Grave, conspiratorial]. [AUDIO: Clock ticking, distant rain]."
+═══════════════════════════════════════
+🎭 CHARACTER ACTIONS (CRITICAL - MÔ TẢ CHI TIẾT):
+═══════════════════════════════════════
+Mỗi nhân vật PHẢI có mô tả HÀNH ĐỘNG riêng:
+
+[CHARACTER_1_ACTION]: 
+- TÊN: mô tả đầy đủ ngoại hình
+- ĐANG LÀM: hành động cụ thể (không chung chung)
+- BIỂU CẢM: khuôn mặt, cơ thể
+- TAY: đang cầm gì, làm gì với tay
+- HƯỚNG NHÌN: nhìn đâu, nhìn ai
+
+[CHARACTER_2_ACTION]: (nếu có)
+- Tương tự như trên
+
+VÍ DỤ ĐÚNG (CHI TIẾT):
+"KAEL: đang quỳ một gối bên trái bàn, tay phải nắm chặt khẩu Glock 19, tay trái đang thay băng đạn mới, mắt liếc về phía cửa sổ, mồ hôi chảy trên trán, cơ hàm nghiến chặt."
+"LYRA: đứng bên phải bàn, đang gõ keyboard với tốc độ cao, mắt dán vào màn hình hologram, lưng hơi cong về phía trước, tóc rối bời, thở gấp."
+
+VÍ DỤ SAI (QUÁ CHUNG CHUNG):
+"KAEL: đang cầm súng -> THIẾU chi tiết tay nào, tư thế gì, nhìn đâu
+"LYRA: đang làm việc" -> THIẾU làm gì, với cái gì, biểu cảm sao
+
+═══════════════════════════════════════
+🤝 CHARACTER INTERACTIONS (TƯƠNG TÁC):
+═══════════════════════════════════════
+Khi có 2+ nhân vật, PHẢI mô tả TƯƠNG TÁC:
+
+[INTERACTION_TYPE]: 
+- VERBAL: Ai nói với ai, giọng điệu
+- PHYSICAL: Chạm nhau như thế nào (nắm tay, đẩy, ôm...)
+- EYE CONTACT: Ai nhìn ai, né tránh ánh mắt
+- SPATIAL: Khoảng cách giữa họ (gần gũi, xa cách, đối đầu)
+- EMOTIONAL: Tension, trust, conflict giữa họ
+
+VÍ DỤ TƯƠNG TÁC:
+"KAEL quay sang LYRA, ánh mắt lo lắng, tay anh chạm nhẹ vai cô. LYRA dừng gõ, quay lại nhìn anh, khoảng cách giữa họ 30cm, không gian thân mật nhưng căng thẳng."
+
+"KAEL và ZARA đứng đối diện nhau, khoảng cách 2 mét, cả hai đều cầm súng chĩa vào nhau. KAEL nhìn thẳng vào mắt ZARA với ánh mắt thù hận. ZARA mỉm cười khinh thường, đầu hơi nghiêng."
+
+7. [CHARACTER_ACTIONS]: (theo format ở trên, mô tả TỪNG nhân vật)
+8. [INTERACTIONS]: (nếu có 2+ nhân vật - mô tả tương tác)
+9. [DIALOGUE]: Nếu có lời thoại
+10. [PROPS]: Đồ vật quan trọng (specific details: SINGLE handle, Glock 19, Tesla Model S)
+11. [CAMERA]: Shot type, angle, movement, relationship to characters
+12. [LIGHTING]: Type, direction, color, mood
+13. [MOOD]: Emotional tone of the scene
+14. [AUDIO]: Ambient sounds, music type
+
+═══════════════════════════════════════
+📝 VÍ DỤ SCENE ĐA NHÂN VẬT HOÀN CHỈNH:
+═══════════════════════════════════════
+"[SCENE TYPE: DIALOGUE]. [PACING: normal]. [LOCATION: INT. ABANDONED WAREHOUSE - MAIN FLOOR - NIGHT]. [TIME: 2 minutes after previous scene]. 
+
+[CHARACTERS: KAEL (foreground LEFT), LYRA (background RIGHT by computer terminal), ZARA (entering from DOOR at far LEFT)].
+
+[KAEL]: 32, East Asian, cybernetic amber eye glowing intensely, black tactical vest scratched from earlier fight, kneeling on RIGHT knee, hiding behind steel crate, LEFT hand gripping Glock 19 aimed at door, RIGHT hand pressing wound on his side, blood seeping through fingers, jaw clenched, breathing heavily, looking directly at ZARA in doorway.
+
+[LYRA]: 28, pink buzzcut, translucent raincoat over bodysuit, standing hunched over holographic terminal, BOTH hands typing rapidly, eyes focused on green data streams, occasionally glancing nervously toward KAEL and door, lips pressed tight.
+
+[ZARA]: 34, Mediterranean features, sleek black suit, stepping through doorway with SMG raised at shoulder level, scanning room LEFT to RIGHT, spotting KAEL, corner of lips curling into smirk.
+
+[INTERACTIONS]: KAEL and ZARA in CONFRONTATION - 8 meters apart, both weapons aimed at each other, direct eye contact with hostility. LYRA is SUPPORTING KAEL - 5 meters behind him, no direct interaction but aware of danger.
+
+[KAEL (through gritted teeth): 'You're too late, Zara. The data is already uploading.']
+
+[PROPS: Rusted steel crates (KAEL's cover), glowing holographic terminal (LYRA's station), metal door with SINGLE push bar (ZARA's entry point)].
+
+[CAMERA: Wide establishing shot first, then quick cuts between close-ups of each character's face and weapons].
+
+[LIGHTING: Cold blue moonlight from broken skylight, orange sparks from terminal, harsh white tactical light on ZARA's SMG].
+
+[MOOD: Tense standoff, ticking clock urgency].
+
+[AUDIO: Electrical humming from terminal, rain on metal roof, ZARA's boots echoing on concrete floor]."
 
 ═══════════════════════════════════════
 📝 FORMAT MỖI SCENE:
