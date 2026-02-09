@@ -1382,6 +1382,104 @@ Video phải đạt chất lượng ĐIỆN ẢNH THẬT SỰ - KHÔNG MƠ HỒ!
 - All dialogue in ${dialogueLang === 'en' ? 'English' : 'Vietnamese'}
 - Voice tags: "VOICE: Male voice" or "VOICE: Female voice" for dialogue scenes
 - For silent scenes: voiceover field = "(Không có lời)" or description of music/sound only`
+        } else if (voiceOverMode === 'cinematic_film_script') {
+            // Professional Movie Script Mode - Natural dialogue, AI decides which scenes need dialogue
+            const dialogueLang = 'Vietnamese' // Default to Vietnamese
+
+            voiceOverInstr = `CONTENT TYPE: KỊCH BẢN PHIM ĐIỆN ẢNH 8K (Professional Movie Screenplay)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎬 MỤC TIÊU: Tạo kịch bản phim chuyên nghiệp như Netflix/Hollywood
+Chất lượng 8K ULTRA HD, lời thoại TỰ NHIÊN, không phải scene nào cũng cần thoại!
+
+═══════════════════════════════════════
+📜 QUY TẮC LỜI THOẠI (DIALOGUE RULES):
+═══════════════════════════════════════
+⚠️ AI TỰ QUYẾT ĐỊNH scene nào cần thoại dựa trên:
+
+✅ SCENE CẦN THOẠI:
+- Conflict/xung đột giữa nhân vật
+- Revelation/tiết lộ thông tin quan trọng
+- Emotional confrontation/đối mặt cảm xúc
+- Character introduction với tính cách đặc trưng
+- Plot twist reveals
+
+❌ SCENE KHÔNG CẦN THOẠI (IM LẶNG LÀ VÀNG):
+- Establishing shots (thiết lập bối cảnh)
+- Emotional processing (nhân vật suy tư)
+- Action sequences (hành động nhanh)
+- Transition scenes (chuyển cảnh)
+- Visual storytelling (kể chuyện bằng hình ảnh)
+- Suspense building (xây dựng hồi hộp)
+- Aftermath/hậu quả
+
+💬 KHI VIẾT THOẠI:
+- Mỗi nhân vật có GIỌNG NÓI RIÊNG (vocabulary, rhythm, accent)
+- Subtext > Direct statement (ẩn ý quan trọng hơn nói thẳng)
+- KHÔNG exposition dump - thông tin phải tự nhiên
+- Dialogue phải reveal CHARACTER, không chỉ thông tin
+- Realistic rhythm: interruptions, trailing off, silence
+
+🎯 TỶ LỆ KHUYẾN NGHỊ:
+- 40% scenes có thoại
+- 30% scenes im lặng hoàn toàn (environmental sound only)
+- 30% scenes có minimal dialogue hoặc single line
+
+═══════════════════════════════════════
+🎨 VISUAL RULES - 8K CINEMATIC:
+═══════════════════════════════════════
+📸 CAMERA & QUALITY:
+- 8K ULTRA HD photorealistic
+- Camera chuyên nghiệp: ARRI Alexa, RED, Panavision
+- Anamorphic lens, shallow depth of field
+- NO FILTERS, NO OVERLAYS - video sạch 100%
+
+🌈 AUTO COLOR GRADING (theo cảm xúc scene):
+- WARM AMBER: Hy vọng, hạnh phúc, chiến thắng
+- COOL TEAL/BLUE: Nguy hiểm, buồn bã, cô đơn
+- GOLDEN: Khoảnh khắc thiêng liêng, tình yêu
+- DESATURATED: Shock, trauma, mất mát
+- HIGH CONTRAST: Tension, thriller moments
+- NEUTRAL: Đời thường, chân thực
+
+═══════════════════════════════════════
+📝 FORMAT MỖI SCENE:
+═══════════════════════════════════════
+SCENE [X]: [Tên scene]
+
+🎬 PROMPTTEXT:
+"[8K cinematic, photorealistic. NHÂ VẬT: (mô tả đầy đủ). HÀNH ĐỘNG: (đang làm gì). ENVIRONMENT: (bối cảnh chi tiết). CAMERA: (angle, movement). LIGHTING: (auto color grade phù hợp emotion). ATMOSPHERE: (mood). NO FILTERS, clean image.]";
+
+📖 VOICEOVER:
+[NẾU CÓ THOẠI]:
+"VOICE (NHÂN_VẬT - tone/emotion): Nội dung lời thoại tự nhiên..."
+
+[NẾU KHÔNG CÓ THOẠI]:
+"(Im lặng - Ambient sound: tiếng mưa rơi, tiếng gió, tiếng bước chân...)"
+HOẶC
+"(Musical score - Emotional orchestral building tension...)"
+
+═══════════════════════════════════════
+🎭 CHARACTER CONSISTENCY (BẮT BUỘC):
+═══════════════════════════════════════
+MỖI nhân vật PHẢI mô tả ĐẦY ĐỦ trong MỖI scene:
+[TÊN: tuổi, ethnicity, DA, MẶT, TÓC, DÁNG, TRANG PHỤC, PHỤ KIỆN, BIỂU CẢM, TƯ THẾ]
+
+⚠️ KHÔNG BAO GIỜ viết: "Jack như thường lệ" hay "Rose với outfit hôm nay"
+✅ LUÔN LUÔN viết: Mô tả đầy đủ chi tiết từ đầu đến cuối
+
+═══════════════════════════════════════
+🎬 SCENE PACING & RHYTHM:
+═══════════════════════════════════════
+- Alternate: Action scene → Quiet scene → Dialogue scene
+- Build tension gradually, release in key moments
+- Silent moments BEFORE major revelations
+- Dialogue scenes followed by silent reaction scenes
+- Let images tell the story when words aren't needed
+
+📝 All dialogue in ${dialogueLang}
+- Voice tags: "VOICE (CHARACTER - emotion): dialogue..."
+- For silent: "(Im lặng - sound description...)" or "(Musical score...)"`
         } else if (voiceOverMode === 'roast_comedy') {
             voiceOverInstr = `CONTENT TYPE: ROAST COMEDY - PROVOCATIVE (Chọc tức khán giả - CỰC KỲ VIRAL!)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

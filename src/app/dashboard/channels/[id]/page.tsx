@@ -399,6 +399,19 @@ const CONTENT_TYPE_INFO: Record<string, { name: string; description: string; ico
             'Chia sẻ kinh nghiệm cá nhân xen kẽ',
             'Kết thúc với tips thực tiễn và CTA'
         ]
+    },
+    'cinematic_film_script': {
+        name: 'Kịch Bản Phim Điện Ảnh 8K',
+        description: 'Kịch bản phim Netflix/Hollywood chuyên nghiệp - Lời thoại tự nhiên, AI quyết định scene nào cần thoại',
+        icon: '🎬',
+        tips: [
+            '📽️ 8K Ultra HD photorealistic - Chất lượng điện ảnh',
+            '🎭 Lời thoại TỰ NHIÊN - Không phải scene nào cũng có thoại',
+            '🌈 Auto Color Grading theo cảm xúc scene',
+            '❌ NO FILTERS, NO OVERLAYS - Video sạch 100%',
+            '👥 Nhân vật nhất quán - Mô tả đầy đủ mỗi scene',
+            '🎯 AI tự quyết định: Thoại/Im lặng/Âm thanh môi trường'
+        ]
     }
 }
 
@@ -516,7 +529,7 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
         'roast_comedy' | 'reaction_commentary' | 'asmr_satisfying' | 'horror_survival' | 'romance_drama' |
         'gen_z_meme' | 'educational_sassy' | 'mystery_detective' | 'breaking_4th_wall' | 'villain_origin' |
         'underdog_triumph' | 'chaos_unhinged' | 'food_animation' | 'food_drama' | 'fashion_showcase' | 'one_shot' |
-        'narrative_storytelling'
+        'narrative_storytelling' | 'cinematic_film_script'
     >('with_host')
 
     // Fashion showcase product state
@@ -2762,6 +2775,7 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                                     </optgroup>
                                     <optgroup label="🎬 Điện ảnh">
                                         <option value="cinematic_film">🎬 Điện Ảnh Hollywood</option>
+                                        <option value="cinematic_film_script">🎬 Kịch Bản Phim 8K (Thoại tự nhiên)</option>
                                     </optgroup>
                                     <optgroup label="🔥 VIRAL - Tương tác mạnh">
                                         <option value="roast_comedy">🔥 Roast Comedy (Chọc tức khán giả)</option>
