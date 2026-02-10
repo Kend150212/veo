@@ -2992,10 +2992,12 @@ KHÔNG có B-Roll, KHÔNG cắt cảnh khác, KHÔNG có hình ảnh minh họa 
 ⚠️ VẤN ĐỀ NGHIÊM TRỌNG: Video bị TRÔI MÀU VÀNG - frame đầu đẹp, càng về sau càng vàng khè.
 Nguyên nhân: AI cộng dồn warm tone khi các scene lặp lại mô tả lighting tương tự.
 
-⛔ CẤM TUYỆT ĐỐI TRONG LIGHTING/COLOR:
+⛔ CẤM TUYỆT ĐỐI TRONG LIGHTING/COLOR/STYLE:
 - CẤM DÙNG: "warm", "golden", "amber", "sunset", "orange glow", "yellow light", "warm tone", "cozy warm"
 - CẤM DÙNG: "sepia", "vintage", "film grain warm", "tungsten"
-- CẤM: bất kỳ từ nào gợi ý màu ấm/vàng
+- CẤM DÙNG TRONG STYLE: "soft lighting" (thay bằng "clean even lighting"), "warm tones", "golden tones"
+- CẤM DÙNG TRONG STYLE: "pastel tones" đơn lẻ (thay bằng "cool pastel tones")
+- CẤM: bất kỳ từ nào gợi ý màu ấm/vàng trong BẤT KỲ field nào
 
 🎯 GIẢI PHÁP BẮT BUỘC:
 1. Scene 1 đặt CHUẨN MÀU GỐC - mô tả chi tiết: skin tone, màu tường, màu áo
@@ -3007,14 +3009,18 @@ Nguyên nhân: AI cộng dồn warm tone khi các scene lặp lại mô tả lig
 📋 MÀU SẮC CỤ THỂ:
 - SKIN TONE: Phải giữ nguyên từ scene 1. Nếu scene 1 da sáng → TẤT CẢ scene phải da sáng. KHÔNG ĐƯỢC ngả vàng.
 - TƯỜNG/NỀN: Nếu scene 1 tường xám → TẤT CẢ scene tường vẫn xám. KHÔNG ngả vàng.
-- QUẦN ÁO: Màu sắc giữ nguyên 100%. Áo be → luôn be, KHÔNG thành vàng.
+- QUẦN ÁO: Màu sắc giữ nguyên 100%. Nếu áo màu kem/cream → phải ghi "cream-white (NOT yellow/golden)" để AI không hiểu nhầm thành vàng.
 - TÓC: Màu tóc không được thay đổi. Tóc đen → luôn đen, KHÔNG được ngả nâu/vàng.
+- NỀN: Đèn neon/LED sign phải giữ đúng màu gốc, KHÔNG được lan warm light ra xung quanh.
 
 💡 KỸ THUẬT PROMPT:
 - Dùng "cool-neutral lighting" thay vì "soft lighting"
+- Dùng "clean even lighting" thay vì "soft lighting" trong STYLE
 - Dùng "daylight balanced 5200K" thay vì "natural light"
 - Dùng "clean white LED illumination" thay vì "ambient light"
+- Dùng "cool pastel tones" thay vì "pastel tones"
 - Thêm "anti-yellow correction applied" vào cuối mỗi LIGHTING description
+- Khi mô tả màu sáng như cream, beige → thêm "(NOT yellow/golden)" để AI hiểu đúng
 
 ═══════════════════════════════════════
 🎭 BIỂU CẢM & CỬ CHỈ (CRITICAL - THU HÚT KHÁN GIẢ):
@@ -3165,11 +3171,16 @@ Các tương tác trên PHẢI xuất hiện ít nhất 1 lần trong video, r�
 ═══════════════════════════════════════
 📝 FORMAT MỖI SCENE:
 ═══════════════════════════════════════
-promptText format:
-"COLOR_LOCK: EXACT SAME color grading as Scene 1, no yellow cast, no warm drift, anti-yellow correction applied. [HOST_SOLO: camera_angle + camera_movement]. [MÔ TẢ HOST: ngoại hình đầy đủ, BIỂU CẢM hiện tại, CỬ CHỈ đang làm, VỊ TRÍ trong phòng]. [BODY LANGUAGE: posture, tay, đầu]. [TƯƠNG TÁC: đồ vật host đang cầm/dùng]. ENVIRONMENT: [Same room - chi tiết${kolChannelName ? `, tên kênh "${kolChannelName}" visible trên tường phía sau` : ''}]. CAMERA: [shot type, movement type, speed, angle]. LIGHTING: [cool-neutral daylight balanced 5000-5200K, clean white LED, anti-yellow correction, NO warm tones]. STYLE: ${styleKeywords}. MOOD: [emotional tone]. MAINTAIN: Scene 1 skin tone, wall color, clothing color exactly."
+promptText format (THỨ TỰ RẤT QUAN TRỌNG - COLOR_LOCK PHẢI LÀ ĐẦU TIÊN):
+"COLOR_LOCK: EXACT SAME color grading as Scene 1, no yellow cast, no warm drift, anti-yellow correction applied, skin tone unchanged. [HOST_SOLO: camera_angle + camera_movement]. [MÔ TẢ HOST: ngoại hình đầy đủ, BIỂU CẢM hiện tại, CỬ CHỈ đang làm, VỊ TRÍ trong phòng, màu quần áo nguyên bản (NOT yellow/golden)]. [BODY LANGUAGE: posture, tay, đầu]. [TƯƠNG TÁC: đồ vật host đang cầm/dùng]. ENVIRONMENT: [Same room - chi tiết${kolChannelName ? `, tên kênh "${kolChannelName}" visible trên tường phía sau` : ''}]. CAMERA: [shot type, movement type, speed, angle]. LIGHTING: [cool-neutral daylight balanced 5000-5200K, clean white LED, anti-yellow correction, NO warm tones]. STYLE: ${styleKeywords ? styleKeywords.replace(/soft lighting/g, 'clean even lighting').replace(/pastel tones/g, 'cool pastel tones') : styleKeywords}. MOOD: [emotional tone]. MAINTAIN: Scene 1 exact skin tone, wall color, clothing color, hair color."
 
-voiceover format:
-"HOST (emotion/giọng điệu): 'Lời kể chuyện tự nhiên, hấp dẫn bằng ${dialogueLang}...'"
+voiceover format (VOICEOVER riêng biệt, KHÔNG đặt trong promptText):
+"[VOICEOVER in ${dialogueLang}]: 'Lời kể chuyện tự nhiên, hấp dẫn...'"
+
+⚠️ CHÚ Ý THỨ TỰ:
+- COLOR_LOCK phải là CÂU ĐẦU TIÊN trong promptText để AI ưu tiên xử lý màu trước
+- VOICEOVER đặt riêng trong field voiceover, KHÔNG mix vào promptText
+- Nếu có whip pan: thêm "maximum 0.5 second without host face visible"
 
 ═══════════════════════════════════════
 🎯 SCENE FLOW (RHYTHM KỂ CHUYỆN):
