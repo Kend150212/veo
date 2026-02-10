@@ -2955,9 +2955,17 @@ LANGUAGE: Speak Vietnamese only.
             voiceOverInstr = `CONTENT TYPE: KOL SOLO STORYTELLER (Host ngồi kể chuyện trước camera - Như Dưa Leo, KOL Talk)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-🎯 MỤC TIÊU: Tạo video chỉ có 1 người ngồi/đứng trong 1 căn phòng kể chuyện trước camera.
-Thu hút người xem 100% bằng BIỂU CẢM, CỬ CHỈ, GIỌNG KỂ và ENERGY của host.
+🎯 MỤC TIÊU: Tạo video chỉ có 1 người ngồi/đứng trong 1 căn phòng NÓI CHUYỆN TRỰC TIẾP trước camera.
+Đây là THOẠI TRỰC TIẾP (dialogue) - host NÓI thật, KHÔNG phải voiceover đọc đè lên.
+Thu hút người xem 100% bằng BIỂU CẢM, CỬ CHỈ, GIỌNG NÓI TRỰC TIẾP và ENERGY của host.
 KHÔNG có B-Roll, KHÔNG cắt cảnh khác, KHÔNG có hình ảnh minh họa bên ngoài.
+
+⚡ QUAN TRỌNG - THOẠI TRỰC TIẾP (KHÔNG PHẢI VOICEOVER):
+- Host ĐANG NÓI trước camera - miệng PHẢI CỬ ĐỘNG khớp với lời nói
+- Đây là DIALOGUE (thoại nhân vật), KHÔNG phải narration/voiceover đọc đè
+- Host nhìn vào camera và NÓI TRỰC TIẾP với khán giả như YouTuber
+- Âm thanh phát ra TỪ MIỆNG HOST, không phải từ nguồn bên ngoài
+- Biểu cảm khuôn mặt PHẢI khớp với nội dung đang nói
 
 ⛔ TUYỆT ĐỐI KHÔNG ĐƯỢC (VI PHẠM = FAIL):
 - KHÔNG có B-Roll hoặc footage minh họa
@@ -3174,12 +3182,13 @@ Các tương tác trên PHẢI xuất hiện ít nhất 1 lần trong video, r�
 promptText format (THỨ TỰ RẤT QUAN TRỌNG - COLOR_LOCK PHẢI LÀ ĐẦU TIÊN):
 "COLOR_LOCK: EXACT SAME color grading as Scene 1, no yellow cast, no warm drift, anti-yellow correction applied, skin tone unchanged. [HOST_SOLO: camera_angle + camera_movement]. [MÔ TẢ HOST: ngoại hình đầy đủ, BIỂU CẢM hiện tại, CỬ CHỈ đang làm, VỊ TRÍ trong phòng, màu quần áo nguyên bản (NOT yellow/golden)]. [BODY LANGUAGE: posture, tay, đầu]. [TƯƠNG TÁC: đồ vật host đang cầm/dùng]. ENVIRONMENT: [Same room - chi tiết${kolChannelName ? `, tên kênh "${kolChannelName}" visible trên tường phía sau` : ''}]. CAMERA: [shot type, movement type, speed, angle]. LIGHTING: [cool-neutral daylight balanced 5000-5200K, clean white LED, anti-yellow correction, NO warm tones]. STYLE: ${styleKeywords ? styleKeywords.replace(/soft lighting/g, 'clean even lighting').replace(/pastel tones/g, 'cool pastel tones') : styleKeywords}. MOOD: [emotional tone]. MAINTAIN: Scene 1 exact skin tone, wall color, clothing color, hair color."
 
-voiceover format (VOICEOVER riêng biệt, KHÔNG đặt trong promptText):
-"[VOICEOVER in ${dialogueLang}]: 'Lời kể chuyện tự nhiên, hấp dẫn...'"
+voiceover field (DÙNG LÀM THOẠI TRỰC TIẾP CỦA HOST - KHÔNG PHẢI VOICEOVER):
+"HOST (emotion/giọng điệu) [SPEAKING DIRECTLY TO CAMERA]: 'Lời nói trực tiếp của host bằng ${dialogueLang}, tự nhiên như đang trò chuyện...'"
 
-⚠️ CHÚ Ý THỨ TỰ:
+⚠️ CHÚ Ý THỨ TỰ VÀ THOẠI:
 - COLOR_LOCK phải là CÂU ĐẦU TIÊN trong promptText để AI ưu tiên xử lý màu trước
-- VOICEOVER đặt riêng trong field voiceover, KHÔNG mix vào promptText
+- Field "voiceover" chứa THOẠI TRỰC TIẾP của host (dialogue), KHÔNG phải narration đọc đè
+- Host PHẢI mấp máy môi khớp với lời nói - miệng CỬ ĐỘNG khi nói
 - Nếu có whip pan: thêm "maximum 0.5 second without host face visible"
 
 ═══════════════════════════════════════
