@@ -3052,23 +3052,69 @@ Tạo 1 host phù hợp với nội dung video. Mô tả CHI TIẾT ở Scene 1:
 Host này PHẢI nhất quán trong MỌI scene sau đó.
 `}
 ═══════════════════════════════════════
-📸 CAMERA ANGLES (TRONG CÙNG 1 PHÒNG):
+📸 CAMERA MOVEMENT (DYNAMIC & ENGAGING):
 ═══════════════════════════════════════
-Thay đổi góc camera giữa các scene để tạo dynamic:
+Camera PHẢI di chuyển liên tục để tạo cảm giác sống động, hấp dẫn người xem:
 
-1. MEDIUM SHOT (thường dùng nhất): Từ ngực trở lên, thấy tay khi gesturing
-2. CLOSE-UP: Chỉ khuôn mặt - dùng cho moments dramatic/thì thầm
-3. WIDE SHOT: Thấy toàn cảnh phòng - dùng cho opening/khi host đứng dậy
-4. SLIGHT ANGLE CHANGE: Hơi lệch trái/phải - tạo visual variety
-5. SLIGHT ZOOM: Zoom chậm vào mặt khi nói điều quan trọng
+🎥 CAMERA SHOTS CƠ BẢN:
+1. MEDIUM SHOT: Từ ngực trở lên, thấy tay khi gesturing
+2. CLOSE-UP: Chỉ khuôn mặt - dramatic moments
+3. WIDE SHOT: Toàn cảnh phòng - opening/khi host đứng dậy
 
-⚠️ Camera LUÔN trong cùng 1 phòng - chỉ thay đổi angle/distance
+🎬 CAMERA MOVEMENTS (BẮT BUỘC DÙNG):
+4. PAN NHANH 45°: Camera xoay ngang nhanh 45° khi host đổi hướng nói → tạo dynamic energy
+5. PAN NHANH 180°: Camera whip pan 180° khi host quay lại bàn sau khi đi lại → dramatic reveal
+6. TILT LÊN/XUỐNG: Camera tilt từ tay host cầm đồ vật lên mặt → reveal emotion
+7. TRACKING SHOT: Camera đi theo host khi host đứng dậy di chuyển trong phòng
+8. WHIP PAN: Camera quay nhanh bất ngờ từ host sang đồ vật rồi quay lại → tạo surprise
+9. DUTCH ANGLE: Camera nghiêng 15-30° → tạo tension, suspense
+10. RACK FOCUS: Chuyển focus từ host (foreground) sang đồ vật phía sau hoặc ngược lại
+11. CRANE-LIKE: Camera từ từ nâng lên cao hoặc hạ xuống thấp
+12. PUSH IN: Zoom chậm vào mặt host khi nói điều quan trọng
+
+⚡ QUY TẮC CAMERA MOVEMENT:
+- MỖI scene PHẢI có ít nhất 1 camera movement KHÁC với scene trước
+- Xen kẽ: static → dynamic → static → dynamic
+- Dùng PAN NHANH khi host thay đổi chủ đề hoặc tạo surprise
+- Dùng TRACKING khi host đi lại, cầm đồ vật
+- Dùng TILT khi reveal đồ vật hoặc emotion
+- Camera movement phải MATCH với energy: calm = slow zoom, excited = whip pan, suspense = dutch angle
+
+═══════════════════════════════════════
+🚶 HOST DI CHUYỂN & TƯƠNG TÁC ĐỒ VẬT:
+═══════════════════════════════════════
+Host KHÔNG chỉ ngồi yên - phải DI CHUYỂN và TƯƠNG TÁC với đồ vật trong phòng:
+
+🏃 DI CHUYỂN:
+- Đứng dậy khỏi ghế, đi lại vài bước khi excited
+- Quay lưng rồi quay lại camera (dramatic effect)
+- Nghiêng người về phía camera khi thì thầm
+- Ngả lưng ra ghế khi relaxed
+- Đứng dựa tường khi casual
+- Đi tới cửa sổ nhìn ra ngoài khi suy nghĩ
+
+🫗 TƯƠNG TÁC ĐỒ VẬT (TỰ NHIÊN):
+- Cầm cốc cà phê/nước uống 1 ngụm giữa câu nói → tạo pause tự nhiên
+- Gõ gõ bàn khi suy nghĩ
+- Cầm sách/sổ tay mở ra rồi đóng lại
+- Chỉ vào laptop/màn hình khi nói về data
+- Đặt kính xuống bàn → cử chỉ nghiêm túc
+- Ăn snack/bánh nhẹ nhàng → casual, thân thiện
+- Cầm bút viết gì đó → illustrate a point
+- Sắp xếp đồ trên bàn → nervous habit khi kể chuyện căng thẳng
+- Chạm vào micro → draw attention
+
+⚠️ QUY TẮC:
+- Mỗi 2-3 scene phải có 1 lần host tương tác đồ vật
+- Hành động phải TỰ NHIÊN, không gượng ép
+- Đồ vật phải phù hợp với môi trường đã mô tả
+- Host vừa làm vừa nói - KHÔNG dừng lại chờ
 
 ═══════════════════════════════════════
 📝 FORMAT MỖI SCENE:
 ═══════════════════════════════════════
 promptText format:
-"[HOST_SOLO: camera_angle]. [MÔ TẢ HOST: ngoại hình đầy đủ, BIỂU CẢM hiện tại, CỬ CHỈ đang làm]. [BODY LANGUAGE: posture, tay, đầu]. ENVIRONMENT: [Same room - chi tiết${kolChannelName ? `, tên kênh "${kolChannelName}" visible trên tường phía sau` : ''}]. CAMERA: [angle, distance]. LIGHTING: [mood lighting]. STYLE: ${styleKeywords}. MOOD: [emotional tone]."
+"[HOST_SOLO: camera_angle + camera_movement]. [MÔ TẢ HOST: ngoại hình đầy đủ, BIỂU CẢM hiện tại, CỬ CHỈ đang làm, VỊ TRÍ trong phòng]. [BODY LANGUAGE: posture, tay, đầu]. [TƯƠNG TÁC: đồ vật host đang cầm/dùng]. ENVIRONMENT: [Same room - chi tiết${kolChannelName ? `, tên kênh "${kolChannelName}" visible trên tường phía sau` : ''}]. CAMERA: [shot type, movement type, speed, angle]. LIGHTING: [mood lighting]. STYLE: ${styleKeywords}. MOOD: [emotional tone]."
 
 voiceover format:
 "HOST (emotion/giọng điệu): 'Lời kể chuyện tự nhiên, hấp dẫn bằng ${dialogueLang}...'"
@@ -3076,17 +3122,20 @@ voiceover format:
 ═══════════════════════════════════════
 🎯 SCENE FLOW (RHYTHM KỂ CHUYỆN):
 ═══════════════════════════════════════
-- Scene 1: WIDE → Giới thiệu, chào hỏi, hook
-- Scene 2-3: MEDIUM → Bắt đầu kể, setup context
-- Scene 4-6: MEDIUM/CLOSE-UP → Core story, đẩy tension
-- Scene 7: CLOSE-UP → Twist/tiết lộ quan trọng
-- Scene 8-9: MEDIUM → Phân tích, ý nghĩa, reaction
-- Scene cuối: MEDIUM → Kết luận, câu hỏi mở, goodbye
+- Scene 1: WIDE + SLOW PUSH IN → Host ngồi, chào hỏi, hook. Cầm cốc uống nước.
+- Scene 2-3: MEDIUM + PAN NHẸ → Bắt đầu kể, setup context. Host gõ bàn suy nghĩ.
+- Scene 4: TRACKING → Host đứng dậy đi lại, excited kể chuyện.
+- Scene 5-6: CLOSE-UP + WHIP PAN → Core story. Host cầm sách chỉ vào. Camera pan nhanh 45°.
+- Scene 7: DUTCH ANGLE + PUSH IN → Twist! Host quay lưng rồi quay lại camera. Pan 180°.
+- Scene 8: MEDIUM + RACK FOCUS → Host ngồi lại, uống nước, phân tích bình tĩnh.
+- Scene 9: TILT UP → Host nhìn xa suy nghĩ, ý nghĩa sâu sắc.
+- Scene cuối: WIDE + SLOW PULL OUT → Kết luận, goodbye. Host vẫy tay vào camera.
 
 ⚠️ QUAN TRỌNG:
-- PHẢI thay đổi biểu cảm và cử chỉ MỖI scene - KHÔNG lặp lại
+- PHẢI thay đổi camera movement MỖI scene - KHÔNG lặp lại cùng kiểu
+- Host PHẢI di chuyển hoặc tương tác đồ vật ít nhất 1 lần mỗi 2-3 scene
 - Energy phải lên xuống: calm → excited → whisper → energetic
-- Host LUÔN nhìn vào camera (eye contact) - đây là KOL nói chuyện với khán giả
+- Host LUÔN nhìn vào camera khi nói (trừ khi cố tình quay đi để dramatic)
 - Lời kể phải TỰ NHIÊN như đang nói chuyện, KHÔNG đọc script`
         } else {
             voiceOverInstr = `CONTENT TYPE: B-ROLL ONLY (pure visuals, no dialogue).
