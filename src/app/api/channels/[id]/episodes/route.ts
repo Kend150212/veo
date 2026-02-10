@@ -2959,21 +2959,32 @@ LANGUAGE: Speak Vietnamese only.
 Thu hút người xem 100% bằng BIỂU CẢM, CỬ CHỈ, GIỌNG KỂ và ENERGY của host.
 KHÔNG có B-Roll, KHÔNG cắt cảnh khác, KHÔNG có hình ảnh minh họa bên ngoài.
 
-⛔ TUYỆT ĐỐI KHÔNG ĐƯỢC:
+⛔ TUYỆT ĐỐI KHÔNG ĐƯỢC (VI PHẠM = FAIL):
 - KHÔNG có B-Roll hoặc footage minh họa
 - KHÔNG chuyển cảnh sang nơi khác
 - KHÔNG có split screen, picture-in-picture
 - KHÔNG có text overlay, graphic elements phức tạp
 - KHÔNG có cảnh quay bên ngoài phòng
 - KHÔNG có nhân vật thứ 2 (trừ khi user yêu cầu)
+- ⛔ TUYỆT ĐỐI KHÔNG THAY ĐỔI MÔI TRƯỜNG: Phòng, đồ vật, tường, nội thất PHẢI giữ nguyên 100% từ scene 1 đến scene cuối. KHÔNG được thêm/bớt đồ vật, KHÔNG đổi màu tường, KHÔNG đổi ánh sáng tổng thể.
+- ⛔ KHÔNG CÓ HIỆU ỨNG ĐẶC BIỆT: KHÔNG có lens flare, KHÔNG có particle effects, KHÔNG có filter color grading thay đổi giữa các scene, KHÔNG có motion blur quá mức, KHÔNG có VFX. Video phải trông TỰ NHIÊN như quay thật.
+- ⛔ KHÔNG có transition effects giữa các scene (no fade, no wipe, no dissolve)
+
+🎯 100% FACE TRACKING (CRITICAL - BẮT BUỘC):
+- Khuôn mặt host PHẢI LUÔN LUÔN xuất hiện trong khung hình ở MỌI scene, MỌI khoảnh khắc
+- Camera PHẢI tracking theo mặt host - nếu host di chuyển, camera PHẢI theo để mặt luôn visible
+- KHÔNG BAO GIỜ được có frame nào mà không thấy mặt host (trừ tối đa 0.5 giây khi whip pan)
+- Khi host đứng dậy đi lại → camera tracking theo, giữ mặt ở center hoặc rule-of-thirds
+- Khi host quay lưng → chỉ tối đa 1-2 giây rồi PHẢI quay lại để thấy mặt
+- Close-up, medium shot, wide shot → MỌI shot đều PHẢI thấy rõ khuôn mặt host
+- Khuôn mặt host phải chiếm ít nhất 15-20% diện tích khung hình (không quá xa)
 
 ✅ CHỈ ĐƯỢC DÙNG:
-- Host ngồi/đứng trong CÙNG 1 phòng suốt video
-- Camera angles khác nhau TRONG CÙNG phòng đó
-- Biểu cảm khuôn mặt thay đổi liên tục
+- Host ngồi/đứng trong CÙNG 1 phòng suốt video - MÔI TRƯỜNG KHÔNG ĐỔI
+- Camera angles khác nhau TRONG CÙNG phòng đó - LUÔN tracking mặt host
+- Biểu cảm khuôn mặt thay đổi liên tục - khuôn mặt LUÔN rõ nét
 - Cử chỉ tay phong phú khi kể chuyện
-- Ánh sáng/mood có thể thay đổi nhẹ để tạo dramatic effect
-- Props trên bàn (cốc nước, sách, laptop) - nhưng cố định, không thay đổi
+- Props trên bàn (cốc nước, sách, laptop) - cố định, KHÔNG thay đổi vị trí giữa các scene
 
 ═══════════════════════════════════════
 🎭 BIỂU CẢM & CỬ CHỈ (CRITICAL - THU HÚT KHÁN GIẢ):
