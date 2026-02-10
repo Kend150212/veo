@@ -2987,23 +2987,34 @@ KHÔNG có B-Roll, KHÔNG cắt cảnh khác, KHÔNG có hình ảnh minh họa 
 - Props trên bàn (cốc nước, sách, laptop) - cố định, KHÔNG thay đổi vị trí giữa các scene
 
 ═══════════════════════════════════════
-🎨 COLOR CONSISTENCY (CHỐNG TRÔI MÀU - CRITICAL):
+🎨 CHỐNG TRÔI MÀU VÀNG (CRITICAL - ƯU TIÊN CAO NHẤT):
 ═══════════════════════════════════════
-⚠️ VẤN ĐỀ: Khi nhiều scene liên tiếp có cùng mô tả lighting warm/soft, AI sẽ cộng dồn warm tone → video càng về sau càng bị VÀNG.
+⚠️ VẤN ĐỀ NGHIÊM TRỌNG: Video bị TRÔI MÀU VÀNG - frame đầu đẹp, càng về sau càng vàng khè.
+Nguyên nhân: AI cộng dồn warm tone khi các scene lặp lại mô tả lighting tương tự.
 
-🎯 GIẢI PHÁP - XEN KẼ COLOR BALANCE:
-- Scene LẺ (1, 3, 5, 7, 9): LIGHTING phải ghi rõ "neutral white balance 5500K, true-to-life colors, no color cast"
-- Scene CHẴN (2, 4, 6, 8, 10): LIGHTING phải ghi rõ "slightly cool white balance 5200K, clean neutral tones, counterbalance any warm drift"
-- TUYỆT ĐỐI KHÔNG dùng từ "warm", "golden", "amber", "sunset" trong lighting description
-- Thay vì "warm soft light" → dùng "neutral soft light, balanced color temperature"
-- Thay vì "golden hour" → dùng "even natural daylight simulation"
+⛔ CẤM TUYỆT ĐỐI TRONG LIGHTING/COLOR:
+- CẤM DÙNG: "warm", "golden", "amber", "sunset", "orange glow", "yellow light", "warm tone", "cozy warm"
+- CẤM DÙNG: "sepia", "vintage", "film grain warm", "tungsten"
+- CẤM: bất kỳ từ nào gợi ý màu ấm/vàng
 
-📋 QUY TẮC MÀU SẮC:
-- Mỗi scene PHẢI có dòng: "COLOR_RESET: neutral white balance, no accumulated color shift"
-- Da người phải giữ skin tone tự nhiên - KHÔNG bị vàng, cam, hoặc đỏ quá
-- Tường trắng/xám phải LUÔN trắng/xám - KHÔNG được ngả vàng
-- Áo quần giữ nguyên màu gốc từ scene 1 đến cuối
-- Nếu scene trước bị warm → scene sau PHẢI compensate bằng slightly cool tone
+🎯 GIẢI PHÁP BẮT BUỘC:
+1. Scene 1 đặt CHUẨN MÀU GỐC - mô tả chi tiết: skin tone, màu tường, màu áo
+2. Mọi scene sau PHẢI ghi: "EXACT SAME color grading, white balance, and skin tone as Scene 1"
+3. Scene CHẴN (2,4,6,8,10): thêm "slightly cool bias 4800K to counteract any accumulated warmth"
+4. Scene LẺ (3,5,7,9): ghi "neutral daylight 5200K, zero color cast, match Scene 1 exactly"
+5. Mọi scene PHẢI có tag: "NO YELLOW CAST. NO WARM DRIFT. MAINTAIN SCENE 1 COLOR PROFILE."
+
+📋 MÀU SẮC CỤ THỂ:
+- SKIN TONE: Phải giữ nguyên từ scene 1. Nếu scene 1 da sáng → TẤT CẢ scene phải da sáng. KHÔNG ĐƯỢC ngả vàng.
+- TƯỜNG/NỀN: Nếu scene 1 tường xám → TẤT CẢ scene tường vẫn xám. KHÔNG ngả vàng.
+- QUẦN ÁO: Màu sắc giữ nguyên 100%. Áo be → luôn be, KHÔNG thành vàng.
+- TÓC: Màu tóc không được thay đổi. Tóc đen → luôn đen, KHÔNG được ngả nâu/vàng.
+
+💡 KỸ THUẬT PROMPT:
+- Dùng "cool-neutral lighting" thay vì "soft lighting"
+- Dùng "daylight balanced 5200K" thay vì "natural light"
+- Dùng "clean white LED illumination" thay vì "ambient light"
+- Thêm "anti-yellow correction applied" vào cuối mỗi LIGHTING description
 
 ═══════════════════════════════════════
 🎭 BIỂU CẢM & CỬ CHỈ (CRITICAL - THU HÚT KHÁN GIẢ):
@@ -3155,7 +3166,7 @@ Các tương tác trên PHẢI xuất hiện ít nhất 1 lần trong video, r�
 📝 FORMAT MỖI SCENE:
 ═══════════════════════════════════════
 promptText format:
-"[HOST_SOLO: camera_angle + camera_movement]. [MÔ TẢ HOST: ngoại hình đầy đủ, BIỂU CẢM hiện tại, CỬ CHỈ đang làm, VỊ TRÍ trong phòng]. [BODY LANGUAGE: posture, tay, đầu]. [TƯƠNG TÁC: đồ vật host đang cầm/dùng]. ENVIRONMENT: [Same room - chi tiết${kolChannelName ? `, tên kênh "${kolChannelName}" visible trên tường phía sau` : ''}]. CAMERA: [shot type, movement type, speed, angle]. LIGHTING: [neutral balanced light, color temperature 5200-5500K, no warm drift]. COLOR_RESET: neutral white balance, no accumulated color shift, true-to-life skin tones. STYLE: ${styleKeywords}. MOOD: [emotional tone]."
+"COLOR_LOCK: EXACT SAME color grading as Scene 1, no yellow cast, no warm drift, anti-yellow correction applied. [HOST_SOLO: camera_angle + camera_movement]. [MÔ TẢ HOST: ngoại hình đầy đủ, BIỂU CẢM hiện tại, CỬ CHỈ đang làm, VỊ TRÍ trong phòng]. [BODY LANGUAGE: posture, tay, đầu]. [TƯƠNG TÁC: đồ vật host đang cầm/dùng]. ENVIRONMENT: [Same room - chi tiết${kolChannelName ? `, tên kênh "${kolChannelName}" visible trên tường phía sau` : ''}]. CAMERA: [shot type, movement type, speed, angle]. LIGHTING: [cool-neutral daylight balanced 5000-5200K, clean white LED, anti-yellow correction, NO warm tones]. STYLE: ${styleKeywords}. MOOD: [emotional tone]. MAINTAIN: Scene 1 skin tone, wall color, clothing color exactly."
 
 voiceover format:
 "HOST (emotion/giọng điệu): 'Lời kể chuyện tự nhiên, hấp dẫn bằng ${dialogueLang}...'"
