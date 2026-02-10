@@ -412,6 +412,18 @@ const CONTENT_TYPE_INFO: Record<string, { name: string; description: string; ico
             '👥 Nhân vật nhất quán - Mô tả đầy đủ mỗi scene',
             '🎯 AI tự quyết định: Thoại/Im lặng/Âm thanh môi trường'
         ]
+    },
+    'kol_solo_storyteller': {
+        name: 'KOL Solo Storyteller',
+        description: 'Host ngồi trong 1 phòng kể chuyện trước camera - Như Dưa Leo, KOL nói chuyện trực tiếp',
+        icon: '🎙️',
+        tips: [
+            '🎤 100% Host trước camera - KHÔNG có B-Roll',
+            '😊 Biểu cảm phong phú: cười, nghiêm túc, bất ngờ, thì thầm',
+            '👐 Cử chỉ tay tự nhiên khi kể chuyện',
+            '📍 Cùng 1 bối cảnh phòng xuyên suốt',
+            '🎯 Thu hút bằng giọng kể, ánh mắt và energy'
+        ]
     }
 }
 
@@ -529,7 +541,7 @@ export default function ChannelDetailPage({ params }: { params: Promise<{ id: st
         'roast_comedy' | 'reaction_commentary' | 'asmr_satisfying' | 'horror_survival' | 'romance_drama' |
         'gen_z_meme' | 'educational_sassy' | 'mystery_detective' | 'breaking_4th_wall' | 'villain_origin' |
         'underdog_triumph' | 'chaos_unhinged' | 'food_animation' | 'food_drama' | 'fashion_showcase' | 'one_shot' |
-        'narrative_storytelling' | 'cinematic_film_script'
+        'narrative_storytelling' | 'cinematic_film_script' | 'kol_solo_storyteller'
     >('with_host')
 
     // Fashion showcase product state
@@ -2776,6 +2788,7 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                                         <option value="host_dynamic_env">🌍 Host 100% + Môi trường động</option>
                                         <option value="host_storyteller">🎭 Host Kể Chuyện (Elements sinh động)</option>
                                         <option value="one_shot">🎥 One Shot (Một cảnh liên tục)</option>
+                                        <option value="kol_solo_storyteller">🎙️ KOL Solo (Ngồi kể chuyện trước camera)</option>
                                     </optgroup>
                                     <optgroup label="🎬 Điện ảnh">
                                         <option value="cinematic_film">🎬 Điện Ảnh Hollywood</option>

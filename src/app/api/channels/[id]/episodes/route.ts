@@ -2944,6 +2944,122 @@ LANGUAGE: Speak Vietnamese only.
 - Scanner qua toàn bộ script trước khi hoàn thành
 - Nếu thấy cùng một cụm từ xuất hiện hơn 2 lần → BẮT BUỘC phải viết lại với cách diễn đạt khác
 - Mỗi scene nên có "personality" riêng, không được generic`
+        } else if (voiceOverMode === 'kol_solo_storyteller') {
+            voiceOverInstr = `CONTENT TYPE: KOL SOLO STORYTELLER (Host ngồi kể chuyện trước camera - Như Dưa Leo, KOL Talk)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎯 MỤC TIÊU: Tạo video chỉ có 1 người ngồi/đứng trong 1 căn phòng kể chuyện trước camera.
+Thu hút người xem 100% bằng BIỂU CẢM, CỬ CHỈ, GIỌNG KỂ và ENERGY của host.
+KHÔNG có B-Roll, KHÔNG cắt cảnh khác, KHÔNG có hình ảnh minh họa bên ngoài.
+
+⛔ TUYỆT ĐỐI KHÔNG ĐƯỢC:
+- KHÔNG có B-Roll hoặc footage minh họa
+- KHÔNG chuyển cảnh sang nơi khác
+- KHÔNG có split screen, picture-in-picture
+- KHÔNG có text overlay, graphic elements phức tạp
+- KHÔNG có cảnh quay bên ngoài phòng
+- KHÔNG có nhân vật thứ 2 (trừ khi user yêu cầu)
+
+✅ CHỈ ĐƯỢC DÙNG:
+- Host ngồi/đứng trong CÙNG 1 phòng suốt video
+- Camera angles khác nhau TRONG CÙNG phòng đó
+- Biểu cảm khuôn mặt thay đổi liên tục
+- Cử chỉ tay phong phú khi kể chuyện
+- Ánh sáng/mood có thể thay đổi nhẹ để tạo dramatic effect
+- Props trên bàn (cốc nước, sách, laptop) - nhưng cố định, không thay đổi
+
+═══════════════════════════════════════
+🎭 BIỂU CẢM & CỬ CHỈ (CRITICAL - THU HÚT KHÁN GIẢ):
+═══════════════════════════════════════
+Mỗi scene PHẢI có biểu cảm và cử chỉ KHÁC NHAU:
+
+😊 VUI VẺ / HÀI HƯỚC:
+- Cười rộng, mắt nheo lại, nghiêng đầu
+- Tay vỗ bàn, chỉ vào camera, giơ tay
+- "Hahaha các bạn biết gì chưa..."
+
+😠 BỰC BỘI / NGHIÊM TÚC:
+- Nhíu mày, môi mím chặt, ánh mắt sắc
+- Tay đan chéo trước ngực, gõ bàn
+- "Nói thật nhé, cái này tôi KHÔNG chấp nhận được..."
+
+😱 BẤT NGỜ / SỐC:
+- Mắt mở to, miệng há hốc, ngả người ra sau
+- Tay che miệng, vỗ trán
+- "WHAT?! Không đời nào!"
+
+🤫 THÌ THẦM / BÍ MẬT:
+- Nghiêng sát camera, tay che miệng một bên  
+- Nói nhỏ, ánh mắt liếc xung quanh
+- "Này, tôi kể cho bạn nghe chuyện này..."
+
+😢 CẢM ĐỘNG / SÂU LẮNG:
+- Mắt nhìn xuống, giọng trầm, chậm rãi
+- Tay đặt lên ngực, hoặc nắm chặt
+- "Lúc đó... tôi thật sự không biết phải làm gì..."
+
+🔥 HYPE / ENERGY CAO:
+- Đứng dậy hoặc nhổm người, vung tay mạnh
+- Nói nhanh, eyes contact mạnh vào camera
+- "BÂY GIỜ ĐÂY! Phần quan trọng nhất!"
+
+═══════════════════════════════════════
+📍 BỐI CẢNH PHÒNG (GIỮ NGUYÊN SUỐT VIDEO):
+═══════════════════════════════════════
+Mô tả phòng CHI TIẾT 1 LẦN ở Scene 1, sau đó ghi "Same room setup as Scene 1":
+
+VÍ DỤ BỐI CẢNH:
+"Phòng studio nhỏ, tường xám với đèn LED strip phía sau tạo backlight màu tím nhẹ. 
+Bàn gỗ đen với micro podcast Silver, cốc cà phê trắng, và 1 cuốn sổ tay mở.
+Ghế gaming đen, host ngồi hơi nghiêng về phía trước. 
+Ánh sáng chính: softbox bên trái, fill light nhẹ bên phải."
+
+═══════════════════════════════════════
+📸 CAMERA ANGLES (TRONG CÙNG 1 PHÒNG):
+═══════════════════════════════════════
+Thay đổi góc camera giữa các scene để tạo dynamic:
+
+1. MEDIUM SHOT (thường dùng nhất): Từ ngực trở lên, thấy tay khi gesturing
+2. CLOSE-UP: Chỉ khuôn mặt - dùng cho moments dramatic/thì thầm
+3. WIDE SHOT: Thấy toàn cảnh phòng - dùng cho opening/khi host đứng dậy
+4. SLIGHT ANGLE CHANGE: Hơi lệch trái/phải - tạo visual variety
+5. SLIGHT ZOOM: Zoom chậm vào mặt khi nói điều quan trọng
+
+⚠️ Camera LUÔN trong cùng 1 phòng - chỉ thay đổi angle/distance
+
+═══════════════════════════════════════
+📝 FORMAT MỖI SCENE:
+═══════════════════════════════════════
+promptText format:
+"[HOST_SOLO: camera_angle]. [MÔ TẢ HOST: ngoại hình đầy đủ, BIỂU CẢM hiện tại, CỬ CHỈ đang làm]. [BODY LANGUAGE: posture, tay, đầu]. ENVIRONMENT: [Same room - chi tiết]. CAMERA: [angle, distance]. LIGHTING: [mood lighting]. STYLE: ${styleKeywords}. MOOD: [emotional tone]."
+
+voiceover format:
+"HOST (emotion/giọng điệu): 'Lời kể chuyện tự nhiên, hấp dẫn bằng ${dialogueLang}...'"
+
+VÍ DỤ SCENE:
+{
+  "order": 5,
+  "title": "Tiết lộ bất ngờ",
+  "duration": 8,
+  "voiceover": "HOST (thì thầm, nghiêng sát camera): 'Nhưng đây mới là phần điên rồ nhất... không ai biết chuyện này...'",
+  "promptText": "[HOST_SOLO: close-up]. HOST: 30 tuổi, Đông Á, tóc đen ngắn gọn gàng, mặc áo hoodie xám, đang nghiêng người sát vào camera, tay trái che miệng một bên như thì thầm bí mật, mắt mở to liếc trái liếc phải, biểu cảm bí ẩn kích thích tò mò. BODY LANGUAGE: Vai hơi co lại, ngồi trên mép ghế, đầu nghiêng về bên phải. ENVIRONMENT: Same room setup - studio với LED tím, micro bạc trên bàn, cốc cà phê. CAMERA: Tight close-up, 85mm lens, shallow depth of field, slight zoom in. LIGHTING: Dim ambient, soft key light from left creating mysterious shadows. STYLE: ${styleKeywords}. MOOD: Mysterious, conspiratorial."
+}
+
+═══════════════════════════════════════
+🎯 SCENE FLOW (RHYTHM KỂ CHUYỆN):
+═══════════════════════════════════════
+- Scene 1: WIDE → Giới thiệu, chào hỏi, hook
+- Scene 2-3: MEDIUM → Bắt đầu kể, setup context
+- Scene 4-6: MEDIUM/CLOSE-UP → Core story, đẩy tension
+- Scene 7: CLOSE-UP → Twist/tiết lộ quan trọng
+- Scene 8-9: MEDIUM → Phân tích, ý nghĩa, reaction
+- Scene cuối: MEDIUM → Kết luận, câu hỏi mở, goodbye
+
+⚠️ QUAN TRỌNG:
+- PHẢI thay đổi biểu cảm và cử chỉ MỖI scene - KHÔNG lặp lại
+- Energy phải lên xuống: calm → excited → whisper → energetic
+- Host LUÔN nhìn vào camera (eye contact) - đây là KOL nói chuyện với khán giả
+- Lời kể phải TỰ NHIÊN như đang nói chuyện, KHÔNG đọc script`
         } else {
             voiceOverInstr = `CONTENT TYPE: B-ROLL ONLY (pure visuals, no dialogue).
 - The "voiceover" field should be empty or minimal ambient text
