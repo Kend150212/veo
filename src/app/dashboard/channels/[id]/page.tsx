@@ -814,6 +814,7 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
     const [kolChannelNameMode, setKolChannelNameMode] = useState<'channel' | 'custom'>('channel')
     const [kolCustomChannelText, setKolCustomChannelText] = useState('')
     const [kolHostInteractions, setKolHostInteractions] = useState<string[]>([])
+    const [kolContentStyle, setKolContentStyle] = useState<string>('dua_leo')
 
     // KOL Room Presets
     const KOL_ROOM_PRESETS: Record<string, { name: string; description: string; icon: string }> = {
@@ -1504,7 +1505,8 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                     kolChannelName: voiceOverMode === 'kol_solo_storyteller' && kolShowChannelName
                         ? (kolChannelNameMode === 'custom' && kolCustomChannelText ? kolCustomChannelText : channel?.name)
                         : null,
-                    kolHostInteractions: voiceOverMode === 'kol_solo_storyteller' ? kolHostInteractions : []
+                    kolHostInteractions: voiceOverMode === 'kol_solo_storyteller' ? kolHostInteractions : [],
+                    kolContentStyle: voiceOverMode === 'kol_solo_storyteller' ? kolContentStyle : null
                 })
             })
 
@@ -3614,7 +3616,39 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                                     </p>
                                 </div>
 
-                                {/* Quick Info */}
+                                {/* Content Style */}
+                                <div className="p-4 bg-gradient-to-r from-purple-500/10 to-pink-500/10 border border-purple-500/20 rounded-lg">
+                                    <label className="block text-sm font-medium mb-3 flex items-center gap-2">
+                                        <span className="text-xl">✍️</span>
+                                        Phong cách kịch bản
+                                    </label>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        {[
+                                            { id: 'dua_leo', icon: '🍈', name: 'Dưa Leo Style', desc: 'Mỉa mai, châm biếm, phân tích sâu, hài hước đen' },
+                                            { id: 'long_style', icon: '🔥', name: 'Lóng Style', desc: 'Kể chuyện cuốn hút, drama, twist bất ngờ' },
+                                            { id: 'commentary', icon: '🎤', name: 'Commentary', desc: 'Bình luận, phản biện, góc nhìn khác biệt' },
+                                            { id: 'storytelling', icon: '📚', name: 'Storytelling', desc: 'Kể chuyện nhẹ nhàng, cảm xúc, sâu lắng' },
+                                            { id: '教育', icon: '🎓', name: 'Education', desc: 'Giải thích dễ hiểu, ví dụ thực tế, hướng dẫn' },
+                                            { id: 'freestyle', icon: '🎨', name: 'Tự do', desc: 'AI tự chọn phong cách phù hợp nội dung' },
+                                        ].map(style => (
+                                            <button
+                                                key={style.id}
+                                                onClick={() => setKolContentStyle(style.id)}
+                                                className={`p-3 rounded-lg text-left transition border ${kolContentStyle === style.id
+                                                        ? 'bg-purple-500/30 border-purple-500 text-white'
+                                                        : 'bg-[var(--bg-secondary)] border-transparent text-[var(--text-muted)] hover:bg-[var(--bg-hover)]'
+                                                    }`}
+                                            >
+                                                <div className="flex items-center gap-2 mb-1">
+                                                    <span>{style.icon}</span>
+                                                    <span className="text-xs font-medium">{style.name}</span>
+                                                </div>
+                                                <p className="text-[10px] text-[var(--text-muted)] leading-tight">{style.desc}</p>
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
                                 <div className="p-3 bg-[var(--bg-tertiary)] rounded-lg">
                                     <p className="text-xs text-[var(--text-muted)]">
                                         ℹ️ Mật độ thoại mặc định cho KOL: <strong className="text-green-400">18-21 từ/câu</strong> (phù hợp với kiểu nói chuyện tự nhiên trước camera)

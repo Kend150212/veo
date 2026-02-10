@@ -87,7 +87,8 @@ export async function POST(
             kolCustomHost = null,
             kolSelectedCharacterIds = [],
             kolChannelName = null,
-            kolHostInteractions = []
+            kolHostInteractions = [],
+            kolContentStyle = 'dua_leo'
         } = await req.json()
 
         // CTA options
@@ -3207,6 +3208,53 @@ voiceover field (DÙNG LÀM THOẠI TRỰC TIẾP CỦA HOST - KHÔNG PHẢI VOI
 ✍️ PHONG CÁCH KỊCH BẢN (STYLE: LÓNG / DƯA LEO):
 ═══════════════════════════════════════
 Thoại phải viết theo phong cách KOL Việt Nam thực thụ - như Dưa Leo, Lóng, hoặc các KOL commentary/storytelling.
+
+${kolContentStyle === 'dua_leo' ? `
+🍈 PHONG CÁCH: DƯA LEO STYLE
+- Giọng điệu: Mỉa mai, châm biếm, phân tích sâu sắc
+- Hài hước đen, sarcasm cấp cao - nói ngược để người xem hiểu xuôi
+- Dùng ví dụ cực đoan, phóng đại để làm rõ point
+- "Bạn biết gì không, cái này nó hài ở chỗ... không hài chút nào."
+- Thường tự phản biện: "Nhiều người sẽ nói... nhưng mà không..."
+- Kết thúc bằng bài học sâu sắc, bất ngờ
+` : kolContentStyle === 'long_style' ? `
+🔥 PHONG CÁCH: LÓNG STYLE  
+- Giọng điệu: Kể chuyện cuốn hút, drama, dẫn dắt như phim
+- Tạo suspense: "Và rồi... *pause dài* ... chuyện xảy ra."
+- Dùng dialogue trong chuyện kể: "Nó nói với tôi: 'Bro, mày tin tôi đi'"
+- Twist bất ngờ ở giữa và cuối
+- Energy cao, nói nhanh khi hồi hộp, chậm khi dramatic
+- Cliffhanger giữa các scene: "Nhưng đó chưa phải là điều đáng sợ nhất..."
+` : kolContentStyle === 'commentary' ? `
+🎤 PHONG CÁCH: COMMENTARY
+- Giọng điệu: Bình luận sắc bén, góc nhìn khác biệt
+- Phản biện: đưa 2 mặt vấn đề, phân tích ưu/nhược
+- Dùng data, số liệu minh họa (thật hoặc gợi ý)
+- "90% người nghĩ như thế này, nhưng thực tế..."
+- Nói thẳng, không vòng vo, có chính kiến rõ ràng
+- Kết bằng call-to-action suy nghĩ: "Còn bạn nghĩ sao?"
+` : kolContentStyle === 'storytelling' ? `
+📚 PHONG CÁCH: STORYTELLING NHẸ NHÀNG
+- Giọng điệu: Kể chuyện cảm xúc, sâu lắng, chân thành
+- Như đang tâm sự với người bạn thân
+- Dùng hình ảnh, ẩn dụ: "Cuộc đời như một dòng sông..."
+- Nhịp chậm, pause nhiều, để người xem cảm nhận
+- Cảm xúc chân thực, vulnerable, không giả tạo
+- Kết bằng bài học ấm áp, truyền cảm hứng
+` : kolContentStyle === '教育' ? `
+🎓 PHONG CÁCH: EDUCATION
+- Giọng điệu: Giải thích dễ hiểu, thân thiện, không khô khan
+- Dùng ví dụ đời thường: "Giống như bạn đi chợ, mua 1 cân táo..."
+- Cấu trúc rõ ràng: vấn đề → giải thích → ví dụ → tóm tắt
+- Đặt câu hỏi kiểm tra: "Đến đây bạn đã hiểu chưa?"
+- Dùng emoji/cữ chỉ đếm: "Điều thứ nhất..., thứ hai..."
+- Kết bằng tóm tắt ngắn gọn và key takeaways
+` : `
+🎨 PHONG CÁCH: TỰ DO (AI TỰ CHỌN)
+- AI tự phân tích nội dung và chọn phong cách phù hợp nhất
+- Kết hợp nhiều phong cách nếu cần
+- Ưu tiên sự tự nhiên và cuốn hút
+`}
 
 🎤 GIỌNG VĂN & TONE:
 - NÓI CHUYỆN như đang ngồi cà phê với bạn bè, KHÔNG phải đọc bài
