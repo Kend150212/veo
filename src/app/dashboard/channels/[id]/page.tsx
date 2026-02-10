@@ -810,6 +810,9 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
     const [kolSavedRoomTemplates, setKolSavedRoomTemplates] = useState<{ name: string, description: string }[]>([])
     const [kolNewTemplateName, setKolNewTemplateName] = useState('')
     const [kolShowSaveTemplate, setKolShowSaveTemplate] = useState(false)
+    const [kolShowChannelName, setKolShowChannelName] = useState(true)
+    const [kolChannelNameMode, setKolChannelNameMode] = useState<'channel' | 'custom'>('channel')
+    const [kolCustomChannelText, setKolCustomChannelText] = useState('')
 
     // KOL Room Presets
     const KOL_ROOM_PRESETS: Record<string, { name: string; description: string; icon: string }> = {
@@ -1497,7 +1500,9 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                     kolHostMode: voiceOverMode === 'kol_solo_storyteller' ? kolHostMode : null,
                     kolCustomHost: voiceOverMode === 'kol_solo_storyteller' && kolHostMode === 'custom' ? kolCustomHost : null,
                     kolSelectedCharacterIds: voiceOverMode === 'kol_solo_storyteller' && kolHostMode === 'channel_character' ? kolSelectedCharacterIds : [],
-                    kolChannelName: voiceOverMode === 'kol_solo_storyteller' ? channel?.name : null
+                    kolChannelName: voiceOverMode === 'kol_solo_storyteller' && kolShowChannelName
+                        ? (kolChannelNameMode === 'custom' && kolCustomChannelText ? kolCustomChannelText : channel?.name)
+                        : null
                 })
             })
 
@@ -3414,10 +3419,56 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                                     </div>
 
                                     {/* Channel Name in Background */}
-                                    <div className="mt-3 p-2 bg-[var(--bg-tertiary)] rounded-lg">
-                                        <p className="text-xs text-[var(--text-muted)]">
-                                            📺 Tên kênh <strong className="text-[var(--text-primary)]">&quot;{channel?.name}&quot;</strong> sẽ được hiển thị ở background (LED sign / poster phía sau host)
-                                        </p>
+                                    <div className="mt-3 p-3 bg-[var(--bg-tertiary)] rounded-lg">
+                                        <div className="flex items-center justify-between mb-2">
+                                            <label className="text-xs font-medium flex items-center gap-1.5">
+                                                <span>📺</span> Tên hiển thị ở background
+                                            </label>
+                                            <button
+                                                onClick={() => setKolShowChannelName(!kolShowChannelName)}
+                                                className={`relative w-10 h-5 rounded-full transition-colors ${kolShowChannelName ? 'bg-green-500' : 'bg-gray-600'}`}
+                                            >
+                                                <span className={`absolute top-0.5 w-4 h-4 rounded-full bg-white transition-transform ${kolShowChannelName ? 'left-5' : 'left-0.5'}`} />
+                                            </button>
+                                        </div>
+                                        {kolShowChannelName && (
+                                            <div>
+                                                <div className="flex gap-2 mb-2">
+                                                    <button
+                                                        onClick={() => setKolChannelNameMode('channel')}
+                                                        className={`flex-1 px-2 py-1.5 rounded-lg text-xs transition ${kolChannelNameMode === 'channel'
+                                                            ? 'bg-green-500/30 border border-green-500 text-white'
+                                                            : 'bg-[var(--bg-secondary)] text-[var(--text-muted)] hover:bg-[var(--bg-hover)]'}`}
+                                                    >
+                                                        📺 Dùng tên kênh
+                                                    </button>
+                                                    <button
+                                                        onClick={() => setKolChannelNameMode('custom')}
+                                                        className={`flex-1 px-2 py-1.5 rounded-lg text-xs transition ${kolChannelNameMode === 'custom'
+                                                            ? 'bg-green-500/30 border border-green-500 text-white'
+                                                            : 'bg-[var(--bg-secondary)] text-[var(--text-muted)] hover:bg-[var(--bg-hover)]'}`}
+                                                    >
+                                                        ✏️ Nhập text khác
+                                                    </button>
+                                                </div>
+                                                {kolChannelNameMode === 'channel' ? (
+                                                    <p className="text-xs text-green-400">
+                                                        ✅ Tên kênh <strong>&quot;{channel?.name}&quot;</strong> sẽ hiển thị ở background (LED sign / poster phía sau host)
+                                                    </p>
+                                                ) : (
+                                                    <input
+                                                        type="text"
+                                                        value={kolCustomChannelText}
+                                                        onChange={(e) => setKolCustomChannelText(e.target.value)}
+                                                        placeholder="Nhập text hiển thị ở background... VD: TECH REVIEW, STORY TIME, v.v."
+                                                        className="input-field w-full text-sm"
+                                                    />
+                                                )}
+                                            </div>
+                                        )}
+                                        {!kolShowChannelName && (
+                                            <p className="text-xs text-[var(--text-muted)]">🚫 Không hiển thị text ở background</p>
+                                        )}
                                     </div>
                                 </div>
 
