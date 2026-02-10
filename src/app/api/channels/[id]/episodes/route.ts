@@ -85,6 +85,7 @@ export async function POST(
             kolRoomDescription = null,
             kolHostMode = null,
             kolCustomHost = null,
+            kolSelectedCharacterIds = [],
             kolChannelName = null
         } = await req.json()
 
@@ -3040,8 +3041,18 @@ ${kolHostMode === 'custom' && kolCustomHost ? `
 Host này PHẢI nhất quán trong MỌI scene - cùng ngoại hình, cùng trang phục.
 Chỉ thay đổi BIỂU CẢM và CỬ CHỈ giữa các scene.
 ` : kolHostMode === 'channel_character' ? `
-🎯 SỬ DỤNG NHÂN VẬT CHÍNH CỦA KÊNH (đã được mô tả trong character section).
-Host này PHẢI nhất quán trong MỌI scene - cùng ngoại hình, cùng trang phục.
+🎯 SỬ DỤNG NHÂN VẬT CỦA KÊNH (đã được mô tả trong character section).
+${kolSelectedCharacterIds && kolSelectedCharacterIds.length > 1 ? `
+⚡ NHIỀU NHÂN VẬT ĐƯỢC CHỌN (${kolSelectedCharacterIds.length} người):
+- Nhân vật đầu tiên được chọn là HOST CHÍNH - nói chuyện nhiều nhất, dẫn dắt câu chuyện
+- Các nhân vật còn lại là KHÁCH MỜI / CO-HOST - tương tác, phản ứng, bình luận
+- Các nhân vật ngồi/đứng CẠNH NHAU trong cùng phòng
+- PHẢI có tương tác giữa các nhân vật: nói chuyện, cười cùng nhau, tranh luận, đồng ý/phản đối
+- Camera phải PAN giữa các nhân vật khi họ nói
+` : `
+Nhân vật này là HOST DUY NHẤT trong video.
+`}
+Host PHẢI nhất quán trong MỌI scene - cùng ngoại hình, cùng trang phục.
 Chỉ thay đổi BIỂU CẢM và CỬ CHỈ giữa các scene.
 ` : `
 🤖 AI TỰ TẠO HOST:

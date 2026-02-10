@@ -806,6 +806,7 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
     const [kolRoomPreset, setKolRoomPreset] = useState<string>('custom')
     const [kolHostMode, setKolHostMode] = useState<'channel_character' | 'custom' | 'ai_generate'>('channel_character')
     const [kolCustomHost, setKolCustomHost] = useState('')
+    const [kolSelectedCharacterIds, setKolSelectedCharacterIds] = useState<string[]>([])
     const [kolSavedRoomTemplates, setKolSavedRoomTemplates] = useState<{ name: string, description: string }[]>([])
     const [kolNewTemplateName, setKolNewTemplateName] = useState('')
     const [kolShowSaveTemplate, setKolShowSaveTemplate] = useState(false)
@@ -1495,6 +1496,7 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                     kolRoomDescription: voiceOverMode === 'kol_solo_storyteller' ? kolRoomDescription : null,
                     kolHostMode: voiceOverMode === 'kol_solo_storyteller' ? kolHostMode : null,
                     kolCustomHost: voiceOverMode === 'kol_solo_storyteller' && kolHostMode === 'custom' ? kolCustomHost : null,
+                    kolSelectedCharacterIds: voiceOverMode === 'kol_solo_storyteller' && kolHostMode === 'channel_character' ? kolSelectedCharacterIds : [],
                     kolChannelName: voiceOverMode === 'kol_solo_storyteller' ? channel?.name : null
                 })
             })
@@ -3457,12 +3459,40 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                                     </div>
 
                                     {kolHostMode === 'channel_character' && (
-                                        <div className="p-2 bg-[var(--bg-tertiary)] rounded-lg">
+                                        <div className="p-3 bg-[var(--bg-tertiary)] rounded-lg">
                                             {channel?.characters && channel.characters.length > 0 ? (
                                                 <div>
-                                                    <p className="text-xs text-green-400 mb-1">✅ Sử dụng nhân vật chính của kênh:</p>
-                                                    <p className="text-xs text-[var(--text-primary)]">
-                                                        {(channel.characters.find((c: ChannelCharacter) => c.isMain) || channel.characters[0]).name} - {(channel.characters.find((c: ChannelCharacter) => c.isMain) || channel.characters[0]).appearance?.substring(0, 100)}...
+                                                    <p className="text-xs text-[var(--text-muted)] mb-2">Chọn nhân vật làm host (có thể chọn nhiều):</p>
+                                                    <div className="flex flex-wrap gap-2">
+                                                        {channel.characters.map((char: ChannelCharacter) => (
+                                                            <button
+                                                                key={char.id}
+                                                                onClick={() => {
+                                                                    setKolSelectedCharacterIds(prev =>
+                                                                        prev.includes(char.id)
+                                                                            ? prev.filter(id => id !== char.id)
+                                                                            : [...prev, char.id]
+                                                                    )
+                                                                }}
+                                                                className={`px-3 py-2 rounded-lg text-xs transition flex items-center gap-2 ${kolSelectedCharacterIds.includes(char.id)
+                                                                    ? 'bg-blue-500/30 border border-blue-500 text-white'
+                                                                    : kolSelectedCharacterIds.length === 0
+                                                                        ? 'bg-blue-500/20 border border-blue-500/30 text-blue-300'
+                                                                        : 'bg-[var(--bg-secondary)] border border-transparent text-[var(--text-muted)] hover:bg-[var(--bg-hover)]'
+                                                                    }`}
+                                                            >
+                                                                {char.isMain && <span className="text-amber-400">⭐</span>}
+                                                                <span className="font-medium">{char.name}</span>
+                                                                <span className="text-[var(--text-muted)]">({char.role})</span>
+                                                            </button>
+                                                        ))}
+                                                    </div>
+                                                    <p className="text-xs text-[var(--text-muted)] mt-2">
+                                                        {kolSelectedCharacterIds.length === 0
+                                                            ? '✅ Sẽ sử dụng nhân vật chính (⭐) làm host'
+                                                            : kolSelectedCharacterIds.length === 1
+                                                                ? `✅ Host: ${channel.characters.find((c: ChannelCharacter) => c.id === kolSelectedCharacterIds[0])?.name || 'Đã chọn'}`
+                                                                : `✅ ${kolSelectedCharacterIds.length} nhân vật - Host chính + khách mời trong video`}
                                                     </p>
                                                 </div>
                                             ) : (
