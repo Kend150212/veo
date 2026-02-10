@@ -813,6 +813,7 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
     const [kolShowChannelName, setKolShowChannelName] = useState(true)
     const [kolChannelNameMode, setKolChannelNameMode] = useState<'channel' | 'custom'>('channel')
     const [kolCustomChannelText, setKolCustomChannelText] = useState('')
+    const [kolHostInteractions, setKolHostInteractions] = useState<string[]>([])
 
     // KOL Room Presets
     const KOL_ROOM_PRESETS: Record<string, { name: string; description: string; icon: string }> = {
@@ -1502,7 +1503,8 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                     kolSelectedCharacterIds: voiceOverMode === 'kol_solo_storyteller' && kolHostMode === 'channel_character' ? kolSelectedCharacterIds : [],
                     kolChannelName: voiceOverMode === 'kol_solo_storyteller' && kolShowChannelName
                         ? (kolChannelNameMode === 'custom' && kolCustomChannelText ? kolCustomChannelText : channel?.name)
-                        : null
+                        : null,
+                    kolHostInteractions: voiceOverMode === 'kol_solo_storyteller' ? kolHostInteractions : []
                 })
             })
 
@@ -3566,6 +3568,50 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                                             <p className="text-xs text-cyan-400">🤖 AI sẽ tự tạo host phù hợp với nội dung và mood của video. Host sẽ được mô tả chi tiết trong mỗi scene.</p>
                                         </div>
                                     )}
+                                </div>
+
+                                {/* Host Interactions */}
+                                <div className="p-4 bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/20 rounded-lg">
+                                    <label className="block text-sm font-medium mb-3 flex items-center gap-2">
+                                        <span className="text-xl">🎬</span>
+                                        Host tương tác đồ vật (chọn để đưa vào kịch bản)
+                                    </label>
+                                    <div className="flex flex-wrap gap-2">
+                                        {[
+                                            { id: 'drink', icon: '🥤', label: 'Uống nước/cà phê', desc: 'Cầm cốc uống giữa câu nói' },
+                                            { id: 'book', icon: '📚', label: 'Cầm sách/sổ', desc: 'Mở sách, lật trang, ghi chép' },
+                                            { id: 'snack', icon: '🍪', label: 'Ăn snack/bánh', desc: 'Ăn nhẹ nhàng, casual' },
+                                            { id: 'write', icon: '✍️', label: 'Cầm bút viết', desc: 'Viết lên giấy/bảng' },
+                                            { id: 'walk', icon: '🚶', label: 'Đi lại trong phòng', desc: 'Đứng dậy, đi qua đi lại' },
+                                            { id: 'window', icon: '🪟', label: 'Nhìn ra cửa sổ', desc: 'Đi tới cửa sổ suy nghĩ' },
+                                            { id: 'phone', icon: '📱', label: 'Cầm điện thoại', desc: 'Check điện thoại, chỉ màn hình' },
+                                            { id: 'desk', icon: '💻', label: 'Tương tác bàn làm việc', desc: 'Gõ bàn, sắp xếp đồ' },
+                                        ].map(item => (
+                                            <button
+                                                key={item.id}
+                                                onClick={() => {
+                                                    setKolHostInteractions(prev =>
+                                                        prev.includes(item.id)
+                                                            ? prev.filter(id => id !== item.id)
+                                                            : [...prev, item.id]
+                                                    )
+                                                }}
+                                                className={`px-3 py-2 rounded-lg text-xs transition flex items-center gap-1.5 ${kolHostInteractions.includes(item.id)
+                                                    ? 'bg-amber-500/30 border border-amber-500 text-white'
+                                                    : 'bg-[var(--bg-secondary)] border border-transparent text-[var(--text-muted)] hover:bg-[var(--bg-hover)]'
+                                                    }`}
+                                                title={item.desc}
+                                            >
+                                                <span>{item.icon}</span>
+                                                <span>{item.label}</span>
+                                            </button>
+                                        ))}
+                                    </div>
+                                    <p className="text-xs text-[var(--text-muted)] mt-2">
+                                        {kolHostInteractions.length === 0
+                                            ? '💡 Chưa chọn - AI sẽ tự chọn tương tác phù hợp'
+                                            : `✅ Đã chọn ${kolHostInteractions.length} tương tác - sẽ được đưa vào kịch bản`}
+                                    </p>
                                 </div>
 
                                 {/* Quick Info */}

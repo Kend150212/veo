@@ -86,7 +86,8 @@ export async function POST(
             kolHostMode = null,
             kolCustomHost = null,
             kolSelectedCharacterIds = [],
-            kolChannelName = null
+            kolChannelName = null,
+            kolHostInteractions = []
         } = await req.json()
 
         // CTA options
@@ -3096,25 +3097,24 @@ Camera PHẢI di chuyển liên tục để tạo cảm giác sống động, h�
 ═══════════════════════════════════════
 Host KHÔNG chỉ ngồi yên - phải DI CHUYỂN và TƯƠNG TÁC với đồ vật trong phòng:
 
+${kolHostInteractions && kolHostInteractions.length > 0 ? `
+🎯 USER ĐÃ CHỌN CÁC TƯƠNG TÁC SAU (BẮT BUỘC DÙNG):
+${kolHostInteractions.includes('drink') ? '- 🥤 UỐNG NƯỚC/CÀ PHÊ: Cầm cốc uống 1 ngụm giữa câu nói → tạo pause tự nhiên\n' : ''}${kolHostInteractions.includes('book') ? '- 📚 CẦM SÁCH/SỔ: Mở sách lật trang, ghi chép vào sổ tay, chỉ vào trang sách\n' : ''}${kolHostInteractions.includes('snack') ? '- 🍪 ĂN SNACK/BÁNH: Ăn nhẹ nhàng casual, cầm bánh trong tay khi nói\n' : ''}${kolHostInteractions.includes('write') ? '- ✍️ CẦM BÚT VIẾT: Viết lên giấy/bảng trắng để illustrate a point\n' : ''}${kolHostInteractions.includes('walk') ? '- 🚶 ĐI LẠI TRONG PHÒNG: Đứng dậy khỏi ghế, đi vài bước khi excited, quay lưng rồi quay lại\n' : ''}${kolHostInteractions.includes('window') ? '- 🪟 NHÌN RA CỬA SỔ: Đi tới cửa sổ nhìn ra ngoài khi suy nghĩ sâu\n' : ''}${kolHostInteractions.includes('phone') ? '- 📱 CẦM ĐIỆN THOẠI: Check điện thoại, chỉ màn hình cho camera xem\n' : ''}${kolHostInteractions.includes('desk') ? '- 💻 TƯƠNG TÁC BÀN: Gõ gõ bàn suy nghĩ, sắp xếp đồ, chỉ vào laptop/màn hình\n' : ''}
+Các tương tác trên PHẢI xuất hiện ít nhất 1 lần trong video, rải đều các scene.
+` : `
 🏃 DI CHUYỂN:
 - Đứng dậy khỏi ghế, đi lại vài bước khi excited
 - Quay lưng rồi quay lại camera (dramatic effect)
 - Nghiêng người về phía camera khi thì thầm
 - Ngả lưng ra ghế khi relaxed
-- Đứng dựa tường khi casual
-- Đi tới cửa sổ nhìn ra ngoài khi suy nghĩ
 
-🫗 TƯƠNG TÁC ĐỒ VẬT (TỰ NHIÊN):
+🫗 TƯƠNG TÁC ĐỒ VẬT (AI TỰ CHỌN):
 - Cầm cốc cà phê/nước uống 1 ngụm giữa câu nói → tạo pause tự nhiên
 - Gõ gõ bàn khi suy nghĩ
 - Cầm sách/sổ tay mở ra rồi đóng lại
-- Chỉ vào laptop/màn hình khi nói về data
-- Đặt kính xuống bàn → cử chỉ nghiêm túc
 - Ăn snack/bánh nhẹ nhàng → casual, thân thiện
 - Cầm bút viết gì đó → illustrate a point
-- Sắp xếp đồ trên bàn → nervous habit khi kể chuyện căng thẳng
-- Chạm vào micro → draw attention
-
+`}
 ⚠️ QUY TẮC:
 - Mỗi 2-3 scene phải có 1 lần host tương tác đồ vật
 - Hành động phải TỰ NHIÊN, không gượng ép
