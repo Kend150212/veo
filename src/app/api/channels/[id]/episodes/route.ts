@@ -3203,12 +3203,65 @@ voiceover field (DÙNG LÀM THOẠI TRỰC TIẾP CỦA HOST - KHÔNG PHẢI VOI
 - Scene 9: TILT UP → Suy nghĩ sâu. COLOR: neutral 5500K, true-to-life.
 - Scene cuối: WIDE + SLOW PULL OUT → Goodbye. COLOR: neutral balanced 5500K.
 
+═══════════════════════════════════════
+✍️ PHONG CÁCH KỊCH BẢN (STYLE: LÓNG / DƯA LEO):
+═══════════════════════════════════════
+Thoại phải viết theo phong cách KOL Việt Nam thực thụ - như Dưa Leo, Lóng, hoặc các KOL commentary/storytelling.
+
+🎤 GIỌNG VĂN & TONE:
+- NÓI CHUYỆN như đang ngồi cà phê với bạn bè, KHÔNG phải đọc bài
+- Dùng ngôn ngữ đời thường, gần gũi, KHÔNG hàn lâm
+- Xen kẽ hài hước + nghiêm túc + mỉa mai (sarcasm)
+- Dùng tiếng lóng, từ ngữ trending: "ủa", "vãi", "đỉnh", "wtf", "sao mà...", "bro"
+- Có personality rõ ràng - KHÔNG generic, KHÔNG nhạt
+
+🔥 KỸ THUẬT HOOK (CÂU ĐẦU TIÊN MỖI SCENE):
+- Scene 1: Hook gây shock/tò mò: "Okay bro, hôm nay kể cho bạn nghe một chuyện mà nghe xong bạn sẽ KHÔNG TIN NỔI..."
+- Câu hỏi tu từ: "Bạn có bao giờ tự hỏi tại sao...?"
+- Khẳng định gây tranh cãi: "Nói thẳng nhé, 90% người Việt đang làm sai chuyện này..."
+- Đặt vấn đề cá nhân: "Tôi từng bị lừa, và bài học đó thay đổi hoàn toàn cách tôi nghĩ..."
+
+💬 CẤU TRÚC THOẠI MỖI SCENE:
+1. HOOK (1-2 câu): Câu mở gây chú ý, hỏi khán giả, hoặc twist
+2. NỘI DUNG (3-5 câu): Kể chuyện, phân tích, đưa ví dụ thực tế
+3. REACTION (1 câu): Phản ứng cá nhân - bình luận, châm biếm, cảm xúc
+4. BRIDGE (1 câu): Nối sang scene tiếp - cliffhanger hoặc câu hỏi mở
+
+🎭 RHYTHM ENERGY (LÊN XUỐNG NHƯ SÓNG):
+- 🟢 Scene 1: ENERGY CAO - hook mạnh, nói nhanh, excited
+- 🟡 Scene 2-3: GIẢM NHẸ - kể chuyện bình tĩnh, dẫn dắt
+- 🔴 Scene 4-5: LÊN CAO - twist, bất ngờ, nói nhanh hơn, cử chỉ mạnh
+- 🟡 Scene 6-7: HẠ XUỐNG - suy tư, nói chậm, pause dài, thì thầm
+- 🔴 Scene 8-9: LÊN LẠI - climax, khẳng định mạnh, chỉ vào camera
+- 🟢 Scene 10: KẾT - nhẹ nhàng, chân thành, CTA
+
+📝 VÍ DỤ THOẠI THEO PHONG CÁCH:
+❌ SAI (nhạt, đọc bài):
+"Hôm nay chúng ta sẽ tìm hiểu về vấn đề cho vay tiền bạn bè."
+
+✅ ĐÚNG (Dưa Leo style):
+"Okay nghe này, có ai ở đây từng cho bạn mượn tiền rồi bị ghost không? *nghiêng đầu, nhướn mày* Nếu có thì chúc mừng, bạn vừa donate thành công cho một tổ chức từ thiện mang tên 'bạn tôi'!"
+
+✅ ĐÚNG (Lóng style):
+"Bro, tôi kể cho bạn nghe chuyện này. *gõ bàn* Thằng bạn tôi mượn 5 triệu, nói tuần sau trả. Tuần sau... *pause dài, nhìn camera* ... nó block Facebook tôi luôn. *cười chua chát*"
+
+🚫 QUY TẮC VIẾT THOẠI:
+- KHÔNG dùng ngôn ngữ hàn lâm, sách vở
+- KHÔNG viết như bản tin thời sự
+- KHÔNG lặp cấu trúc câu giữa các scene
+- PHẢI có ít nhất 2 câu hỏi tu từ trong toàn bộ kịch bản
+- PHẢI có ít nhất 1 lần host tự phản biện hoặc nói "nhưng mà..." (self-debate)
+- PHẢI xen kẽ câu ngắn (3-5 từ) và câu dài để tạo nhịp
+- Ví dụ nhịp: "Tiền. Bạn bè. Hai thứ đó KHÔNG BAO GIỜ nên đi chung với nhau. Và tôi sẽ giải thích cho bạn tại sao trong 5 phút tới."
+- PHẢI có *action cues* trong thoại: *cười*, *pause*, *nhìn camera*, *gõ bàn* để host biểu cảm khớp
+
 ⚠️ QUAN TRỌNG:
 - PHẢI thay đổi camera movement MỖI scene - KHÔNG lặp lại cùng kiểu
 - Host PHẢI di chuyển hoặc tương tác đồ vật ít nhất 1 lần mỗi 2-3 scene
 - Energy phải lên xuống: calm → excited → whisper → energetic
 - Host LUÔN nhìn vào camera khi nói (trừ khi cố tình quay đi để dramatic)
-- Lời kể phải TỰ NHIÊN như đang nói chuyện, KHÔNG đọc script`
+- Thoại phải TỰ NHIÊN như đang nói chuyện, KHÔNG đọc script
+- Mỗi scene phải có "personality" riêng - giọng điệu khác biệt`
         } else {
             voiceOverInstr = `CONTENT TYPE: B-ROLL ONLY (pure visuals, no dialogue).
 - The "voiceover" field should be empty or minimal ambient text
