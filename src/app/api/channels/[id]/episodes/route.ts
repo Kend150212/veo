@@ -80,7 +80,12 @@ export async function POST(
             // Narrative Storytelling options
             narrativeTemplateId = null,
             narrativeKeyPoints = [],
-            narrativeWithHost = false
+            narrativeWithHost = false,
+            // KOL Solo Storyteller options
+            kolRoomDescription = null,
+            kolHostMode = null,
+            kolCustomHost = null,
+            kolChannelName = null
         } = await req.json()
 
         // CTA options
@@ -3006,6 +3011,10 @@ Mỗi scene PHẢI có biểu cảm và cử chỉ KHÁC NHAU:
 ═══════════════════════════════════════
 📍 BỐI CẢNH PHÒNG (GIỮ NGUYÊN SUỐT VIDEO):
 ═══════════════════════════════════════
+${kolRoomDescription ? `
+🏠 PHÒNG CỦA USER (SỬ DỤNG MÔ TẢ NÀY):
+"${kolRoomDescription}"
+` : `
 Mô tả phòng CHI TIẾT 1 LẦN ở Scene 1, sau đó ghi "Same room setup as Scene 1":
 
 VÍ DỤ BỐI CẢNH:
@@ -3013,7 +3022,35 @@ VÍ DỤ BỐI CẢNH:
 Bàn gỗ đen với micro podcast Silver, cốc cà phê trắng, và 1 cuốn sổ tay mở.
 Ghế gaming đen, host ngồi hơi nghiêng về phía trước. 
 Ánh sáng chính: softbox bên trái, fill light nhẹ bên phải."
-
+`}
+${kolChannelName ? `
+📺 TÊN KÊNH TRONG BACKGROUND:
+Phía sau host PHẢI có tên kênh "${kolChannelName}" hiển thị dưới dạng:
+- LED neon sign phát sáng trên tường, HOẶC
+- Poster/banner treo phía sau, HOẶC  
+- Logo trên màn hình/TV phía sau
+Tên kênh phải VISIBLE nhưng không quá lớn, nằm ở background tự nhiên.
+` : ''}
+═══════════════════════════════════════
+👤 HOST DESCRIPTION:
+═══════════════════════════════════════
+${kolHostMode === 'custom' && kolCustomHost ? `
+🎯 USER ĐÃ MÔ TẢ HOST (SỬ DỤNG MÔ TẢ NÀY CHO MỌI SCENE):
+"${kolCustomHost}"
+Host này PHẢI nhất quán trong MỌI scene - cùng ngoại hình, cùng trang phục.
+Chỉ thay đổi BIỂU CẢM và CỬ CHỈ giữa các scene.
+` : kolHostMode === 'channel_character' ? `
+🎯 SỬ DỤNG NHÂN VẬT CHÍNH CỦA KÊNH (đã được mô tả trong character section).
+Host này PHẢI nhất quán trong MỌI scene - cùng ngoại hình, cùng trang phục.
+Chỉ thay đổi BIỂU CẢM và CỬ CHỈ giữa các scene.
+` : `
+🤖 AI TỰ TẠO HOST:
+Tạo 1 host phù hợp với nội dung video. Mô tả CHI TIẾT ở Scene 1:
+- Tuổi, giới tính, ethnicity, kiểu tóc, màu mắt
+- Trang phục cụ thể (màu sắc, chất liệu, thương hiệu)  
+- Phong cách tổng thể
+Host này PHẢI nhất quán trong MỌI scene sau đó.
+`}
 ═══════════════════════════════════════
 📸 CAMERA ANGLES (TRONG CÙNG 1 PHÒNG):
 ═══════════════════════════════════════
@@ -3031,19 +3068,10 @@ Thay đổi góc camera giữa các scene để tạo dynamic:
 📝 FORMAT MỖI SCENE:
 ═══════════════════════════════════════
 promptText format:
-"[HOST_SOLO: camera_angle]. [MÔ TẢ HOST: ngoại hình đầy đủ, BIỂU CẢM hiện tại, CỬ CHỈ đang làm]. [BODY LANGUAGE: posture, tay, đầu]. ENVIRONMENT: [Same room - chi tiết]. CAMERA: [angle, distance]. LIGHTING: [mood lighting]. STYLE: ${styleKeywords}. MOOD: [emotional tone]."
+"[HOST_SOLO: camera_angle]. [MÔ TẢ HOST: ngoại hình đầy đủ, BIỂU CẢM hiện tại, CỬ CHỈ đang làm]. [BODY LANGUAGE: posture, tay, đầu]. ENVIRONMENT: [Same room - chi tiết${kolChannelName ? `, tên kênh "${kolChannelName}" visible trên tường phía sau` : ''}]. CAMERA: [angle, distance]. LIGHTING: [mood lighting]. STYLE: ${styleKeywords}. MOOD: [emotional tone]."
 
 voiceover format:
 "HOST (emotion/giọng điệu): 'Lời kể chuyện tự nhiên, hấp dẫn bằng ${dialogueLang}...'"
-
-VÍ DỤ SCENE:
-{
-  "order": 5,
-  "title": "Tiết lộ bất ngờ",
-  "duration": 8,
-  "voiceover": "HOST (thì thầm, nghiêng sát camera): 'Nhưng đây mới là phần điên rồ nhất... không ai biết chuyện này...'",
-  "promptText": "[HOST_SOLO: close-up]. HOST: 30 tuổi, Đông Á, tóc đen ngắn gọn gàng, mặc áo hoodie xám, đang nghiêng người sát vào camera, tay trái che miệng một bên như thì thầm bí mật, mắt mở to liếc trái liếc phải, biểu cảm bí ẩn kích thích tò mò. BODY LANGUAGE: Vai hơi co lại, ngồi trên mép ghế, đầu nghiêng về bên phải. ENVIRONMENT: Same room setup - studio với LED tím, micro bạc trên bàn, cốc cà phê. CAMERA: Tight close-up, 85mm lens, shallow depth of field, slight zoom in. LIGHTING: Dim ambient, soft key light from left creating mysterious shadows. STYLE: ${styleKeywords}. MOOD: Mysterious, conspiratorial."
-}
 
 ═══════════════════════════════════════
 🎯 SCENE FLOW (RHYTHM KỂ CHUYỆN):

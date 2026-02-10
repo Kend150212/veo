@@ -801,7 +801,76 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
     const [cinematicCameraStyles, setCinematicCameraStyles] = useState<string[]>(['dynamic_angles'])
     const [cinematicSceneCount, setCinematicSceneCount] = useState(8)
 
+    // KOL Solo Storyteller specific states
+    const [kolRoomDescription, setKolRoomDescription] = useState('')
+    const [kolRoomPreset, setKolRoomPreset] = useState<string>('custom')
+    const [kolHostMode, setKolHostMode] = useState<'channel_character' | 'custom' | 'ai_generate'>('channel_character')
+    const [kolCustomHost, setKolCustomHost] = useState('')
+    const [kolSavedRoomTemplates, setKolSavedRoomTemplates] = useState<{ name: string, description: string }[]>([])
+    const [kolNewTemplateName, setKolNewTemplateName] = useState('')
+    const [kolShowSaveTemplate, setKolShowSaveTemplate] = useState(false)
 
+    // KOL Room Presets
+    const KOL_ROOM_PRESETS: Record<string, { name: string; description: string; icon: string }> = {
+        'modern_studio': {
+            name: 'Studio Hiện Đại',
+            description: 'Phòng studio sáng sủa, tường trắng với đèn LED RGB phía sau, bàn gỗ sáng với micro podcast Silver, cốc cà phê, laptop MacBook Pro. Ghế ergonomic đen. Softbox lighting bên trái, fill light bên phải. Backdrop sạch sẽ, chuyên nghiệp.',
+            icon: '🎙️'
+        },
+        'cozy_bedroom': {
+            name: 'Phòng Ngủ Ấm Cúng',
+            description: 'Phòng ngủ ấm cúng, tường gạch exposed brick, fairy lights treo lung tung, kệ sách gỗ phía sau đầy sách. Ngồi trên giường với chăn dày, gối tựa lưng. Đèn bàn warm light, nến thơm. Không khí intimate, gần gũi.',
+            icon: '🛋️'
+        },
+        'dark_gaming': {
+            name: 'Gaming Room Tối',
+            description: 'Phòng gaming tối, đèn LED strip màu tím/xanh neon viền tường và bàn. 2 màn hình gaming phía sau, bàn phím cơ RGB. Ghế gaming đỏ-đen. Poster anime/game trên tường. Ánh sáng chính từ key light phía trước, ambient neon xung quanh.',
+            icon: '🎮'
+        },
+        'cafe_vibe': {
+            name: 'Góc Café',
+            description: 'Góc café nhỏ xinh, tường gỗ rustic, cây xanh nhỏ trên kệ. Bàn gỗ tròn nhỏ với ly cà phê latte art, cuốn sổ tay leather. Ghế gỗ vintage. Ánh sáng tự nhiên từ cửa sổ bên trái, warm tone. Tiệm café mờ ảo phía sau.',
+            icon: '☕'
+        },
+        'minimalist_white': {
+            name: 'Minimalist Trắng',
+            description: 'Phòng minimalist toàn trắng, tường trắng sạch, bàn trắng đơn giản chỉ có micro và 1 cây xanh nhỏ. Ghế trắng. Ring light phía trước tạo ánh sáng đều. Nền trắng clean, focus hoàn toàn vào host. Phong cách Apple-like.',
+            icon: '⬜'
+        },
+        'outdoor_balcony': {
+            name: 'Ban Công / Ngoài Trời',
+            description: 'Ban công mở, view thành phố phía sau mờ ảo (bokeh). Ghế mây, bàn nhỏ với ly trà, cây xanh xung quanh. Ánh sáng tự nhiên golden hour, gió nhẹ lay tóc. Không khí thoáng đãng, tự do.',
+            icon: '🌅'
+        },
+        'podcast_pro': {
+            name: 'Podcast Studio Pro',
+            description: 'Studio podcast chuyên nghiệp, tường cách âm foam đen, 2 micro boom arm đối diện nhau, mixer audio trên bàn, headphone treo. Đèn spotlight từ trên, LED logo kênh phát sáng phía sau. Cực kỳ pro, như Joe Rogan studio.',
+            icon: '🎧'
+        },
+        'library_scholar': {
+            name: 'Thư Viện / Phòng Đọc',
+            description: 'Phòng đọc sách cổ điển, tường kệ sách gỗ tối đầy sách leather-bound, bàn gỗ mahogany với đèn đọc sách xanh lá. Ghế da nâu. Ánh sáng ấm từ đèn bàn, atmosphere học thuật, sang trọng.',
+            icon: '📚'
+        }
+    }
+
+    // Load saved KOL room templates from localStorage
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const saved = localStorage.getItem('kol_room_templates')
+            if (saved) {
+                try { setKolSavedRoomTemplates(JSON.parse(saved)) } catch { }
+            }
+        }
+    }, [])
+
+    // Auto-set dialogue density for KOL mode
+    useEffect(() => {
+        if (voiceOverMode === 'kol_solo_storyteller') {
+            setDialogueDensityMin(18)
+            setDialogueDensityMax(21)
+        }
+    }, [voiceOverMode])
     // Native Ad Insertion
     const [adEnabled, setAdEnabled] = useState(false)
     const [adProductInfo, setAdProductInfo] = useState('')
@@ -1421,7 +1490,12 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                     narrativeKeyPoints: voiceOverMode === 'narrative_storytelling' && narrativeKeyPoints.trim()
                         ? narrativeKeyPoints.split(',').map(s => s.trim()).filter(Boolean)
                         : null,
-                    narrativeWithHost: voiceOverMode === 'narrative_storytelling' ? narrativeWithHost : false
+                    narrativeWithHost: voiceOverMode === 'narrative_storytelling' ? narrativeWithHost : false,
+                    // KOL Solo Storyteller options
+                    kolRoomDescription: voiceOverMode === 'kol_solo_storyteller' ? kolRoomDescription : null,
+                    kolHostMode: voiceOverMode === 'kol_solo_storyteller' ? kolHostMode : null,
+                    kolCustomHost: voiceOverMode === 'kol_solo_storyteller' && kolHostMode === 'custom' ? kolCustomHost : null,
+                    kolChannelName: voiceOverMode === 'kol_solo_storyteller' ? channel?.name : null
                 })
             })
 
@@ -3203,6 +3277,221 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                                             </ul>
                                         </div>
                                     </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* KOL Solo Storyteller Settings */}
+                        {voiceOverMode === 'kol_solo_storyteller' && (
+                            <div className="mb-4 space-y-4">
+                                {/* Room/Environment Selection */}
+                                <div className="p-4 bg-gradient-to-r from-purple-500/10 to-pink-500/10 border border-purple-500/20 rounded-lg">
+                                    <label className="block text-sm font-medium mb-3 flex items-center gap-2">
+                                        <span className="text-xl">🏠</span>
+                                        Môi trường / Căn phòng
+                                    </label>
+
+                                    {/* Room Presets */}
+                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-3">
+                                        {Object.entries(KOL_ROOM_PRESETS).map(([key, preset]) => (
+                                            <button
+                                                key={key}
+                                                onClick={() => {
+                                                    setKolRoomPreset(key)
+                                                    setKolRoomDescription(preset.description)
+                                                }}
+                                                className={`p-2 rounded-lg text-xs text-center transition flex flex-col items-center gap-1 ${kolRoomPreset === key
+                                                    ? 'bg-purple-500/30 border border-purple-500 text-white'
+                                                    : 'bg-[var(--bg-secondary)] border border-transparent text-[var(--text-muted)] hover:bg-[var(--bg-hover)]'
+                                                    }`}
+                                            >
+                                                <span className="text-lg">{preset.icon}</span>
+                                                <span>{preset.name}</span>
+                                            </button>
+                                        ))}
+                                    </div>
+
+                                    {/* Saved Templates */}
+                                    {kolSavedRoomTemplates.length > 0 && (
+                                        <div className="mb-3">
+                                            <p className="text-xs text-[var(--text-muted)] mb-2">💾 Template đã lưu:</p>
+                                            <div className="flex flex-wrap gap-2">
+                                                {kolSavedRoomTemplates.map((tmpl, i) => (
+                                                    <div key={i} className="flex items-center gap-1">
+                                                        <button
+                                                            onClick={() => {
+                                                                setKolRoomPreset('saved_' + i)
+                                                                setKolRoomDescription(tmpl.description)
+                                                            }}
+                                                            className={`px-3 py-1 rounded-lg text-xs transition ${kolRoomPreset === 'saved_' + i
+                                                                ? 'bg-blue-500/30 border border-blue-500 text-white'
+                                                                : 'bg-[var(--bg-secondary)] text-[var(--text-muted)] hover:bg-[var(--bg-hover)]'
+                                                                }`}
+                                                        >
+                                                            📁 {tmpl.name}
+                                                        </button>
+                                                        <button
+                                                            onClick={() => {
+                                                                const updated = kolSavedRoomTemplates.filter((_, idx) => idx !== i)
+                                                                setKolSavedRoomTemplates(updated)
+                                                                localStorage.setItem('kol_room_templates', JSON.stringify(updated))
+                                                            }}
+                                                            className="text-red-400 hover:text-red-300 text-xs"
+                                                            title="Xóa template"
+                                                        >✕</button>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Custom Room Button */}
+                                    <button
+                                        onClick={() => {
+                                            setKolRoomPreset('custom')
+                                            setKolRoomDescription('')
+                                        }}
+                                        className={`w-full mb-3 px-3 py-2 rounded-lg text-sm transition ${kolRoomPreset === 'custom' && !kolRoomDescription
+                                            ? 'bg-green-500/30 border border-green-500 text-white'
+                                            : 'bg-[var(--bg-secondary)] text-[var(--text-muted)] hover:bg-[var(--bg-hover)]'
+                                            }`}
+                                    >
+                                        ✏️ Tự mô tả môi trường
+                                    </button>
+
+                                    {/* Room Description Textarea */}
+                                    <textarea
+                                        value={kolRoomDescription}
+                                        onChange={(e) => {
+                                            setKolRoomDescription(e.target.value)
+                                            if (!Object.keys(KOL_ROOM_PRESETS).includes(kolRoomPreset) && !kolRoomPreset.startsWith('saved_')) {
+                                                setKolRoomPreset('custom')
+                                            }
+                                        }}
+                                        placeholder="Mô tả môi trường chi tiết... VD: Phòng studio nhỏ, tường xám, đèn LED tím phía sau, bàn gỗ đen với micro Silver, cốc cà phê..."
+                                        className="input-field w-full h-24 text-sm"
+                                    />
+
+                                    {/* Save Template */}
+                                    <div className="mt-2 flex items-center gap-2">
+                                        {!kolShowSaveTemplate ? (
+                                            <button
+                                                onClick={() => setKolShowSaveTemplate(true)}
+                                                disabled={!kolRoomDescription.trim()}
+                                                className="text-xs text-blue-400 hover:text-blue-300 disabled:opacity-30 disabled:cursor-not-allowed"
+                                            >
+                                                💾 Lưu template này
+                                            </button>
+                                        ) : (
+                                            <div className="flex items-center gap-2 flex-1">
+                                                <input
+                                                    type="text"
+                                                    value={kolNewTemplateName}
+                                                    onChange={(e) => setKolNewTemplateName(e.target.value)}
+                                                    placeholder="Tên template..."
+                                                    className="input-field flex-1 text-xs"
+                                                />
+                                                <button
+                                                    onClick={() => {
+                                                        if (kolNewTemplateName.trim() && kolRoomDescription.trim()) {
+                                                            const updated = [...kolSavedRoomTemplates, { name: kolNewTemplateName.trim(), description: kolRoomDescription }]
+                                                            setKolSavedRoomTemplates(updated)
+                                                            localStorage.setItem('kol_room_templates', JSON.stringify(updated))
+                                                            setKolNewTemplateName('')
+                                                            setKolShowSaveTemplate(false)
+                                                        }
+                                                    }}
+                                                    className="px-3 py-1 bg-blue-500 text-white rounded text-xs hover:bg-blue-600"
+                                                >Lưu</button>
+                                                <button
+                                                    onClick={() => { setKolShowSaveTemplate(false); setKolNewTemplateName('') }}
+                                                    className="text-xs text-[var(--text-muted)]"
+                                                >Hủy</button>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Channel Name in Background */}
+                                    <div className="mt-3 p-2 bg-[var(--bg-tertiary)] rounded-lg">
+                                        <p className="text-xs text-[var(--text-muted)]">
+                                            📺 Tên kênh <strong className="text-[var(--text-primary)]">&quot;{channel?.name}&quot;</strong> sẽ được hiển thị ở background (LED sign / poster phía sau host)
+                                        </p>
+                                    </div>
+                                </div>
+
+                                {/* Host Selection */}
+                                <div className="p-4 bg-gradient-to-r from-blue-500/10 to-cyan-500/10 border border-blue-500/20 rounded-lg">
+                                    <label className="block text-sm font-medium mb-3 flex items-center gap-2">
+                                        <span className="text-xl">👤</span>
+                                        Host / Người dẫn chương trình
+                                    </label>
+
+                                    <div className="flex gap-2 mb-3">
+                                        <button
+                                            onClick={() => setKolHostMode('channel_character')}
+                                            className={`flex-1 px-3 py-2 rounded-lg text-xs font-medium transition ${kolHostMode === 'channel_character'
+                                                ? 'bg-blue-500/30 border border-blue-500 text-white'
+                                                : 'bg-[var(--bg-secondary)] text-[var(--text-muted)] hover:bg-[var(--bg-hover)]'
+                                                }`}
+                                        >
+                                            👥 Dùng nhân vật kênh
+                                        </button>
+                                        <button
+                                            onClick={() => setKolHostMode('custom')}
+                                            className={`flex-1 px-3 py-2 rounded-lg text-xs font-medium transition ${kolHostMode === 'custom'
+                                                ? 'bg-blue-500/30 border border-blue-500 text-white'
+                                                : 'bg-[var(--bg-secondary)] text-[var(--text-muted)] hover:bg-[var(--bg-hover)]'
+                                                }`}
+                                        >
+                                            ✏️ Mô tả custom
+                                        </button>
+                                        <button
+                                            onClick={() => setKolHostMode('ai_generate')}
+                                            className={`flex-1 px-3 py-2 rounded-lg text-xs font-medium transition ${kolHostMode === 'ai_generate'
+                                                ? 'bg-blue-500/30 border border-blue-500 text-white'
+                                                : 'bg-[var(--bg-secondary)] text-[var(--text-muted)] hover:bg-[var(--bg-hover)]'
+                                                }`}
+                                        >
+                                            🤖 AI tự tạo
+                                        </button>
+                                    </div>
+
+                                    {kolHostMode === 'channel_character' && (
+                                        <div className="p-2 bg-[var(--bg-tertiary)] rounded-lg">
+                                            {channel?.characters && channel.characters.length > 0 ? (
+                                                <div>
+                                                    <p className="text-xs text-green-400 mb-1">✅ Sử dụng nhân vật chính của kênh:</p>
+                                                    <p className="text-xs text-[var(--text-primary)]">
+                                                        {(channel.characters.find((c: ChannelCharacter) => c.isMain) || channel.characters[0]).name} - {(channel.characters.find((c: ChannelCharacter) => c.isMain) || channel.characters[0]).appearance?.substring(0, 100)}...
+                                                    </p>
+                                                </div>
+                                            ) : (
+                                                <p className="text-xs text-amber-400">⚠️ Kênh chưa có nhân vật. Vào cài đặt kênh để tạo nhân vật, hoặc chọn &quot;Mô tả custom&quot; / &quot;AI tự tạo&quot;.</p>
+                                            )}
+                                        </div>
+                                    )}
+
+                                    {kolHostMode === 'custom' && (
+                                        <textarea
+                                            value={kolCustomHost}
+                                            onChange={(e) => setKolCustomHost(e.target.value)}
+                                            placeholder="Mô tả host... VD: Nam, 30 tuổi, Đông Á, tóc đen ngắn gọn gàng, da sáng, mặc áo hoodie xám Nike, kính tròn gọng đen, râu nhẹ, nụ cười thân thiện, giọng nói trầm ấm..."
+                                            className="input-field w-full h-20 text-sm"
+                                        />
+                                    )}
+
+                                    {kolHostMode === 'ai_generate' && (
+                                        <div className="p-2 bg-[var(--bg-tertiary)] rounded-lg">
+                                            <p className="text-xs text-cyan-400">🤖 AI sẽ tự tạo host phù hợp với nội dung và mood của video. Host sẽ được mô tả chi tiết trong mỗi scene.</p>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Quick Info */}
+                                <div className="p-3 bg-[var(--bg-tertiary)] rounded-lg">
+                                    <p className="text-xs text-[var(--text-muted)]">
+                                        ℹ️ Mật độ thoại mặc định cho KOL: <strong className="text-green-400">18-21 từ/câu</strong> (phù hợp với kiểu nói chuyện tự nhiên trước camera)
+                                    </p>
                                 </div>
                             </div>
                         )}
