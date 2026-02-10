@@ -2987,6 +2987,25 @@ KHÔNG có B-Roll, KHÔNG cắt cảnh khác, KHÔNG có hình ảnh minh họa 
 - Props trên bàn (cốc nước, sách, laptop) - cố định, KHÔNG thay đổi vị trí giữa các scene
 
 ═══════════════════════════════════════
+🎨 COLOR CONSISTENCY (CHỐNG TRÔI MÀU - CRITICAL):
+═══════════════════════════════════════
+⚠️ VẤN ĐỀ: Khi nhiều scene liên tiếp có cùng mô tả lighting warm/soft, AI sẽ cộng dồn warm tone → video càng về sau càng bị VÀNG.
+
+🎯 GIẢI PHÁP - XEN KẼ COLOR BALANCE:
+- Scene LẺ (1, 3, 5, 7, 9): LIGHTING phải ghi rõ "neutral white balance 5500K, true-to-life colors, no color cast"
+- Scene CHẴN (2, 4, 6, 8, 10): LIGHTING phải ghi rõ "slightly cool white balance 5200K, clean neutral tones, counterbalance any warm drift"
+- TUYỆT ĐỐI KHÔNG dùng từ "warm", "golden", "amber", "sunset" trong lighting description
+- Thay vì "warm soft light" → dùng "neutral soft light, balanced color temperature"
+- Thay vì "golden hour" → dùng "even natural daylight simulation"
+
+📋 QUY TẮC MÀU SẮC:
+- Mỗi scene PHẢI có dòng: "COLOR_RESET: neutral white balance, no accumulated color shift"
+- Da người phải giữ skin tone tự nhiên - KHÔNG bị vàng, cam, hoặc đỏ quá
+- Tường trắng/xám phải LUÔN trắng/xám - KHÔNG được ngả vàng
+- Áo quần giữ nguyên màu gốc từ scene 1 đến cuối
+- Nếu scene trước bị warm → scene sau PHẢI compensate bằng slightly cool tone
+
+═══════════════════════════════════════
 🎭 BIỂU CẢM & CỬ CHỈ (CRITICAL - THU HÚT KHÁN GIẢ):
 ═══════════════════════════════════════
 Mỗi scene PHẢI có biểu cảm và cử chỉ KHÁC NHAU:
@@ -3136,7 +3155,7 @@ Các tương tác trên PHẢI xuất hiện ít nhất 1 lần trong video, r�
 📝 FORMAT MỖI SCENE:
 ═══════════════════════════════════════
 promptText format:
-"[HOST_SOLO: camera_angle + camera_movement]. [MÔ TẢ HOST: ngoại hình đầy đủ, BIỂU CẢM hiện tại, CỬ CHỈ đang làm, VỊ TRÍ trong phòng]. [BODY LANGUAGE: posture, tay, đầu]. [TƯƠNG TÁC: đồ vật host đang cầm/dùng]. ENVIRONMENT: [Same room - chi tiết${kolChannelName ? `, tên kênh "${kolChannelName}" visible trên tường phía sau` : ''}]. CAMERA: [shot type, movement type, speed, angle]. LIGHTING: [mood lighting]. STYLE: ${styleKeywords}. MOOD: [emotional tone]."
+"[HOST_SOLO: camera_angle + camera_movement]. [MÔ TẢ HOST: ngoại hình đầy đủ, BIỂU CẢM hiện tại, CỬ CHỈ đang làm, VỊ TRÍ trong phòng]. [BODY LANGUAGE: posture, tay, đầu]. [TƯƠNG TÁC: đồ vật host đang cầm/dùng]. ENVIRONMENT: [Same room - chi tiết${kolChannelName ? `, tên kênh "${kolChannelName}" visible trên tường phía sau` : ''}]. CAMERA: [shot type, movement type, speed, angle]. LIGHTING: [neutral balanced light, color temperature 5200-5500K, no warm drift]. COLOR_RESET: neutral white balance, no accumulated color shift, true-to-life skin tones. STYLE: ${styleKeywords}. MOOD: [emotional tone]."
 
 voiceover format:
 "HOST (emotion/giọng điệu): 'Lời kể chuyện tự nhiên, hấp dẫn bằng ${dialogueLang}...'"
@@ -3144,14 +3163,14 @@ voiceover format:
 ═══════════════════════════════════════
 🎯 SCENE FLOW (RHYTHM KỂ CHUYỆN):
 ═══════════════════════════════════════
-- Scene 1: WIDE + SLOW PUSH IN → Host ngồi, chào hỏi, hook. Cầm cốc uống nước.
-- Scene 2-3: MEDIUM + PAN NHẸ → Bắt đầu kể, setup context. Host gõ bàn suy nghĩ.
-- Scene 4: TRACKING → Host đứng dậy đi lại, excited kể chuyện.
-- Scene 5-6: CLOSE-UP + WHIP PAN → Core story. Host cầm sách chỉ vào. Camera pan nhanh 45°.
-- Scene 7: DUTCH ANGLE + PUSH IN → Twist! Host quay lưng rồi quay lại camera. Pan 180°.
-- Scene 8: MEDIUM + RACK FOCUS → Host ngồi lại, uống nước, phân tích bình tĩnh.
-- Scene 9: TILT UP → Host nhìn xa suy nghĩ, ý nghĩa sâu sắc.
-- Scene cuối: WIDE + SLOW PULL OUT → Kết luận, goodbye. Host vẫy tay vào camera.
+- Scene 1: WIDE + SLOW PUSH IN → Host ngồi, chào hỏi, hook. COLOR: neutral 5500K.
+- Scene 2-3: MEDIUM + PAN NHẸ → Bắt đầu kể, setup context. COLOR: slightly cool 5200K, counterbalance.
+- Scene 4: TRACKING → Host đứng dậy đi lại. COLOR: neutral reset 5500K.
+- Scene 5-6: CLOSE-UP + WHIP PAN → Core story. COLOR: cool neutral 5200K, clean tones.
+- Scene 7: DUTCH ANGLE + PUSH IN → Twist! COLOR: neutral reset 5500K, no color cast.
+- Scene 8: MEDIUM + RACK FOCUS → Phân tích bình tĩnh. COLOR: cool balance 5200K.
+- Scene 9: TILT UP → Suy nghĩ sâu. COLOR: neutral 5500K, true-to-life.
+- Scene cuối: WIDE + SLOW PULL OUT → Goodbye. COLOR: neutral balanced 5500K.
 
 ⚠️ QUAN TRỌNG:
 - PHẢI thay đổi camera movement MỖI scene - KHÔNG lặp lại cùng kiểu
