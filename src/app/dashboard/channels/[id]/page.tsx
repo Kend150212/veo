@@ -5052,7 +5052,7 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                                                 for (const pattern of patterns) {
                                                     const matches = [...text.matchAll(pattern)]
                                                     if (matches.length > 0) {
-                                                        return matches.map(m => m[1].trim()).join(' ')
+                                                        return matches[0][1].trim()
                                                     }
                                                 }
                                                 // If the scene has a separate voiceover field, prefer that
