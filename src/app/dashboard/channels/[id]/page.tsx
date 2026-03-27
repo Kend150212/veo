@@ -44,7 +44,8 @@ import {
     Wand2,
     GripVertical,
     AlertTriangle,
-    X
+    X,
+    Camera
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { CHANNEL_STYLES, STYLE_CATEGORIES, getStylesByCategory } from '@/lib/channel-styles'
@@ -2346,6 +2347,14 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                 </div>
                 <div className="flex items-center gap-2">
                     <button
+                        onClick={() => router.push(`/dashboard/channels/${id}/avatar`)}
+                        className="btn-secondary flex items-center gap-2 text-purple-400 hover:text-purple-300"
+                        title="Avatar Studio"
+                    >
+                        <Camera className="w-4 h-4" />
+                        Avatar Studio
+                    </button>
+                    <button
                         onClick={() => setSetupCollapsed(!setupCollapsed)}
                         className="btn-secondary flex items-center gap-2"
                         title={setupCollapsed ? 'Mở rộng Setup' : 'Thu gọn Setup'}
@@ -3635,8 +3644,8 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                                                 key={style.id}
                                                 onClick={() => setKolContentStyle(style.id)}
                                                 className={`p-3 rounded-lg text-left transition border ${kolContentStyle === style.id
-                                                        ? 'bg-purple-500/30 border-purple-500 text-white'
-                                                        : 'bg-[var(--bg-secondary)] border-transparent text-[var(--text-muted)] hover:bg-[var(--bg-hover)]'
+                                                    ? 'bg-purple-500/30 border-purple-500 text-white'
+                                                    : 'bg-[var(--bg-secondary)] border-transparent text-[var(--text-muted)] hover:bg-[var(--bg-hover)]'
                                                     }`}
                                             >
                                                 <div className="flex items-center gap-2 mb-1">

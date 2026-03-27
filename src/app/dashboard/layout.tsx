@@ -16,13 +16,15 @@ import {
     Shield,
     CreditCard,
     Package,
-    Wallet
+    Wallet,
+    Layers
 } from 'lucide-react'
 import { useState } from 'react'
 
 const navItems = [
     { href: '/dashboard', label: 'Dashboard', labelVi: 'Tổng quan', icon: LayoutDashboard },
     { href: '/dashboard/channels', label: 'Channels', labelVi: 'Kênh YouTube', icon: Tv },
+    { href: '/dashboard/space', label: 'Veo Space', labelVi: '🚀 Veo Space', icon: Layers },
     { href: '/dashboard/billing', label: 'Billing', labelVi: 'Thanh toán', icon: CreditCard },
     { href: '/dashboard/admin', label: 'Admin', labelVi: 'Quản lý Users', icon: Shield, adminOnly: true },
     { href: '/dashboard/admin/plans', label: 'Plans', labelVi: 'Gói đăng ký', icon: Package, adminOnly: true },
