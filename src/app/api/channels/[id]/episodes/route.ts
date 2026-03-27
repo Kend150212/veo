@@ -2727,16 +2727,29 @@ Example: "[AD_INTEGRATION: testimonial] Host showing product with genuine smile.
             voiceOverInstr += `
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-⚠️⚠️⚠️ CHẾ ĐỘ TÁCH VOICE RIÊNG ⚠️⚠️⚠️
+🚫🚫🚫 CHẾ ĐỘ TÁCH VOICE — CẤM TUYỆT ĐỐI 🚫🚫🚫
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-QUAN TRỌNG: "voiceover" và "dialogue" phải TÁCH HOÀN TOÀN khỏi promptText.
 
-✅ TRONG "voiceover" field: đặt TOÀN BỘ lời thoại/narration gốc (chỉ văn bản thuần, KHÔNG có nhãn như [VOICEOVER:...])
-   Ví dụ: "Hãy tưởng tượng bạn đang nắm giữ một đế chế nghìn tỷ đô..."
+"voiceover" field = chứa TOÀN BỘ lời thoại/narration dạng văn bản thuần.
+Ví dụ đúng: "Từ một tài xế xe tải Thái Lan đến đế chế tỷ đô..."
 
-❌ TRONG "promptText": TUYỆT ĐỐI KHÔNG chứa bất kỳ lời thoại, voiceover, hay dialogue nào.
-   Prompttext chỉ mô tả: hình ảnh, camera, lighting, environment, sound effects, movement, style.
-   KHÔNG có: [VOICEOVER ...], [DIALOGUE ...], VOICE:, hay bất kỳ lời nói của nhân vật/narrator.`
+"promptText" = CHỈ mô tả hình ảnh/camera/lighting/environment/sound effect.
+
+🚫 TUYỆT ĐỐI CẤM trong "promptText" các nhãn sau:
+   - VOICE: (dù ngắn hay dài, dù ở cuối hay giữa)
+   - LANGUAGE: Speak ... only
+   - [VOICEOVER ...]
+   - [DIALOGUE ...]
+   - PACING: (chỉ dùng nếu mô tả visual cut, KHÔNG dùng để chỉ giọng đọc)
+   - Bất kỳ câu nói của nhân vật hay narrator
+
+❌ VÍ DỤ SAI (KHÔNG làm thế này):
+   "...STYLE: doodle. VOICE: Nam, warm and friendly. LANGUAGE: Speak Vietnamese only."
+
+✅ VÍ DỤ ĐÚNG:
+   "...STYLE: doodle. SOUND: Upbeat background music, no dialogue."
+
+NHẮC LẠI: Lời thoại/voice → chỉ đặt trong "voiceover" field. "promptText" = hình ảnh + âm thanh môi trường ONLY.`
         }
 
         // Generate episode with YouTube content

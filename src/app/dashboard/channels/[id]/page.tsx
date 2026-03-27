@@ -1736,11 +1736,21 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
     const stripVoiceFromText = (text: string) => {
         if (!text) return text
         return text
+            // Remove [VOICEOVER ...] blocks
             .replace(/\[VOICEOVER[^\]]*\]/gi, '')
+            // Remove [DIALOGUE ...] blocks
             .replace(/\[DIALOGUE[^\]]*\]/gi, '')
-            .replace(/VOICE IN VIETNAMESE:\s*(\[[^\]]*\]|"[^"]*")/gi, '')
+            // Remove VOICE IN VIETNAMESE: [...] or "..."
+            .replace(/VOICE IN VIETNAMESE:\s*([\["[^)\]"]*[\]"'])/gi, '')
+            // Remove inline VOICE: ... (stop at . or end of text)
+            .replace(/\.?\s*VOICE:\s*[^.]*\.?/gi, '')
+            // Remove inline LANGUAGE: Speak ... only.
+            .replace(/\.?\s*LANGUAGE:\s*Speak[^.]*\.?/gi, '')
+            // Remove line-start VOICE:/LANGUAGE:
             .replace(/^VOICE:[^\n]*/gim, '')
-            .replace(/^LANGUAGE:\s*Speak[^\n]*/gim, '')
+            .replace(/^LANGUAGE:[^\n]*/gim, '')
+            // Collapse multiple spaces/blank lines
+            .replace(/[ \t]{2,}/g, ' ')
             .replace(/\n{3,}/g, '\n\n')
             .trim()
     }
@@ -2226,17 +2236,21 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
         const stripVoiceFromPrompt = (text: string) => {
             if (!text) return text
             return text
-                // Remove [VOICEOVER in X: ...] blocks
+                // Remove [VOICEOVER ...] blocks
                 .replace(/\[VOICEOVER[^\]]*\]/gi, '')
-                // Remove [DIALOGUE: ...] blocks
+                // Remove [DIALOGUE ...] blocks
                 .replace(/\[DIALOGUE[^\]]*\]/gi, '')
                 // Remove VOICE IN VIETNAMESE: [...] or "..."
-                .replace(/VOICE IN VIETNAMESE:\s*(\[[^\]]*\]|"[^"]*")/gi, '')
-                // Remove standalone VOICE: ... lines
+                .replace(/VOICE IN VIETNAMESE:\s*([\["[^)\]"]*[\]"'])/gi, '')
+                // Remove inline VOICE: ... (stop at . or end of text)
+                .replace(/\.?\s*VOICE:\s*[^.]*\.?/gi, '')
+                // Remove inline LANGUAGE: Speak ... only.
+                .replace(/\.?\s*LANGUAGE:\s*Speak[^.]*\.?/gi, '')
+                // Remove line-start VOICE:/LANGUAGE:
                 .replace(/^VOICE:[^\n]*/gim, '')
-                // Remove LANGUAGE: Speak X only. lines (usually paired with voice)
-                .replace(/^LANGUAGE:\s*Speak[^\n]*/gim, '')
-                // Collapse multiple blank lines
+                .replace(/^LANGUAGE:[^\n]*/gim, '')
+                // Collapse multiple spaces/blank lines
+                .replace(/[ \t]{2,}/g, ' ')
                 .replace(/\n{3,}/g, '\n\n')
                 .trim()
         }
