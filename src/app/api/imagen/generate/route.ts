@@ -3,7 +3,6 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 
-// POST: Generate image using Gemini (with reference image support) or Imagen
 export async function POST(req: Request) {
     try {
         const session = await getServerSession(authOptions)
@@ -13,17 +12,16 @@ export async function POST(req: Request) {
 
         const {
             prompt,
-            referenceImageBase64, // Base64 của hình sản phẩm reference
-            aspectRatio = '9:16', // Default vertical for TikTok/Reels
-            sceneId, // Optional: lưu vào scene nếu có
-            model: requestedModel // Optional: specific model override
+            referenceImageBase64,
+            aspectRatio = '9:16',
+            sceneId,
+            model: requestedModel
         } = await req.json()
 
         if (!prompt) {
             return NextResponse.json({ error: 'Prompt is required' }, { status: 400 })
         }
 
-        // Get user's Gemini API key
         const settings = await prisma.userSettings.findUnique({
             where: { userId: session.user.id }
         })
@@ -37,209 +35,209 @@ export async function POST(req: Request) {
 
         let imageBase64: string | null = null
 
-        // ============================================
-        // METHOD 1: Use Gemini with Reference Image (PREFERRED)
-        // ============================================
+        // ============================================================
+        // METHOD 1: Gemini with Reference Image
+        // ============================================================
         if (referenceImageBase64) {
             console.log('[Image Gen] Using Gemini with reference image')
-
-            // Gemini models that support image generation with image input
             const geminiModels = [
                 'gemini-2.0-flash-preview-image-generation',
-                'gemini-2.5-flash-preview-image-generation'
+                'gemini-2.5-flash-preview-image-generation',
             ]
-
             for (const model of geminiModels) {
-                console.log(`[Gemini] Trying model: ${model}`)
-
                 try {
-                    // Clean the base64 data
                     const cleanBase64 = referenceImageBase64.replace(/^data:image\/\w+;base64,/, '')
-
-                    // Build prompt with reference instruction
-                    const referencePrompt = `I am providing you a REFERENCE IMAGE of a clothing item. Your task is to generate a NEW image with a fashion model wearing the EXACT SAME clothing item.
-
-REFERENCE CLOTHING (from image I'm attaching):
-- You MUST analyze the clothing in my reference image
-- Recreate this EXACT clothing item - same color, same style, same design, same material
-- DO NOT create a different outfit
-- The reference shows the exact clothing that must appear in your generated image
-
-SCENE TO GENERATE:
-${prompt}
-
-STRICT RULES:
-1. The model MUST wear the EXACT clothing from my reference image
-2. Same color - do not change the color
-3. Same style - do not change the design
-4. NO text, watermarks, or graphics on the image
-5. Vertical format ${aspectRatio}
-6. iPhone quality photography`
-
+                    const refPrompt = `Reference image provided. Generate a new image: ${prompt}`
                     const response = await fetch(
-                        `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
+                        `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
                         {
                             method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
+                            headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
                             body: JSON.stringify({
                                 contents: [{
+                                    role: 'user',
                                     parts: [
-                                        { text: referencePrompt },
-                                        {
-                                            inline_data: {
-                                                mime_type: 'image/jpeg',
-                                                data: cleanBase64
-                                            }
-                                        }
+                                        { inlineData: { mimeType: 'image/jpeg', data: cleanBase64 } },
+                                        { text: refPrompt }
                                     ]
                                 }],
-                                generationConfig: {
-                                    temperature: 0.4,
-                                    responseModalities: ["TEXT", "IMAGE"]
-                                }
+                                generationConfig: { responseModalities: ['TEXT', 'IMAGE'] }
                             })
                         }
                     )
-
                     if (response.ok) {
                         const result = await response.json()
-
-                        // Find the image part in the response
-                        const parts = result.candidates?.[0]?.content?.parts || []
-                        for (const part of parts) {
+                        for (const part of result.candidates?.[0]?.content?.parts || []) {
                             if (part.inlineData?.mimeType?.startsWith('image/')) {
                                 imageBase64 = part.inlineData.data
-                                console.log(`[Gemini] Success with model: ${model}`)
+                                console.log(`[Gemini] Success: ${model}`)
                                 break
                             }
                         }
-
                         if (imageBase64) break
-                    } else {
-                        const errorData = await response.json().catch(() => ({}))
-                        console.error(`[Gemini] Model ${model} error:`, errorData.error?.message || 'Unknown')
                     }
                 } catch (err) {
-                    console.error(`[Gemini] Error with ${model}:`, err)
+                    console.error(`[Gemini ref] Error with ${model}:`, err)
                 }
             }
         }
 
-        // ============================================
-        // METHOD 2: Fallback to Imagen (text-only)
-        // ============================================
+        // ============================================================
+        // METHOD 2: Text-to-image (Imagen or Gemini)
+        // ============================================================
         if (!imageBase64) {
-            console.log('[Image Gen] Falling back to Imagen (no reference)')
-
-            // Valid models via Google AI API (generativelanguage.googleapis.com)
-            const allImagenModels = [
-                'imagen-3.0-generate-002',      // Imagen 3 - recommended
-                'imagen-4.0-generate-001',       // Imagen 4 preview
-                'imagen-4.0-fast-generate-001',  // Imagen 4 fast
+            // Models supported via Google AI (generativelanguage.googleapis.com)
+            const imagenModels = [
+                'imagen-4.0-generate-001',
+                'imagen-4.0-fast-generate-001',
+                'imagen-3.0-generate-002',
+            ]
+            const geminiImageModels = [
+                'gemini-2.0-flash-preview-image-generation',
+                'gemini-flash',
             ]
 
-            // If caller requests a specific model, use only that one
-            const imagenModels = requestedModel && allImagenModels.includes(requestedModel)
-                ? [requestedModel]
-                : allImagenModels
+            const isGeminiRequest = requestedModel && geminiImageModels.includes(requestedModel)
 
-            const cleanPrompt = `${prompt} STYLE: Pure photography, clean visual. NEVER add ANY text, watermarks, logos, captions, or graphic overlays on the image.`
-
-            for (const modelName of imagenModels) {
-                const imagenEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:predict`
-                console.log(`[Imagen] Trying model: ${modelName}`)
-
+            if (isGeminiRequest) {
+                // Gemini text-to-image path
+                const modelId = requestedModel === 'gemini-flash'
+                    ? 'gemini-2.0-flash-preview-image-generation'
+                    : requestedModel
+                console.log(`[Gemini] Direct request: ${modelId}`)
                 try {
-                    const response = await fetch(imagenEndpoint, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'x-goog-api-key': apiKey,
-                        },
-                        body: JSON.stringify({
-                            instances: [{ prompt: cleanPrompt }],
-                            parameters: {
-                                sampleCount: 1,
-                                aspectRatio: aspectRatio,
-                                personGeneration: "allow_adult",
-                            }
-                        })
-                    })
-
-                    if (response.ok) {
-                        const result = await response.json()
-                        imageBase64 = result.predictions?.[0]?.bytesBase64Encoded ||
-                            result.generated_images?.[0]?.image?.image_bytes
-                        if (imageBase64) {
-                            console.log(`[Imagen] Success with model: ${modelName}`)
-                            break
+                    const response = await fetch(
+                        `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent`,
+                        {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
+                            body: JSON.stringify({
+                                contents: [{ role: 'user', parts: [{ text: prompt }] }],
+                                generationConfig: { responseModalities: ['TEXT', 'IMAGE'] }
+                            })
                         }
-                    } else {
-                        const errorData = await response.json().catch(() => ({}))
-                        console.error(`[Imagen] Model ${modelName} error:`, errorData.error?.message || 'Unknown')
-                    }
-                } catch (fetchError) {
-                    console.error(`[Imagen] Fetch error for ${modelName}:`, fetchError)
-                }
-            }
-
-            // Fallback: try Gemini Flash if all Imagen models failed
-            if (!imageBase64) {
-                console.log('[Image Gen] Trying Gemini Flash as last resort')
-                try {
-                    const geminiEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-preview-image-generation:generateContent`
-                    const response = await fetch(geminiEndpoint, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
-                        body: JSON.stringify({
-                            contents: [{ role: 'user', parts: [{ text: cleanPrompt }] }],
-                            generationConfig: { responseModalities: ['TEXT', 'IMAGE'] }
-                        })
-                    })
+                    )
                     if (response.ok) {
                         const result = await response.json()
-                        const parts = result.candidates?.[0]?.content?.parts || []
-                        for (const part of parts) {
+                        for (const part of result.candidates?.[0]?.content?.parts || []) {
                             if (part.inlineData?.mimeType?.startsWith('image/')) {
                                 imageBase64 = part.inlineData.data
-                                console.log('[Gemini Flash] Success as fallback')
+                                console.log(`[Gemini] Success: ${modelId}`)
                                 break
                             }
                         }
                     }
                 } catch (err) {
-                    console.error('[Gemini Flash fallback] Error:', err)
+                    console.error('[Gemini text-to-image] Error:', err)
+                }
+            } else {
+                // Imagen path — use requested model if valid, else auto-fallback
+                const modelsToTry = requestedModel && imagenModels.includes(requestedModel)
+                    ? [requestedModel]           // Use ONLY the requested model (no surprise fallback)
+                    : imagenModels               // Auto mode: try all in order
+
+                const cleanPrompt = `${prompt} STYLE: Pure photography. NEVER add ANY text, watermarks, logos, or overlays.`
+
+                for (const modelName of modelsToTry) {
+                    console.log(`[Imagen] Trying model: ${modelName}`)
+                    try {
+                        const response = await fetch(
+                            `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:predict`,
+                            {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
+                                body: JSON.stringify({
+                                    instances: [{ prompt: cleanPrompt }],
+                                    parameters: {
+                                        sampleCount: 1,
+                                        aspectRatio,
+                                        personGeneration: 'allow_adult',
+                                    }
+                                })
+                            }
+                        )
+                        if (response.ok) {
+                            const result = await response.json()
+                            const b64 = result.predictions?.[0]?.bytesBase64Encoded
+                                ?? result.generated_images?.[0]?.image?.image_bytes
+                            if (b64) {
+                                imageBase64 = b64
+                                console.log(`[Imagen] Success with model: ${modelName}`)
+                                break
+                            }
+                        } else {
+                            const err = await response.json().catch(() => ({}))
+                            console.error(`[Imagen] Model ${modelName} error:`, err?.error?.message || 'Unknown')
+                        }
+                    } catch (err) {
+                        console.error(`[Imagen] Fetch error for ${modelName}:`, err)
+                    }
+                }
+
+                // Gemini Flash as final fallback (only in auto mode)
+                if (!imageBase64 && !requestedModel) {
+                    console.log('[Image Gen] Trying Gemini Flash as last resort')
+                    try {
+                        const response = await fetch(
+                            `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-preview-image-generation:generateContent`,
+                            {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
+                                body: JSON.stringify({
+                                    contents: [{ role: 'user', parts: [{ text: prompt }] }],
+                                    generationConfig: { responseModalities: ['TEXT', 'IMAGE'] }
+                                })
+                            }
+                        )
+                        if (response.ok) {
+                            const result = await response.json()
+                            for (const part of result.candidates?.[0]?.content?.parts || []) {
+                                if (part.inlineData?.mimeType?.startsWith('image/')) {
+                                    imageBase64 = part.inlineData.data
+                                    console.log('[Gemini Flash] Success as fallback')
+                                    break
+                                }
+                            }
+                        }
+                    } catch (err) {
+                        console.error('[Gemini Flash fallback] Error:', err)
+                    }
                 }
             }
         }
 
-        // ============================================
-        // Check result
-        // ============================================
         if (!imageBase64) {
-            return NextResponse.json({
-                error: 'Không thể tạo ảnh. Tất cả các model đều thất bại.'
-            }, { status: 500 })
+            return NextResponse.json(
+                { error: 'Không thể tạo ảnh. Tất cả các model đều thất bại.' },
+                { status: 500 }
+            )
         }
 
-        // Save to scene if sceneId provided
+        // sceneId path — still use JSON (internal use, small chance of large base64 issue)
         if (sceneId) {
             await prisma.episodeScene.update({
                 where: { id: sceneId },
                 data: { generatedImageUrl: `data:image/png;base64,${imageBase64}` }
             })
+            return NextResponse.json({ success: true, imageBase64 })
         }
 
-        return NextResponse.json({
-            success: true,
-            imageBase64: imageBase64,
-            // imageUrl constructed client-side to halve response payload
+        // ✅ Return raw binary PNG — avoids multi-MB JSON parse failures on client
+        const imageBuffer = Buffer.from(imageBase64, 'base64')
+        return new NextResponse(imageBuffer, {
+            status: 200,
+            headers: {
+                'Content-Type': 'image/png',
+                'Content-Length': String(imageBuffer.length),
+                'Cache-Control': 'no-store',
+            }
         })
 
     } catch (error) {
         console.error('Generate image error:', error)
-        return NextResponse.json({
-            error: `Failed to generate image: ${error instanceof Error ? error.message : 'Unknown error'}`
-        }, { status: 500 })
+        return NextResponse.json(
+            { error: `Failed to generate image: ${error instanceof Error ? error.message : 'Unknown error'}` },
+            { status: 500 }
+        )
     }
 }

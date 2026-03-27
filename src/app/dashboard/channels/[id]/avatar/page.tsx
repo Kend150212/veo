@@ -53,10 +53,10 @@ const MOODS = [
 ]
 
 const IMAGE_MODELS = [
-    { id: 'imagen-3.0-generate-002', label: 'Imagen 3', badge: 'Khủyến dùng', color: '#8b5cf6', desc: 'Chất lượng cao nhất' },
-    { id: 'imagegeneration@006', label: 'Imagen 2 (Banana 2)', badge: 'Ổn định', color: '#10b981', desc: 'Nhanh, ổn định, lâu năm' },
-    { id: 'imagen-4.0-generate-001', label: 'Imagen 4', badge: 'Preview', color: '#f59e0b', desc: 'Thế hệ tiếp theo' },
-    { id: 'gemini-2.0-flash-preview-image-generation', label: 'Gemini Flash', badge: 'Gemini', color: '#3b82f6', desc: 'Hỗ trợ reference image' },
+    { id: 'imagen-4.0-generate-001', label: 'Imagen 4', badge: 'Khuyến dùng', color: '#f59e0b', desc: 'Thế hệ mới nhất, chất lượng cao' },
+    { id: 'imagen-4.0-fast-generate-001', label: 'Imagen 4 Fast', badge: 'Nhanh', color: '#10b981', desc: 'Nhanh, tiết kiệm' },
+    { id: 'imagen-3.0-generate-002', label: 'Imagen 3', badge: 'Ổn định', color: '#8b5cf6', desc: 'Ổn định, lâu năm' },
+    { id: 'gemini-flash', label: 'Gemini Flash', badge: 'Gemini', color: '#3b82f6', desc: 'Hỗ trợ reference image' },
 ]
 
 // ─── Types ────────────────────────────────────────────────────
@@ -171,15 +171,16 @@ export default function AvatarStudioPage() {
                 return
             }
 
-            const data = await res.json()
+            // ✅ Use blob() — avoids huge JSON parse
+            const blob = await res.blob()
+            const imageUrl = URL.createObjectURL(blob)
+            setPreviewImage(imageUrl)
+            toast.success('Ảnh đã được tạo!')
 
-            if (data.imageBase64) {
-                const imageUrl = `data:image/png;base64,${data.imageBase64}`
-                // Show image IMMEDIATELY — don't block on save
-                setPreviewImage(imageUrl)
-                toast.success('Ảnh đã được tạo!')
-
-                // Save in background — failure won't affect preview
+            // Convert to dataURL for saving (async, background)
+            const reader = new FileReader()
+            reader.onload = () => {
+                const dataUrl = reader.result as string
                 fetch(`/api/channels/${channelId}/avatar`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -190,15 +191,14 @@ export default function AvatarStudioPage() {
                         background: selectedBg.id === 'custom' ? customBg : selectedBg.id,
                         mood: selectedMood.id,
                         prompt: generatedPrompt,
-                        imageUrl
+                        imageUrl: dataUrl
                     })
                 }).then(r => {
                     if (r.ok) fetchData()
                     else console.warn('[Avatar save] failed:', r.status)
                 }).catch(e => console.warn('[Avatar save] error:', e))
-            } else {
-                toast.error(data.error || 'Không thể tạo ảnh')
             }
+            reader.readAsDataURL(blob)
         } catch (e) {
             console.error('[Generate] error:', e)
             toast.error('Lỗi kết nối tới server')
@@ -220,14 +220,10 @@ export default function AvatarStudioPage() {
         const charDesc = `${char.fullDescription}${char.appearance ? ', ' + char.appearance : ''}`
 
         const masterPrompt = `Character reference sheet. A 2x3 grid composite photo of the SAME person: ${charDesc}, wearing ${outfitText}. ` +
-            `Top-left: extreme close-up face portrait. ` +
-            `Top-right: medium shot waist-up front facing. ` +
-            `Middle-left: full body front view head to toe. ` +
-            `Middle-right: full body side profile view. ` +
-            `Bottom-left: full body rear back view. ` +
-            `Bottom-right: full body 3/4 angle walking pose. ` +
-            `${bgText}, ${selectedMood.lighting}. ` +
-            `Clean white studio backdrop. All 6 panels show the EXACT SAME character with consistent appearance. ` +
+            `Top-left: extreme close-up face portrait. Top-right: medium shot waist-up front facing. ` +
+            `Middle-left: full body front view head to toe. Middle-right: full body side profile view. ` +
+            `Bottom-left: full body rear back view. Bottom-right: full body 3/4 angle walking pose. ` +
+            `${bgText}, ${selectedMood.lighting}. All 6 panels same character, consistent appearance. ` +
             `High quality, photorealistic, 8K, no text, no labels, no watermark.`
 
         try {
@@ -247,15 +243,16 @@ export default function AvatarStudioPage() {
                 return
             }
 
-            const data = await res.json()
+            // ✅ Use blob() — avoids huge JSON parse
+            const blob = await res.blob()
+            const imageUrl = URL.createObjectURL(blob)
+            setMasterSheetImage(imageUrl)
+            toast.success('Master Sheet đã được tạo!')
 
-            if (data.imageBase64) {
-                const imageUrl = `data:image/png;base64,${data.imageBase64}`
-                // Show immediately
-                setMasterSheetImage(imageUrl)
-                toast.success('Master Sheet đã được tạo!')
-
-                // Save in background
+            // Convert to dataURL for saving (background)
+            const reader = new FileReader()
+            reader.onload = () => {
+                const dataUrl = reader.result as string
                 fetch(`/api/channels/${channelId}/avatar`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -266,15 +263,14 @@ export default function AvatarStudioPage() {
                         background: selectedBg.id === 'custom' ? customBg : selectedBg.id,
                         mood: selectedMood.id,
                         prompt: masterPrompt,
-                        imageUrl
+                        imageUrl: dataUrl
                     })
                 }).then(r => {
                     if (r.ok) fetchData()
                     else console.warn('[MasterSheet save] failed:', r.status)
                 }).catch(e => console.warn('[MasterSheet save] error:', e))
-            } else {
-                toast.error(data.error || 'Không thể tạo Master Sheet')
             }
+            reader.readAsDataURL(blob)
         } catch (e) {
             console.error('[MasterSheet] error:', e)
             toast.error('Lỗi kết nối tới server')
