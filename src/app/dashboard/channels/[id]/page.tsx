@@ -5060,7 +5060,8 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                                             }
                                             const voiceLines = episode.scenes
                                                 .sort((a, b) => a.order - b.order)
-                                                .map(scene => ({
+                                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                                .map((scene: any) => ({
                                                     order: scene.order,
                                                     title: scene.title,
                                                     voice: scene.voiceover || scene.dialogue || extractVoice(scene.promptText) || ''
