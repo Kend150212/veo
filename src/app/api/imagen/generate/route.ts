@@ -90,7 +90,6 @@ export async function POST(req: Request) {
             const imagenModels = [
                 'imagen-4.0-generate-001',
                 'imagen-4.0-fast-generate-001',
-                'imagen-3.0-generate-002',
             ]
             const geminiImageModels = [
                 'gemini-2.0-flash-preview-image-generation',
