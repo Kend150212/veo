@@ -2183,7 +2183,8 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
         onGenerateImage,
         isDeleting,
         isGeneratingImage,
-        downloadImage
+        downloadImage,
+        stripVoice = false
     }: {
         scene: EpisodeScene
         episodeId: string
@@ -2194,14 +2195,36 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
         isDeleting: boolean
         isGeneratingImage: boolean
         downloadImage: (url: string, filename: string) => void
+        stripVoice?: boolean
     }) => {
         const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: scene.id })
+
+        // Strip voice/dialogue labels from promptText for display
+        const stripVoiceFromPrompt = (text: string) => {
+            if (!text) return text
+            return text
+                // Remove [VOICEOVER in X: ...] blocks
+                .replace(/\[VOICEOVER[^\]]*\]/gi, '')
+                // Remove [DIALOGUE: ...] blocks
+                .replace(/\[DIALOGUE[^\]]*\]/gi, '')
+                // Remove VOICE IN VIETNAMESE: [...] or "..."
+                .replace(/VOICE IN VIETNAMESE:\s*(\[[^\]]*\]|"[^"]*")/gi, '')
+                // Remove standalone VOICE: ... lines
+                .replace(/^VOICE:[^\n]*/gim, '')
+                // Remove LANGUAGE: Speak X only. lines (usually paired with voice)
+                .replace(/^LANGUAGE:\s*Speak[^\n]*/gim, '')
+                // Collapse multiple blank lines
+                .replace(/\n{3,}/g, '\n\n')
+                .trim()
+        }
 
         const style = {
             transform: CSS.Transform.toString(transform),
             transition,
             opacity: isDragging ? 0.5 : 1,
         }
+
+        const displayPrompt = stripVoice ? stripVoiceFromPrompt(scene.promptText) : scene.promptText
 
         return (
             <div
@@ -2268,8 +2291,13 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                 </div>
 
                 <pre className="text-xs text-[var(--text-secondary)] whitespace-pre-wrap bg-[var(--bg-primary)] rounded p-2 mono max-h-32 overflow-y-auto">
-                    {scene.promptText}
+                    {displayPrompt}
                 </pre>
+                {stripVoice && (
+                    <p className="text-[10px] text-violet-400 mt-1 flex items-center gap-1">
+                        🎙️ Voice tách riêng — chỉ hiển thị hình ảnh / âm thanh
+                    </p>
+                )}
 
                 {/* Show generated image if exists */}
                 {scene.generatedImageUrl && (
@@ -5029,6 +5057,7 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                                                                 isDeleting={deletingSceneId === scene.id}
                                                                 isGeneratingImage={generatingImageForScene === scene.id}
                                                                 downloadImage={downloadImage}
+                                                                stripVoice={showVoicePanel === episode.id}
                                                             />
                                                         )
                                                     })}
