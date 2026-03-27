@@ -176,22 +176,24 @@ export default function AvatarStudioPage() {
             // ✅ Use blob() — avoids huge JSON parse
             const blob = await res.blob()
             const imageUrl = URL.createObjectURL(blob)
+            // ✅ Display the original blob URL (do NOT revoke it)
             setPreviewImage(imageUrl)
             toast.success('Ảnh đã được tạo!')
 
-            // Compress to JPEG before saving (reduces 5MB PNG → ~200KB)
+            // Compress a SEPARATE copy for saving (don't touch imageUrl / the displayed blob)
             const compressBlob = (b: Blob): Promise<string> => new Promise(resolve => {
-                const img = new Image()
-                img.onload = () => {
+                const img2 = new Image()
+                const tempUrl = URL.createObjectURL(b)
+                img2.onload = () => {
                     const canvas = document.createElement('canvas')
-                    const scale = Math.min(1, 800 / Math.max(img.width, img.height))
-                    canvas.width = img.width * scale
-                    canvas.height = img.height * scale
-                    canvas.getContext('2d')!.drawImage(img, 0, 0, canvas.width, canvas.height)
+                    const scale = Math.min(1, 800 / Math.max(img2.width, img2.height))
+                    canvas.width = img2.width * scale
+                    canvas.height = img2.height * scale
+                    canvas.getContext('2d')!.drawImage(img2, 0, 0, canvas.width, canvas.height)
+                    URL.revokeObjectURL(tempUrl) // revoke TEMP url, not the preview one
                     resolve(canvas.toDataURL('image/jpeg', 0.8))
-                    URL.revokeObjectURL(img.src)
                 }
-                img.src = URL.createObjectURL(b)
+                img2.src = tempUrl
             })
 
             compressBlob(blob).then(dataUrl => {
@@ -259,22 +261,24 @@ export default function AvatarStudioPage() {
             // ✅ Use blob() — avoids huge JSON parse
             const blob = await res.blob()
             const imageUrl = URL.createObjectURL(blob)
+            // ✅ Display the original blob URL (do NOT revoke it)
             setMasterSheetImage(imageUrl)
             toast.success('Master Sheet đã được tạo!')
 
-            // Compress to JPEG before saving
+            // Compress a SEPARATE copy for saving
             const compressMaster = (b: Blob): Promise<string> => new Promise(resolve => {
-                const img = new Image()
-                img.onload = () => {
+                const img2 = new Image()
+                const tempUrl = URL.createObjectURL(b)
+                img2.onload = () => {
                     const canvas = document.createElement('canvas')
-                    const scale = Math.min(1, 1200 / Math.max(img.width, img.height))
-                    canvas.width = img.width * scale
-                    canvas.height = img.height * scale
-                    canvas.getContext('2d')!.drawImage(img, 0, 0, canvas.width, canvas.height)
+                    const scale = Math.min(1, 1200 / Math.max(img2.width, img2.height))
+                    canvas.width = img2.width * scale
+                    canvas.height = img2.height * scale
+                    canvas.getContext('2d')!.drawImage(img2, 0, 0, canvas.width, canvas.height)
+                    URL.revokeObjectURL(tempUrl)
                     resolve(canvas.toDataURL('image/jpeg', 0.8))
-                    URL.revokeObjectURL(img.src)
                 }
-                img.src = URL.createObjectURL(b)
+                img2.src = tempUrl
             })
 
             compressMaster(blob).then(dataUrl => {
@@ -649,10 +653,11 @@ export default function AvatarStudioPage() {
                                         </motion.div>
                                     ) : (
                                         <div
-                                            className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-white/10 py-20"
+                                            className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-white/10 py-20 cursor-pointer hover:border-purple-500/40 hover:bg-purple-500/5 transition-all group"
                                             style={{ minHeight: 300 }}
+                                            onClick={() => !isGenerating && !isGeneratingMaster && uploadInputRef.current?.click()}
                                         >
-                                            {isGenerating ? (
+                                            {isGenerating || isGeneratingMaster ? (
                                                 <div className="text-center">
                                                     <div className="relative w-16 h-16 mx-auto mb-4">
                                                         <div className="absolute inset-0 rounded-full border-4 border-purple-500/20 animate-ping" />
@@ -663,9 +668,9 @@ export default function AvatarStudioPage() {
                                                 </div>
                                             ) : (
                                                 <div className="text-center">
-                                                    <Camera className="w-12 h-12 text-white/20 mx-auto mb-3" />
-                                                    <p className="text-white/40">Chọn nhân vật và góc quay,</p>
-                                                    <p className="text-white/40">rồi bấm Generate bên dưới</p>
+                                                    <Camera className="w-12 h-12 text-white/20 group-hover:text-purple-400/50 mx-auto mb-3 transition-colors" />
+                                                    <p className="text-white/40 group-hover:text-white/60 transition-colors">Bấm Generate bên dưới hoặc</p>
+                                                    <p className="text-purple-400/70 group-hover:text-purple-400 text-sm mt-1 transition-colors">📁 Click để upload ảnh có sẵn</p>
                                                 </div>
                                             )}
                                         </div>
@@ -694,6 +699,15 @@ export default function AvatarStudioPage() {
                                 </p>
                             </div>
 
+                            {/* Hidden upload input — triggered by placeholder click */}
+                            <input
+                                ref={uploadInputRef}
+                                type="file"
+                                accept="image/*"
+                                className="hidden"
+                                onChange={handleUploadImage}
+                            />
+
                             {/* Generate Buttons */}
                             <div className="grid grid-cols-2 gap-3">
                                 <button
@@ -721,26 +735,6 @@ export default function AvatarStudioPage() {
                                     )}
                                 </button>
                             </div>
-
-                            {/* Upload Button */}
-                            <input
-                                ref={uploadInputRef}
-                                type="file"
-                                accept="image/*"
-                                className="hidden"
-                                onChange={handleUploadImage}
-                            />
-                            <button
-                                onClick={() => uploadInputRef.current?.click()}
-                                disabled={isGenerating || isGeneratingMaster || isUploading || !selectedChar}
-                                className="w-full py-3 rounded-2xl font-semibold text-white/80 text-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 border border-white/15 hover:border-white/30 hover:bg-white/5"
-                            >
-                                {isUploading ? (
-                                    <><Loader2 className="w-4 h-4 animate-spin" /> Đang upload...</>
-                                ) : (
-                                    <><Camera className="w-4 h-4" /> Upload ảnh có sẵn</>
-                                )}
-                            </button>
                             <p className="text-xs text-white/30 text-center -mt-2">
                                 Master Sheet = 1 ảnh 6 góc • tiết kiệm 6x API call
                             </p>
