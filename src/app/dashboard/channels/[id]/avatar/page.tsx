@@ -14,12 +14,13 @@ import toast from 'react-hot-toast'
 const SHOT_TYPES = [
     { id: 'extreme_close_up', label: 'Extreme Close-up', desc: 'Chỉ mắt / môi', icon: '🔍', camera: 'Extreme close-up macro shot of face, only eyes and lips visible, 100mm macro lens' },
     { id: 'close_up', label: 'Close-up', desc: 'Mặt + vai', icon: '👤', camera: 'Close-up portrait shot, face and shoulders, 85mm lens, eye-level' },
-    { id: 'medium_close_up', label: 'Medium Close-up', desc: 'Ngực trở lên', icon: '🧍', camera: 'Medium close-up shot, chest up, 50mm lens, eye-level' },
+    { id: 'medium_close_up', label: 'Medium Close-up', desc: 'Ngực trở lên', icon: '🧐', camera: 'Medium close-up shot, chest up, 50mm lens, eye-level' },
     { id: 'medium_shot', label: 'Medium Shot', desc: 'Nửa người', icon: '📷', camera: 'Medium shot, waist up, 35mm lens, eye-level' },
-    { id: 'medium_full', label: 'Medium Full Shot', desc: 'Gần toàn thân', icon: '🧍‍♂️', camera: 'Medium full shot, knees up, 28mm lens, slight low angle' },
+    { id: 'medium_full', label: 'Medium Full Shot', desc: 'Gần toàn thân', icon: '🧐‍♂️', camera: 'Medium full shot, knees up, 28mm lens, slight low angle' },
     { id: 'full_shot', label: 'Full Shot', desc: 'Toàn thân', icon: '🖼️', camera: 'Full body shot, head to toe, 24mm wide lens, eye-level' },
-    { id: 'wide_shot', label: 'Wide Shot', desc: 'Nhân vật trong bối cảnh', icon: '🌄', camera: 'Wide establishing shot, character in full environment, 16mm ultra-wide lens' },
+    { id: 'wide_shot', label: 'Wide Shot', desc: 'Nhân vật trong bối cảnh', icon: '🏔', camera: 'Wide establishing shot, character in full environment, 16mm ultra-wide lens' },
     { id: 'back_34', label: '3/4 Back View', desc: 'Góc sau 3/4', icon: '🔄', camera: 'Three-quarter back view shot, medium shot from behind-left, 50mm lens' },
+    { id: 'master_sheet', label: 'Master Sheet', desc: '6 góc trong 1 ảnh', icon: '🗂️', camera: 'Character reference sheet 2x3 grid composite' },
 ]
 
 const OUTFITS = [
@@ -172,9 +173,10 @@ export default function AvatarStudioPage() {
 
             const data = await res.json()
 
-            if (data.imageUrl) {
+            if (data.imageBase64) {
+                const imageUrl = `data:image/png;base64,${data.imageBase64}`
                 // Show image IMMEDIATELY — don't block on save
-                setPreviewImage(data.imageUrl)
+                setPreviewImage(imageUrl)
                 toast.success('Ảnh đã được tạo!')
 
                 // Save in background — failure won't affect preview
@@ -188,7 +190,7 @@ export default function AvatarStudioPage() {
                         background: selectedBg.id === 'custom' ? customBg : selectedBg.id,
                         mood: selectedMood.id,
                         prompt: generatedPrompt,
-                        imageUrl: data.imageUrl
+                        imageUrl
                     })
                 }).then(r => {
                     if (r.ok) fetchData()
@@ -247,9 +249,10 @@ export default function AvatarStudioPage() {
 
             const data = await res.json()
 
-            if (data.imageUrl) {
+            if (data.imageBase64) {
+                const imageUrl = `data:image/png;base64,${data.imageBase64}`
                 // Show immediately
-                setMasterSheetImage(data.imageUrl)
+                setMasterSheetImage(imageUrl)
                 toast.success('Master Sheet đã được tạo!')
 
                 // Save in background
@@ -263,7 +266,7 @@ export default function AvatarStudioPage() {
                         background: selectedBg.id === 'custom' ? customBg : selectedBg.id,
                         mood: selectedMood.id,
                         prompt: masterPrompt,
-                        imageUrl: data.imageUrl
+                        imageUrl
                     })
                 }).then(r => {
                     if (r.ok) fetchData()

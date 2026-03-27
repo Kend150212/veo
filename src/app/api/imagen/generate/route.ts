@@ -233,7 +233,7 @@ STRICT RULES:
         return NextResponse.json({
             success: true,
             imageBase64: imageBase64,
-            imageUrl: `data:image/png;base64,${imageBase64}`
+            // imageUrl constructed client-side to halve response payload
         })
 
     } catch (error) {
