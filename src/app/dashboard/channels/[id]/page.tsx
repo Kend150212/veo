@@ -798,8 +798,8 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
     const [emotionalCurveEnabled, setEmotionalCurveEnabled] = useState(true)
     const [spatialAudioEnabled, setSpatialAudioEnabled] = useState(true)
     const [musicMode, setMusicMode] = useState<'with_music' | 'ambient_only'>('with_music') // Nhạc nền hoặc chỉ âm thanh môi trường
-    const [dialogueDensityMin, setDialogueDensityMin] = useState(12)
-    const [dialogueDensityMax, setDialogueDensityMax] = useState(18)
+    const [dialogueDensityMin, setDialogueDensityMin] = useState(18)
+    const [dialogueDensityMax, setDialogueDensityMax] = useState(20)
 
     // Cinematic film script specific states
     const [cinematicCameraStyles, setCinematicCameraStyles] = useState<string[]>(['dynamic_angles'])
