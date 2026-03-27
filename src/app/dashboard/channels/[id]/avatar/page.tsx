@@ -52,8 +52,8 @@ const MOODS = [
 ]
 
 const IMAGE_MODELS = [
-    { id: 'imagen-3.0-generate-002', label: 'Imagen 3', badge: 'Mới nhất', color: '#8b5cf6', desc: 'Chất lượng cao nhất' },
-    { id: 'imagen-3.0-generate-001', label: 'Imagen 2 / Banana 2', badge: 'Ổn định', color: '#10b981', desc: 'Nhanh & ổn định' },
+    { id: 'imagen-3.0-generate-002', label: 'Imagen 3', badge: 'Khủyến dùng', color: '#8b5cf6', desc: 'Chất lượng cao nhất' },
+    { id: 'imagegeneration@006', label: 'Imagen 2 (Banana 2)', badge: 'Ổn định', color: '#10b981', desc: 'Nhanh, ổn định, lâu năm' },
     { id: 'imagen-4.0-generate-001', label: 'Imagen 4', badge: 'Preview', color: '#f59e0b', desc: 'Thế hệ tiếp theo' },
     { id: 'gemini-2.0-flash-preview-image-generation', label: 'Gemini Flash', badge: 'Gemini', color: '#3b82f6', desc: 'Hỗ trợ reference image' },
 ]

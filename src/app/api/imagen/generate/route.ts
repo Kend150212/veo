@@ -131,25 +131,25 @@ STRICT RULES:
         if (!imageBase64) {
             console.log('[Image Gen] Falling back to Imagen (no reference)')
 
-            // Default order; if caller specifies a model, use only that one
+            // Valid models via Google AI API (generativelanguage.googleapis.com)
             const allImagenModels = [
-                'imagen-3.0-generate-002',    // Imagen 3 (latest)
-                'imagen-3.0-generate-001',    // Imagen 3 / "Banana 2"
-                'imagen-4.0-generate-001',    // Imagen 4 (preview)
-                'imagen-4.0-fast-generate-001'
+                'imagen-3.0-generate-002',      // Imagen 3 - recommended
+                'imagen-4.0-generate-001',       // Imagen 4 preview
+                'imagen-4.0-fast-generate-001',  // Imagen 4 fast
             ]
+
+            // If caller requests a specific model, use only that one
             const imagenModels = requestedModel && allImagenModels.includes(requestedModel)
                 ? [requestedModel]
                 : allImagenModels
 
+            const cleanPrompt = `${prompt} STYLE: Pure photography, clean visual. NEVER add ANY text, watermarks, logos, captions, or graphic overlays on the image.`
+
             for (const modelName of imagenModels) {
                 const imagenEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:predict`
-
                 console.log(`[Imagen] Trying model: ${modelName}`)
 
                 try {
-                    const cleanPrompt = `${prompt} STYLE: Pure photography, clean visual. NEVER add ANY text, watermarks, logos, captions, or graphic overlays on the image.`
-
                     const response = await fetch(imagenEndpoint, {
                         method: 'POST',
                         headers: {
@@ -180,6 +180,35 @@ STRICT RULES:
                     }
                 } catch (fetchError) {
                     console.error(`[Imagen] Fetch error for ${modelName}:`, fetchError)
+                }
+            }
+
+            // Fallback: try Gemini Flash if all Imagen models failed
+            if (!imageBase64) {
+                console.log('[Image Gen] Trying Gemini Flash as last resort')
+                try {
+                    const geminiEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-preview-image-generation:generateContent`
+                    const response = await fetch(geminiEndpoint, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
+                        body: JSON.stringify({
+                            contents: [{ role: 'user', parts: [{ text: cleanPrompt }] }],
+                            generationConfig: { responseModalities: ['TEXT', 'IMAGE'] }
+                        })
+                    })
+                    if (response.ok) {
+                        const result = await response.json()
+                        const parts = result.candidates?.[0]?.content?.parts || []
+                        for (const part of parts) {
+                            if (part.inlineData?.mimeType?.startsWith('image/')) {
+                                imageBase64 = part.inlineData.data
+                                console.log('[Gemini Flash] Success as fallback')
+                                break
+                            }
+                        }
+                    }
+                } catch (err) {
+                    console.error('[Gemini Flash fallback] Error:', err)
                 }
             }
         }
