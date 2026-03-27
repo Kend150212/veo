@@ -106,6 +106,8 @@ export default function AvatarStudioPage() {
     const [isLoading, setIsLoading] = useState(true)
     const [activeTab, setActiveTab] = useState<'create' | 'library'>('create')
     const [selectedModel, setSelectedModel] = useState(IMAGE_MODELS[0])
+    const [masterSheetImage, setMasterSheetImage] = useState<string | null>(null)
+    const [isGeneratingMaster, setIsGeneratingMaster] = useState(false)
 
     const fetchData = useCallback(async () => {
         try {
@@ -192,6 +194,69 @@ export default function AvatarStudioPage() {
             setIsGenerating(false)
         }
     }
+
+    const handleGenerateMasterSheet = async () => {
+        if (!selectedChar) return
+        const char = characters.find(c => c.id === selectedChar)
+        if (!char) return
+
+        setIsGeneratingMaster(true)
+        setMasterSheetImage(null)
+
+        const outfitText = selectedOutfit.id === 'custom' ? customOutfit : `${selectedOutfit.label} outfit (${selectedOutfit.desc})`
+        const bgText = selectedBg.id === 'custom' ? customBg : `${selectedBg.label} background`
+        const charDesc = `${char.fullDescription}${char.appearance ? ', ' + char.appearance : ''}`
+
+        const masterPrompt = `Character reference sheet. A 2x3 grid composite photo of the SAME person: ${charDesc}, wearing ${outfitText}. ` +
+            `Top-left: extreme close-up face portrait. ` +
+            `Top-right: medium shot waist-up front facing. ` +
+            `Middle-left: full body front view head to toe. ` +
+            `Middle-right: full body side profile view. ` +
+            `Bottom-left: full body rear back view. ` +
+            `Bottom-right: full body 3/4 angle walking pose. ` +
+            `${bgText}, ${selectedMood.lighting}. ` +
+            `Clean white studio backdrop. All 6 panels show the EXACT SAME character with consistent appearance. ` +
+            `High quality, photorealistic, 8K, no text, no labels, no watermark.`
+
+        try {
+            const res = await fetch('/api/imagen/generate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    prompt: masterPrompt,
+                    aspectRatio: '9:16',
+                    model: selectedModel.id
+                })
+            })
+            const data = await res.json()
+
+            if (data.imageUrl) {
+                setMasterSheetImage(data.imageUrl)
+                await fetch(`/api/channels/${channelId}/avatar`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        characterId: selectedChar,
+                        shotType: 'master_sheet',
+                        outfit: selectedOutfit.id === 'custom' ? customOutfit : selectedOutfit.id,
+                        background: selectedBg.id === 'custom' ? customBg : selectedBg.id,
+                        mood: selectedMood.id,
+                        prompt: masterPrompt,
+                        imageUrl: data.imageUrl
+                    })
+                })
+                toast.success('Master Sheet đã được tạo và lưu!')
+                fetchData()
+            } else {
+                toast.error(data.error || 'Không thể tạo Master Sheet')
+            }
+        } catch {
+            toast.error('Lỗi kết nối')
+        } finally {
+            setIsGeneratingMaster(false)
+        }
+    }
+
 
     const handleDelete = async (characterId: string, shotId: string) => {
         try {
@@ -532,19 +597,64 @@ export default function AvatarStudioPage() {
                                 </p>
                             </div>
 
-                            {/* Generate Button */}
-                            <button
-                                onClick={handleGenerate}
-                                disabled={isGenerating || !selectedChar}
-                                className="w-full py-4 rounded-2xl font-bold text-white text-lg transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-3"
-                                style={{ background: 'linear-gradient(135deg, #a855f7, #ec4899, #f59e0b)' }}
-                            >
-                                {isGenerating ? (
-                                    <><Loader2 className="w-5 h-5 animate-spin" /> Đang tạo...</>
-                                ) : (
-                                    <><Sparkles className="w-5 h-5" /> Generate Avatar Shot</>
-                                )}
-                            </button>
+                            {/* Generate Buttons */}
+                            <div className="grid grid-cols-2 gap-3">
+                                <button
+                                    onClick={handleGenerate}
+                                    disabled={isGenerating || isGeneratingMaster || !selectedChar}
+                                    className="py-4 rounded-2xl font-bold text-white text-base transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                    style={{ background: 'linear-gradient(135deg, #a855f7, #ec4899)' }}
+                                >
+                                    {isGenerating ? (
+                                        <><Loader2 className="w-4 h-4 animate-spin" /> Đang tạo...</>
+                                    ) : (
+                                        <><Sparkles className="w-4 h-4" /> 1 Shot</>
+                                    )}
+                                </button>
+                                <button
+                                    onClick={handleGenerateMasterSheet}
+                                    disabled={isGenerating || isGeneratingMaster || !selectedChar}
+                                    className="py-4 rounded-2xl font-bold text-white text-base transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 border border-amber-400/30"
+                                    style={{ background: 'linear-gradient(135deg, #92400e, #d97706, #f59e0b)' }}
+                                >
+                                    {isGeneratingMaster ? (
+                                        <><Loader2 className="w-4 h-4 animate-spin" /> Đang tạo...</>
+                                    ) : (
+                                        <><ImageIcon className="w-4 h-4" /> Master Sheet</>
+                                    )}
+                                </button>
+                            </div>
+                            <p className="text-xs text-white/30 text-center -mt-2">
+                                Master Sheet = 1 ảnh 6 góc • tiết kiệm 6x API call
+                            </p>
+
+                            {/* Master Sheet Preview */}
+                            {masterSheetImage && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    className="rounded-2xl border border-amber-500/30 overflow-hidden"
+                                    style={{ background: 'rgba(217,119,6,0.05)' }}
+                                >
+                                    <div className="p-3 border-b border-amber-500/20 flex items-center justify-between">
+                                        <span className="text-sm font-semibold text-amber-400 flex items-center gap-2">
+                                            <ImageIcon className="w-4 h-4" /> Master Sheet — 6 góc
+                                        </span>
+                                        <button
+                                            onClick={() => {
+                                                const a = document.createElement('a')
+                                                a.href = masterSheetImage
+                                                a.download = `master_sheet_${selectedChar}.png`
+                                                a.click()
+                                            }}
+                                            className="flex items-center gap-1 px-3 py-1 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 text-xs transition-all"
+                                        >
+                                            <Download className="w-3 h-3" /> Download
+                                        </button>
+                                    </div>
+                                    <img src={masterSheetImage} alt="Master Sheet" className="w-full object-contain" />
+                                </motion.div>
+                            )}
 
                             {/* Existing shots for this character */}
                             {currentCharAvatar && currentCharAvatar.shots.length > 0 && (
