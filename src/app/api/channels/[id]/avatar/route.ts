@@ -16,12 +16,9 @@ export async function GET(
 
         const { id } = await params
 
-        // Check channel ownership
+        // Check channel ownership using userId (correct pattern for this project)
         const channel = await prisma.channel.findFirst({
-            where: {
-                id,
-                members: { some: { userId: session.user.id } }
-            },
+            where: { id, userId: session.user.id },
             include: {
                 characters: {
                     orderBy: { createdAt: 'desc' }
@@ -78,17 +75,14 @@ export async function POST(
 
         // Check channel ownership
         const channel = await prisma.channel.findFirst({
-            where: {
-                id,
-                members: { some: { userId: session.user.id } }
-            }
+            where: { id, userId: session.user.id }
         })
         if (!channel) {
             return NextResponse.json({ error: 'Channel not found' }, { status: 404 })
         }
 
-        // Get the character
-        const character = await prisma.character.findFirst({
+        // Get the character (correct model name = channelCharacter)
+        const character = await prisma.channelCharacter.findFirst({
             where: { id: characterId, channelId: id }
         })
         if (!character) {
@@ -116,7 +110,7 @@ export async function POST(
 
         meta.avatarShots = shots
 
-        await prisma.character.update({
+        await prisma.channelCharacter.update({
             where: { id: characterId },
             data: { metadata: JSON.stringify(meta) }
         })
@@ -143,7 +137,7 @@ export async function DELETE(
         const { id } = await params
         const { characterId, shotId } = await req.json()
 
-        const character = await prisma.character.findFirst({
+        const character = await prisma.channelCharacter.findFirst({
             where: { id: characterId, channelId: id }
         })
         if (!character) {
@@ -160,7 +154,7 @@ export async function DELETE(
         )
         meta.avatarShots = shots
 
-        await prisma.character.update({
+        await prisma.channelCharacter.update({
             where: { id: characterId },
             data: { metadata: JSON.stringify(meta) }
         })

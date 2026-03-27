@@ -200,6 +200,25 @@ export default function AvatarStudioPage() {
 
     const currentCharAvatar = avatarData.find(a => a.characterId === selectedChar)
     const allShots = avatarData.flatMap(a => a.shots.map(s => ({ ...s, characterName: a.characterName, characterId: a.characterId })))
+    const allShotsWithImages = allShots.filter(s => s.imageUrl)
+
+    const handleBulkDownload = async () => {
+        if (allShotsWithImages.length === 0) {
+            toast.error('Không có ảnh nào để download')
+            return
+        }
+        toast.loading(`Đang tải ${allShotsWithImages.length} ảnh...`, { id: 'bulk-dl' })
+        for (const shot of allShotsWithImages) {
+            const a = document.createElement('a')
+            a.href = shot.imageUrl!
+            a.download = `${shot.characterName}_${shot.shotType}.png`
+            document.body.appendChild(a)
+            a.click()
+            document.body.removeChild(a)
+            await new Promise(r => setTimeout(r, 300))
+        }
+        toast.success(`Đã tải ${allShotsWithImages.length} ảnh!`, { id: 'bulk-dl' })
+    }
 
     if (isLoading) {
         return (
@@ -233,7 +252,17 @@ export default function AvatarStudioPage() {
                     </div>
 
                     <div className="flex items-center gap-2">
+                        {activeTab === 'library' && allShotsWithImages.length > 0 && (
+                            <button
+                                onClick={handleBulkDownload}
+                                className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium text-white border border-white/10 hover:border-purple-500/50 hover:bg-purple-500/10 transition-all"
+                            >
+                                <Download className="w-4 h-4" />
+                                Tải tất cả ({allShotsWithImages.length})
+                            </button>
+                        )}
                         <div className="flex rounded-lg overflow-hidden border border-white/10">
+
                             {(['create', 'library'] as const).map(tab => (
                                 <button
                                     key={tab}
@@ -503,12 +532,27 @@ export default function AvatarStudioPage() {
                                                     )}
                                                     <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-all flex flex-col items-center justify-center gap-2">
                                                         <span className="text-xs text-white font-medium">{shotInfo?.label}</span>
-                                                        <button
-                                                            onClick={() => handleDelete(currentCharAvatar.characterId, shot.id)}
-                                                            className="p-1.5 rounded-lg bg-red-500/20 hover:bg-red-500/40 text-red-400 transition-all"
-                                                        >
-                                                            <Trash2 className="w-3.5 h-3.5" />
-                                                        </button>
+                                                        <div className="flex gap-1">
+                                                            {shot.imageUrl && (
+                                                                <button
+                                                                    onClick={() => {
+                                                                        const a = document.createElement('a')
+                                                                        a.href = shot.imageUrl!
+                                                                        a.download = `${currentCharAvatar?.characterName}_${shot.shotType}.png`
+                                                                        a.click()
+                                                                    }}
+                                                                    className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-all"
+                                                                >
+                                                                    <Download className="w-3.5 h-3.5" />
+                                                                </button>
+                                                            )}
+                                                            <button
+                                                                onClick={() => handleDelete(currentCharAvatar!.characterId, shot.id)}
+                                                                className="p-1.5 rounded-lg bg-red-500/20 hover:bg-red-500/40 text-red-400 transition-all"
+                                                            >
+                                                                <Trash2 className="w-3.5 h-3.5" />
+                                                            </button>
+                                                        </div>
                                                     </div>
                                                     <div className="absolute bottom-0 left-0 right-0 bg-black/70 py-1 px-1.5">
                                                         <span className="text-[10px] text-white/70">{shotInfo?.label || shot.shotType}</span>
