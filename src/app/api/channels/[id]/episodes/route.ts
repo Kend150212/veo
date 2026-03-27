@@ -55,8 +55,6 @@ export async function POST(
             customContent = null,
             voiceOverMode = 'with_host',
             cinematicStyle = null, // Cinematic film style (cinematic_documentary, psychological_drama, etc.)
-            cinematicCameraStyles = [], // Camera styles for cinematic_film_script mode
-            cinematicSceneCount = 8, // Scene count for cinematic_film_script mode
             voiceGender = 'auto',
             voiceTone = 'warm',
             categoryId = null,
@@ -80,15 +78,7 @@ export async function POST(
             // Narrative Storytelling options
             narrativeTemplateId = null,
             narrativeKeyPoints = [],
-            narrativeWithHost = false,
-            // KOL Solo Storyteller options
-            kolRoomDescription = null,
-            kolHostMode = null,
-            kolCustomHost = null,
-            kolSelectedCharacterIds = [],
-            kolChannelName = null,
-            kolHostInteractions = [],
-            kolContentStyle = 'dua_leo'
+            narrativeWithHost = false
         } = await req.json()
 
         // CTA options
@@ -142,8 +132,9 @@ export async function POST(
 
         const nextEpisodeNumber = channel._count.episodes + 1
 
-        // Build character bible based on selection
+        // Build character bible based on selection - IMPROVED FORMAT for consistency
         let characterBible = ''
+        let characterTemplates = '' // Template để copy vào mỗi scene
         if (useCharacters && channel.characters.length > 0) {
             // Filter characters if specific ones selected
             const charsToUse = selectedCharacterIds.length > 0
@@ -151,10 +142,76 @@ export async function POST(
                 : channel.characters
 
             if (charsToUse.length > 0) {
-                characterBible = `\nCHARACTER BIBLE:\n${charsToUse.map((c: { name: string; role: string; fullDescription: string; personality: string | null }) => {
-                    const personalityInfo = c.personality ? ` | TÍNH CÁCH: ${c.personality}` : ''
-                    return `[${c.name}] - ${c.role}: ${c.fullDescription}${personalityInfo}`
-                }).join('\n')}`
+                // IMPROVED: Tạo Character Bible với format rõ ràng, có cấu trúc
+                characterBible = `\n═══════════════════════════════════════
+🎭 CHARACTER BIBLE (MANDATORY REFERENCE):
+═══════════════════════════════════════
+${charsToUse.map((c: { 
+                    name: string
+                    role: string
+                    fullDescription: string
+                    personality: string | null
+                    appearance?: string | null
+                    clothing?: string | null
+                    skinTone?: string | null
+                    faceDetails?: string | null
+                    hairDetails?: string | null
+                    gender?: string | null
+                    ageRange?: string | null
+                }) => {
+                    const personalityInfo = c.personality ? `\n  • TÍNH CÁCH: ${c.personality}` : ''
+                    const appearanceInfo = c.appearance ? `\n  • NGOẠI HÌNH: ${c.appearance}` : ''
+                    const clothingInfo = c.clothing ? `\n  • TRANG PHỤC MẶC ĐỊNH: ${c.clothing}` : ''
+                    const skinInfo = c.skinTone ? `\n  • MÀU DA: ${c.skinTone}` : ''
+                    const faceInfo = c.faceDetails ? `\n  • KHUÔN MẶT: ${c.faceDetails}` : ''
+                    const hairInfo = c.hairDetails ? `\n  • TÓC: ${c.hairDetails}` : ''
+                    const genderInfo = c.gender ? `\n  • GIỚI TÍNH: ${c.gender}` : ''
+                    const ageInfo = c.ageRange ? `\n  • ĐỘ TUỔI: ${c.ageRange}` : ''
+                    
+                    return `\n📌 NHÂN VẬT: ${c.name.toUpperCase()} (${c.role})
+  • MÔ TẢ ĐẦY ĐỦ: ${c.fullDescription}${personalityInfo}${appearanceInfo}${clothingInfo}${skinInfo}${faceInfo}${hairInfo}${genderInfo}${ageInfo}
+  
+  ⚠️ TEMPLATE BẮT BUỘC KHI MÔ TẢ ${c.name.toUpperCase()}:
+  [${c.name.toUpperCase()}: ${c.fullDescription}${c.appearance ? `, ${c.appearance}` : ''}${c.clothing && !adaptCharactersToScript ? `, ${c.clothing}` : ''}${c.skinTone ? `, da ${c.skinTone}` : ''}${c.faceDetails ? `, ${c.faceDetails}` : ''}${c.hairDetails ? `, ${c.hairDetails}` : ''}]
+  
+  ❌ KHÔNG BAO GIỜ VIẾT: [${c.name}] hoặc [${c.name.toUpperCase()}] một mình!
+  ✅ LUÔN LUÔN VIẾT: [${c.name.toUpperCase()}: ${c.fullDescription}...] với đầy đủ mô tả`
+                }).join('\n\n')}
+
+═══════════════════════════════════════
+⚠️⚠️⚠️ QUY TẮC VÀNG - ĐỌC KỸ:
+═══════════════════════════════════════
+1. MỖI SCENE có nhân vật xuất hiện → PHẢI copy TEMPLATE ở trên vào promptText
+2. KHÔNG được viết tắt, KHÔNG được bỏ sót chi tiết
+3. Video AI không nhớ scene trước → PHẢI lặp lại mô tả đầy đủ mỗi lần
+4. Nếu có 2+ nhân vật trong 1 scene → mô tả ĐẦY ĐỦ cả 2
+5. ${adaptCharactersToScript ? 'Có thể thay đổi trang phục/biểu cảm theo cảnh, NHƯNG giữ nguyên: màu da, màu mắt, kiểu tóc cơ bản, tuổi, giới tính' : 'GIỮ NGUYÊN 100% mô tả - KHÔNG thay đổi bất cứ gì'}
+═══════════════════════════════════════`
+
+                // Tạo character templates riêng để dễ reference
+                characterTemplates = charsToUse.map((c: { 
+                    name: string
+                    fullDescription: string
+                    appearance?: string | null
+                    clothing?: string | null
+                    skinTone?: string | null
+                    faceDetails?: string | null
+                    hairDetails?: string | null
+                }) => {
+                    const baseDesc = c.fullDescription
+                    const parts = []
+                    if (c.appearance) parts.push(c.appearance)
+                    if (c.skinTone) parts.push(`da ${c.skinTone}`)
+                    if (c.faceDetails) parts.push(c.faceDetails)
+                    if (c.hairDetails) parts.push(c.hairDetails)
+                    if (c.clothing && !adaptCharactersToScript) parts.push(c.clothing)
+                    
+                    const fullTemplate = parts.length > 0 
+                        ? `${baseDesc}, ${parts.join(', ')}`
+                        : baseDesc
+                    
+                    return `  "${c.name.toUpperCase()}": "[${c.name.toUpperCase()}: ${fullTemplate}]"`
+                }).join(',\n')
             }
         }
 
@@ -194,16 +251,26 @@ VÍ DỤ:
 - Cảnh mưa: "[LINH: 28 tuổi, tóc đen dài ướt sũng, da trắng, áo mưa trong suốt, mắt lo lắng, run rẩy]"
 - Cảnh tiệc: "[LINH: 28 tuổi, tóc đen dài búi cao, da trắng, đầm đỏ lộng lẫy, makeup glamorous, tự tin]"
 ` : (characterBible ? `
-🎭 CHARACTER CONSISTENCY MODE (STRICT):
+🎭 CHARACTER CONSISTENCY MODE (STRICT - KHÔNG THAY ĐỔI):
 ═══════════════════════════════════════
-KHÔNG được thay đổi bất kỳ chi tiết nào của nhân vật.
-Copy NGUYÊN VĂN mô tả từ CHARACTER BIBLE vào MỌI cảnh.
-Trang phục, biểu cảm, phụ kiện phải GIỐNG HỆT nhau trong tất cả các scene.
+🔴 QUY TẮC NGHIÊM NGẶT:
+- KHÔNG được thay đổi BẤT KỲ chi tiết nào của nhân vật
+- Copy NGUYÊN VĂN 100% mô tả từ CHARACTER BIBLE vào MỌI cảnh
+- Trang phục, biểu cảm, phụ kiện, vị trí PHẢI GIỐNG HỆT nhau trong TẤT CẢ scene
+- Màu da, màu mắt, kiểu tóc, tuổi, giới tính → GIỮ NGUYÊN 100%
+
+⚠️ TEMPLATE BẮT BUỘC:
+- Mỗi scene có nhân vật → Dùng EXACT template từ CHARACTER BIBLE
+- KHÔNG được tự ý thêm/bớt/sửa đổi bất cứ gì
+- Nếu scene có 2+ nhân vật → mô tả đầy đủ CẢ 2 với template riêng
 
 🎭 SỬ DỤNG TÍNH CÁCH (PERSONALITY):
 - Dialogue phải PHÙ HỢP với tính cách đã định nghĩa trong CHARACTER BIBLE
 - Hành động, phản ứng, cử chỉ phản ánh tính cách nhân vật
 - Giữ nhất quán cách nói, cách phản ứng xuyên suốt
+- NHƯNG: Ngoại hình, trang phục, phụ kiện → GIỮ NGUYÊN 100%
+
+❌ VI PHẠM = Episode bị REJECT và phải generate lại!
 ` : '')
 
         // Existing episodes (avoid duplication)
@@ -229,13 +296,11 @@ Trang phục, biểu cảm, phụ kiện phải GIỐNG HỆT nhau trong tất c
 
         // Build CTA instruction
         let ctaInstruction = ''
-        if (ctaMode === 'disabled') {
-            ctaInstruction = 'NO CTA at all - this is a cinematic/film style content without any subscribe, like, or comment prompts.'
-        } else if (ctaMode === 'random') {
-            ctaInstruction = 'Include 1-2 natural CTAs (subscribe, like, comment, share) at RANDOM positions (25-60% through video) - NOT fixed at 40%.'
+        if (ctaMode === 'random') {
+            ctaInstruction = 'Include 1-2 natural CTAs (subscribe, like, comment, share) at appropriate moments in the script.'
         } else if (selectedCTAs.length > 0) {
             const ctaTexts = selectedCTAs.map((id: string) => CTA_MAP[id] || id).join(', ')
-            ctaInstruction = `Include these specific CTAs naturally in the script at random positions: ${ctaTexts}`
+            ctaInstruction = `Include these specific CTAs naturally in the script: ${ctaTexts}`
         } else {
             ctaInstruction = 'No CTA needed in this episode.'
         }
@@ -1006,128 +1071,6 @@ Hành động tốc độ cao, xe đẹp, và FAMILY!
 
 📝 PROMPTTEXT FORMAT:
 "[SCENE TYPE: race/chase/heist/stunt]. [VEHICLE: specific car with color, modifications]. [DRIVER: full description, expression of focus/determination]. [ACTION: specific driving move - drift, NOS boost, jump]. CAMERA: [low angle/interior/tracking/drone], speed lines. LIGHTING: night neon/tunnel strobe/fire glow. VFX: motion blur, NOS flames, tire smoke. STYLE: Fast & Furious, street racing, high octane. PACING: FAST-CUT, adrenaline pumping."`
-                },
-                'fantasy_epic_8k': {
-                    name: 'Fantasy Epic 8K (Phim Thần Thoại Sử Thi)',
-                    keywords: '8K ULTRA HD, epic fantasy adventure, Journey to the West style, Lord of the Rings scale, ARRI Alexa 65, anamorphic lens, warm amber and teal color grading, golden hour dramatic lighting, mythical scope, volumetric god rays, atmospheric haze, NO FILTERS clean image, AUTO COLOR: warm for hope cool for danger golden for victory',
-                    guidance: `🏔️ FANTASY EPIC 8K STYLE (Tây Du Ký / Chúa Nhẫn):
-═══════════════════════════════════════
-Phim thần thoại sử thi chất lượng NETFLIX/HBO 8K!
-
-🎨 COLOR GRADING (AUTO-MATCH TO SCENE):
-- WARM AMBER: Cảnh chiến thắng, hy vọng, anh hùng
-- COOL TEAL: Cảnh nguy hiểm, đối đầu, thử thách
-- GOLDEN: Cảnh thần thánh, giác ngộ, phép thuật
-- DEEP BLUE: Cảnh đêm, bí ẩn, thế giới thần linh
-
-🎥 CAMERA STYLE:
-- 8K ULTRA HD photorealistic
-- ARRI Alexa 65, anamorphic lens
-- Epic wide establishing shots cho cảnh hoành tráng
-- Shallow depth of field cho intimate moments
-- Crane/Drone cho sweeping epic landscapes
-
-💡 LIGHTING:
-- Volumetric god rays xuyên qua rừng/mây
-- Golden hour backlit hero shots
-- Atmospheric haze cho chiều sâu
-- Practical lights từ đuốc, lửa, phép thuật
-
-⚠️ MANDATORY:
-- NO FILTERS, NO OVERLAYS - video sạch 100%
-- Color grading CHỈ qua lighting và environment
-- Mô tả nhân vật ĐẦY ĐỦ mỗi scene
-- Scale hoành tráng như phim $200M+
-
-🎭 SCENE TYPES:
-1. HERO INTRODUCTION: Nhân vật chính xuất hiện hoành tráng
-2. JOURNEY: Đường hành trình qua cảnh quan hùng vĩ
-3. CONFRONTATION: Đối đầu với thế lực đen tối
-4. TRAINING: Tu luyện, trưởng thành
-5. BATTLE: Chiến đấu epic với phép thuật
-6. TRIUMPH: Chiến thắng, giác ngộ`
-                },
-                'emotional_drama_8k': {
-                    name: 'Emotional Drama 8K (Phim Tâm Lý Tình Cảm)',
-                    keywords: '8K ULTRA HD, award-winning drama, Parasite style, Nomadland aesthetic, ARRI Alexa Mini, natural muted earthy tones, subtle desaturation, film grain texture, intimate close-ups, soft diffused natural light, NO FILTERS clean image, AUTO COLOR: warm for tender cool for sadness neutral for contemplation',
-                    guidance: `🎭 EMOTIONAL DRAMA 8K STYLE (Parasite / Nomadland):
-═══════════════════════════════════════
-Phim tâm lý tình cảm đạt giải Oscar chất lượng 8K!
-
-🎨 COLOR GRADING (AUTO-MATCH TO EMOTION):
-- WARM TONES: Khoảnh khắc dịu dàng, hạnh phúc, ấm áp
-- COOL DESATURATED: Nỗi buồn, cô đơn, mất mát
-- NEUTRAL: Chiêm nghiệm, suy tư, quyết định
-- MUTED EARTHY: Cuộc sống thường nhật, chân thực
-
-🎥 CAMERA STYLE:
-- 8K ULTRA HD photorealistic
-- ARRI Alexa Mini, intimate feel
-- Close-ups cho biểu cảm cảm xúc
-- Handheld nhẹ cho sự chân thực
-- Natural focus pulls
-
-💡 LIGHTING:
-- Soft diffused natural light
-- Window light cho morning scenes
-- Practical lighting sources
-- Naturalistic, không theatrical
-
-⚠️ MANDATORY:
-- NO FILTERS, NO OVERLAYS - video sạch 100%
-- Color grading naturalistic
-- LET EMOTION BREATHE - không rush
-- Raw emotional authenticity
-
-🎭 SCENE TYPES:
-1. INTIMATE MOMENT: Khoảnh khắc riêng tư sâu lắng
-2. CONFRONTATION: Đối mặt cảm xúc, truth reveals
-3. LOSS: Mất mát, đau khổ, than khóc
-4. REFLECTION: Chiêm nghiệm, nhìn lại cuộc đời
-5. RECONCILIATION: Hòa giải, tha thứ
-6. HOPE: Tia hy vọng nhỏ nhoi`
-                },
-                'psychological_thriller_8k': {
-                    name: 'Psychological Thriller 8K (Phim Kinh Dị Tâm Lý)',
-                    keywords: '8K ULTRA HD, psychological thriller, Se7en style, Gone Girl aesthetic, David Fincher cinematography, teal and orange high contrast, deep blacks, noir lighting, chiaroscuro dramatic shadows, rain on window, silhouettes, dutch angles, NO FILTERS clean image, AUTO COLOR: cold teal for dread warm amber false safety desaturated for shock',
-                    guidance: `🕵️ PSYCHOLOGICAL THRILLER 8K STYLE (Se7en / Gone Girl):
-═══════════════════════════════════════
-Phim kinh dị tâm lý David Fincher chất lượng 8K!
-
-🎨 COLOR GRADING (AUTO-MATCH TO TENSION):
-- COLD TEAL: Sợ hãi, nguy hiểm đang rình rập
-- WARM AMBER: An toàn giả tạo, trước bão táp
-- DESATURATED: Shock reveals, twist endings
-- HIGH CONTRAST: Đen sâu, ánh sáng sắc lẹm
-
-🎥 CAMERA STYLE:
-- 8K ULTRA HD photorealistic
-- Panavision Millennium DXL2
-- Dutch angles tạo bất ổn
-- Slow push-ins xây dựng tension
-- Long takes giữ người xem hồi hộp
-- Silhouettes ẩn giấu mối đe dọa
-
-💡 LIGHTING:
-- Chiaroscuro dramatic (sáng tối mạnh)
-- Single source lighting
-- Shadows che giấu chi tiết
-- Rain on window reflections
-- Practical lights theatrical
-
-⚠️ MANDATORY:
-- NO FILTERS, NO OVERLAYS - video sạch 100%
-- Mood TẠO QUA lighting và color grading
-- BUILD TENSION slowly
-- David Fincher aesthetic precision
-
-🎭 SCENE TYPES:
-1. SETUP: Thiết lập bình thường giả tạo
-2. DISCOVERY: Phát hiện điều bất thường
-3. INVESTIGATION: Đào sâu bí ẩn
-4. CAT AND MOUSE: Rượt đuổi tâm lý
-5. REVELATION: Twist shocking
-6. CLIMAX: Đối mặt cuối cùng`
                 }
             }
 
@@ -1394,306 +1337,6 @@ Video phải đạt chất lượng ĐIỆN ẢNH THẬT SỰ - KHÔNG MƠ HỒ!
 - All dialogue in ${dialogueLang === 'en' ? 'English' : 'Vietnamese'}
 - Voice tags: "VOICE: Male voice" or "VOICE: Female voice" for dialogue scenes
 - For silent scenes: voiceover field = "(Không có lời)" or description of music/sound only`
-        } else if (voiceOverMode === 'cinematic_film_script') {
-            // Professional Movie Script Mode - CHARACTER DIALOGUE (not voice-over), Cut transitions
-            const dialogueLang = 'Vietnamese' // Default to Vietnamese
-
-            // Camera Style Map
-            const cameraStyleMap: Record<string, { name: string, desc: string }> = {
-                'one_shot': { name: 'One Shot', desc: 'Cảnh liên tục không cắt, camera di chuyển mượt mà' },
-                'tracking': { name: 'Tracking Shot', desc: 'Camera theo chân nhân vật, dolly hoặc steadicam' },
-                'drone_aerial': { name: 'Drone/Flycam', desc: 'Góc cao bay lượn, establishing shots hoành tráng' },
-                'macro_zoom': { name: 'Macro/Siêu Zoom', desc: 'Chi tiết cực cận, texture và micro-expressions' },
-                'dutch_angle': { name: 'Dutch Angle', desc: 'Góc nghiêng tạo cảm giác bất ổn, tension' },
-                'handheld': { name: 'Handheld', desc: 'Camera cầm tay, shaky realistic storytelling' },
-                'steadicam': { name: 'Steadicam', desc: 'Camera ổn định di chuyển mượt, professional feel' },
-                'crane_jib': { name: 'Crane/Jib', desc: 'Di chuyển từ cao xuống thấp hoặc ngược lại' },
-                'focus_pull': { name: 'Focus Pull', desc: 'Chuyển focus giữa subjects, reveal moments' },
-                'slow_motion': { name: 'Slow Motion', desc: 'Làm chậm kịch tính cho emotional impact' },
-                'pov': { name: 'POV', desc: 'Góc nhìn first-person từ mắt nhân vật' },
-                'dynamic_angles': { name: 'Dynamic Mix', desc: 'AI tự chọn góc máy phù hợp theo mood scene' },
-            }
-
-            // Generate selected camera styles text
-            const selectedCameraStylesText = (cinematicCameraStyles && cinematicCameraStyles.length > 0)
-                ? cinematicCameraStyles.map((cs: string) => {
-                    const style = cameraStyleMap[cs]
-                    return style ? `• ${style.name}: ${style.desc}` : null
-                }).filter(Boolean).join('\n')
-                : '• Dynamic Mix: AI tự chọn góc máy phù hợp'
-
-            voiceOverInstr = `CONTENT TYPE: KỊCH BẢN PHIM ĐIỆN ẢNH 8K (Professional Movie Screenplay)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-🎬 MỤC TIÊU: Tạo kịch bản phim chuyên nghiệp như Netflix/Hollywood
-Chất lượng 8K ULTRA HD, LỜI THOẠI NHÂN VẬT THẬT (không dùng voice-over narrator)!
-
-📊 YÊU CẦU: TẠO CHÍNH XÁC ${cinematicSceneCount || 8} SCENES
-
-═══════════════════════════════════════
-🚨🚨🚨 CRITICAL - KHÔNG DÙNG VOICE-OVER 🚨🚨🚨
-═══════════════════════════════════════
-⛔ TUYỆT ĐỐI KHÔNG VIẾT:
-- [VOICEOVER: ...] - SAI! Đây không phải documentary
-- [NARRATOR: ...] - SAI! Không có người kể chuyện
-- "Tonight we dive into..." - SAI! Đây là giọng narrator
-
-✅ THAY VÀO ĐÓ, VIẾT LỜI THOẠI NHÂN VẬT THẬT:
-- JACK (giọng căng thẳng): "Chúng ta chỉ có 5 phút. Di chuyển!"
-- ROSE (thì thầm, sợ hãi): "Tao nghe thấy tiếng bước chân..."
-- (Im lặng - tiếng mưa rơi, thở gấp, tiếng súng xa)
-
-═══════════════════════════════════════
-🎬 TRANSITIONS - CHỈ DÙNG CUT-TO-CUT
-═══════════════════════════════════════
-⛔ KHÔNG DÙNG:
-- Morphing transitions (cảm giác giả, rẻ tiền)
-- Smooth blend between scenes
-- Dissolve effects
-- Match cuts quá phức tạp
-
-✅ CHỈ DÙNG CUT ĐƠN GIẢN:
-- CUT TO: [Scene mới]
-- HARD CUT (cắt đột ngột cho impact)
-- SMASH CUT (cắt giữa action)
-- TIME CUT (cùng location, khác thời gian)
-- Jump trong logic câu chuyện phải RÕ RÀNG
-
-═══════════════════════════════════════
-📷 GÓC MÁY CAMERA ĐƯỢC CHỌN:
-═══════════════════════════════════════
-${selectedCameraStylesText}
-
-⚠️ ÁP DỤNG các góc máy này xen kẽ trong suốt kịch bản.
-
-═══════════════════════════════════════
-📜 QUY TẮC LỜI THOẠI (CHARACTER DIALOGUE):
-═══════════════════════════════════════
-⚠️ AI TỰ QUYẾT ĐỊNH scene nào cần thoại:
-
-✅ SCENE CẦN THOẠI NHÂN VẬT:
-- Conflict/xung đột trực tiếp
-- Revelation/tiết lộ thông tin
-- Emotional confrontation
-- Character introduction
-- Plot twist reveals
-
-❌ SCENE IM LẶNG (KHÔNG CÓ LỜI):
-- Establishing shots
-- Action sequences
-- Suspense building
-- Visual storytelling thuần túy
-- Aftermath/hậu quả
-
-💬 FORMAT LỜI THOẠI ĐÚNG:
-- TÊN_NHÂN_VẬT (trạng thái/emotion): "Lời thoại..."
-- Ví dụ: JACK (thì thầm, căng thẳng): "Họ đã tìm thấy chúng ta."
-- Ví dụ: ROSE (hét lên, tuyệt vọng): "KHÔNG!"
-
-🎯 TỶ LỆ KHUYẾN NGHỊ:
-- 40% scenes có dialogue nhân vật
-- 30% scenes im lặng hoàn toàn (ambient sound only)
-- 30% scenes có 1-2 câu thoại ngắn
-
-═══════════════════════════════════════
-🎭 MÔ TẢ NHÂN VẬT CHI TIẾT (BẮT BUỘC):
-═══════════════════════════════════════
-MỖI nhân vật PHẢI mô tả ĐẦY ĐỦ trong MỖI scene:
-
-📌 TEMPLATE MÔ TẢ:
-[TÊN]: [Tuổi], [Ethnicity/race], [Kiểu da/face shape], [MẮT: màu, hình dáng], [TÓC: kiểu, màu, dài/ngắn], [CHIỀU CAO/DÁNG], [TRANG PHỤC: chi tiết cụ thể màu sắc, chất liệu], [PHỤ KIỆN], [VẾT THƯƠNG/ĐẶC ĐIỂM nếu có], [BIỂU CẢM HIỆN TẠI], [HÀNH ĐỘNG CỤ THỂ đang làm]
-
-📌 VÍ DỤ ĐÚNG (CHI TIẾT):
-"JACK: 35 tuổi, Caucasian, da rám nắng với sẹo trên má trái, mắt xanh sắc lạnh, tóc đen ngắn military cut lấm bụi, cao 1m85 vạm vỡ, mặc tactical vest đen carbon-fiber có vết đạn mới, quần cargo khaki bám máu, đeo dao combat bên hông, mặt căng thẳng đổ mồ hôi, đang nạp đạn cho khẩu M4 trong khi quỳ gối sau bức tường đổ."
-
-⛔ VÍ DỤ SAI (THIẾU CHI TIẾT):
-"JACK: Người đàn ông mặc đồ đen, đang cầm súng."
-
-═══════════════════════════════════════
-🎨 VISUAL RULES - 8K CINEMATIC:
-═══════════════════════════════════════
-📸 CAMERA & QUALITY:
-- 8K ULTRA HD photorealistic
-- Cinema camera: ARRI Alexa, RED, Panavision
-- Anamorphic lens, shallow depth of field
-- NO FILTERS, NO OVERLAYS - clean image
-
-🌈 AUTO COLOR GRADING:
-- WARM AMBER: Hy vọng, hạnh phúc
-- COOL TEAL/BLUE: Nguy hiểm, buồn
-- DESATURATED: Shock, trauma
-- HIGH CONTRAST: Tension, thriller
-
-═══════════════════════════════════════
-🚨 VISUAL CONTINUITY LOGIC (CRITICAL):
-═══════════════════════════════════════
-⚠️ PROBLEM: AI thường tạo hình ảnh vô logic như:
-- Cửa có 2 tay cầm
-- Người đang ở ngoài tự nhiên đi ra từ trong
-- Đồ vật xuất hiện/biến mất vô lý
-- Trang phục/vết thương thay đổi giữa các cảnh
-
-✅ BẮT BUỘC TUÂN THEO:
-
-📍 CHARACTER POSITION TRACKING:
-Mỗi scene PHẢI ghi rõ VỊ TRÍ của TỪNG nhân vật:
-- "KAEL đứng BÊN TRÁI cửa, LYRA đứng BÊN PHẢI"
-- "KAEL từ TRONG phòng bước RA ngoài hành lang"
-- "LYRA vẫn ở vị trí CŨ từ scene trước"
-
-📍 ENTRY/EXIT LOGIC:
-- Nhân vật PHẢI có lý do để xuất hiện/biến mất
-- Ghi rõ: "KAEL enters FROM the left door" hoặc "LYRA exits THROUGH the window"
-- KHÔNG để nhân vật tự nhiên xuất hiện/biến mất
-
-📍 OBJECT CONSISTENCY:
-- Cửa: CHỈ 1 tay cầm, mô tả rõ kiểu (round handle, lever handle, push bar)
-- Vũ khí: Ghi rõ loại (Glock 19, not just "gun")
-- Xe: Ghi rõ model nếu có (Tesla Model S, not just "car")
-- Quần áo: PHẢI giữ nguyên trong cùng sequence trừ khi có lý do thay đổi
-
-📍 SPATIAL AWARENESS:
-- Mô tả vị trí camera so với nhân vật
-- "Camera facing KAEL from his LEFT side"
-- "LYRA visible in BACKGROUND, 5 meters behind KAEL"
-
-═══════════════════════════════════════
-📋 STRUCTURED SCENE FORMAT (JSON-LIKE):
-═══════════════════════════════════════
-Mỗi scene PHẢI có các elements sau theo thứ tự:
-
-1. [SCENE_TYPE]: COLD OPEN / DIALOGUE / ACTION / etc.
-2. [PACING]: slow-burn / normal / fast-cut
-3. [LOCATION]: Cụ thể (INT. WAREHOUSE - GROUND FLOOR / EXT. ROOFTOP - NIGHT)
-4. [TIME]: Same as previous / 5 minutes later / Next morning
-5. [CHARACTERS_PRESENT]: Liệt kê TẤT CẢ nhân vật có mặt và VỊ TRÍ
-6. [CHARACTER_IN_FOCUS]: Nhân vật camera đang tập trung
-
-═══════════════════════════════════════
-🎭 CHARACTER ACTIONS (CRITICAL - MÔ TẢ CHI TIẾT):
-═══════════════════════════════════════
-Mỗi nhân vật PHẢI có mô tả HÀNH ĐỘNG riêng:
-
-[CHARACTER_1_ACTION]: 
-- TÊN: mô tả đầy đủ ngoại hình
-- ĐANG LÀM: hành động cụ thể (không chung chung)
-- BIỂU CẢM: khuôn mặt, cơ thể
-- TAY: đang cầm gì, làm gì với tay
-- HƯỚNG NHÌN: nhìn đâu, nhìn ai
-
-[CHARACTER_2_ACTION]: (nếu có)
-- Tương tự như trên
-
-VÍ DỤ ĐÚNG (CHI TIẾT):
-"KAEL: đang quỳ một gối bên trái bàn, tay phải nắm chặt khẩu Glock 19, tay trái đang thay băng đạn mới, mắt liếc về phía cửa sổ, mồ hôi chảy trên trán, cơ hàm nghiến chặt."
-"LYRA: đứng bên phải bàn, đang gõ keyboard với tốc độ cao, mắt dán vào màn hình hologram, lưng hơi cong về phía trước, tóc rối bời, thở gấp."
-
-VÍ DỤ SAI (QUÁ CHUNG CHUNG):
-"KAEL: đang cầm súng -> THIẾU chi tiết tay nào, tư thế gì, nhìn đâu
-"LYRA: đang làm việc" -> THIẾU làm gì, với cái gì, biểu cảm sao
-
-═══════════════════════════════════════
-🤝 CHARACTER INTERACTIONS (TƯƠNG TÁC):
-═══════════════════════════════════════
-Khi có 2+ nhân vật, PHẢI mô tả TƯƠNG TÁC:
-
-[INTERACTION_TYPE]: 
-- VERBAL: Ai nói với ai, giọng điệu
-- PHYSICAL: Chạm nhau như thế nào (nắm tay, đẩy, ôm...)
-- EYE CONTACT: Ai nhìn ai, né tránh ánh mắt
-- SPATIAL: Khoảng cách giữa họ (gần gũi, xa cách, đối đầu)
-- EMOTIONAL: Tension, trust, conflict giữa họ
-
-VÍ DỤ TƯƠNG TÁC:
-"KAEL quay sang LYRA, ánh mắt lo lắng, tay anh chạm nhẹ vai cô. LYRA dừng gõ, quay lại nhìn anh, khoảng cách giữa họ 30cm, không gian thân mật nhưng căng thẳng."
-
-"KAEL và ZARA đứng đối diện nhau, khoảng cách 2 mét, cả hai đều cầm súng chĩa vào nhau. KAEL nhìn thẳng vào mắt ZARA với ánh mắt thù hận. ZARA mỉm cười khinh thường, đầu hơi nghiêng."
-
-7. [CHARACTER_ACTIONS]: (theo format ở trên, mô tả TỪNG nhân vật)
-8. [INTERACTIONS]: (nếu có 2+ nhân vật - mô tả tương tác)
-9. [DIALOGUE]: Nếu có lời thoại
-10. [PROPS]: Đồ vật quan trọng (specific details: SINGLE handle, Glock 19, Tesla Model S)
-11. [CAMERA]: Shot type, angle, movement, relationship to characters
-12. [LIGHTING]: Type, direction, color, mood
-13. [MOOD]: Emotional tone of the scene
-14. [AUDIO]: Ambient sounds, music type
-
-═══════════════════════════════════════
-📝 VÍ DỤ SCENE ĐA NHÂN VẬT HOÀN CHỈNH:
-═══════════════════════════════════════
-"[SCENE TYPE: DIALOGUE]. [PACING: normal]. [LOCATION: INT. ABANDONED WAREHOUSE - MAIN FLOOR - NIGHT]. [TIME: 2 minutes after previous scene]. 
-
-[CHARACTERS: KAEL (foreground LEFT), LYRA (background RIGHT by computer terminal), ZARA (entering from DOOR at far LEFT)].
-
-[KAEL]: 32, East Asian, cybernetic amber eye glowing intensely, black tactical vest scratched from earlier fight, kneeling on RIGHT knee, hiding behind steel crate, LEFT hand gripping Glock 19 aimed at door, RIGHT hand pressing wound on his side, blood seeping through fingers, jaw clenched, breathing heavily, looking directly at ZARA in doorway.
-
-[LYRA]: 28, pink buzzcut, translucent raincoat over bodysuit, standing hunched over holographic terminal, BOTH hands typing rapidly, eyes focused on green data streams, occasionally glancing nervously toward KAEL and door, lips pressed tight.
-
-[ZARA]: 34, Mediterranean features, sleek black suit, stepping through doorway with SMG raised at shoulder level, scanning room LEFT to RIGHT, spotting KAEL, corner of lips curling into smirk.
-
-[INTERACTIONS]: KAEL and ZARA in CONFRONTATION - 8 meters apart, both weapons aimed at each other, direct eye contact with hostility. LYRA is SUPPORTING KAEL - 5 meters behind him, no direct interaction but aware of danger.
-
-[KAEL (through gritted teeth): 'You're too late, Zara. The data is already uploading.']
-
-[PROPS: Rusted steel crates (KAEL's cover), glowing holographic terminal (LYRA's station), metal door with SINGLE push bar (ZARA's entry point)].
-
-[CAMERA: Wide establishing shot first, then quick cuts between close-ups of each character's face and weapons].
-
-[LIGHTING: Cold blue moonlight from broken skylight, orange sparks from terminal, harsh white tactical light on ZARA's SMG].
-
-[MOOD: Tense standoff, ticking clock urgency].
-
-[AUDIO: Electrical humming from terminal, rain on metal roof, ZARA's boots echoing on concrete floor]."
-
-═══════════════════════════════════════
-📝 FORMAT MỖI SCENE:
-═══════════════════════════════════════
-[SCENE TYPE: (type)]. PACING: (fast-cut/slow-burn/normal).
-[NẾU CÓ DIALOGUE - BẮT BUỘC VIẾT LỜI THOẠI]:
-[CHARACTER_NAME (emotion/trạng thái): "Lời thoại thực sự bằng ${dialogueLang}..."]
-
-🎬 PROMPTTEXT FORMAT:
-"[SCENE TYPE: X]. PACING: X. [DIALOGUE nếu có]. [MÔ TẢ NHÂN VẬT ĐẦY ĐỦ]. HÀNH ĐỘNG: X. ENVIRONMENT: X. CAMERA: X. LIGHTING: X. STYLE: X. MOOD: X."
-
-═══════════════════════════════════════
-🎭 VÍ DỤ DIALOGUE SCENE (BẮT BUỘC CÓ LỜI THOẠI):
-═══════════════════════════════════════
-✅ ĐÚNG:
-"[SCENE TYPE: DIALOGUE]. PACING: normal. [KAEL (whispered, tense): 'They've breached the perimeter. We have maybe two minutes before they find us.']. KAEL: 32, East Asian, cybernetic amber eye glowing, black tactical vest... ENVIRONMENT: Dark corridor..."
-
-⛔ SAI (THIẾU LỜI THOẠI):
-"[SCENE TYPE: DIALOGUE]. PACING: normal. [KAEL is standing in the room]. KAEL: 32, East Asian..."
-↑ DIALOGUE scene nhưng KHÔNG CÓ lời thoại thực sự!
-
-═══════════════════════════════════════
-📖 DIALOGUE QUALITY RULES (CINEMATIC):
-═══════════════════════════════════════
-LỜI THOẠI PHẢI:
-✓ SUBTEXT - Nói một đằng, ý một nẻo (như phim thật)
-✓ CONFLICT - Mỗi câu thoại phải có tension/mục đích
-✓ CHARACTER VOICE - Mỗi nhân vật có cách nói riêng
-✓ BREVITY - Ngắn gọn, súc tích (không dài dòng)
-✓ SHOW DON'T TELL - Không giải thích trực tiếp
-
-VÍ DỤ DIALOGUE HAY:
-- "I didn't come here to negotiate." (Subtext: threat)
-- "You look just like her..." (Subtext: loss, memory)
-- "Run. Now." (Brevity, urgency)
-
-VÍ DỤ DIALOGUE DỞ:
-- "I am angry because you betrayed me." (Too direct)
-- "Let me explain everything that happened..." (Too expository)
-
-═══════════════════════════════════════
-🎬 PACING & LOGIC:
-═══════════════════════════════════════
-- Mỗi scene CHỈ CÓ MỘT mục đích - không overload
-- Logic chuyển cảnh PHẢI rõ ràng
-- KHÔNG nhảy cóc vô lý giữa locations
-- Action → Quiet → Dialogue → Action (rhythm)
-- Build tension dần → release at key moments
-- End với powerful IMAGE, often silent`
-
         } else if (voiceOverMode === 'roast_comedy') {
             voiceOverInstr = `CONTENT TYPE: ROAST COMEDY - PROVOCATIVE (Chọc tức khán giả - CỰC KỲ VIRAL!)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -2505,58 +2148,6 @@ VOICE: (dialogue)]
                 ? 'Bình Luận Xã Hội (Social Commentary)'
                 : 'Hành Trình Cá Nhân (Personal Journey)'
 
-            // Build host template from CHARACTER BIBLE or create default instruction
-            let hostTemplateSection = ''
-            if (narrativeWithHost) {
-                if (characterBible && useCharacters && channel.characters.length > 0) {
-                    // Use first selected character as host
-                    const hostChar = selectedCharacterIds.length > 0
-                        ? channel.characters.find((c: { id: string }) => selectedCharacterIds.includes(c.id))
-                        : channel.characters[0]
-
-                    if (hostChar) {
-                        const hostName = hostChar.name.toUpperCase()
-                        const hostDesc = hostChar.fullDescription
-                        const hostPersonality = hostChar.personality ? `\n💭 TÍNH CÁCH: ${hostChar.personality}` : ''
-                        hostTemplateSection = `
-🎭 HOST CHARACTER TEMPLATE (COPY NGUYÊN VĂN vào MỌI scene có host):
-═══════════════════════════════════════
-📋 HOST: [${hostName}: ${hostDesc}]${hostPersonality}
-
-⚠️ QUY TẮC BẮT BUỘC:
-- COPY NGUYÊN VĂN template trên vào MỌI scene có host xuất hiện
-- Chỉ THÊM hành động/biểu cảm/tư thế SAU mô tả cố định
-- KHÔNG thay đổi: tuổi, giới tính, trang phục cơ bản, đặc điểm nhận dạng
-
-✅ VÍ DỤ ĐÚNG: [${hostName}: ${hostDesc}, đang cười và nhìn thẳng vào camera]
-❌ VÍ DỤ SAI: [Host: A young man...] hoặc [${hostName}] sitting in studio
-═══════════════════════════════════════`
-                    }
-                }
-
-                // If no character bible, create instruction for AI to generate consistent host
-                if (!hostTemplateSection) {
-                    hostTemplateSection = `
-🎭 HOST CHARACTER - AI PHẢI TẠO VÀ GIỮ NHẤT QUÁN:
-═══════════════════════════════════════
-⚠️ QUAN TRỌNG: Kênh chưa có nhân vật, AI phải:
-
-1️⃣ TẠO MỘT host ở Scene 1 với MÔ TẢ ĐẦY ĐỦ:
-   [TÊN: tuổi, giới tính, dân tộc, da, tóc (màu+kiểu), trang phục chi tiết, phụ kiện]
-   VD: [LEO: 28 tuổi, nam, Việt Nam, da ngăm, tóc đen ngắn, đeo kính gọng đen, áo hoodie xám có logo CREATOR, quần jeans xanh đậm]
-
-2️⃣ COPY NGUYÊN VĂN mô tả này vào TẤT CẢ các scene tiếp theo
-
-3️⃣ CHỈ THÊM hành động/biểu cảm khác nhau cho mỗi scene:
-   ✅ Scene 1: [LEO: ...full description..., đang ngồi trong studio, nhìn camera tự tin]
-   ✅ Scene 5: [LEO: ...full description..., đứng dậy, vẻ mặt nghiêm túc]
-
-❌ SAI: [Host: A young man...] - Quá chung chung!
-❌ SAI: [LEO] sitting in studio - Thiếu mô tả đầy đủ!
-═══════════════════════════════════════`
-                }
-            }
-
             // Common voice style instructions (shared between both modes)
             const voiceStyleInstructions = `
 🎙️ GIỌNG VĂN KỂ CHUYỆN (CRITICAL - Phong cách Anh Dư Leo):
@@ -2623,13 +2214,11 @@ ${keyPointsText}
 
 ${voiceConsistencyRule}
 
-${hostTemplateSection}
-
 ${voiceStyleInstructions}
 
 📸 PROMPTTEXT FORMAT (HOST + STORY ELEMENTS):
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-⚠️ HOST: COPY NGUYÊN VĂN template từ HOST CHARACTER TEMPLATE ở trên + thêm hành động/biểu cảm phù hợp scene
+[HOST trên màn hình: (mô tả chi tiết host - tuổi, giới tính, trang phục, biểu cảm, tư thế, đang làm gì)].
 [STORY ELEMENTS minh họa: (các yếu tố xuất hiện xung quanh host để minh họa nội dung - có thể là props, graphics, background thay đổi)].
 ENVIRONMENT: (bối cảnh - studio, nhà, quán cà phê, etc).
 CAMERA: (góc quay - medium shot, close-up, etc).
@@ -2952,364 +2541,6 @@ LANGUAGE: Speak Vietnamese only.
 - Scanner qua toàn bộ script trước khi hoàn thành
 - Nếu thấy cùng một cụm từ xuất hiện hơn 2 lần → BẮT BUỘC phải viết lại với cách diễn đạt khác
 - Mỗi scene nên có "personality" riêng, không được generic`
-        } else if (voiceOverMode === 'kol_solo_storyteller') {
-            voiceOverInstr = `CONTENT TYPE: KOL SOLO STORYTELLER (Host ngồi kể chuyện trước camera - Như Dưa Leo, KOL Talk)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-🎯 MỤC TIÊU: Tạo video chỉ có 1 người ngồi/đứng trong 1 căn phòng NÓI CHUYỆN TRỰC TIẾP trước camera.
-Đây là THOẠI TRỰC TIẾP (dialogue) - host NÓI thật, KHÔNG phải voiceover đọc đè lên.
-Thu hút người xem 100% bằng BIỂU CẢM, CỬ CHỈ, GIỌNG NÓI TRỰC TIẾP và ENERGY của host.
-KHÔNG có B-Roll, KHÔNG cắt cảnh khác, KHÔNG có hình ảnh minh họa bên ngoài.
-
-⚡ QUAN TRỌNG - THOẠI TRỰC TIẾP (KHÔNG PHẢI VOICEOVER):
-- Host ĐANG NÓI trước camera - miệng PHẢI CỬ ĐỘNG khớp với lời nói
-- Đây là DIALOGUE (thoại nhân vật), KHÔNG phải narration/voiceover đọc đè
-- Host nhìn vào camera và NÓI TRỰC TIẾP với khán giả như YouTuber
-- Âm thanh phát ra TỪ MIỆNG HOST, không phải từ nguồn bên ngoài
-- Biểu cảm khuôn mặt PHẢI khớp với nội dung đang nói
-
-⛔ TUYỆT ĐỐI KHÔNG ĐƯỢC (VI PHẠM = FAIL):
-- KHÔNG có B-Roll hoặc footage minh họa
-- KHÔNG chuyển cảnh sang nơi khác
-- KHÔNG có split screen, picture-in-picture
-- KHÔNG có text overlay, graphic elements phức tạp
-- KHÔNG có cảnh quay bên ngoài phòng
-- KHÔNG có nhân vật thứ 2 (trừ khi user yêu cầu)
-- ⛔ TUYỆT ĐỐI KHÔNG THAY ĐỔI MÔI TRƯỜNG: Phòng, đồ vật, tường, nội thất PHẢI giữ nguyên 100% từ scene 1 đến scene cuối. KHÔNG được thêm/bớt đồ vật, KHÔNG đổi màu tường, KHÔNG đổi ánh sáng tổng thể.
-- ⛔ KHÔNG CÓ HIỆU ỨNG ĐẶC BIỆT: KHÔNG có lens flare, KHÔNG có particle effects, KHÔNG có filter color grading thay đổi giữa các scene, KHÔNG có motion blur quá mức, KHÔNG có VFX. Video phải trông TỰ NHIÊN như quay thật.
-- ⛔ KHÔNG có transition effects giữa các scene (no fade, no wipe, no dissolve)
-
-🎯 100% FACE TRACKING (CRITICAL - BẮT BUỘC):
-- Khuôn mặt host PHẢI LUÔN LUÔN xuất hiện trong khung hình ở MỌI scene, MỌI khoảnh khắc
-- Camera PHẢI tracking theo mặt host - nếu host di chuyển, camera PHẢI theo để mặt luôn visible
-- KHÔNG BAO GIỜ được có frame nào mà không thấy mặt host (trừ tối đa 0.5 giây khi whip pan)
-- Khi host đứng dậy đi lại → camera tracking theo, giữ mặt ở center hoặc rule-of-thirds
-- Khi host quay lưng → chỉ tối đa 1-2 giây rồi PHẢI quay lại để thấy mặt
-- Close-up, medium shot, wide shot → MỌI shot đều PHẢI thấy rõ khuôn mặt host
-- Khuôn mặt host phải chiếm ít nhất 15-20% diện tích khung hình (không quá xa)
-
-✅ CHỈ ĐƯỢC DÙNG:
-- Host ngồi/đứng trong CÙNG 1 phòng suốt video - MÔI TRƯỜNG KHÔNG ĐỔI
-- Camera angles khác nhau TRONG CÙNG phòng đó - LUÔN tracking mặt host
-- Biểu cảm khuôn mặt thay đổi liên tục - khuôn mặt LUÔN rõ nét
-- Cử chỉ tay phong phú khi kể chuyện
-- Props trên bàn (cốc nước, sách, laptop) - cố định, KHÔNG thay đổi vị trí giữa các scene
-
-═══════════════════════════════════════
-🎨 CHỐNG TRÔI MÀU VÀNG (CRITICAL - ƯU TIÊN CAO NHẤT):
-═══════════════════════════════════════
-⚠️ VẤN ĐỀ NGHIÊM TRỌNG: Video bị TRÔI MÀU VÀNG - frame đầu đẹp, càng về sau càng vàng khè.
-Nguyên nhân: AI cộng dồn warm tone khi các scene lặp lại mô tả lighting tương tự.
-
-⛔ CẤM TUYỆT ĐỐI TRONG LIGHTING/COLOR/STYLE:
-- CẤM DÙNG: "warm", "golden", "amber", "sunset", "orange glow", "yellow light", "warm tone", "cozy warm"
-- CẤM DÙNG: "sepia", "vintage", "film grain warm", "tungsten"
-- CẤM DÙNG TRONG STYLE: "soft lighting" (thay bằng "clean even lighting"), "warm tones", "golden tones"
-- CẤM DÙNG TRONG STYLE: "pastel tones" đơn lẻ (thay bằng "cool pastel tones")
-- CẤM: bất kỳ từ nào gợi ý màu ấm/vàng trong BẤT KỲ field nào
-
-🎯 GIẢI PHÁP BẮT BUỘC:
-1. Scene 1 đặt CHUẨN MÀU GỐC - mô tả chi tiết: skin tone, màu tường, màu áo
-2. Mọi scene sau PHẢI ghi: "EXACT SAME color grading, white balance, and skin tone as Scene 1"
-3. Scene CHẴN (2,4,6,8,10): thêm "slightly cool bias 4800K to counteract any accumulated warmth"
-4. Scene LẺ (3,5,7,9): ghi "neutral daylight 5200K, zero color cast, match Scene 1 exactly"
-5. Mọi scene PHẢI có tag: "NO YELLOW CAST. NO WARM DRIFT. MAINTAIN SCENE 1 COLOR PROFILE."
-
-📋 MÀU SẮC CỤ THỂ:
-- SKIN TONE: Phải giữ nguyên từ scene 1. Nếu scene 1 da sáng → TẤT CẢ scene phải da sáng. KHÔNG ĐƯỢC ngả vàng.
-- TƯỜNG/NỀN: Nếu scene 1 tường xám → TẤT CẢ scene tường vẫn xám. KHÔNG ngả vàng.
-- QUẦN ÁO: Màu sắc giữ nguyên 100%. Nếu áo màu kem/cream → phải ghi "cream-white (NOT yellow/golden)" để AI không hiểu nhầm thành vàng.
-- TÓC: Màu tóc không được thay đổi. Tóc đen → luôn đen, KHÔNG được ngả nâu/vàng.
-- NỀN: Đèn neon/LED sign phải giữ đúng màu gốc, KHÔNG được lan warm light ra xung quanh.
-
-💡 KỸ THUẬT PROMPT:
-- Dùng "cool-neutral lighting" thay vì "soft lighting"
-- Dùng "clean even lighting" thay vì "soft lighting" trong STYLE
-- Dùng "daylight balanced 5200K" thay vì "natural light"
-- Dùng "clean white LED illumination" thay vì "ambient light"
-- Dùng "cool pastel tones" thay vì "pastel tones"
-- Thêm "anti-yellow correction applied" vào cuối mỗi LIGHTING description
-- Khi mô tả màu sáng như cream, beige → thêm "(NOT yellow/golden)" để AI hiểu đúng
-
-═══════════════════════════════════════
-🎭 BIỂU CẢM & CỬ CHỈ (CRITICAL - THU HÚT KHÁN GIẢ):
-═══════════════════════════════════════
-Mỗi scene PHẢI có biểu cảm và cử chỉ KHÁC NHAU:
-
-😊 VUI VẺ / HÀI HƯỚC:
-- Cười rộng, mắt nheo lại, nghiêng đầu
-- Tay vỗ bàn, chỉ vào camera, giơ tay
-- "Hahaha các bạn biết gì chưa..."
-
-😠 BỰC BỘI / NGHIÊM TÚC:
-- Nhíu mày, môi mím chặt, ánh mắt sắc
-- Tay đan chéo trước ngực, gõ bàn
-- "Nói thật nhé, cái này tôi KHÔNG chấp nhận được..."
-
-😱 BẤT NGỜ / SỐC:
-- Mắt mở to, miệng há hốc, ngả người ra sau
-- Tay che miệng, vỗ trán
-- "WHAT?! Không đời nào!"
-
-🤫 THÌ THẦM / BÍ MẬT:
-- Nghiêng sát camera, tay che miệng một bên  
-- Nói nhỏ, ánh mắt liếc xung quanh
-- "Này, tôi kể cho bạn nghe chuyện này..."
-
-😢 CẢM ĐỘNG / SÂU LẮNG:
-- Mắt nhìn xuống, giọng trầm, chậm rãi
-- Tay đặt lên ngực, hoặc nắm chặt
-- "Lúc đó... tôi thật sự không biết phải làm gì..."
-
-🔥 HYPE / ENERGY CAO:
-- Đứng dậy hoặc nhổm người, vung tay mạnh
-- Nói nhanh, eyes contact mạnh vào camera
-- "BÂY GIỜ ĐÂY! Phần quan trọng nhất!"
-
-═══════════════════════════════════════
-📍 BỐI CẢNH PHÒNG (GIỮ NGUYÊN SUỐT VIDEO):
-═══════════════════════════════════════
-${kolRoomDescription ? `
-🏠 PHÒNG CỦA USER (SỬ DỤNG MÔ TẢ NÀY):
-"${kolRoomDescription}"
-` : `
-Mô tả phòng CHI TIẾT 1 LẦN ở Scene 1, sau đó ghi "Same room setup as Scene 1":
-
-VÍ DỤ BỐI CẢNH:
-"Phòng studio nhỏ, tường xám với đèn LED strip phía sau tạo backlight màu tím nhẹ. 
-Bàn gỗ đen với micro podcast Silver, cốc cà phê trắng, và 1 cuốn sổ tay mở.
-Ghế gaming đen, host ngồi hơi nghiêng về phía trước. 
-Ánh sáng chính: softbox bên trái, fill light nhẹ bên phải."
-`}
-${kolChannelName ? `
-📺 TÊN KÊNH TRONG BACKGROUND:
-Phía sau host PHẢI có tên kênh "${kolChannelName}" hiển thị dưới dạng:
-- LED neon sign phát sáng trên tường, HOẶC
-- Poster/banner treo phía sau, HOẶC  
-- Logo trên màn hình/TV phía sau
-Tên kênh phải VISIBLE nhưng không quá lớn, nằm ở background tự nhiên.
-` : ''}
-═══════════════════════════════════════
-👤 HOST DESCRIPTION:
-═══════════════════════════════════════
-${kolHostMode === 'custom' && kolCustomHost ? `
-🎯 USER ĐÃ MÔ TẢ HOST (SỬ DỤNG MÔ TẢ NÀY CHO MỌI SCENE):
-"${kolCustomHost}"
-Host này PHẢI nhất quán trong MỌI scene - cùng ngoại hình, cùng trang phục.
-Chỉ thay đổi BIỂU CẢM và CỬ CHỈ giữa các scene.
-` : kolHostMode === 'channel_character' ? `
-🎯 SỬ DỤNG NHÂN VẬT CỦA KÊNH (đã được mô tả trong character section).
-${kolSelectedCharacterIds && kolSelectedCharacterIds.length > 1 ? `
-⚡ NHIỀU NHÂN VẬT ĐƯỢC CHỌN (${kolSelectedCharacterIds.length} người):
-- Nhân vật đầu tiên được chọn là HOST CHÍNH - nói chuyện nhiều nhất, dẫn dắt câu chuyện
-- Các nhân vật còn lại là KHÁCH MỜI / CO-HOST - tương tác, phản ứng, bình luận
-- Các nhân vật ngồi/đứng CẠNH NHAU trong cùng phòng
-- PHẢI có tương tác giữa các nhân vật: nói chuyện, cười cùng nhau, tranh luận, đồng ý/phản đối
-- Camera phải PAN giữa các nhân vật khi họ nói
-` : `
-Nhân vật này là HOST DUY NHẤT trong video.
-`}
-Host PHẢI nhất quán trong MỌI scene - cùng ngoại hình, cùng trang phục.
-Chỉ thay đổi BIỂU CẢM và CỬ CHỈ giữa các scene.
-` : `
-🤖 AI TỰ TẠO HOST:
-Tạo 1 host phù hợp với nội dung video. Mô tả CHI TIẾT ở Scene 1:
-- Tuổi, giới tính, ethnicity, kiểu tóc, màu mắt
-- Trang phục cụ thể (màu sắc, chất liệu, thương hiệu)  
-- Phong cách tổng thể
-Host này PHẢI nhất quán trong MỌI scene sau đó.
-`}
-═══════════════════════════════════════
-📸 CAMERA MOVEMENT (DYNAMIC & ENGAGING):
-═══════════════════════════════════════
-Camera PHẢI di chuyển liên tục để tạo cảm giác sống động, hấp dẫn người xem:
-
-🎥 CAMERA SHOTS CƠ BẢN:
-1. MEDIUM SHOT: Từ ngực trở lên, thấy tay khi gesturing
-2. CLOSE-UP: Chỉ khuôn mặt - dramatic moments
-3. WIDE SHOT: Toàn cảnh phòng - opening/khi host đứng dậy
-
-🎬 CAMERA MOVEMENTS (BẮT BUỘC DÙNG):
-4. PAN NHANH 45°: Camera xoay ngang nhanh 45° khi host đổi hướng nói → tạo dynamic energy
-5. PAN NHANH 180°: Camera whip pan 180° khi host quay lại bàn sau khi đi lại → dramatic reveal
-6. TILT LÊN/XUỐNG: Camera tilt từ tay host cầm đồ vật lên mặt → reveal emotion
-7. TRACKING SHOT: Camera đi theo host khi host đứng dậy di chuyển trong phòng
-8. WHIP PAN: Camera quay nhanh bất ngờ từ host sang đồ vật rồi quay lại → tạo surprise
-9. DUTCH ANGLE: Camera nghiêng 15-30° → tạo tension, suspense
-10. RACK FOCUS: Chuyển focus từ host (foreground) sang đồ vật phía sau hoặc ngược lại
-11. CRANE-LIKE: Camera từ từ nâng lên cao hoặc hạ xuống thấp
-12. PUSH IN: Zoom chậm vào mặt host khi nói điều quan trọng
-
-⚡ QUY TẮC CAMERA MOVEMENT:
-- MỖI scene PHẢI có ít nhất 1 camera movement KHÁC với scene trước
-- Xen kẽ: static → dynamic → static → dynamic
-- Dùng PAN NHANH khi host thay đổi chủ đề hoặc tạo surprise
-- Dùng TRACKING khi host đi lại, cầm đồ vật
-- Dùng TILT khi reveal đồ vật hoặc emotion
-- Camera movement phải MATCH với energy: calm = slow zoom, excited = whip pan, suspense = dutch angle
-
-═══════════════════════════════════════
-🚶 HOST DI CHUYỂN & TƯƠNG TÁC ĐỒ VẬT:
-═══════════════════════════════════════
-Host KHÔNG chỉ ngồi yên - phải DI CHUYỂN và TƯƠNG TÁC với đồ vật trong phòng:
-
-${kolHostInteractions && kolHostInteractions.length > 0 ? `
-🎯 USER ĐÃ CHỌN CÁC TƯƠNG TÁC SAU (BẮT BUỘC DÙNG):
-${kolHostInteractions.includes('drink') ? '- 🥤 UỐNG NƯỚC/CÀ PHÊ: Cầm cốc uống 1 ngụm giữa câu nói → tạo pause tự nhiên\n' : ''}${kolHostInteractions.includes('book') ? '- 📚 CẦM SÁCH/SỔ: Mở sách lật trang, ghi chép vào sổ tay, chỉ vào trang sách\n' : ''}${kolHostInteractions.includes('snack') ? '- 🍪 ĂN SNACK/BÁNH: Ăn nhẹ nhàng casual, cầm bánh trong tay khi nói\n' : ''}${kolHostInteractions.includes('write') ? '- ✍️ CẦM BÚT VIẾT: Viết lên giấy/bảng trắng để illustrate a point\n' : ''}${kolHostInteractions.includes('walk') ? '- 🚶 ĐI LẠI TRONG PHÒNG: Đứng dậy khỏi ghế, đi vài bước khi excited, quay lưng rồi quay lại\n' : ''}${kolHostInteractions.includes('window') ? '- 🪟 NHÌN RA CỬA SỔ: Đi tới cửa sổ nhìn ra ngoài khi suy nghĩ sâu\n' : ''}${kolHostInteractions.includes('phone') ? '- 📱 CẦM ĐIỆN THOẠI: Check điện thoại, chỉ màn hình cho camera xem\n' : ''}${kolHostInteractions.includes('desk') ? '- 💻 TƯƠNG TÁC BÀN: Gõ gõ bàn suy nghĩ, sắp xếp đồ, chỉ vào laptop/màn hình\n' : ''}
-Các tương tác trên PHẢI xuất hiện ít nhất 1 lần trong video, rải đều các scene.
-` : `
-🏃 DI CHUYỂN:
-- Đứng dậy khỏi ghế, đi lại vài bước khi excited
-- Quay lưng rồi quay lại camera (dramatic effect)
-- Nghiêng người về phía camera khi thì thầm
-- Ngả lưng ra ghế khi relaxed
-
-🫗 TƯƠNG TÁC ĐỒ VẬT (AI TỰ CHỌN):
-- Cầm cốc cà phê/nước uống 1 ngụm giữa câu nói → tạo pause tự nhiên
-- Gõ gõ bàn khi suy nghĩ
-- Cầm sách/sổ tay mở ra rồi đóng lại
-- Ăn snack/bánh nhẹ nhàng → casual, thân thiện
-- Cầm bút viết gì đó → illustrate a point
-`}
-⚠️ QUY TẮC:
-- Mỗi 2-3 scene phải có 1 lần host tương tác đồ vật
-- Hành động phải TỰ NHIÊN, không gượng ép
-- Đồ vật phải phù hợp với môi trường đã mô tả
-- Host vừa làm vừa nói - KHÔNG dừng lại chờ
-
-═══════════════════════════════════════
-📝 FORMAT MỖI SCENE:
-═══════════════════════════════════════
-promptText format (THỨ TỰ RẤT QUAN TRỌNG - COLOR_LOCK PHẢI LÀ ĐẦU TIÊN):
-"COLOR_LOCK: EXACT SAME color grading as Scene 1, no yellow cast, no warm drift, anti-yellow correction applied, skin tone unchanged. [HOST_SOLO: camera_angle + camera_movement]. [MÔ TẢ HOST: ngoại hình đầy đủ, BIỂU CẢM hiện tại, CỬ CHỈ đang làm, VỊ TRÍ trong phòng, màu quần áo nguyên bản (NOT yellow/golden)]. [BODY LANGUAGE: posture, tay, đầu]. [TƯƠNG TÁC: đồ vật host đang cầm/dùng]. ENVIRONMENT: [Same room - chi tiết${kolChannelName ? `, tên kênh "${kolChannelName}" visible trên tường phía sau` : ''}]. CAMERA: [shot type, movement type, speed, angle]. LIGHTING: [cool-neutral daylight balanced 5000-5200K, clean white LED, anti-yellow correction, NO warm tones]. STYLE: ${styleKeywords ? styleKeywords.replace(/soft lighting/g, 'clean even lighting').replace(/pastel tones/g, 'cool pastel tones') : styleKeywords}. MOOD: [emotional tone]. MAINTAIN: Scene 1 exact skin tone, wall color, clothing color, hair color."
-
-voiceover field (DÙNG LÀM THOẠI TRỰC TIẾP CỦA HOST - KHÔNG PHẢI VOICEOVER):
-"HOST (emotion/giọng điệu) [SPEAKING DIRECTLY TO CAMERA]: 'Lời nói trực tiếp của host bằng ${dialogueLang}, tự nhiên như đang trò chuyện...'"
-
-⚠️ CHÚ Ý THỨ TỰ VÀ THOẠI:
-- COLOR_LOCK phải là CÂU ĐẦU TIÊN trong promptText để AI ưu tiên xử lý màu trước
-- Field "voiceover" chứa THOẠI TRỰC TIẾP của host (dialogue), KHÔNG phải narration đọc đè
-- Host PHẢI mấp máy môi khớp với lời nói - miệng CỬ ĐỘNG khi nói
-- Nếu có whip pan: thêm "maximum 0.5 second without host face visible"
-
-═══════════════════════════════════════
-🎯 SCENE FLOW (RHYTHM KỂ CHUYỆN):
-═══════════════════════════════════════
-- Scene 1: WIDE + SLOW PUSH IN → Host ngồi, chào hỏi, hook. COLOR: neutral 5500K.
-- Scene 2-3: MEDIUM + PAN NHẸ → Bắt đầu kể, setup context. COLOR: slightly cool 5200K, counterbalance.
-- Scene 4: TRACKING → Host đứng dậy đi lại. COLOR: neutral reset 5500K.
-- Scene 5-6: CLOSE-UP + WHIP PAN → Core story. COLOR: cool neutral 5200K, clean tones.
-- Scene 7: DUTCH ANGLE + PUSH IN → Twist! COLOR: neutral reset 5500K, no color cast.
-- Scene 8: MEDIUM + RACK FOCUS → Phân tích bình tĩnh. COLOR: cool balance 5200K.
-- Scene 9: TILT UP → Suy nghĩ sâu. COLOR: neutral 5500K, true-to-life.
-- Scene cuối: WIDE + SLOW PULL OUT → Goodbye. COLOR: neutral balanced 5500K.
-
-═══════════════════════════════════════
-✍️ PHONG CÁCH KỊCH BẢN (STYLE: LÓNG / DƯA LEO):
-═══════════════════════════════════════
-Thoại phải viết theo phong cách KOL Việt Nam thực thụ - như Dưa Leo, Lóng, hoặc các KOL commentary/storytelling.
-
-${kolContentStyle === 'dua_leo' ? `
-🍈 PHONG CÁCH: DƯA LEO STYLE
-- Giọng điệu: Mỉa mai, châm biếm, phân tích sâu sắc
-- Hài hước đen, sarcasm cấp cao - nói ngược để người xem hiểu xuôi
-- Dùng ví dụ cực đoan, phóng đại để làm rõ point
-- "Bạn biết gì không, cái này nó hài ở chỗ... không hài chút nào."
-- Thường tự phản biện: "Nhiều người sẽ nói... nhưng mà không..."
-- Kết thúc bằng bài học sâu sắc, bất ngờ
-` : kolContentStyle === 'long_style' ? `
-🔥 PHONG CÁCH: LÓNG STYLE  
-- Giọng điệu: Kể chuyện cuốn hút, drama, dẫn dắt như phim
-- Tạo suspense: "Và rồi... *pause dài* ... chuyện xảy ra."
-- Dùng dialogue trong chuyện kể: "Nó nói với tôi: 'Bro, mày tin tôi đi'"
-- Twist bất ngờ ở giữa và cuối
-- Energy cao, nói nhanh khi hồi hộp, chậm khi dramatic
-- Cliffhanger giữa các scene: "Nhưng đó chưa phải là điều đáng sợ nhất..."
-` : kolContentStyle === 'commentary' ? `
-🎤 PHONG CÁCH: COMMENTARY
-- Giọng điệu: Bình luận sắc bén, góc nhìn khác biệt
-- Phản biện: đưa 2 mặt vấn đề, phân tích ưu/nhược
-- Dùng data, số liệu minh họa (thật hoặc gợi ý)
-- "90% người nghĩ như thế này, nhưng thực tế..."
-- Nói thẳng, không vòng vo, có chính kiến rõ ràng
-- Kết bằng call-to-action suy nghĩ: "Còn bạn nghĩ sao?"
-` : kolContentStyle === 'storytelling' ? `
-📚 PHONG CÁCH: STORYTELLING NHẸ NHÀNG
-- Giọng điệu: Kể chuyện cảm xúc, sâu lắng, chân thành
-- Như đang tâm sự với người bạn thân
-- Dùng hình ảnh, ẩn dụ: "Cuộc đời như một dòng sông..."
-- Nhịp chậm, pause nhiều, để người xem cảm nhận
-- Cảm xúc chân thực, vulnerable, không giả tạo
-- Kết bằng bài học ấm áp, truyền cảm hứng
-` : kolContentStyle === '教育' ? `
-🎓 PHONG CÁCH: EDUCATION
-- Giọng điệu: Giải thích dễ hiểu, thân thiện, không khô khan
-- Dùng ví dụ đời thường: "Giống như bạn đi chợ, mua 1 cân táo..."
-- Cấu trúc rõ ràng: vấn đề → giải thích → ví dụ → tóm tắt
-- Đặt câu hỏi kiểm tra: "Đến đây bạn đã hiểu chưa?"
-- Dùng emoji/cữ chỉ đếm: "Điều thứ nhất..., thứ hai..."
-- Kết bằng tóm tắt ngắn gọn và key takeaways
-` : `
-🎨 PHONG CÁCH: TỰ DO (AI TỰ CHỌN)
-- AI tự phân tích nội dung và chọn phong cách phù hợp nhất
-- Kết hợp nhiều phong cách nếu cần
-- Ưu tiên sự tự nhiên và cuốn hút
-`}
-
-🎤 GIỌNG VĂN & TONE:
-- NÓI CHUYỆN như đang ngồi cà phê với bạn bè, KHÔNG phải đọc bài
-- Dùng ngôn ngữ đời thường, gần gũi, KHÔNG hàn lâm
-- Xen kẽ hài hước + nghiêm túc + mỉa mai (sarcasm)
-- Dùng tiếng lóng, từ ngữ trending: "ủa", "vãi", "đỉnh", "wtf", "sao mà...", "bro"
-- Có personality rõ ràng - KHÔNG generic, KHÔNG nhạt
-
-🔥 KỸ THUẬT HOOK (CÂU ĐẦU TIÊN MỖI SCENE):
-- Scene 1: Hook gây shock/tò mò: "Okay bro, hôm nay kể cho bạn nghe một chuyện mà nghe xong bạn sẽ KHÔNG TIN NỔI..."
-- Câu hỏi tu từ: "Bạn có bao giờ tự hỏi tại sao...?"
-- Khẳng định gây tranh cãi: "Nói thẳng nhé, 90% người Việt đang làm sai chuyện này..."
-- Đặt vấn đề cá nhân: "Tôi từng bị lừa, và bài học đó thay đổi hoàn toàn cách tôi nghĩ..."
-
-💬 CẤU TRÚC THOẠI MỖI SCENE:
-1. HOOK (1-2 câu): Câu mở gây chú ý, hỏi khán giả, hoặc twist
-2. NỘI DUNG (3-5 câu): Kể chuyện, phân tích, đưa ví dụ thực tế
-3. REACTION (1 câu): Phản ứng cá nhân - bình luận, châm biếm, cảm xúc
-4. BRIDGE (1 câu): Nối sang scene tiếp - cliffhanger hoặc câu hỏi mở
-
-🎭 RHYTHM ENERGY (LÊN XUỐNG NHƯ SÓNG):
-- 🟢 Scene 1: ENERGY CAO - hook mạnh, nói nhanh, excited
-- 🟡 Scene 2-3: GIẢM NHẸ - kể chuyện bình tĩnh, dẫn dắt
-- 🔴 Scene 4-5: LÊN CAO - twist, bất ngờ, nói nhanh hơn, cử chỉ mạnh
-- 🟡 Scene 6-7: HẠ XUỐNG - suy tư, nói chậm, pause dài, thì thầm
-- 🔴 Scene 8-9: LÊN LẠI - climax, khẳng định mạnh, chỉ vào camera
-- 🟢 Scene 10: KẾT - nhẹ nhàng, chân thành, CTA
-
-📝 VÍ DỤ THOẠI THEO PHONG CÁCH:
-❌ SAI (nhạt, đọc bài):
-"Hôm nay chúng ta sẽ tìm hiểu về vấn đề cho vay tiền bạn bè."
-
-✅ ĐÚNG (Dưa Leo style):
-"Okay nghe này, có ai ở đây từng cho bạn mượn tiền rồi bị ghost không? *nghiêng đầu, nhướn mày* Nếu có thì chúc mừng, bạn vừa donate thành công cho một tổ chức từ thiện mang tên 'bạn tôi'!"
-
-✅ ĐÚNG (Lóng style):
-"Bro, tôi kể cho bạn nghe chuyện này. *gõ bàn* Thằng bạn tôi mượn 5 triệu, nói tuần sau trả. Tuần sau... *pause dài, nhìn camera* ... nó block Facebook tôi luôn. *cười chua chát*"
-
-🚫 QUY TẮC VIẾT THOẠI:
-- KHÔNG dùng ngôn ngữ hàn lâm, sách vở
-- KHÔNG viết như bản tin thời sự
-- KHÔNG lặp cấu trúc câu giữa các scene
-- PHẢI có ít nhất 2 câu hỏi tu từ trong toàn bộ kịch bản
-- PHẢI có ít nhất 1 lần host tự phản biện hoặc nói "nhưng mà..." (self-debate)
-- PHẢI xen kẽ câu ngắn (3-5 từ) và câu dài để tạo nhịp
-- Ví dụ nhịp: "Tiền. Bạn bè. Hai thứ đó KHÔNG BAO GIỜ nên đi chung với nhau. Và tôi sẽ giải thích cho bạn tại sao trong 5 phút tới."
-- PHẢI có *action cues* trong thoại: *cười*, *pause*, *nhìn camera*, *gõ bàn* để host biểu cảm khớp
-
-⚠️ QUAN TRỌNG:
-- PHẢI thay đổi camera movement MỖI scene - KHÔNG lặp lại cùng kiểu
-- Host PHẢI di chuyển hoặc tương tác đồ vật ít nhất 1 lần mỗi 2-3 scene
-- Energy phải lên xuống: calm → excited → whisper → energetic
-- Host LUÔN nhìn vào camera khi nói (trừ khi cố tình quay đi để dramatic)
-- Thoại phải TỰ NHIÊN như đang nói chuyện, KHÔNG đọc script
-- Mỗi scene phải có "personality" riêng - giọng điệu khác biệt`
         } else {
             voiceOverInstr = `CONTENT TYPE: B-ROLL ONLY (pure visuals, no dialogue).
 - The "voiceover" field should be empty or minimal ambient text
@@ -3493,7 +2724,7 @@ ${adInsertionInstr}
 ═══════════════════════════════════════
 EPISODE STRUCTURE (MUST FOLLOW EXACTLY):
 ═══════════════════════════════════════
-${voiceOverMode === 'cinematic_film' || voiceOverMode === 'cinematic_film_script' ? `
+${voiceOverMode === 'cinematic_film' ? `
 🎬 HOLLYWOOD 3-ACT STRUCTURE FOR ${totalScenes} SCENES:
 This is a FILM, not a YouTube video. Follow Hollywood screenplay conventions:
 
@@ -3568,7 +2799,7 @@ Mark each scene with its type in promptText:
 📌 SCENE BREAKDOWN FOR ${totalScenes} SCENES:
 • Opening (Scene 1-3): Host intro + Hook + Preview ALL topics
 • Topic Sections (Remaining scenes minus 5): Distribute EVENLY across ALL topics from input
-• Mid-CTA (1 scene at random position 25-60%): "Subscribe if enjoying!" (AI picks natural moment) 
+• Mid-CTA (1 scene at ~40%): "Subscribe if learning!" 
 • Summary (2-3 scenes): Quick recap KEY POINTS from EACH topic
 • Closing CTA (Final 2 scenes): Comment question + Goodbye`}
 
@@ -3689,9 +2920,33 @@ ${voiceOverMode === 'cinematic_film' ? `
 PROMPTTEXT FORMAT (EXACT):
 [VOICEOVER in ${dialogueLangLabel}: {voiceover text here}]. [${characterBible ? 'Character name: Full appearance description with clothing, expression, gesture' : 'Subject description'}]. ENVIRONMENT: {detailed location, set pieces, props}. CAMERA: {shot type}, {lens: 35mm/50mm/85mm}, {angle: eye-level/low/high}. LIGHTING: {type: soft/dramatic/natural}, {direction}, {color temperature}. STYLE: ${styleKeywords}. MOOD: {emotional tone}. AUDIO: {background sounds, music type}. LANGUAGE: Speak ${dialogueLangLabel} only.
 
+${characterTemplates ? `\n═══════════════════════════════════════
+📋 CHARACTER TEMPLATES - COPY EXACTLY:
+═══════════════════════════════════════
+${characterTemplates}
+
+⚠️ MỖI SCENE có nhân vật → DÙNG EXACT TEMPLATE ở trên!
+═══════════════════════════════════════\n` : ''}
+
 ═══════════════════════════════════════
 EXAMPLE OF PERFECT SCENE:
 ═══════════════════════════════════════
+${characterBible ? `\n✅ EXAMPLE WITH CHARACTER (CORRECT):
+{
+    "order": 7,
+    "title": "Host giải thích thu nhập",
+    "duration": 8,
+    "voiceover": "Thu nhập đa dạng. Thợ mới có lương cơ bản và tiền boa. Thợ lành nghề có thể kiếm từ 40,000 đến 70,000 đô la một năm.",
+    "promptText": "[VOICEOVER in Vietnamese: Thu nhập đa dạng. Thợ mới có lương cơ bản và tiền boa. Thợ lành nghề có thể kiếm từ 40,000 đến 70,000 đô la một năm.]. [${characterTemplates ? characterTemplates.split(',\n')[0].split(': ')[1] : 'CHARACTER_NAME: full description from CHARACTER BIBLE template'}]. ENVIRONMENT: Modern studio, clean background, professional setup. CAMERA: Medium shot, 50mm lens, eye-level. LIGHTING: Soft studio lighting, even illumination. STYLE: ${styleKeywords}. MOOD: Informative and professional. AUDIO: Clear voice, subtle background music. LANGUAGE: Speak Vietnamese only."
+}
+
+❌ WRONG EXAMPLE (DO NOT DO THIS):
+{
+    "promptText": "[VOICEOVER: ...]. [LEO_REAL] standing in studio. ..."
+    // ❌ THIẾU mô tả đầy đủ! Phải dùng template từ CHARACTER BIBLE!
+}
+
+` : `\n✅ EXAMPLE WITHOUT CHARACTER:
 {
     "order": 7,
     "title": "Thu nhập ngành nail",
@@ -3721,21 +2976,35 @@ ${voiceOverMode === 'cinematic_film' ? `
 10. ALL dialogue in ${dialogueLangLabel.toUpperCase()}
 11. Include VOICE tags: "VOICE: Male voice" or "VOICE: Female voice" matching character` : `1. VOICEOVER = What host SAYS (natural, conversational)
 2. PROMPTTEXT = Visual description for video AI (MUST include voiceover at start)
-3. ${characterBible ? `⚠️⚠️⚠️ CHARACTER DESCRIPTION - ABSOLUTELY MANDATORY:
-   - NEVER write just "[LEO_REAL]" or "[CHARACTER_NAME]" alone - this is WRONG!
-   - NEVER write "A character" or any generic descriptions
-   - ALWAYS include FULL DESCRIPTION every single time: [NAME: age, ethnicity, hair, outfit, accessories, expression, action]
-   - ✅ CORRECT: [LEO_REAL: 25yo Hispanic male, short curly black hair, wearing mustard yellow hoodie with 'LEO' on it, silver glasses. He is sitting on the couch reading a book]
-   - ❌ WRONG: [LEO_REAL] sitting on the couch
-   - ❌ WRONG: [LEO_REAL] standing in his apartment
-   - Copy the FULL character details from CHARACTER BIBLE into EVERY scene with that person
-   - The video AI cannot see previous scenes, so REPEAT full description EVERY time` : 'Use detailed visual subjects'}
+3. ${characterBible ? `⚠️⚠️⚠️ CHARACTER DESCRIPTION - ABSOLUTELY MANDATORY (READ THIS 3 TIMES):
+   
+   🔴 CRITICAL RULE: MỖI SCENE có nhân vật → PHẢI dùng EXACT TEMPLATE từ CHARACTER BIBLE
+   
+   ❌ TUYỆT ĐỐI KHÔNG VIẾT:
+   - "[LEO_REAL]" hoặc "[CHARACTER_NAME]" một mình
+   - "[LEO_REAL] sitting on couch" (thiếu mô tả)
+   - "A character" hoặc "The host" (quá chung chung)
+   - Bất kỳ mô tả ngắn gọn nào
+   
+   ✅ BẮT BUỘC PHẢI VIẾT (copy từ CHARACTER BIBLE):
+   - Dùng EXACT template: [TÊN_NHÂN_VẬT: mô tả đầy đủ từ CHARACTER BIBLE]
+   - Ví dụ: [LEO_REAL: 25yo Hispanic male, short curly black hair, wearing mustard yellow hoodie with 'LEO' on it, silver glasses. He is sitting on the couch reading a book]
+   
+   📋 CHECKLIST TRƯỚC KHI VIẾT MỖI SCENE:
+   □ Scene có nhân vật nào xuất hiện?
+   □ Đã copy FULL template từ CHARACTER BIBLE chưa?
+   □ Đã include TẤT CẢ chi tiết: tuổi, ngoại hình, trang phục, phụ kiện?
+   □ Nếu có 2+ nhân vật → đã mô tả đầy đủ CẢ 2 chưa?
+   
+   ⚠️ LƯU Ý: Video AI KHÔNG nhớ scene trước → PHẢI lặp lại mô tả đầy đủ mỗi scene!
+   ⚠️ Nếu vi phạm → Episode sẽ bị REJECT và phải generate lại!` : 'Use detailed visual subjects'}
 4. Mix Host scenes (60%) and B-Roll scenes (40%) for visual variety
 5. B-Roll scenes = NO character, pure visual/animation/graphics only
 6. Include SPECIFIC facts/numbers when discussing income, statistics
 7. Smooth transitions between scenes
 8. CTA scenes should feel natural, not forced
-9. ALL text/voiceover in ${dialogueLangLabel.toUpperCase()} ONLY`}
+9. ALL text/voiceover in ${dialogueLangLabel.toUpperCase()} ONLY
+`}
 
 Return JSON:
 {
@@ -3867,6 +3136,32 @@ Generate ALL ${totalScenes} scenes. Return ONLY valid JSON.`
 
             console.log(`[Continue] Need ${remaining} more scenes from ${startFrom}`)
 
+            // Get character templates for continue prompt
+            let continueCharTemplates = ''
+            if (characterBible && channel.characters.length > 0) {
+                const charsToUse = selectedCharacterIds.length > 0
+                    ? channel.characters.filter((c: { id: string }) => selectedCharacterIds.includes(c.id))
+                    : channel.characters
+                
+                continueCharTemplates = charsToUse.map((c: { 
+                    name: string
+                    fullDescription: string
+                    appearance?: string | null
+                    clothing?: string | null
+                    skinTone?: string | null
+                    faceDetails?: string | null
+                    hairDetails?: string | null
+                }) => {
+                    const parts = [c.fullDescription]
+                    if (c.appearance) parts.push(c.appearance)
+                    if (c.skinTone) parts.push(`da ${c.skinTone}`)
+                    if (c.faceDetails) parts.push(c.faceDetails)
+                    if (c.hairDetails) parts.push(c.hairDetails)
+                    if (c.clothing && !adaptCharactersToScript) parts.push(c.clothing)
+                    return `[${c.name.toUpperCase()}: ${parts.join(', ')}]`
+                }).join('\n')
+            }
+
             const continuePrompt = `Continue Episode "${episodeData.title}" - generate scenes ${startFrom} to ${totalScenes}
 
 CONTEXT: ${episodeData.synopsis}
@@ -3875,12 +3170,26 @@ DIALOGUE: ${dialogueLangLabel.toUpperCase()} ONLY
 
 ${characterBible}
 
-⚠️⚠️⚠️ CRITICAL FORMAT RULES:
-1. NEVER write just "[LEO_REAL]" or "[CHARACTER_NAME]" alone - ALWAYS include FULL description
-2. ✅ CORRECT: [LEO_REAL: 25yo Hispanic male, short curly black hair, wearing mustard yellow hoodie with 'LEO' on it, silver glasses. He is doing something]
-3. ❌ WRONG: [LEO_REAL] doing something
-4. ❌ WRONG: INT. LOCATION screenplay format
-5. Each scene must have: [VOICEOVER in ${dialogueLangLabel}: text]. [Character with FULL description OR B-Roll visual]. ENVIRONMENT: X. CAMERA: X. LIGHTING: X. STYLE: X. MOOD: X. AUDIO: X.
+${continueCharTemplates ? `\n═══════════════════════════════════════
+📋 CHARACTER TEMPLATES - COPY EXACTLY:
+═══════════════════════════════════════
+${continueCharTemplates}
+
+⚠️ MỖI SCENE có nhân vật → DÙNG EXACT TEMPLATE ở trên!
+═══════════════════════════════════════\n` : ''}
+
+⚠️⚠️⚠️ CRITICAL FORMAT RULES (VIOLATION = REJECT):
+1. ❌ TUYỆT ĐỐI KHÔNG: "[CHARACTER_NAME]" một mình
+2. ✅ BẮT BUỘC: "[CHARACTER_NAME: FULL_DESCRIPTION_FROM_TEMPLATE]"
+3. ✅ CORRECT: ${continueCharTemplates ? continueCharTemplates.split('\n')[0] : '[LEO_REAL: 25yo Hispanic male, short curly black hair, wearing mustard yellow hoodie with \'LEO\' on it, silver glasses. He is doing something]'}
+4. ❌ WRONG: [LEO_REAL] doing something
+5. ❌ WRONG: INT. LOCATION screenplay format
+6. Each scene must have: [VOICEOVER in ${dialogueLangLabel}: text]. [Character with FULL description OR B-Roll visual]. ENVIRONMENT: X. CAMERA: X. LIGHTING: X. STYLE: X. MOOD: X. AUDIO: X.
+
+📋 CHECKLIST TRƯỚC MỖI SCENE:
+□ Đã check CHARACTER TEMPLATES ở trên chưa?
+□ Đã copy EXACT template vào promptText chưa?
+□ Nếu có 2+ nhân vật → đã mô tả đầy đủ cả 2 chưa?
 
 Generate ${remaining} more scenes (scene ${startFrom} to ${totalScenes}).
 Return JSON: {"scenes": [{"order": ${startFrom}, "title": "Scene Title", "voiceover": "what is said", "promptText": "FULL formatted prompt with character descriptions", "duration": 8}]}
@@ -3909,7 +3218,91 @@ Return ONLY valid JSON.`
             }, { status: 400 })
         }
 
-        console.log('[Final] Total scenes:', allScenes.length)
+            console.log('[Final] Total scenes:', allScenes.length)
+
+        // POST-PROCESSING: Validate and fix character consistency
+        if (characterBible && allScenes.length > 0) {
+            console.log('[Post-Process] Validating character descriptions...')
+            
+            // Extract character names from characterBible
+            const characterNames = channel.characters
+                .filter((c: { id: string }) => selectedCharacterIds.length === 0 || selectedCharacterIds.includes(c.id))
+                .map((c: { name: string }) => c.name.toUpperCase())
+            
+            // Get full character descriptions for reference
+            const characterRefs: Record<string, string> = {}
+            channel.characters
+                .filter((c: { id: string }) => selectedCharacterIds.length === 0 || selectedCharacterIds.includes(c.id))
+                .forEach((c: { 
+                    name: string
+                    fullDescription: string
+                    appearance?: string | null
+                    clothing?: string | null
+                    skinTone?: string | null
+                    faceDetails?: string | null
+                    hairDetails?: string | null
+                }) => {
+                    const parts = [c.fullDescription]
+                    if (c.appearance) parts.push(c.appearance)
+                    if (c.skinTone) parts.push(`da ${c.skinTone}`)
+                    if (c.faceDetails) parts.push(c.faceDetails)
+                    if (c.hairDetails) parts.push(c.hairDetails)
+                    if (c.clothing && !adaptCharactersToScript) parts.push(c.clothing)
+                    characterRefs[c.name.toUpperCase()] = parts.join(', ')
+                })
+            
+            // Fix each scene
+            allScenes.forEach((scene: SceneData) => {
+                if (!scene.promptText) return
+                
+                let fixedPrompt = scene.promptText
+                let wasFixed = false
+                
+                // Check for each character
+                characterNames.forEach((charName: string) => {
+                    const charRef = characterRefs[charName]
+                    if (!charRef) return
+                    
+                    // Pattern 1: Just [CHARACTER_NAME] or [CHARACTER_NAME] alone
+                    const pattern1 = new RegExp(`\\[${charName}\\]`, 'gi')
+                    if (pattern1.test(fixedPrompt)) {
+                        fixedPrompt = fixedPrompt.replace(pattern1, `[${charName}: ${charRef}]`)
+                        wasFixed = true
+                        console.log(`[Post-Process] Fixed: [${charName}] → [${charName}: ...]`)
+                    }
+                    
+                    // Pattern 2: [CHARACTER_NAME] followed by action but no description
+                    const pattern2 = new RegExp(`\\[${charName}\\]([^:])`, 'gi')
+                    if (pattern2.test(fixedPrompt)) {
+                        fixedPrompt = fixedPrompt.replace(pattern2, `[${charName}: ${charRef}]$1`)
+                        wasFixed = true
+                        console.log(`[Post-Process] Fixed: [${charName}] action → [${charName}: ...] action`)
+                    }
+                    
+                    // Pattern 3: Very short description (less than 20 chars after colon)
+                    const pattern3 = new RegExp(`\\[${charName}:\\s*([^\\]]{1,20})\\]`, 'gi')
+                    const match3 = fixedPrompt.match(pattern3)
+                    if (match3) {
+                        match3.forEach(match => {
+                            const desc = match.match(/\[.*?:\s*(.*?)\]/)?.[1] || ''
+                            // If description is too short or doesn't contain key details, replace
+                            if (desc.length < 30 || !desc.includes(charRef.split(',')[0].substring(0, 20))) {
+                                fixedPrompt = fixedPrompt.replace(match, `[${charName}: ${charRef}]`)
+                                wasFixed = true
+                                console.log(`[Post-Process] Fixed: Short description for ${charName}`)
+                            }
+                        })
+                    }
+                })
+                
+                if (wasFixed) {
+                    scene.promptText = fixedPrompt
+                    console.log(`[Post-Process] Fixed scene ${scene.order}`)
+                }
+            })
+            
+            console.log('[Post-Process] Character validation complete')
+        }
 
         // Save to database
         try {
@@ -3943,25 +3336,9 @@ Return ONLY valid JSON.`
                             const visualPrompt = scene.promptText || 'Scene visual description'
                             // Add language specification for voiceover
                             const langTag = dialogueLang === 'en' ? 'English' : 'Vietnamese'
-
-                            // Check if promptText already has VOICEOVER or LANGUAGE tags to prevent duplicates
-                            const hasVoiceover = visualPrompt.includes('[VOICEOVER') || visualPrompt.includes('[SCENE TYPE:')
-                            const hasLanguage = visualPrompt.includes('LANGUAGE:')
-
-                            // For cinematic_film_script mode, don't add VOICEOVER wrapper since it uses character dialogue
-                            const isCinematicScript = voiceOverMode === 'cinematic_film_script' || voiceOverMode === 'cinematic_film'
-
-                            let fullPrompt: string
-                            if (isCinematicScript || hasVoiceover) {
-                                // Don't add VOICEOVER wrapper - AI already formatted correctly or uses character dialogue
-                                fullPrompt = hasLanguage ? visualPrompt : `${visualPrompt}. LANGUAGE: Speak ${langTag} only.`
-                            } else if (voiceContent && !hasVoiceover) {
-                                // Standard mode: add VOICEOVER wrapper only if not present
-                                const languageSuffix = hasLanguage ? '' : `. LANGUAGE: Speak ${langTag} only.`
-                                fullPrompt = `[VOICEOVER in ${langTag}: ${voiceContent}]. ${visualPrompt}${languageSuffix}`
-                            } else {
-                                fullPrompt = hasLanguage ? visualPrompt : `${visualPrompt}. LANGUAGE: Speak ${langTag} only.`
-                            }
+                            const fullPrompt = voiceContent
+                                ? `[VOICEOVER in ${langTag}: ${voiceContent}]. ${visualPrompt}. LANGUAGE: Speak ${langTag} only.`
+                                : visualPrompt
 
                             return {
                                 order: scene.order || index + 1,

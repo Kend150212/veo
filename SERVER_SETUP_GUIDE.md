@@ -31,13 +31,13 @@ npm -v
 cd /var/www
 
 # 2. Clone source code (Thay URL của bạn vào đây)
-sudo git clone https://github.com/Kend150212/veo.git veo-prompt
+sudo git clone https://github.com/Kend150212/veo.git veo
 
 # 3. Cấp quyền cho user hiện tại (nếu đang dùng user thường)
-sudo chown -R $USER:$USER /var/www/veo-prompt
+sudo chown -R $USER:$USER /var/www/veo
 
 # 4. Di chuyển vào thư mục dự án
-cd /var/www/veo-prompt
+cd /var/www/veo
 ```
 
 ---
@@ -100,7 +100,7 @@ PM2 giúp ứng dụng chạy ngầm và tự khởi động lại khi crash ho�
 sudo npm install -g pm2
 
 # 2. Khởi chạy ứng dụng
-pm2 start npm --name "veo-prompt" -- start
+pm2 start npm --name "veo" -- start
 
 # 3. Lưu cấu hình hiện tại để tự load khi reboot
 pm2 save
@@ -117,7 +117,7 @@ Nginx sẽ đóng vai trò cổng đón request từ internet (port 80/443) và 
 
 ```bash
 # 1. Tạo file config Nginx
-sudo nano /etc/nginx/sites-available/veo-prompt
+sudo nano /etc/nginx/sites-available/veo
 ```
 
 **Dán nội dung sau vào file (thay `your-domain.com` bằng domain thật):**
@@ -146,7 +146,7 @@ server {
 **Kích hoạt site:**
 ```bash
 # 1. Tạo symlink sang sites-enabled
-sudo ln -s /etc/nginx/sites-available/veo-prompt /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/veo /etc/nginx/sites-enabled/
 
 # 2. Kiểm tra cú pháp config
 sudo nginx -t
@@ -176,16 +176,16 @@ Truy cập `https://your-domain.com` để kiểm tra.
 
 **Cập nhật code mới:**
 ```bash
-cd /var/www/veo-prompt
+cd /var/www/veo
 git pull origin main
 npm install
 npx prisma generate
 npx prisma db push
 npm run build
-pm2 restart veo-prompt
+pm2 restart veo
 ```
 
 **Xem logs lỗi:**
 ```bash
-pm2 logs veo-prompt
+pm2 logs veo
 ```
