@@ -219,6 +219,7 @@ model ChannelCharacter {
   personality     String?   // Tính cách
   voiceStyle      String?   // Giọng nói
   isMain          Boolean   @default(false) // Nhân vật chính
+  metadata        String?   // JSON: { avatarShots: [...] }
   createdAt       DateTime  @default(now())
   
   channelId       String

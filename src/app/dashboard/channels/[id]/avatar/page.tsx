@@ -51,6 +51,13 @@ const MOODS = [
     { id: 'soft_pastel', label: 'Soft Pastel', lighting: 'soft pastel tones, dreamy, ethereal lighting' },
 ]
 
+const IMAGE_MODELS = [
+    { id: 'imagen-3.0-generate-002', label: 'Imagen 3', badge: 'Mới nhất', color: '#8b5cf6', desc: 'Chất lượng cao nhất' },
+    { id: 'imagen-3.0-generate-001', label: 'Imagen 2 / Banana 2', badge: 'Ổn định', color: '#10b981', desc: 'Nhanh & ổn định' },
+    { id: 'imagen-4.0-generate-001', label: 'Imagen 4', badge: 'Preview', color: '#f59e0b', desc: 'Thế hệ tiếp theo' },
+    { id: 'gemini-2.0-flash-preview-image-generation', label: 'Gemini Flash', badge: 'Gemini', color: '#3b82f6', desc: 'Hỗ trợ reference image' },
+]
+
 // ─── Types ────────────────────────────────────────────────────
 interface Character {
     id: string
@@ -98,6 +105,7 @@ export default function AvatarStudioPage() {
     const [previewImage, setPreviewImage] = useState<string | null>(null)
     const [isLoading, setIsLoading] = useState(true)
     const [activeTab, setActiveTab] = useState<'create' | 'library'>('create')
+    const [selectedModel, setSelectedModel] = useState(IMAGE_MODELS[0])
 
     const fetchData = useCallback(async () => {
         try {
@@ -149,7 +157,8 @@ export default function AvatarStudioPage() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     prompt: generatedPrompt,
-                    aspectRatio: ['full_shot', 'medium_full', 'wide_shot'].includes(selectedShot.id) ? '9:16' : '1:1'
+                    aspectRatio: ['full_shot', 'medium_full', 'wide_shot'].includes(selectedShot.id) ? '9:16' : '1:1',
+                    model: selectedModel.id
                 })
             })
             const data = await res.json()
@@ -397,6 +406,31 @@ export default function AvatarStudioPage() {
                                             className={`px-3 py-1.5 rounded-full text-sm transition-all ${selectedMood.id === m.id ? 'bg-amber-500/40 border border-amber-400/50 text-white' : 'bg-white/5 border border-transparent text-white/50 hover:text-white'}`}
                                         >
                                             {m.label}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Image Model */}
+                            <div className="rounded-2xl border border-white/10 p-4" style={{ background: 'rgba(255,255,255,0.03)' }}>
+                                <h3 className="text-sm font-semibold text-white/60 uppercase tracking-widest mb-3 flex items-center gap-2">
+                                    🤖 Model AI
+                                </h3>
+                                <div className="space-y-2">
+                                    {IMAGE_MODELS.map(m => (
+                                        <button
+                                            key={m.id}
+                                            onClick={() => setSelectedModel(m)}
+                                            className={`w-full text-left px-3 py-2.5 rounded-xl transition-all flex items-center justify-between ${selectedModel.id === m.id ? 'border text-white' : 'bg-white/5 border border-transparent text-white/60 hover:text-white hover:bg-white/10'}`}
+                                            style={selectedModel.id === m.id ? { background: `${m.color}22`, borderColor: `${m.color}66` } : {}}
+                                        >
+                                            <div>
+                                                <div className="text-sm font-medium">{m.label}</div>
+                                                <div className="text-xs opacity-50">{m.desc}</div>
+                                            </div>
+                                            <span className="text-[10px] px-2 py-0.5 rounded-full font-medium" style={{ background: `${m.color}33`, color: m.color }}>
+                                                {m.badge}
+                                            </span>
                                         </button>
                                     ))}
                                 </div>

@@ -11,11 +11,12 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
         }
 
-        const { 
+        const {
             prompt,
             referenceImageBase64, // Base64 của hình sản phẩm reference
             aspectRatio = '9:16', // Default vertical for TikTok/Reels
-            sceneId // Optional: lưu vào scene nếu có
+            sceneId, // Optional: lưu vào scene nếu có
+            model: requestedModel // Optional: specific model override
         } = await req.json()
 
         if (!prompt) {
@@ -29,8 +30,8 @@ export async function POST(req: Request) {
 
         const apiKey = settings?.geminiKey
         if (!apiKey) {
-            return NextResponse.json({ 
-                error: 'Chưa cấu hình Google API Key. Vào Settings để thêm.' 
+            return NextResponse.json({
+                error: 'Chưa cấu hình Google API Key. Vào Settings để thêm.'
             }, { status: 400 })
         }
 
@@ -41,7 +42,7 @@ export async function POST(req: Request) {
         // ============================================
         if (referenceImageBase64) {
             console.log('[Image Gen] Using Gemini with reference image')
-            
+
             // Gemini models that support image generation with image input
             const geminiModels = [
                 'gemini-2.0-flash-preview-image-generation',
@@ -50,11 +51,11 @@ export async function POST(req: Request) {
 
             for (const model of geminiModels) {
                 console.log(`[Gemini] Trying model: ${model}`)
-                
+
                 try {
                     // Clean the base64 data
                     const cleanBase64 = referenceImageBase64.replace(/^data:image\/\w+;base64,/, '')
-                    
+
                     // Build prompt with reference instruction
                     const referencePrompt = `I am providing you a REFERENCE IMAGE of a clothing item. Your task is to generate a NEW image with a fashion model wearing the EXACT SAME clothing item.
 
@@ -102,7 +103,7 @@ STRICT RULES:
 
                     if (response.ok) {
                         const result = await response.json()
-                        
+
                         // Find the image part in the response
                         const parts = result.candidates?.[0]?.content?.parts || []
                         for (const part of parts) {
@@ -112,7 +113,7 @@ STRICT RULES:
                                 break
                             }
                         }
-                        
+
                         if (imageBase64) break
                     } else {
                         const errorData = await response.json().catch(() => ({}))
@@ -129,22 +130,26 @@ STRICT RULES:
         // ============================================
         if (!imageBase64) {
             console.log('[Image Gen] Falling back to Imagen (no reference)')
-            
-            const imagenModels = [
-                'imagen-3.0-generate-002',
-                'imagen-3.0-generate-001', 
-                'imagen-4.0-generate-001',
+
+            // Default order; if caller specifies a model, use only that one
+            const allImagenModels = [
+                'imagen-3.0-generate-002',    // Imagen 3 (latest)
+                'imagen-3.0-generate-001',    // Imagen 3 / "Banana 2"
+                'imagen-4.0-generate-001',    // Imagen 4 (preview)
                 'imagen-4.0-fast-generate-001'
             ]
+            const imagenModels = requestedModel && allImagenModels.includes(requestedModel)
+                ? [requestedModel]
+                : allImagenModels
 
             for (const modelName of imagenModels) {
                 const imagenEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:predict`
-                
+
                 console.log(`[Imagen] Trying model: ${modelName}`)
 
                 try {
                     const cleanPrompt = `${prompt} STYLE: Pure photography, clean visual. NEVER add ANY text, watermarks, logos, captions, or graphic overlays on the image.`
-                    
+
                     const response = await fetch(imagenEndpoint, {
                         method: 'POST',
                         headers: {
@@ -164,7 +169,7 @@ STRICT RULES:
                     if (response.ok) {
                         const result = await response.json()
                         imageBase64 = result.predictions?.[0]?.bytesBase64Encoded ||
-                                     result.generated_images?.[0]?.image?.image_bytes
+                            result.generated_images?.[0]?.image?.image_bytes
                         if (imageBase64) {
                             console.log(`[Imagen] Success with model: ${modelName}`)
                             break
@@ -183,8 +188,8 @@ STRICT RULES:
         // Check result
         // ============================================
         if (!imageBase64) {
-            return NextResponse.json({ 
-                error: 'Không thể tạo ảnh. Tất cả các model đều thất bại.' 
+            return NextResponse.json({
+                error: 'Không thể tạo ảnh. Tất cả các model đều thất bại.'
             }, { status: 500 })
         }
 
@@ -204,8 +209,8 @@ STRICT RULES:
 
     } catch (error) {
         console.error('Generate image error:', error)
-        return NextResponse.json({ 
-            error: `Failed to generate image: ${error instanceof Error ? error.message : 'Unknown error'}` 
+        return NextResponse.json({
+            error: `Failed to generate image: ${error instanceof Error ? error.message : 'Unknown error'}`
         }, { status: 500 })
     }
 }
