@@ -163,13 +163,22 @@ export default function AvatarStudioPage() {
                     model: selectedModel.id
                 })
             })
+
+            if (!res.ok) {
+                const err = await res.json().catch(() => ({}))
+                toast.error(err.error || `Lỗi ${res.status}`)
+                return
+            }
+
             const data = await res.json()
 
             if (data.imageUrl) {
+                // Show image IMMEDIATELY — don't block on save
                 setPreviewImage(data.imageUrl)
+                toast.success('Ảnh đã được tạo!')
 
-                // Auto-save the shot
-                await fetch(`/api/channels/${channelId}/avatar`, {
+                // Save in background — failure won't affect preview
+                fetch(`/api/channels/${channelId}/avatar`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -181,15 +190,16 @@ export default function AvatarStudioPage() {
                         prompt: generatedPrompt,
                         imageUrl: data.imageUrl
                     })
-                })
-
-                toast.success('Đã tạo và lưu avatar shot!')
-                fetchData()
+                }).then(r => {
+                    if (r.ok) fetchData()
+                    else console.warn('[Avatar save] failed:', r.status)
+                }).catch(e => console.warn('[Avatar save] error:', e))
             } else {
                 toast.error(data.error || 'Không thể tạo ảnh')
             }
-        } catch {
-            toast.error('Lỗi kết nối')
+        } catch (e) {
+            console.error('[Generate] error:', e)
+            toast.error('Lỗi kết nối tới server')
         } finally {
             setIsGenerating(false)
         }
@@ -228,11 +238,22 @@ export default function AvatarStudioPage() {
                     model: selectedModel.id
                 })
             })
+
+            if (!res.ok) {
+                const err = await res.json().catch(() => ({}))
+                toast.error(err.error || `Lỗi ${res.status}`)
+                return
+            }
+
             const data = await res.json()
 
             if (data.imageUrl) {
+                // Show immediately
                 setMasterSheetImage(data.imageUrl)
-                await fetch(`/api/channels/${channelId}/avatar`, {
+                toast.success('Master Sheet đã được tạo!')
+
+                // Save in background
+                fetch(`/api/channels/${channelId}/avatar`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -244,14 +265,16 @@ export default function AvatarStudioPage() {
                         prompt: masterPrompt,
                         imageUrl: data.imageUrl
                     })
-                })
-                toast.success('Master Sheet đã được tạo và lưu!')
-                fetchData()
+                }).then(r => {
+                    if (r.ok) fetchData()
+                    else console.warn('[MasterSheet save] failed:', r.status)
+                }).catch(e => console.warn('[MasterSheet save] error:', e))
             } else {
                 toast.error(data.error || 'Không thể tạo Master Sheet')
             }
-        } catch {
-            toast.error('Lỗi kết nối')
+        } catch (e) {
+            console.error('[MasterSheet] error:', e)
+            toast.error('Lỗi kết nối tới server')
         } finally {
             setIsGeneratingMaster(false)
         }
