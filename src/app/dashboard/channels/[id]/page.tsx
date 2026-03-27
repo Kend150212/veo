@@ -1733,6 +1733,29 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
         setTimeout(() => setCopied(false), 2000)
     }
 
+    const stripVoiceFromText = (text: string) => {
+        if (!text) return text
+        return text
+            .replace(/\[VOICEOVER[^\]]*\]/gi, '')
+            .replace(/\[DIALOGUE[^\]]*\]/gi, '')
+            .replace(/VOICE IN VIETNAMESE:\s*(\[[^\]]*\]|"[^"]*")/gi, '')
+            .replace(/^VOICE:[^\n]*/gim, '')
+            .replace(/^LANGUAGE:\s*Speak[^\n]*/gim, '')
+            .replace(/\n{3,}/g, '\n\n')
+            .trim()
+    }
+
+    const handleCopyEpisodeWithoutVoice = async (episode: Episode) => {
+        const text = episode.scenes.map(s =>
+            `Scene ${s.order}: ${stripVoiceFromText(s.promptText)}`
+        ).join('\n\n')
+
+        await navigator.clipboard.writeText(text)
+        setCopied(true)
+        toast.success('Đã copy scenes (không có voice)')
+        setTimeout(() => setCopied(false), 2000)
+    }
+
     const handleUpdateLanguage = async (lang: string) => {
         try {
             await fetch(`/api/channels/${id}`, {
@@ -4925,12 +4948,25 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                                                 🎙️ Voice
                                             </button>
                                             <button
-                                                onClick={() => handleCopyEpisode(episode)}
+                                                onClick={() => showVoicePanel === episode.id
+                                                    ? handleCopyEpisodeWithoutVoice(episode)
+                                                    : handleCopyEpisode(episode)
+                                                }
                                                 className="btn-secondary text-sm flex items-center gap-1"
                                             >
                                                 {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
-                                                Copy All
+                                                {showVoicePanel === episode.id ? 'Copy (no 🎙️)' : 'Copy All'}
                                             </button>
+                                            {showVoicePanel !== episode.id && (
+                                                <button
+                                                    onClick={() => handleCopyEpisodeWithoutVoice(episode)}
+                                                    className="text-sm flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[var(--bg-tertiary)] text-[var(--text-muted)] hover:text-violet-400 hover:bg-violet-500/10 transition"
+                                                    title="Copy không kèm voice/thoại"
+                                                >
+                                                    <Copy className="w-3 h-3" />
+                                                    no 🎙️
+                                                </button>
+                                            )}
                                             <button
                                                 onClick={() => handleTranslateEpisode(episode.id, channel.dialogueLanguage === 'vi' ? 'en' : 'vi')}
                                                 disabled={actionLoading === episode.id}
