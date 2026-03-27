@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
@@ -109,6 +109,8 @@ export default function AvatarStudioPage() {
     const [selectedModel, setSelectedModel] = useState(IMAGE_MODELS[0])
     const [masterSheetImage, setMasterSheetImage] = useState<string | null>(null)
     const [isGeneratingMaster, setIsGeneratingMaster] = useState(false)
+    const [isUploading, setIsUploading] = useState(false)
+    const uploadInputRef = useRef<HTMLInputElement>(null)
 
     const fetchData = useCallback(async () => {
         try {
@@ -301,6 +303,57 @@ export default function AvatarStudioPage() {
         }
     }
 
+    const handleUploadImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0]
+        if (!file || !selectedChar) return
+        setIsUploading(true)
+        try {
+            const dataUrl = await new Promise<string>((resolve, reject) => {
+                const img = new Image()
+                img.onload = () => {
+                    const canvas = document.createElement('canvas')
+                    const scale = Math.min(1, 1200 / Math.max(img.width, img.height))
+                    canvas.width = img.width * scale
+                    canvas.height = img.height * scale
+                    canvas.getContext('2d')!.drawImage(img, 0, 0, canvas.width, canvas.height)
+                    resolve(canvas.toDataURL('image/jpeg', 0.85))
+                    URL.revokeObjectURL(img.src)
+                }
+                img.onerror = reject
+                img.src = URL.createObjectURL(file)
+            })
+
+            // Show in preview
+            setPreviewImage(dataUrl)
+
+            // Save to library
+            const res = await fetch(`/api/channels/${channelId}/avatar`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    characterId: selectedChar,
+                    shotType: selectedShot.id,
+                    outfit: selectedOutfit.id === 'custom' ? customOutfit : selectedOutfit.id,
+                    background: selectedBg.id === 'custom' ? customBg : selectedBg.id,
+                    mood: selectedMood.id,
+                    prompt: `Uploaded: ${file.name}`,
+                    imageUrl: dataUrl
+                })
+            })
+            if (res.ok) {
+                toast.success('Ảnh đã được upload và lưu vào thư viện!')
+                fetchData()
+            } else {
+                toast.success('Ảnh đã upload! (Chưa lưu được thư viện - cần migrate DB)')
+            }
+        } catch {
+            toast.error('Lỗi khi upload ảnh')
+        } finally {
+            setIsUploading(false)
+            // Reset input
+            if (uploadInputRef.current) uploadInputRef.current.value = ''
+        }
+    }
 
     const handleDelete = async (characterId: string, shotId: string) => {
         try {
@@ -645,7 +698,7 @@ export default function AvatarStudioPage() {
                             <div className="grid grid-cols-2 gap-3">
                                 <button
                                     onClick={handleGenerate}
-                                    disabled={isGenerating || isGeneratingMaster || !selectedChar}
+                                    disabled={isGenerating || isGeneratingMaster || isUploading || !selectedChar}
                                     className="py-4 rounded-2xl font-bold text-white text-base transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                                     style={{ background: 'linear-gradient(135deg, #a855f7, #ec4899)' }}
                                 >
@@ -657,7 +710,7 @@ export default function AvatarStudioPage() {
                                 </button>
                                 <button
                                     onClick={handleGenerateMasterSheet}
-                                    disabled={isGenerating || isGeneratingMaster || !selectedChar}
+                                    disabled={isGenerating || isGeneratingMaster || isUploading || !selectedChar}
                                     className="py-4 rounded-2xl font-bold text-white text-base transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 border border-amber-400/30"
                                     style={{ background: 'linear-gradient(135deg, #92400e, #d97706, #f59e0b)' }}
                                 >
@@ -668,6 +721,26 @@ export default function AvatarStudioPage() {
                                     )}
                                 </button>
                             </div>
+
+                            {/* Upload Button */}
+                            <input
+                                ref={uploadInputRef}
+                                type="file"
+                                accept="image/*"
+                                className="hidden"
+                                onChange={handleUploadImage}
+                            />
+                            <button
+                                onClick={() => uploadInputRef.current?.click()}
+                                disabled={isGenerating || isGeneratingMaster || isUploading || !selectedChar}
+                                className="w-full py-3 rounded-2xl font-semibold text-white/80 text-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 border border-white/15 hover:border-white/30 hover:bg-white/5"
+                            >
+                                {isUploading ? (
+                                    <><Loader2 className="w-4 h-4 animate-spin" /> Đang upload...</>
+                                ) : (
+                                    <><Camera className="w-4 h-4" /> Upload ảnh có sẵn</>
+                                )}
+                            </button>
                             <p className="text-xs text-white/30 text-center -mt-2">
                                 Master Sheet = 1 ảnh 6 góc • tiết kiệm 6x API call
                             </p>
