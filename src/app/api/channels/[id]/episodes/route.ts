@@ -79,7 +79,8 @@ export async function POST(
             narrativeTemplateId = null,
             narrativeKeyPoints = [],
             narrativeWithHost = false,
-            narrativeHostId = null
+            narrativeHostId = null,
+            separateVoice = false
         } = await req.json()
 
         // CTA options
@@ -2720,6 +2721,23 @@ Example: "[AD_INTEGRATION: testimonial] Host showing product with genuine smile.
 - Blend naturally with content - viewers shouldn't feel interrupted
 - Keep ad segments SHORT (1 scene each, not long pitches)
 ` : ''
+
+        // Inject Separate Voice rule if requested
+        if (separateVoice) {
+            voiceOverInstr += `
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⚠️⚠️⚠️ CHẾ ĐỘ TÁCH VOICE RIÊNG ⚠️⚠️⚠️
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+QUAN TRỌNG: "voiceover" và "dialogue" phải TÁCH HOÀN TOÀN khỏi promptText.
+
+✅ TRONG "voiceover" field: đặt TOÀN BỘ lời thoại/narration gốc (chỉ văn bản thuần, KHÔNG có nhãn như [VOICEOVER:...])
+   Ví dụ: "Hãy tưởng tượng bạn đang nắm giữ một đế chế nghìn tỷ đô..."
+
+❌ TRONG "promptText": TUYỆT ĐỐI KHÔNG chứa bất kỳ lời thoại, voiceover, hay dialogue nào.
+   Prompttext chỉ mô tả: hình ảnh, camera, lighting, environment, sound effects, movement, style.
+   KHÔNG có: [VOICEOVER ...], [DIALOGUE ...], VOICE:, hay bất kỳ lời nói của nhân vật/narrator.`
+        }
 
         // Generate episode with YouTube content
         const fullPrompt = `Create Episode ${nextEpisodeNumber} with EXACTLY ${totalScenes} scenes for channel "${channel.name}"

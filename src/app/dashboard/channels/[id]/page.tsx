@@ -789,6 +789,8 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
     const [narrativeKeyPoints, setNarrativeKeyPoints] = useState('')
     const [narrativeWithHost, setNarrativeWithHost] = useState(false) // false = 100% B-roll, true = có host dẫn chuyện
     const [narrativeHostId, setNarrativeHostId] = useState<string>('') // ID nhân vật được chọn làm host
+    const [separateVoice, setSeparateVoice] = useState(false) // Tách voice/thoại ra khỏi promptText
+    const [showVoicePanel, setShowVoicePanel] = useState<string | null>(null) // episodeId đang xem voice panel
     const narrativeTemplates = getNarrativeTemplateSummaries()
 
     // Advanced Episode Features
@@ -1500,6 +1502,7 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                         : null,
                     narrativeWithHost: voiceOverMode === 'narrative_storytelling' ? narrativeWithHost : false,
                     narrativeHostId: voiceOverMode === 'narrative_storytelling' && narrativeWithHost && narrativeHostId ? narrativeHostId : null,
+                    separateVoice,
                     // KOL Solo Storyteller options
                     kolRoomDescription: voiceOverMode === 'kol_solo_storyteller' ? kolRoomDescription : null,
                     kolHostMode: voiceOverMode === 'kol_solo_storyteller' ? kolHostMode : null,
@@ -4438,6 +4441,27 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                             )}
                         </div>
 
+                        {/* Separate Voice Toggle */}
+                        <div className="mb-4 p-3 bg-[var(--bg-secondary)] rounded-lg border border-violet-500/20 flex items-center justify-between">
+                            <div>
+                                <p className="text-sm font-medium text-violet-300 flex items-center gap-2">
+                                    🎙️ Tách Voice ra riêng
+                                </p>
+                                <p className="text-xs text-[var(--text-muted)] mt-0.5">
+                                    Voice/thoại sẽ chỉ nằm trong field riêng — promptText chỉ có hình ảnh / camera
+                                </p>
+                            </div>
+                            <button
+                                onClick={() => setSeparateVoice(!separateVoice)}
+                                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition flex-shrink-0 ${separateVoice
+                                    ? 'bg-violet-500 text-white'
+                                    : 'bg-[var(--bg-tertiary)] text-[var(--text-muted)]'
+                                    }`}
+                            >
+                                {separateVoice ? 'ON' : 'OFF'}
+                            </button>
+                        </div>
+
                         {/* Generate button */}
                         <button
                             onClick={handleGenerateEpisode}
@@ -4862,6 +4886,16 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                                                 </svg>
                                                 YouTube
                                             </button>
+                                            {/* Copy Voice Button */}
+                                            <button
+                                                onClick={() => setShowVoicePanel(showVoicePanel === episode.id ? null : episode.id)}
+                                                className={`text-sm flex items-center gap-1 px-3 py-1.5 rounded-lg transition ${showVoicePanel === episode.id
+                                                    ? 'bg-violet-500 text-white'
+                                                    : 'bg-violet-500/20 text-violet-400 hover:bg-violet-500/30'
+                                                    }`}
+                                            >
+                                                🎙️ Voice
+                                            </button>
                                             <button
                                                 onClick={() => handleCopyEpisode(episode)}
                                                 className="btn-secondary text-sm flex items-center gap-1"
@@ -5001,6 +5035,83 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                                                 </div>
                                             </SortableContext>
                                         </DndContext>
+
+                                        {/* Voice Panel */}
+                                        {showVoicePanel === episode.id && (() => {
+                                            // Extract clean voiceover from each scene
+                                            const extractVoice = (text: string) => {
+                                                if (!text) return null
+                                                // Match [VOICEOVER ...] or [DIALOGUE ...] or VOICE IN VIETNAMESE: patterns
+                                                const patterns = [
+                                                    /\[VOICEOVER[^:]*:\s*([^\]]+)\]/gi,
+                                                    /\[DIALOGUE[^:]*:\s*([^\]]+)\]/gi,
+                                                    /VOICE IN VIETNAMESE:\s*\[([^\]]+)\]/gi,
+                                                    /VOICE IN VIETNAMESE:\s*"([^"]+)"/gi,
+                                                    /\bVOICE:\s*[^.]*\.?\s*"([^"]+)"/gi,
+                                                ]
+                                                for (const pattern of patterns) {
+                                                    const matches = [...text.matchAll(pattern)]
+                                                    if (matches.length > 0) {
+                                                        return matches.map(m => m[1].trim()).join(' ')
+                                                    }
+                                                }
+                                                // If the scene has a separate voiceover field, prefer that
+                                                return null
+                                            }
+                                            const voiceLines = episode.scenes
+                                                .sort((a, b) => a.order - b.order)
+                                                .map(scene => ({
+                                                    order: scene.order,
+                                                    title: scene.title,
+                                                    voice: scene.voiceover || scene.dialogue || extractVoice(scene.promptText) || ''
+                                                }))
+                                                .filter(s => s.voice)
+
+                                            const allVoiceText = voiceLines.map(s => s.voice).join('\n')
+
+                                            return (
+                                                <div className="border-t border-violet-500/30 bg-violet-500/5">
+                                                    <div className="px-4 py-3">
+                                                        <div className="flex items-center justify-between mb-3">
+                                                            <h4 className="text-sm font-semibold text-violet-300 flex items-center gap-2">
+                                                                🎙️ Voice / Thoại ({voiceLines.length} cảnh)
+                                                            </h4>
+                                                            <button
+                                                                onClick={() => {
+                                                                    navigator.clipboard.writeText(allVoiceText)
+                                                                    toast.success('Đã copy toàn bộ voice!')
+                                                                }}
+                                                                className="text-xs px-3 py-1.5 bg-violet-500 text-white rounded-lg hover:bg-violet-600 flex items-center gap-1"
+                                                            >
+                                                                <Copy className="w-3 h-3" />
+                                                                Copy tất cả
+                                                            </button>
+                                                        </div>
+                                                        {voiceLines.length === 0 ? (
+                                                            <p className="text-xs text-[var(--text-muted)] italic">Không tìm thấy voice/thoại. Hãy tạo episode mới với tùy chọn "Tách Voice".</p>
+                                                        ) : (
+                                                            <div className="space-y-2 max-h-80 overflow-y-auto">
+                                                                {voiceLines.map(s => (
+                                                                    <div key={s.order} className="flex gap-3 items-start group">
+                                                                        <span className="text-xs text-violet-400 font-mono mt-0.5 w-6 flex-shrink-0">S{s.order}</span>
+                                                                        <p className="text-sm text-[var(--text-primary)] flex-1 leading-relaxed">{s.voice}</p>
+                                                                        <button
+                                                                            onClick={() => {
+                                                                                navigator.clipboard.writeText(s.voice)
+                                                                                toast.success(`Đã copy Scene ${s.order}!`)
+                                                                            }}
+                                                                            className="opacity-0 group-hover:opacity-100 p-1 hover:bg-violet-500/20 rounded transition flex-shrink-0"
+                                                                        >
+                                                                            <Copy className="w-3 h-3 text-violet-400" />
+                                                                        </button>
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            )
+                                        })()}
 
                                         {/* Add Scene Button */}
                                         <div className="px-4 py-3 border-t border-[var(--border-subtle)]">
