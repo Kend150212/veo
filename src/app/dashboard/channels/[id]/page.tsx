@@ -1733,23 +1733,25 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
         setTimeout(() => setCopied(false), 2000)
     }
 
-    const stripVoiceFromText = (text: string) => {
+    const stripVoiceFromText = (text: string): string => {
         if (!text) return text
         return text
             // Remove [VOICEOVER ...] blocks
             .replace(/\[VOICEOVER[^\]]*\]/gi, '')
             // Remove [DIALOGUE ...] blocks
             .replace(/\[DIALOGUE[^\]]*\]/gi, '')
-            // Remove VOICE IN VIETNAMESE: [...] or "..."
-            .replace(/VOICE IN VIETNAMESE:\s*([\["[^)\]"]*[\]"'])/gi, '')
-            // Remove inline VOICE: ... (stop at . or end of text)
-            .replace(/\.?\s*VOICE:\s*[^.]*\.?/gi, '')
-            // Remove inline LANGUAGE: Speak ... only.
-            .replace(/\.?\s*LANGUAGE:\s*Speak[^.]*\.?/gi, '')
-            // Remove line-start VOICE:/LANGUAGE:
+            // Remove VOICE IN VIETNAMESE: ...
+            .replace(/VOICE IN VIETNAMESE:[^.\n]*/gi, '')
+            // Remove inline VOICE: ... (up to next period, bracket, or newline)
+            .replace(/[.\s]*VOICE:[^.\n\[\]]*\.?/gi, '')
+            // Remove LANGUAGE: ... (all forms, with or without 'Speak')
+            .replace(/[.\s]*LANGUAGE:[^.\n\[\]]*\.?/gi, '')
+            // Remove line-start leftovers
             .replace(/^VOICE:[^\n]*/gim, '')
             .replace(/^LANGUAGE:[^\n]*/gim, '')
-            // Collapse multiple spaces/blank lines
+            // Clean up double dots (e.g. "only.. LANGUAGE" leaves "only.")
+            .replace(/\.{2,}/g, '.')
+            // Collapse multiple spaces
             .replace(/[ \t]{2,}/g, ' ')
             .replace(/\n{3,}/g, '\n\n')
             .trim()
@@ -2232,24 +2234,18 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
     }) => {
         const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: scene.id })
 
-        // Strip voice/dialogue labels from promptText for display
-        const stripVoiceFromPrompt = (text: string) => {
+        // Strip voice/dialogue labels from promptText for display — same logic as stripVoiceFromText
+        const stripVoiceFromPrompt = (text: string): string => {
             if (!text) return text
             return text
-                // Remove [VOICEOVER ...] blocks
                 .replace(/\[VOICEOVER[^\]]*\]/gi, '')
-                // Remove [DIALOGUE ...] blocks
                 .replace(/\[DIALOGUE[^\]]*\]/gi, '')
-                // Remove VOICE IN VIETNAMESE: [...] or "..."
-                .replace(/VOICE IN VIETNAMESE:\s*([\["[^)\]"]*[\]"'])/gi, '')
-                // Remove inline VOICE: ... (stop at . or end of text)
-                .replace(/\.?\s*VOICE:\s*[^.]*\.?/gi, '')
-                // Remove inline LANGUAGE: Speak ... only.
-                .replace(/\.?\s*LANGUAGE:\s*Speak[^.]*\.?/gi, '')
-                // Remove line-start VOICE:/LANGUAGE:
+                .replace(/VOICE IN VIETNAMESE:[^.\n]*/gi, '')
+                .replace(/[.\s]*VOICE:[^.\n\[\]]*\.?/gi, '')
+                .replace(/[.\s]*LANGUAGE:[^.\n\[\]]*\.?/gi, '')
                 .replace(/^VOICE:[^\n]*/gim, '')
                 .replace(/^LANGUAGE:[^\n]*/gim, '')
-                // Collapse multiple spaces/blank lines
+                .replace(/\.{2,}/g, '.')
                 .replace(/[ \t]{2,}/g, ' ')
                 .replace(/\n{3,}/g, '\n\n')
                 .trim()
