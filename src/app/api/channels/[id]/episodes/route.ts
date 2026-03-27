@@ -146,7 +146,7 @@ export async function POST(
                 characterBible = `\n═══════════════════════════════════════
 🎭 CHARACTER BIBLE (MANDATORY REFERENCE):
 ═══════════════════════════════════════
-${charsToUse.map((c: { 
+${charsToUse.map((c: {
                     name: string
                     role: string
                     fullDescription: string
@@ -167,7 +167,7 @@ ${charsToUse.map((c: {
                     const hairInfo = c.hairDetails ? `\n  • TÓC: ${c.hairDetails}` : ''
                     const genderInfo = c.gender ? `\n  • GIỚI TÍNH: ${c.gender}` : ''
                     const ageInfo = c.ageRange ? `\n  • ĐỘ TUỔI: ${c.ageRange}` : ''
-                    
+
                     return `\n📌 NHÂN VẬT: ${c.name.toUpperCase()} (${c.role})
   • MÔ TẢ ĐẦY ĐỦ: ${c.fullDescription}${personalityInfo}${appearanceInfo}${clothingInfo}${skinInfo}${faceInfo}${hairInfo}${genderInfo}${ageInfo}
   
@@ -189,7 +189,7 @@ ${charsToUse.map((c: {
 ═══════════════════════════════════════`
 
                 // Tạo character templates riêng để dễ reference
-                characterTemplates = charsToUse.map((c: { 
+                characterTemplates = charsToUse.map((c: {
                     name: string
                     fullDescription: string
                     appearance?: string | null
@@ -205,11 +205,11 @@ ${charsToUse.map((c: {
                     if (c.faceDetails) parts.push(c.faceDetails)
                     if (c.hairDetails) parts.push(c.hairDetails)
                     if (c.clothing && !adaptCharactersToScript) parts.push(c.clothing)
-                    
-                    const fullTemplate = parts.length > 0 
+
+                    const fullTemplate = parts.length > 0
                         ? `${baseDesc}, ${parts.join(', ')}`
                         : baseDesc
-                    
+
                     return `  "${c.name.toUpperCase()}": "[${c.name.toUpperCase()}: ${fullTemplate}]"`
                 }).join(',\n')
             }
@@ -2954,6 +2954,7 @@ ${characterBible ? `\n✅ EXAMPLE WITH CHARACTER (CORRECT):
     "voiceover": "Thu nhập đa dạng. Thợ mới có lương cơ bản và tiền boa. Thợ lành nghề có thể kiếm từ 40,000 đến 70,000 đô la một năm.",
     "promptText": "[VOICEOVER in Vietnamese: Thu nhập đa dạng. Thợ mới có lương cơ bản và tiền boa. Thợ lành nghề có thể kiếm từ 40,000 đến 70,000 đô la một năm.]. [Visual representation of money, with a subtle graphic illustrating the income range: $40,000 - $70,000.]. ENVIRONMENT: Clean graphic design, easily readable. CAMERA: Static shot, clear and concise. LIGHTING: Bright, well-lit graphic. STYLE: ${styleKeywords}. MOOD: Informative and appealing. AUDIO: Upbeat, positive sound effect. LANGUAGE: Speak Vietnamese only."
 }`}
+`}
 
 ═══════════════════════════════════════
 CRITICAL RULES:
@@ -3142,8 +3143,8 @@ Generate ALL ${totalScenes} scenes. Return ONLY valid JSON.`
                 const charsToUse = selectedCharacterIds.length > 0
                     ? channel.characters.filter((c: { id: string }) => selectedCharacterIds.includes(c.id))
                     : channel.characters
-                
-                continueCharTemplates = charsToUse.map((c: { 
+
+                continueCharTemplates = charsToUse.map((c: {
                     name: string
                     fullDescription: string
                     appearance?: string | null
@@ -3218,22 +3219,22 @@ Return ONLY valid JSON.`
             }, { status: 400 })
         }
 
-            console.log('[Final] Total scenes:', allScenes.length)
+        console.log('[Final] Total scenes:', allScenes.length)
 
         // POST-PROCESSING: Validate and fix character consistency
         if (characterBible && allScenes.length > 0) {
             console.log('[Post-Process] Validating character descriptions...')
-            
+
             // Extract character names from characterBible
             const characterNames = channel.characters
                 .filter((c: { id: string }) => selectedCharacterIds.length === 0 || selectedCharacterIds.includes(c.id))
                 .map((c: { name: string }) => c.name.toUpperCase())
-            
+
             // Get full character descriptions for reference
             const characterRefs: Record<string, string> = {}
             channel.characters
                 .filter((c: { id: string }) => selectedCharacterIds.length === 0 || selectedCharacterIds.includes(c.id))
-                .forEach((c: { 
+                .forEach((c: {
                     name: string
                     fullDescription: string
                     appearance?: string | null
@@ -3250,19 +3251,19 @@ Return ONLY valid JSON.`
                     if (c.clothing && !adaptCharactersToScript) parts.push(c.clothing)
                     characterRefs[c.name.toUpperCase()] = parts.join(', ')
                 })
-            
+
             // Fix each scene
             allScenes.forEach((scene: SceneData) => {
                 if (!scene.promptText) return
-                
+
                 let fixedPrompt = scene.promptText
                 let wasFixed = false
-                
+
                 // Check for each character
                 characterNames.forEach((charName: string) => {
                     const charRef = characterRefs[charName]
                     if (!charRef) return
-                    
+
                     // Pattern 1: Just [CHARACTER_NAME] or [CHARACTER_NAME] alone
                     const pattern1 = new RegExp(`\\[${charName}\\]`, 'gi')
                     if (pattern1.test(fixedPrompt)) {
@@ -3270,7 +3271,7 @@ Return ONLY valid JSON.`
                         wasFixed = true
                         console.log(`[Post-Process] Fixed: [${charName}] → [${charName}: ...]`)
                     }
-                    
+
                     // Pattern 2: [CHARACTER_NAME] followed by action but no description
                     const pattern2 = new RegExp(`\\[${charName}\\]([^:])`, 'gi')
                     if (pattern2.test(fixedPrompt)) {
@@ -3278,7 +3279,7 @@ Return ONLY valid JSON.`
                         wasFixed = true
                         console.log(`[Post-Process] Fixed: [${charName}] action → [${charName}: ...] action`)
                     }
-                    
+
                     // Pattern 3: Very short description (less than 20 chars after colon)
                     const pattern3 = new RegExp(`\\[${charName}:\\s*([^\\]]{1,20})\\]`, 'gi')
                     const match3 = fixedPrompt.match(pattern3)
@@ -3294,13 +3295,13 @@ Return ONLY valid JSON.`
                         })
                     }
                 })
-                
+
                 if (wasFixed) {
                     scene.promptText = fixedPrompt
                     console.log(`[Post-Process] Fixed scene ${scene.order}`)
                 }
             })
-            
+
             console.log('[Post-Process] Character validation complete')
         }
 
