@@ -78,7 +78,8 @@ export async function POST(
             // Narrative Storytelling options
             narrativeTemplateId = null,
             narrativeKeyPoints = [],
-            narrativeWithHost = false
+            narrativeWithHost = false,
+            narrativeHostId = null
         } = await req.json()
 
         // CTA options
@@ -2199,6 +2200,22 @@ PHẢI viết kiểu TÂM SỰ/KỂ CHUYỆN cá nhân:
 8. CTA CLOSING (3%): Kêu gọi hành động nhẹ nhàng`
 
             if (narrativeWithHost) {
+                // Resolve the selected host character description
+                const selectedHostChar = narrativeHostId
+                    ? channel.characters.find((c: { id: string }) => c.id === narrativeHostId)
+                    : null
+                const narrativeHostDesc = selectedHostChar
+                    ? [
+                        selectedHostChar.fullDescription,
+                        selectedHostChar.appearance,
+                        selectedHostChar.clothing,
+                        selectedHostChar.skinTone ? `da ${selectedHostChar.skinTone}` : null,
+                        selectedHostChar.faceDetails,
+                        selectedHostChar.hairDetails,
+                    ].filter(Boolean).join(', ')
+                    : '(mô tả chi tiết host - tuổi, giới tính, trang phục, biểu cảm, tư thế, đang làm gì)'
+                const narrativeHostName = selectedHostChar?.name || 'HOST'
+
                 // HOST-LED NARRATIVE MODE: Host appears on screen, telling the story
                 voiceOverInstr = `CONTENT TYPE: NARRATIVE STORYTELLING WITH HOST (Kể chuyện có nhân vật dẫn - Phong cách Anh Dư Leo)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -2212,13 +2229,19 @@ ${keyPointsText}
 - Host có cảm xúc, biểu cảm phong phú theo nội dung
 - Phong cách thân mật như đang tâm sự với bạn thân
 
+🎭 HOST CHARACTER (BẮT BUỘC DÙNG NHẤT QUÁN):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+TÊN: ${narrativeHostName}
+MÔ TẢ: ${narrativeHostDesc}
+⚠️ PHẢI mô tả đầy đủ host này trong TỪNG scene có host xuất hiện!
+
 ${voiceConsistencyRule}
 
 ${voiceStyleInstructions}
 
 📸 PROMPTTEXT FORMAT (HOST + STORY ELEMENTS):
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-[HOST trên màn hình: (mô tả chi tiết host - tuổi, giới tính, trang phục, biểu cảm, tư thế, đang làm gì)].
+[HOST ${narrativeHostName.toUpperCase()} trên màn hình: ${narrativeHostDesc}, biểu cảm (theo cảnh), tư thế (theo nội dung)].
 [STORY ELEMENTS minh họa: (các yếu tố xuất hiện xung quanh host để minh họa nội dung - có thể là props, graphics, background thay đổi)].
 ENVIRONMENT: (bối cảnh - studio, nhà, quán cà phê, etc).
 CAMERA: (góc quay - medium shot, close-up, etc).

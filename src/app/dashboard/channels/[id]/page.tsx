@@ -788,6 +788,7 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
     const [narrativeTopic, setNarrativeTopic] = useState('')
     const [narrativeKeyPoints, setNarrativeKeyPoints] = useState('')
     const [narrativeWithHost, setNarrativeWithHost] = useState(false) // false = 100% B-roll, true = có host dẫn chuyện
+    const [narrativeHostId, setNarrativeHostId] = useState<string>('') // ID nhân vật được chọn làm host
     const narrativeTemplates = getNarrativeTemplateSummaries()
 
     // Advanced Episode Features
@@ -1498,6 +1499,7 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                         ? narrativeKeyPoints.split(',').map(s => s.trim()).filter(Boolean)
                         : null,
                     narrativeWithHost: voiceOverMode === 'narrative_storytelling' ? narrativeWithHost : false,
+                    narrativeHostId: voiceOverMode === 'narrative_storytelling' && narrativeWithHost && narrativeHostId ? narrativeHostId : null,
                     // KOL Solo Storyteller options
                     kolRoomDescription: voiceOverMode === 'kol_solo_storyteller' ? kolRoomDescription : null,
                     kolHostMode: voiceOverMode === 'kol_solo_storyteller' ? kolHostMode : null,
@@ -3841,6 +3843,48 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                                         </button>
                                     </div>
                                 </div>
+
+                                {/* Host Character Selector */}
+                                {narrativeWithHost && channel && channel.characters.length > 0 && (
+                                    <div className="mb-3">
+                                        <label className="block text-sm font-medium mb-2">Chọn Host dẫn chuyện</label>
+                                        <div className="grid grid-cols-1 gap-2">
+                                            <button
+                                                onClick={() => setNarrativeHostId('')}
+                                                className={`p-3 rounded-lg text-left transition text-sm ${narrativeHostId === ''
+                                                    ? 'bg-orange-500/20 border-2 border-orange-500'
+                                                    : 'bg-[var(--bg-secondary)] border border-transparent hover:border-orange-500/50'
+                                                    }`}
+                                            >
+                                                <div className="font-medium">🤖 AI tự quyết định</div>
+                                                <div className="text-xs text-[var(--text-muted)] mt-0.5">AI tự mô tả host phù hợp với channel</div>
+                                            </button>
+                                            {channel.characters.map(char => (
+                                                <button
+                                                    key={char.id}
+                                                    onClick={() => setNarrativeHostId(char.id)}
+                                                    className={`p-3 rounded-lg text-left transition text-sm ${narrativeHostId === char.id
+                                                        ? 'bg-orange-500/20 border-2 border-orange-500'
+                                                        : 'bg-[var(--bg-secondary)] border border-transparent hover:border-orange-500/50'
+                                                        }`}
+                                                >
+                                                    <div className="font-medium flex items-center gap-2">
+                                                        {char.isMain && <span className="text-yellow-400">⭐</span>}
+                                                        👤 {char.name}
+                                                        <span className="text-xs text-orange-400 font-normal">{char.role}</span>
+                                                    </div>
+                                                    <div className="text-xs text-[var(--text-muted)] mt-0.5 line-clamp-1">{char.fullDescription}</div>
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                                {narrativeWithHost && channel && channel.characters.length === 0 && (
+                                    <div className="mb-3 p-3 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
+                                        <p className="text-xs text-yellow-400">⚠️ Channel chưa có nhân vật nào. AI sẽ tự tạo host.</p>
+                                        <p className="text-xs text-[var(--text-muted)] mt-1">Tạo nhân vật trong phần Nhân Vật để chọn host cụ thể.</p>
+                                    </div>
+                                )}
 
                                 {/* Tips - Dynamic based on host mode */}
                                 <div className="bg-[var(--bg-secondary)] p-3 rounded-lg">
