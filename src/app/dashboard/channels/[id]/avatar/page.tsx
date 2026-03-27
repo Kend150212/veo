@@ -177,10 +177,22 @@ export default function AvatarStudioPage() {
             setPreviewImage(imageUrl)
             toast.success('Ảnh đã được tạo!')
 
-            // Convert to dataURL for saving (async, background)
-            const reader = new FileReader()
-            reader.onload = () => {
-                const dataUrl = reader.result as string
+            // Compress to JPEG before saving (reduces 5MB PNG → ~200KB)
+            const compressBlob = (b: Blob): Promise<string> => new Promise(resolve => {
+                const img = new Image()
+                img.onload = () => {
+                    const canvas = document.createElement('canvas')
+                    const scale = Math.min(1, 800 / Math.max(img.width, img.height))
+                    canvas.width = img.width * scale
+                    canvas.height = img.height * scale
+                    canvas.getContext('2d')!.drawImage(img, 0, 0, canvas.width, canvas.height)
+                    resolve(canvas.toDataURL('image/jpeg', 0.8))
+                    URL.revokeObjectURL(img.src)
+                }
+                img.src = URL.createObjectURL(b)
+            })
+
+            compressBlob(blob).then(dataUrl => {
                 fetch(`/api/channels/${channelId}/avatar`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -197,8 +209,7 @@ export default function AvatarStudioPage() {
                     if (r.ok) fetchData()
                     else console.warn('[Avatar save] failed:', r.status)
                 }).catch(e => console.warn('[Avatar save] error:', e))
-            }
-            reader.readAsDataURL(blob)
+            })
         } catch (e) {
             console.error('[Generate] error:', e)
             toast.error('Lỗi kết nối tới server')
@@ -249,10 +260,22 @@ export default function AvatarStudioPage() {
             setMasterSheetImage(imageUrl)
             toast.success('Master Sheet đã được tạo!')
 
-            // Convert to dataURL for saving (background)
-            const reader = new FileReader()
-            reader.onload = () => {
-                const dataUrl = reader.result as string
+            // Compress to JPEG before saving
+            const compressMaster = (b: Blob): Promise<string> => new Promise(resolve => {
+                const img = new Image()
+                img.onload = () => {
+                    const canvas = document.createElement('canvas')
+                    const scale = Math.min(1, 1200 / Math.max(img.width, img.height))
+                    canvas.width = img.width * scale
+                    canvas.height = img.height * scale
+                    canvas.getContext('2d')!.drawImage(img, 0, 0, canvas.width, canvas.height)
+                    resolve(canvas.toDataURL('image/jpeg', 0.8))
+                    URL.revokeObjectURL(img.src)
+                }
+                img.src = URL.createObjectURL(b)
+            })
+
+            compressMaster(blob).then(dataUrl => {
                 fetch(`/api/channels/${channelId}/avatar`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -269,8 +292,7 @@ export default function AvatarStudioPage() {
                     if (r.ok) fetchData()
                     else console.warn('[MasterSheet save] failed:', r.status)
                 }).catch(e => console.warn('[MasterSheet save] error:', e))
-            }
-            reader.readAsDataURL(blob)
+            })
         } catch (e) {
             console.error('[MasterSheet] error:', e)
             toast.error('Lỗi kết nối tới server')
@@ -674,7 +696,7 @@ export default function AvatarStudioPage() {
                                             <Download className="w-3 h-3" /> Download
                                         </button>
                                     </div>
-                                    <img src={masterSheetImage} alt="Master Sheet" className="w-full object-contain" />
+                                    <img src={masterSheetImage} alt="Master Sheet" className="w-full max-h-80 object-contain" />
                                 </motion.div>
                             )}
 
