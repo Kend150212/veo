@@ -791,6 +791,10 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
     const [narrativeHostId, setNarrativeHostId] = useState<string>('') // ID nhân vật được chọn làm host
     const [separateVoice, setSeparateVoice] = useState(false) // Tách voice/thoại ra khỏi promptText
     const [showVoicePanel, setShowVoicePanel] = useState<string | null>(null) // episodeId đang xem voice panel
+    const [voiceTranslateLang, setVoiceTranslateLang] = useState('en')
+    const [voiceTranslating, setVoiceTranslating] = useState(false)
+    // Map: episodeId -> array of translated lines (same order as voiceLines)
+    const [voiceTranslations, setVoiceTranslations] = useState<Record<string, string[]>>({})
     const narrativeTemplates = getNarrativeTemplateSummaries()
 
     // Advanced Episode Features
@@ -5154,7 +5158,10 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                                                             </h4>
                                                             <button
                                                                 onClick={() => {
-                                                                    navigator.clipboard.writeText(allVoiceText)
+                                                                    const txt = voiceTranslations[episode.id]
+                                                                        ? voiceTranslations[episode.id].join('\n')
+                                                                        : allVoiceText
+                                                                    navigator.clipboard.writeText(txt)
                                                                     toast.success('Đã copy toàn bộ voice!')
                                                                 }}
                                                                 className="text-xs px-3 py-1.5 bg-violet-500 text-white rounded-lg hover:bg-violet-600 flex items-center gap-1"
@@ -5163,23 +5170,124 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                                                                 Copy tất cả
                                                             </button>
                                                         </div>
+
+                                                        {/* Translation Controls */}
+                                                        <div className="flex items-center gap-2 mb-3 p-2 bg-[var(--bg-tertiary)] rounded-lg">
+                                                            <span className="text-xs text-[var(--text-muted)] flex-shrink-0">🌐 Dịch:</span>
+                                                            <select
+                                                                value={voiceTranslateLang}
+                                                                onChange={e => {
+                                                                    setVoiceTranslateLang(e.target.value)
+                                                                    // Clear previous translation when lang changes
+                                                                    setVoiceTranslations(prev => ({ ...prev, [episode.id]: [] }))
+                                                                }}
+                                                                className="input-field text-xs py-1 flex-1"
+                                                            >
+                                                                <option value="en">English</option>
+                                                                <option value="vi">Tiếng Việt</option>
+                                                                <option value="zh">中文 (Chinese)</option>
+                                                                <option value="ja">日本語 (Japanese)</option>
+                                                                <option value="ko">한국어 (Korean)</option>
+                                                                <option value="es">Español</option>
+                                                                <option value="fr">Français</option>
+                                                                <option value="de">Deutsch</option>
+                                                                <option value="pt">Português</option>
+                                                                <option value="ru">Русский</option>
+                                                                <option value="th">ไทย (Thai)</option>
+                                                                <option value="id">Bahasa Indonesia</option>
+                                                                <option value="ar">عربي (Arabic)</option>
+                                                                <option value="hi">हिन्दी (Hindi)</option>
+                                                            </select>
+                                                            <button
+                                                                disabled={voiceTranslating || voiceLines.length === 0}
+                                                                onClick={async () => {
+                                                                    setVoiceTranslating(true)
+                                                                    try {
+                                                                        const langNames: Record<string, string> = {
+                                                                            en: 'English', vi: 'Vietnamese', zh: 'Chinese',
+                                                                            ja: 'Japanese', ko: 'Korean', es: 'Spanish',
+                                                                            fr: 'French', de: 'German', pt: 'Portuguese',
+                                                                            ru: 'Russian', th: 'Thai', id: 'Indonesian',
+                                                                            ar: 'Arabic', hi: 'Hindi'
+                                                                        }
+                                                                        const res = await fetch('/api/translate', {
+                                                                            method: 'POST',
+                                                                            headers: { 'Content-Type': 'application/json' },
+                                                                            body: JSON.stringify({
+                                                                                lines: voiceLines.map(s => s.voice),
+                                                                                targetLanguage: voiceTranslateLang,
+                                                                                targetLanguageName: langNames[voiceTranslateLang] || voiceTranslateLang
+                                                                            })
+                                                                        })
+                                                                        const data = await res.json()
+                                                                        if (data.translated) {
+                                                                            setVoiceTranslations(prev => ({ ...prev, [episode.id]: data.translated }))
+                                                                            toast.success(`Đã dịch xong sang ${langNames[voiceTranslateLang]}!`)
+                                                                        } else {
+                                                                            toast.error(data.error || 'Lỗi dịch')
+                                                                        }
+                                                                    } catch {
+                                                                        toast.error('Lỗi kết nối')
+                                                                    } finally {
+                                                                        setVoiceTranslating(false)
+                                                                    }
+                                                                }}
+                                                                className="text-xs px-3 py-1.5 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 flex items-center gap-1 flex-shrink-0"
+                                                            >
+                                                                {voiceTranslating ? (
+                                                                    <><Loader2 className="w-3 h-3 animate-spin" /> Đang dịch...</>
+                                                                ) : (
+                                                                    <>🌐 Dịch ngay</>
+                                                                )}
+                                                            </button>
+                                                            {voiceTranslations[episode.id]?.length > 0 && (
+                                                                <button
+                                                                    onClick={() => {
+                                                                        navigator.clipboard.writeText(voiceTranslations[episode.id].join('\n'))
+                                                                        toast.success('Đã copy bản dịch!')
+                                                                    }}
+                                                                    className="text-xs px-2 py-1.5 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center gap-1 flex-shrink-0"
+                                                                >
+                                                                    <Copy className="w-3 h-3" /> Copy
+                                                                </button>
+                                                            )}
+                                                        </div>
                                                         {voiceLines.length === 0 ? (
                                                             <p className="text-xs text-[var(--text-muted)] italic">Không tìm thấy voice/thoại. Hãy tạo episode mới với tùy chọn "Tách Voice".</p>
                                                         ) : (
                                                             <div className="space-y-2 max-h-80 overflow-y-auto">
-                                                                {voiceLines.map(s => (
-                                                                    <div key={s.order} className="flex gap-3 items-start group">
-                                                                        <span className="text-xs text-violet-400 font-mono mt-0.5 w-6 flex-shrink-0">S{s.order}</span>
-                                                                        <p className="text-sm text-[var(--text-primary)] flex-1 leading-relaxed">{s.voice}</p>
-                                                                        <button
-                                                                            onClick={() => {
-                                                                                navigator.clipboard.writeText(s.voice)
-                                                                                toast.success(`Đã copy Scene ${s.order}!`)
-                                                                            }}
-                                                                            className="opacity-0 group-hover:opacity-100 p-1 hover:bg-violet-500/20 rounded transition flex-shrink-0"
-                                                                        >
-                                                                            <Copy className="w-3 h-3 text-violet-400" />
-                                                                        </button>
+                                                                {voiceLines.map((s, idx) => (
+                                                                    <div key={s.order} className="group">
+                                                                        {/* Original line */}
+                                                                        <div className="flex gap-3 items-start">
+                                                                            <span className="text-xs text-violet-400 font-mono mt-0.5 w-6 flex-shrink-0">S{s.order}</span>
+                                                                            <p className="text-sm text-[var(--text-primary)] flex-1 leading-relaxed">{s.voice}</p>
+                                                                            <button
+                                                                                onClick={() => {
+                                                                                    navigator.clipboard.writeText(s.voice)
+                                                                                    toast.success(`Đã copy Scene ${s.order}!`)
+                                                                                }}
+                                                                                className="opacity-0 group-hover:opacity-100 p-1 hover:bg-violet-500/20 rounded transition flex-shrink-0"
+                                                                            >
+                                                                                <Copy className="w-3 h-3 text-violet-400" />
+                                                                            </button>
+                                                                        </div>
+                                                                        {/* Translated line (if exists) */}
+                                                                        {voiceTranslations[episode.id]?.[idx] && (
+                                                                            <div className="flex gap-3 items-start mt-1 pl-0">
+                                                                                <span className="text-xs text-blue-400 font-mono mt-0.5 w-6 flex-shrink-0">🌐</span>
+                                                                                <p className="text-sm text-blue-300 flex-1 leading-relaxed italic">{voiceTranslations[episode.id][idx]}</p>
+                                                                                <button
+                                                                                    onClick={() => {
+                                                                                        navigator.clipboard.writeText(voiceTranslations[episode.id][idx])
+                                                                                        toast.success(`Đã copy bản dịch S${s.order}!`)
+                                                                                    }}
+                                                                                    className="opacity-0 group-hover:opacity-100 p-1 hover:bg-blue-500/20 rounded transition flex-shrink-0"
+                                                                                >
+                                                                                    <Copy className="w-3 h-3 text-blue-400" />
+                                                                                </button>
+                                                                            </div>
+                                                                        )}
                                                                     </div>
                                                                 ))}
                                                             </div>
