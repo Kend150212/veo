@@ -45,9 +45,31 @@ export const CHANNEL_STYLES: ChannelStyle[] = [
         id: 'sidescroll-doodle',
         name: 'Side-Scroll Doodle Adventure',
         nameVi: 'Phiêu Lưu Doodle Cuộn Ngang',
-        description: 'Character walks left-to-right through a scrolling doodle world, encountering story obstacles like a 2000s Flash game',
-        descriptionVi: 'Nhân vật đi từ trái sang phải xuyên suốt thế giới doodle cuộn ngang, gặp các vấn đề câu chuyện như game Flash thời 2000s',
-        promptKeywords: 'side-scrolling 2D platformer doodle animation style, hand-drawn black ink on white paper background, simple doodle stick figure character running/walking from LEFT TO RIGHT continuously, scrolling horizontal world with story obstacles appearing along the path (mountains barriers dragons question mark blocks treasure chests challenges), DYNAMIC CAMERA MOTION: camera smoothly zooms IN close-up when character reaches an obstacle or key story moment (interaction/reaction/confrontation), then zooms OUT wide to resume side-scrolling journey after interaction resolves - creating a cinematic push-pull rhythm, character physically interacts with obstacles as narrative unfolds, Flash game aesthetic from early 2000s (Newgrounds style), ground is simple doodle line, directional arrows above showing forward momentum, sketchy energetic hand-drawn doodle lines, continuous journey storytelling visual style',
+        description: 'Character journeys left-to-right through a doodle world with expressive body language, comic reactions, cinematic camera techniques and color-coded emotional scenes',
+        descriptionVi: 'Nhân vật hành trình từ trái sang phải qua thế giới doodle với body language, hiệu ứng truyện tranh, kỹ thuật quay phim đa dạng và màu cảm xúc',
+        promptKeywords: `side-scrolling 2D platformer doodle animation, hand-drawn black ink on white paper background, simple doodle stick figure runs LEFT TO RIGHT continuously across the frame,
+
+CHARACTER BODY LANGUAGE: character RUNS fast when motivated, SHUFFLES slowly when struggling, STUMBLES and falls when failing, LEAPS triumphantly when overcoming obstacles - body posture always reflects emotional state,
+
+COMIC REACTION EFFECTS on zoom: doodle star bursts, exclamation marks (!!!), question marks (???), sweat drops, speed lines, impact stars drawn around character during key moments - manga/webtoon expressiveness,
+
+EMOTIONAL COLOR WASH: subtle background tint shifts with mood - red wash for danger/problems, yellow for hope/ideas, blue for sadness, green for success - layered lightly over white background,
+
+JOURNEY PROGRESS PATH: a doodle map line or dotted path runs along the top of the frame showing how far the character has traveled and how far remains - always gives sense of forward momentum,
+
+SPEECH BUBBLES: hand-drawn doodle speech/thought bubbles appear during zoom-in moments with character reactions ("Oh no!" "???" "I got this!" "Why?!"),
+
+CINEMATIC CAMERA TOOLKIT:
+- ZOOM IN/OUT: slow push-in when approaching obstacles, pull back after resolution
+- DUTCH ANGLE: camera tilts 15-30 degrees during tension and confrontation
+- WHIP PAN: fast horizontal swipe transition between scenes
+- LOW ANGLE SHOT: camera looks UP at obstacles making them feel massive and threatening
+- HIGH ANGLE / BIRD'S EYE: camera pulls far above to show full journey progress
+- SLOW MOTION: key dramatic moments (falling, collision, breakthrough) play in slow motion
+- HANDHELD SHAKE: camera trembles during struggle/chase/action sequences
+- RACK FOCUS: foreground obstacle goes sharp while background blurs for depth
+
+Newgrounds/Flash game aesthetic 2000s, sketchy energetic doodle lines, continuous journey storytelling`,
         hasCharacters: true,
         suggestedCharCount: 1,
         previewImage: '/images/styles/style_sidescroll_doodle.png',
