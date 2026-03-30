@@ -30,6 +30,30 @@ export const CHANNEL_STYLES: ChannelStyle[] = [
         category: 'illustration'
     },
     {
+        id: 'colorful-3d-doodle',
+        name: 'Colorful 3D Doodle (With Narrator)',
+        nameVi: 'Doodle 3D Màu Sắc (Có Nhân Vật)',
+        description: 'Vibrant 3D doodle style with a simple consistent illustrated narrator character',
+        descriptionVi: 'Phong cách doodle 3D đầy màu sắc với nhân vật người kể chuyện đơn giản, nhất quán xuyên suốt',
+        promptKeywords: 'doodle art style with thick BLACK ink outlines and vibrant flat color fills inside the shapes (like a colored coloring book page), bold black hand-drawn marker strokes define all outlines and details, flat solid colors filled inside each shape (red yellow blue green orange purple), simple consistent narrator character in doodle sketch style with black outlines and colored body fill, 3D depth suggested by black cross-hatching and perspective doodle lines, white background, colored doodle whiteboard animation style, energetic explainer video',
+        hasCharacters: true,
+        suggestedCharCount: 1,
+        previewImage: 'https://cdn1.sharemyimage.com/smi/2026/02/02/style_doodle_1769921761065.jpeg',
+        category: 'illustration'
+    },
+    {
+        id: 'colorful-3d-doodle-bg',
+        name: 'Colorful 3D Doodle (No Character)',
+        nameVi: 'Doodle 3D Màu Sắc (Không Nhân Vật)',
+        description: 'Vibrant 3D doodle style with floating objects and icons only, no human characters',
+        descriptionVi: 'Phong cách doodle 3D đầy màu với các vật thể và icon nổi, không có nhân vật người',
+        promptKeywords: 'doodle art style with thick BLACK ink outlines and vibrant flat color fills inside the shapes (like a colored coloring book page), NO human characters, bold black hand-drawn marker strokes define all outlines, flat solid colors filled inside each shape (red yellow blue green orange purple), objects and icons in doodle sketch style (lightbulbs arrows geometric shapes gears books speech bubbles stars), 3D depth suggested by black cross-hatching and perspective doodle lines, white background with black doodle border scribbles, colored doodle whiteboard animation style',
+        hasCharacters: false,
+        suggestedCharCount: 0,
+        previewImage: 'https://cdn1.sharemyimage.com/smi/2026/02/02/style_doodle_1769921761065.jpeg',
+        category: 'illustration'
+    },
+    {
         id: 'digital-illustration',
         name: 'Digital Illustration',
         nameVi: 'Minh Họa Số',
