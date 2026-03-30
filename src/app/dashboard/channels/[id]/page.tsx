@@ -803,8 +803,11 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
     const [narrativeYoutubeUrl, setNarrativeYoutubeUrl] = useState('')
     const [narrativeYoutubeFetching, setNarrativeYoutubeFetching] = useState(false)
     const [narrativeChannelVoice, setNarrativeChannelVoice] = useState('')
+    const [narrativeVideoDuration, setNarrativeVideoDuration] = useState(3600)
     const [narrativeRewriting, setNarrativeRewriting] = useState(false)
     const [narrativeRewriteResult, setNarrativeRewriteResult] = useState<{ title: string; fullScript: string; segmentCount: number } | null>(null)
+    const [narrativeToScenesLoading, setNarrativeToScenesLoading] = useState(false)
+    const [narrativeScenesResult, setNarrativeScenesResult] = useState<{ title: string; synopsis: string; scenes: unknown[]; fullScript: string; stats: { sceneCount: number; durationMinutes: number } } | null>(null)
 
     // Advanced Episode Features
     const [visualHookEnabled, setVisualHookEnabled] = useState(true)
@@ -1492,13 +1495,12 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
         setNarrativeRewriting(true)
         setNarrativeRewriteResult(null)
         try {
-            const durationSec = parseInt((document.getElementById('narrative-duration-input') as HTMLInputElement)?.value || '600')
             const res = await fetch('/api/story/rewrite-transcript', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     transcript: narrativeTranscript,
-                    duration: isNaN(durationSec) ? 600 : durationSec,
+                    duration: narrativeVideoDuration,
                     channelVoice: narrativeChannelVoice.trim() || undefined,
                     templateId: 'personal-journey-broll',
                 })
@@ -1515,6 +1517,38 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
             alert(`❌ ${msg}`)
         } finally {
             setNarrativeRewriting(false)
+        }
+    }
+
+    const handleTranscriptToScenes = async () => {
+        if (!narrativeTranscript.trim()) {
+            alert('Vui lòng paste transcript hoặc lấy từ YouTube trước.')
+            return
+        }
+        setNarrativeToScenesLoading(true)
+        setNarrativeScenesResult(null)
+        try {
+            const durationSec = parseInt((document.getElementById('narrative-duration-input') as HTMLInputElement)?.value || '600')
+            const res = await fetch('/api/story/transcript-to-scenes', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    transcript: narrativeTranscript,
+                    duration: narrativeVideoDuration,
+                    channelId: id,
+                    channelVoice: narrativeChannelVoice.trim() || undefined,
+                    narrativeTemplateId: narrativeTemplateId || undefined,
+                    separateVoice,
+                })
+            })
+            const data = await res.json()
+            if (!res.ok) throw new Error(data.error || 'Không thể tạo scenes')
+            setNarrativeScenesResult(data)
+        } catch (err: unknown) {
+            const msg = err instanceof Error ? err.message : 'Lỗi không xác định'
+            alert(`❌ ${msg}`)
+        } finally {
+            setNarrativeToScenesLoading(false)
         }
     }
 
@@ -4002,7 +4036,8 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                                                     type="number"
                                                     min="60"
                                                     max="7200"
-                                                    defaultValue={600}
+                                                    value={narrativeVideoDuration}
+                                                     onChange={e => setNarrativeVideoDuration(Number(e.target.value) || 3600)}
                                                     className="input-field w-full text-sm"
                                                     placeholder="VD: 3600 = 60 phút"
                                                 />
@@ -4018,9 +4053,25 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                                             </div>
                                         </div>
 
-                                        {narrativeRewriteResult && (
+                                        {/* Direct scenes result */}
+                                        {narrativeScenesResult && (
                                             <div className="mt-3 p-3 bg-green-500/10 border border-green-500/30 rounded-lg">
-                                                <p className="text-sm font-medium text-green-400 mb-1">✅ Rewrite thành công!</p>
+                                                <p className="text-sm font-medium text-green-400 mb-1">✅ Đã tạo {narrativeScenesResult.stats.sceneCount} scenes!</p>
+                                                <p className="text-xs text-[var(--text-muted)]">📌 <strong className="text-white">{narrativeScenesResult.title}</strong></p>
+                                                <p className="text-xs text-[var(--text-muted)] mt-0.5">🎬 {narrativeScenesResult.stats.sceneCount} scenes · {narrativeScenesResult.stats.durationMinutes} phút</p>
+                                                <details className="mt-2">
+                                                    <summary className="text-xs text-green-400 cursor-pointer">Xem toàn bộ voiceover đã tạo</summary>
+                                                    <pre className="mt-2 text-xs text-[var(--text-secondary)] whitespace-pre-wrap bg-[var(--bg-primary)] p-2 rounded max-h-60 overflow-y-auto">
+                                                        {narrativeScenesResult.fullScript}
+                                                    </pre>
+                                                </details>
+                                            </div>
+                                        )}
+
+                                        {/* Two-step rewrite result */}
+                                        {narrativeRewriteResult && (
+                                            <div className="mt-3 p-3 bg-orange-500/10 border border-orange-500/30 rounded-lg">
+                                                <p className="text-sm font-medium text-orange-400 mb-1">✅ Rewrite thành công!</p>
                                                 <p className="text-xs text-[var(--text-muted)]">📌 Tiêu đề: <strong className="text-white">{narrativeRewriteResult.title}</strong></p>
                                                 <p className="text-xs text-[var(--text-muted)] mt-0.5">🎬 {narrativeRewriteResult.segmentCount} segments</p>
                                                 <details className="mt-2">
