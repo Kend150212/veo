@@ -38,7 +38,7 @@ export const CHANNEL_STYLES: ChannelStyle[] = [
         promptKeywords: 'doodle art style with thick BLACK ink outlines and vibrant flat color fills inside the shapes (like a colored coloring book page), bold black hand-drawn marker strokes define all outlines and details, flat solid colors filled inside each shape (red yellow blue green orange purple), simple consistent narrator character in doodle sketch style with black outlines and colored body fill, 3D depth suggested by black cross-hatching and perspective doodle lines, white background, colored doodle whiteboard animation style, energetic explainer video',
         hasCharacters: true,
         suggestedCharCount: 1,
-        previewImage: 'https://cdn1.sharemyimage.com/smi/2026/02/02/style_doodle_1769921761065.jpeg',
+        previewImage: '/images/styles/style_colorful_doodle_character.png',
         category: 'illustration'
     },
     {
@@ -50,7 +50,7 @@ export const CHANNEL_STYLES: ChannelStyle[] = [
         promptKeywords: 'doodle art style with thick BLACK ink outlines and vibrant flat color fills inside the shapes (like a colored coloring book page), NO human characters, bold black hand-drawn marker strokes define all outlines, flat solid colors filled inside each shape (red yellow blue green orange purple), objects and icons in doodle sketch style (lightbulbs arrows geometric shapes gears books speech bubbles stars), 3D depth suggested by black cross-hatching and perspective doodle lines, white background with black doodle border scribbles, colored doodle whiteboard animation style',
         hasCharacters: false,
         suggestedCharCount: 0,
-        previewImage: 'https://cdn1.sharemyimage.com/smi/2026/02/02/style_doodle_1769921761065.jpeg',
+        previewImage: '/images/styles/style_colorful_doodle_no_character.png',
         category: 'illustration'
     },
     {
