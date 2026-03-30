@@ -42,6 +42,18 @@ export const CHANNEL_STYLES: ChannelStyle[] = [
         category: 'illustration'
     },
     {
+        id: 'iridescent-clay-burlap',
+        name: 'Iridescent Clay',
+        nameVi: 'Đất Sét Ngũ Sắc',
+        description: '3D holographic clay characters on dark burlap texture with glowing optical fiber light — premium tactile artisan feel',
+        descriptionVi: 'Nhân vật đất sét 3D ngũ sắc holographic trên nền vải burlap tối với sợi quang phát sáng — cảm giác thủ công cao cấp huyền ảo',
+        promptKeywords: 'iridescent holographic clay animation style, dark woven burlap fabric texture background with visible fiber weave, optical fiber threads woven into background emitting soft glowing blue and purple light, characters and objects sculpted from glossy 3D digital clay with iridescent surface (color-shifting from purple to pink to blue like oil slick or holographic foil), clay has visible gloss bumps and tactile 3D volume, natural rope props made of real fiber, everything looks physically touchable and sculptural, photorealistic macro photography lighting, premium artisan craft aesthetic, cinematic depth of field',
+        hasCharacters: true,
+        suggestedCharCount: 1,
+        previewImage: '/images/styles/style_iridescent_clay_burlap.png',
+        category: 'artistic'
+    },
+    {
         id: 'stick-figure-explainer',
         name: 'Stick Figure Explainer',
         nameVi: 'Nhân Vật Que Kể Chuyện',
