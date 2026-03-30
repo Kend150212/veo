@@ -30,6 +30,18 @@ export const CHANNEL_STYLES: ChannelStyle[] = [
         category: 'illustration'
     },
     {
+        id: 'chalkboard-animation',
+        name: 'Chalkboard Animation',
+        nameVi: 'Vẽ Phấn Bảng Đen',
+        description: 'White chalk stick figures on dark green chalkboard background, like RSA Animate',
+        descriptionVi: 'Nhân vật que phấn trắng trên bảng đen xanh, phong cách kể chuyện triết lý/tài chính TikTok',
+        promptKeywords: 'chalkboard animation style, dark green chalkboard background, white chalk drawn stick figure character with round head and simple body, all objects drawn as white chalk strokes on blackboard (scissors money rope arrows), minimalist stick figure art, RSA Animate style, no color only white chalk on dark green board, simple hand-drawn chalk lines, Vietnamese social media explainer storytelling style',
+        hasCharacters: true,
+        suggestedCharCount: 1,
+        previewImage: '/images/styles/style_chalkboard_animation.png',
+        category: 'illustration'
+    },
+    {
         id: 'colorful-3d-doodle',
         name: 'Colorful 3D Doodle (With Narrator)',
         nameVi: 'Doodle 3D Màu Sắc (Có Nhân Vật)',
