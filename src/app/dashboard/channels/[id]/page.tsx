@@ -797,6 +797,15 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
     const [voiceTranslations, setVoiceTranslations] = useState<Record<string, string[]>>({})
     const narrativeTemplates = getNarrativeTemplateSummaries()
 
+    // Narrative Rewrite / Transcript mode
+    const [narrativeInputMode, setNarrativeInputMode] = useState<'topic' | 'paste' | 'youtube'>('topic')
+    const [narrativeTranscript, setNarrativeTranscript] = useState('')
+    const [narrativeYoutubeUrl, setNarrativeYoutubeUrl] = useState('')
+    const [narrativeYoutubeFetching, setNarrativeYoutubeFetching] = useState(false)
+    const [narrativeChannelVoice, setNarrativeChannelVoice] = useState('')
+    const [narrativeRewriting, setNarrativeRewriting] = useState(false)
+    const [narrativeRewriteResult, setNarrativeRewriteResult] = useState<{ title: string; fullScript: string; segmentCount: number } | null>(null)
+
     // Advanced Episode Features
     const [visualHookEnabled, setVisualHookEnabled] = useState(true)
     const [emotionalCurveEnabled, setEmotionalCurveEnabled] = useState(true)
@@ -1451,6 +1460,62 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
         }
 
         return parts.length > 0 ? parts.join('\n') : null
+    }
+
+    // ===== Narrative Transcript Rewrite Handlers =====
+    const fetchYoutubeTranscript = async () => {
+        if (!narrativeYoutubeUrl.trim()) return
+        setNarrativeYoutubeFetching(true)
+        try {
+            const res = await fetch('/api/story/fetch-youtube-transcript', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ url: narrativeYoutubeUrl.trim() })
+            })
+            const data = await res.json()
+            if (!res.ok) throw new Error(data.error || 'Không thể lấy transcript')
+            setNarrativeTranscript(data.transcript)
+            alert(`✅ Đã lấy transcript thành công! (~${data.wordCount} từ, ước đạt ~${data.estimatedMinutes} phút)`)
+        } catch (err: unknown) {
+            const msg = err instanceof Error ? err.message : 'Lỗi không xác định'
+            alert(`❌ ${msg}`)
+        } finally {
+            setNarrativeYoutubeFetching(false)
+        }
+    }
+
+    const handleNarrativeRewrite = async () => {
+        if (!narrativeTranscript.trim()) {
+            alert('Vui lòng paste transcript hoặc lấy từ YouTube trước.')
+            return
+        }
+        setNarrativeRewriting(true)
+        setNarrativeRewriteResult(null)
+        try {
+            const durationSec = parseInt((document.getElementById('narrative-duration-input') as HTMLInputElement)?.value || '600')
+            const res = await fetch('/api/story/rewrite-transcript', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    transcript: narrativeTranscript,
+                    duration: isNaN(durationSec) ? 600 : durationSec,
+                    channelVoice: narrativeChannelVoice.trim() || undefined,
+                    templateId: 'personal-journey-broll',
+                })
+            })
+            const data = await res.json()
+            if (!res.ok) throw new Error(data.error || 'Không thể rewrite')
+            setNarrativeRewriteResult({
+                title: data.script.title,
+                fullScript: data.script.fullScript,
+                segmentCount: data.script.segments?.length || 0,
+            })
+        } catch (err: unknown) {
+            const msg = err instanceof Error ? err.message : 'Lỗi không xác định'
+            alert(`❌ ${msg}`)
+        } finally {
+            setNarrativeRewriting(false)
+        }
     }
 
     const handleGenerateEpisode = async () => {
@@ -3843,8 +3908,134 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                                     Kể Chuyện B-roll (Phong cách Anh Dư Leo)
                                 </h4>
 
-                                {/* Template Selection */}
-                                <div className="mb-3">
+                                {/* Input Mode Tabs */}
+                                <div className="flex gap-1 mb-4 p-1 bg-[var(--bg-secondary)] rounded-lg">
+                                    <button
+                                        onClick={() => setNarrativeInputMode('topic')}
+                                        className={`flex-1 py-2 px-3 rounded-md text-xs font-medium transition ${narrativeInputMode === 'topic'
+                                            ? 'bg-orange-500 text-white'
+                                            : 'text-[var(--text-muted)] hover:text-white'}`}
+                                    >
+                                        ✍️ Tạo từ chủ đề
+                                    </button>
+                                    <button
+                                        onClick={() => setNarrativeInputMode('paste')}
+                                        className={`flex-1 py-2 px-3 rounded-md text-xs font-medium transition ${narrativeInputMode === 'paste'
+                                            ? 'bg-orange-500 text-white'
+                                            : 'text-[var(--text-muted)] hover:text-white'}`}
+                                    >
+                                        📋 Paste transcript
+                                    </button>
+                                    <button
+                                        onClick={() => setNarrativeInputMode('youtube')}
+                                        className={`flex-1 py-2 px-3 rounded-md text-xs font-medium transition ${narrativeInputMode === 'youtube'
+                                            ? 'bg-red-500 text-white'
+                                            : 'text-[var(--text-muted)] hover:text-white'}`}
+                                    >
+                                        🎬 YouTube URL
+                                    </button>
+                                </div>
+
+                                {/* YouTube URL Mode */}
+                                {(narrativeInputMode === 'youtube' || narrativeInputMode === 'paste') && (
+                                    <div className="mb-4 p-3 bg-[var(--bg-secondary)] rounded-lg border border-orange-500/20">
+                                        {narrativeInputMode === 'youtube' && (
+                                            <div className="mb-3">
+                                                <label className="block text-sm font-medium mb-2">🔗 YouTube URL</label>
+                                                <div className="flex gap-2">
+                                                    <input
+                                                        type="text"
+                                                        value={narrativeYoutubeUrl}
+                                                        onChange={(e) => setNarrativeYoutubeUrl(e.target.value)}
+                                                        placeholder="https://youtube.com/watch?v=... hoặc youtu.be/..."
+                                                        className="input-field flex-1 text-sm"
+                                                    />
+                                                    <button
+                                                        onClick={fetchYoutubeTranscript}
+                                                        disabled={narrativeYoutubeFetching || !narrativeYoutubeUrl.trim()}
+                                                        className="px-4 py-2 bg-red-600 hover:bg-red-500 disabled:opacity-50 text-white rounded-lg text-sm font-medium transition whitespace-nowrap"
+                                                    >
+                                                        {narrativeYoutubeFetching ? '⏳ Đang lấy...' : '📥 Lấy transcript'}
+                                                    </button>
+                                                </div>
+                                                <p className="text-xs text-[var(--text-muted)] mt-1">
+                                                    💡 Video cần có phụ đề (captions). Hỗ trợ tiếng Việt & tiếng Anh.
+                                                </p>
+                                            </div>
+                                        )}
+
+                                        <div className="mb-3">
+                                            <label className="block text-sm font-medium mb-2">
+                                                {narrativeInputMode === 'youtube' ? '📄 Transcript (tự động điền sau khi fetch)' : '📄 Paste transcript'}
+                                            </label>
+                                            <textarea
+                                                value={narrativeTranscript}
+                                                onChange={(e) => setNarrativeTranscript(e.target.value)}
+                                                placeholder={narrativeInputMode === 'youtube'
+                                                    ? 'Transcript sẽ tự động điền từ YouTube...'
+                                                    : 'Paste toàn bộ transcript vào đây. AI sẽ tự động lọc intro kênh, CTA, email/zalo và rewrite thành câu chuyện của kênh mình...'
+                                                }
+                                                className="input-field w-full h-40 text-sm font-mono"
+                                            />
+                                            {narrativeTranscript && (
+                                                <p className="text-xs text-green-400 mt-1">
+                                                    ✅ {narrativeTranscript.split(' ').length} từ
+                                                </p>
+                                            )}
+                                        </div>
+
+                                        <div className="mb-3">
+                                            <label className="block text-sm font-medium mb-2">🎤 Giọng văn kênh (tuỳ chọn)</label>
+                                            <textarea
+                                                value={narrativeChannelVoice}
+                                                onChange={(e) => setNarrativeChannelVoice(e.target.value)}
+                                                placeholder="Mô tả phong cách kể chuyện của kênh mình... VD: Giọng ấm, thân mật kiểu Bắc, hay dùng 'Bạn ơi', câu ngắn gọn, hài hước nhẹ nhàng..."
+                                                className="input-field w-full h-16 text-sm"
+                                            />
+                                        </div>
+
+                                        <div className="flex gap-3 items-center">
+                                            <div className="flex-1">
+                                                <label className="block text-xs text-[var(--text-muted)] mb-1">Thời lượng video (giây)</label>
+                                                <input
+                                                    id="narrative-duration-input"
+                                                    type="number"
+                                                    min="60"
+                                                    max="7200"
+                                                    defaultValue={600}
+                                                    className="input-field w-full text-sm"
+                                                    placeholder="VD: 3600 = 60 phút"
+                                                />
+                                            </div>
+                                            <div className="flex-1">
+                                                <button
+                                                    onClick={handleNarrativeRewrite}
+                                                    disabled={narrativeRewriting || !narrativeTranscript.trim()}
+                                                    className="w-full mt-4 py-2.5 px-4 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-400 hover:to-amber-400 disabled:opacity-50 text-white rounded-lg text-sm font-bold transition"
+                                                >
+                                                    {narrativeRewriting ? '✨ Đang rewrite...' : '✨ Rewrite kịch bản'}
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        {narrativeRewriteResult && (
+                                            <div className="mt-3 p-3 bg-green-500/10 border border-green-500/30 rounded-lg">
+                                                <p className="text-sm font-medium text-green-400 mb-1">✅ Rewrite thành công!</p>
+                                                <p className="text-xs text-[var(--text-muted)]">📌 Tiêu đề: <strong className="text-white">{narrativeRewriteResult.title}</strong></p>
+                                                <p className="text-xs text-[var(--text-muted)] mt-0.5">🎬 {narrativeRewriteResult.segmentCount} segments</p>
+                                                <details className="mt-2">
+                                                    <summary className="text-xs text-orange-400 cursor-pointer">Xem toàn bộ kịch bản đã rewrite</summary>
+                                                    <pre className="mt-2 text-xs text-[var(--text-secondary)] whitespace-pre-wrap bg-[var(--bg-primary)] p-2 rounded max-h-60 overflow-y-auto">
+                                                        {narrativeRewriteResult.fullScript}
+                                                    </pre>
+                                                </details>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+
+                                {/* Template Selection (only show for topic mode) */}
+                                {narrativeInputMode === 'topic' && <div className="mb-3">
                                     <label className="block text-sm font-medium mb-2">Chọn template kể chuyện</label>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                                         {narrativeTemplates.map(template => (
@@ -3868,10 +4059,10 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                                             </button>
                                         ))}
                                     </div>
-                                </div>
+                                </div>}
 
                                 {/* Key Points */}
-                                <div className="mb-3">
+                                {narrativeInputMode === 'topic' && <div className="mb-3">
                                     <label className="block text-sm font-medium mb-2">Điểm chính cần đề cập (tuỳ chọn)</label>
                                     <input
                                         type="text"
@@ -3883,10 +4074,10 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                                     <p className="text-xs text-[var(--text-muted)] mt-1">
                                         AI sẽ tự động tích hợp các điểm này vào kịch bản
                                     </p>
-                                </div>
+                                </div>}
 
                                 {/* Host Mode Toggle */}
-                                <div className="mb-3">
+                                {narrativeInputMode === 'topic' && <div className="mb-3">
                                     <label className="block text-sm font-medium mb-2">Chế độ hiển thị</label>
                                     <div className="flex gap-2">
                                         <button
@@ -3910,10 +4101,10 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                                             <div className="text-xs text-[var(--text-muted)] mt-1">Host xuất hiện + kể chuyện</div>
                                         </button>
                                     </div>
-                                </div>
+                                </div>}
 
                                 {/* Host Character Selector */}
-                                {narrativeWithHost && channel && channel.characters.length > 0 && (
+                                {narrativeInputMode === 'topic' && narrativeWithHost && channel && channel.characters.length > 0 && (
                                     <div className="mb-3">
                                         <label className="block text-sm font-medium mb-2">Chọn Host dẫn chuyện</label>
                                         <div className="grid grid-cols-1 gap-2">
@@ -3947,7 +4138,7 @@ CRITICAL INSTRUCTION: You MUST recreate the EXACT clothing item from the referen
                                         </div>
                                     </div>
                                 )}
-                                {narrativeWithHost && channel && channel.characters.length === 0 && (
+                                {narrativeInputMode === 'topic' && narrativeWithHost && channel && channel.characters.length === 0 && (
                                     <div className="mb-3 p-3 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
                                         <p className="text-xs text-yellow-400">⚠️ Channel chưa có nhân vật nào. AI sẽ tự tạo host.</p>
                                         <p className="text-xs text-[var(--text-muted)] mt-1">Tạo nhân vật trong phần Nhân Vật để chọn host cụ thể.</p>
