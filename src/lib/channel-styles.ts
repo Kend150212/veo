@@ -42,6 +42,18 @@ export const CHANNEL_STYLES: ChannelStyle[] = [
         category: 'illustration'
     },
     {
+        id: 'sidescroll-doodle',
+        name: 'Side-Scroll Doodle Adventure',
+        nameVi: 'Phiêu Lưu Doodle Cuộn Ngang',
+        description: 'Character walks left-to-right through a scrolling doodle world, encountering story obstacles like a 2000s Flash game',
+        descriptionVi: 'Nhân vật đi từ trái sang phải xuyên suốt thế giới doodle cuộn ngang, gặp các vấn đề câu chuyện như game Flash thời 2000s',
+        promptKeywords: 'side-scrolling 2D platformer doodle animation style, hand-drawn black ink on white paper background, simple doodle stick figure character running/walking from LEFT TO RIGHT continuously, scrolling horizontal world with story obstacles appearing along the path (mountains barriers dragons question mark blocks treasure chests challenges), character physically interacts with obstacles as narrative unfolds, Flash game aesthetic from early 2000s (Newgrounds style), ground is simple doodle line, directional arrows above showing forward momentum, sketchy energetic hand-drawn doodle lines, continuous journey storytelling visual style',
+        hasCharacters: true,
+        suggestedCharCount: 1,
+        previewImage: '/images/styles/style_sidescroll_doodle.png',
+        category: 'illustration'
+    },
+    {
         id: 'iridescent-clay-burlap',
         name: 'Iridescent Clay',
         nameVi: 'Đất Sét Ngũ Sắc',
