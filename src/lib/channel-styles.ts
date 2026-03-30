@@ -42,6 +42,18 @@ export const CHANNEL_STYLES: ChannelStyle[] = [
         category: 'illustration'
     },
     {
+        id: 'stick-figure-explainer',
+        name: 'Stick Figure Explainer',
+        nameVi: 'Nhân Vật Que Kể Chuyện',
+        description: 'Bold black stick figure narrator present in every scene, acting out the story with expressions, surrounded by colorful flat-design icons',
+        descriptionVi: 'Nhân vật que đen đậm xuất hiện MỌI cảnh, diễn hoạt theo câu chuyện với biểu cảm đa dạng, xung quanh là flat icons màu sắc',
+        promptKeywords: 'stick figure explainer video style, clean white background, persistent bold black stick figure character with thick circle head and simple body appearing in every scene, character has expressive face (changing emotions: sad angry confused happy surprised), character physically acts out the narrative (lifting weights, running, standing confused, pointing), colorful flat-design vector icons surrounding the character as supporting elements (piggy bank wallet calendar coins arrows progress bars), bold clean black stick figure with sharp outlines, flat colored icons in vibrant solid colors, whiteboard explainer animation style, Vietnamese YouTube finance motivation storytelling',
+        hasCharacters: true,
+        suggestedCharCount: 1,
+        previewImage: '/images/styles/style_stick_figure_explainer.png',
+        category: 'illustration'
+    },
+    {
         id: 'neon-cyber-dust',
         name: 'Neon Glow Doodle',
         nameVi: 'Doodle Neon Phát Sáng',
