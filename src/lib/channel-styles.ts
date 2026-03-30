@@ -42,6 +42,18 @@ export const CHANNEL_STYLES: ChannelStyle[] = [
         category: 'illustration'
     },
     {
+        id: 'neon-cyber-dust',
+        name: 'Neon Cyber Dust',
+        nameVi: 'Bụi Neon Vũ Trụ',
+        description: 'Characters and objects made of millions of glowing neon particles on pure black void background',
+        descriptionVi: 'Nhân vật và vật thể được tạo từ hàng triệu hạt bụi phát sáng neon trên nền đen tuyệt đối',
+        promptKeywords: 'Neon Cyber Dust animation style, pure black vantablack background (absolutely dark void with no texture), characters and objects constructed from millions of micro-scale self-illuminated glowing particles (neon dust), character made of Neon Cobalt Violet particles, objects made of complementary neon color particles (Blazing Neon Magenta, Vivid Neon Gold, Teal), particles scatter and explode outward like slow-motion cosmic dust during movement, sharp intense glow against pure black, high-contrast complementary color pairs at extreme saturation, no solid lines everything is glowing particle clusters, hyper-visible dynamic energy, minimalist silhouettes made of neon dust',
+        hasCharacters: true,
+        suggestedCharCount: 1,
+        previewImage: '/images/styles/style_neon_cyber_dust.png',
+        category: 'artistic'
+    },
+    {
         id: 'colorful-3d-doodle',
         name: 'Colorful 3D Doodle (With Narrator)',
         nameVi: 'Doodle 3D Màu Sắc (Có Nhân Vật)',
