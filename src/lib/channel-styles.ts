@@ -49,6 +49,8 @@ export const CHANNEL_STYLES: ChannelStyle[] = [
         descriptionVi: 'Nhân vật hành trình từ trái sang phải qua thế giới doodle với body language, hiệu ứng truyện tranh, kỹ thuật quay phim đa dạng và màu cảm xúc',
         promptKeywords: `side-scrolling 2D platformer doodle animation, hand-drawn black ink on white paper background, simple doodle stick figure runs LEFT TO RIGHT continuously across the frame,
 
+⚠️ VISUAL CONTINUITY (CRITICAL): this is ONE SINGLE CONTINUOUS WORLD - the same ground line, same sky, same art style, same character design must persist across every scene without any breaks or resets. NO hard cuts to new environments. The world scrolls horizontally like an unbroken paper roll - when a new scene begins it must look like a direct extension of the previous frame. The character always remains the same consistent stick figure throughout. Scene transitions use WHIP PAN (fast horizontal swipe) not cuts, giving illusion of smooth continuous scrolling. Background elements (trees hills clouds) change gradually not abruptly. Same doodle line weight and ink style maintained 100% of the time.
+
 CHARACTER BODY LANGUAGE: character RUNS fast when motivated, SHUFFLES slowly when struggling, STUMBLES and falls when failing, LEAPS triumphantly when overcoming obstacles - body posture always reflects emotional state,
 
 COMIC REACTION EFFECTS on zoom: doodle star bursts, exclamation marks (!!!), question marks (???), sweat drops, speed lines, impact stars drawn around character during key moments - manga/webtoon expressiveness,
@@ -62,7 +64,7 @@ SPEECH BUBBLES: hand-drawn doodle speech/thought bubbles appear during zoom-in m
 CINEMATIC CAMERA TOOLKIT:
 - ZOOM IN/OUT: slow push-in when approaching obstacles, pull back after resolution
 - DUTCH ANGLE: camera tilts 15-30 degrees during tension and confrontation
-- WHIP PAN: fast horizontal swipe transition between scenes
+- WHIP PAN: fast horizontal swipe — PRIMARY transition method to maintain scroll continuity
 - LOW ANGLE SHOT: camera looks UP at obstacles making them feel massive and threatening
 - HIGH ANGLE / BIRD'S EYE: camera pulls far above to show full journey progress
 - SLOW MOTION: key dramatic moments (falling, collision, breakthrough) play in slow motion
