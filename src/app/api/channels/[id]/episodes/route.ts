@@ -2972,7 +2972,12 @@ ${voiceOverMode === 'cinematic_film' ? `
 }
 
 PROMPTTEXT FORMAT (EXACT):
-[VOICEOVER in ${dialogueLangLabel}: {voiceover text here}]. [${characterBible ? 'Character name: Full appearance description with clothing, expression, gesture' : 'Subject description'}]. ENVIRONMENT: {detailed location, set pieces, props}. CAMERA: {shot type}, {lens: 35mm/50mm/85mm}, {angle: eye-level/low/high}. LIGHTING: {type: soft/dramatic/natural}, {direction}, {color temperature}. STYLE: ${styleKeywords}. MOOD: {emotional tone}. AUDIO: {background sounds, music type}. LANGUAGE: Speak ${dialogueLangLabel} only.
+[VOICEOVER in ${dialogueLangLabel}: {voiceover text here}]. [${characterBible ? 'Character name: Full appearance description with clothing, expression, gesture' : 'Subject description'}]. ENVIRONMENT: {detailed location in ENGLISH}. CAMERA: {shot type}, {lens: 35mm/50mm/85mm}, {angle: eye-level/low/high}. LIGHTING: {type: soft/dramatic/natural}, {direction}, {color temperature}. STYLE: ${styleKeywords}. MOOD: {emotional tone}. AUDIO: {background sounds, music type}. LANGUAGE: Speak ${dialogueLangLabel} only.
+
+⚠️ CRITICAL LANGUAGE RULE FOR PROMPTTEXT:
+- ALL visual descriptions (ENVIRONMENT, CAMERA, LIGHTING, STYLE, MOOD, AUDIO sections) MUST be written in ENGLISH.
+- ONLY the [VOICEOVER in ${dialogueLangLabel}: ...] part should be in ${dialogueLangLabel}.
+- Vietnamese characters in ENVIRONMENT/CAMERA/etc. will BREAK the video generation. Write them in English ONLY.
 
 ${characterTemplates ? `\n═══════════════════════════════════════
 📋 CHARACTER TEMPLATES - COPY EXACTLY:
@@ -3386,19 +3391,51 @@ Return ONLY valid JSON.`
                     }),
                     scenes: {
                         create: allScenes.map((scene, index) => {
-                            // Combine voiceover/dialogue into promptText for complete scene info
                             const voiceContent = scene.voiceover || scene.dialogue || ''
-                            const visualPrompt = scene.promptText || 'Scene visual description'
-                            // Add language specification for voiceover
+                            let visualPrompt = scene.promptText || 'Scene visual description'
                             const langTag = dialogueLang === 'en' ? 'English' : 'Vietnamese'
-                            const fullPrompt = voiceContent
-                                ? `[VOICEOVER in ${langTag}: ${voiceContent}]. ${visualPrompt}. LANGUAGE: Speak ${langTag} only.`
-                                : visualPrompt
+
+                            let finalPrompt: string
+
+                            if (separateVoice) {
+                                // SEPARATE VOICE MODE: strip ALL voice/language tags from promptText
+                                // so it becomes pure visual-only (for Veo3 image generation)
+                                finalPrompt = visualPrompt
+                                    .replace(/\[VOICEOVER[^\]]*\]/gi, '')         // remove [VOICEOVER ...]
+                                    .replace(/\[DIALOGUE[^\]]*\]/gi, '')          // remove [DIALOGUE ...]
+                                    .replace(/VOICE:\s*[^.]+\./gi, '')            // remove VOICE: Nam, warm...
+                                    .replace(/LANGUAGE:\s*Speak[^.]+\.?/gi, '')  // remove LANGUAGE: Speak...
+                                    .replace(/\s{2,}/g, ' ')                      // clean up extra spaces
+                                    .trim()
+                            } else {
+                                // NORMAL MODE: prepend [VOICEOVER] only if AI hasn't already added it
+                                const alreadyHasVoiceover = /\[VOICEOVER/i.test(visualPrompt)
+                                if (voiceContent && !alreadyHasVoiceover) {
+                                    // AI forgot to put voiceover in promptText — prepend it
+                                    finalPrompt = `[VOICEOVER in ${langTag}: ${voiceContent}]. ${visualPrompt}`
+                                    // Add LANGUAGE tag only if not already present
+                                    if (!/LANGUAGE:/i.test(finalPrompt)) {
+                                        finalPrompt += `. LANGUAGE: Speak ${langTag} only.`
+                                    }
+                                } else {
+                                    // promptText already complete — use as-is, just remove duplicate VOICEOVER if any
+                                    // Fix: remove duplicated [VOICEOVER ...][VOICEOVER ...] pattern
+                                    finalPrompt = visualPrompt.replace(
+                                        /(\[VOICEOVER[^\]]*\])\.?\s*\1/gi,
+                                        '$1'
+                                    )
+                                    // Also remove duplicate LANGUAGE tag
+                                    finalPrompt = finalPrompt.replace(
+                                        /(LANGUAGE:\s*Speak[^.]+\.?)\s*\1/gi,
+                                        '$1'
+                                    )
+                                }
+                            }
 
                             return {
                                 order: scene.order || index + 1,
                                 title: scene.title || `Scene ${index + 1}`,
-                                promptText: fullPrompt,
+                                promptText: finalPrompt,
                                 duration: scene.duration || 8,
                                 hookType: scene.hookType || null
                             }
