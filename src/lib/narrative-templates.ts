@@ -29,6 +29,7 @@ export interface VoiceStyle {
     characteristics: string[] // Đặc điểm giọng văn
     avoidPatterns: string[]   // Tránh những gì
     examplePhrases: string[]  // Câu mẫu
+    audienceAddressPool?: string[] // Pool đa dạng cách gọi khán giả (tránh lặp)
 }
 
 // ===== PHÂN TÍCH SÂU TỪ VIDEO ANH DƯ LEO =====
@@ -71,25 +72,66 @@ export const NARRATIVE_TEMPLATES: NarrativeTemplate[] = [
                 'Dùng số liệu cụ thể để tăng độ tin cậy',
                 'Đặt câu hỏi tu từ để tương tác với người xem',
                 'Thỉnh thoảng dùng tiếng lóng đời thường',
-                'Xen kẽ câu ngắn và câu dài tạo nhịp điệu'
+                'Xen kẽ câu ngắn và câu dài tạo nhịp điệu',
+                'MỖI TẬP phải dùng cách mở đầu câu hoàn toàn khác nhau — KHÔNG lặp format'
             ],
             avoidPatterns: [
                 'Ngôn ngữ formal, cứng nhắc',
                 'Câu quá dài, phức tạp',
                 'Lý thuyết suông không có ví dụ',
                 'Giọng điệu rao giảng, lên lớp',
-                'Hứa hẹn viển vông không thực tế'
+                'Hứa hẹn viển vông không thực tế',
+                // ❌ CÁC MẪU CÂU BỊ CẤM DÙNG LẠI NHIỀU LẦN:
+                '"Mấy đứa nghĩ..." — ĐÃ BỊ DÙNG QUÁ NHIỀU, TUYỆT ĐỐI KHÔNG ĐƯỢC DÙNG LẠI',
+                '"Mấy bạn nghĩ..." — ĐÃ BỊ DÙNG QUÁ NHIỀU, TUYỆT ĐỐI KHÔNG ĐƯỢC DÙNG LẠI',
+                '"Mấy em nghĩ..." — ĐÃ BỊ DÙNG QUÁ NHIỀU, TUYỆT ĐỐI KHÔNG ĐƯỢC DÙNG LẠI',
+                '"Nhiều đứa nghĩ..." — ĐÃ BỊ DÙNG QUÁ NHIỀU, TUYỆT ĐỐI KHÔNG ĐƯỢC DÙNG LẠI',
+                '"Nhiều người nghĩ..." — ĐÃ BỊ DÙNG QUÁ NHIỀU, TUYỆT ĐỐI KHÔNG ĐƯỢC DÙNG LẠI',
+                'Bắt đầu mỗi câu thoại với khán giả theo cùng một format xưng hô'
+            ],
+            // Pool đa dạng để AI ĐẶT CÂU HỎI / GỌI KHÁN GIẢ — mỗi tập CHỌN NGẪU NHIÊN, KHÔNG ĐƯỢC LẶP LẠI:
+            audienceAddressPool: [
+                // Dạng câu hỏi bất ngờ
+                'Bạn có tin không?',
+                'Bạn đã bao giờ tự hỏi...',
+                'Bạn có bao giờ nghĩ rằng...',
+                'Bạn có biết không?',
+                'Thử đoán xem...',
+                'Nghe có vẻ vô lý, nhưng...',
+                // Dạng tuyên bố gây sốc
+                'Sự thật là...',
+                'Điều ít ai biết là...',
+                'Hầu hết mọi người không nhận ra rằng...',
+                'Cái mà ít ai kể cho bạn nghe là...',
+                'Con số này sẽ làm bạn ngạc nhiên...',
+                // Dạng kể chuyện tự nhiên
+                'Câu chuyện bắt đầu từ...',
+                'Hãy tưởng tượng...',
+                'Nếu tôi nói với bạn rằng...',
+                'Có một điều thú vị là...',
+                'Thật ra thì...',
+                // Dạng đặt bối cảnh
+                'Hồi đó, không ai ngờ rằng...',
+                'Trước khi mọi thứ thay đổi...',
+                'Nhìn lại thì mới thấy...',
+                'Chỉ cần nhìn vào con số này thôi...',
+                // Dạng kết nối cảm xúc
+                'Nói thật nha...',
+                'Điều khiến tôi tò mò nhất là...',
+                'Cái hay là ở chỗ này...',
+                'Nghe mà không tin được luôn...'
             ],
             examplePhrases: [
-                'Nghe xong cái này là bảo đảm nhiều người sẽ...',
-                'Nhưng mà khoan, vấn đề là ở chỗ này...',
-                'Mấy em biết không? Thời điểm đó...',
-                'Nói thật nha, cái này...',
-                'Đó là chuyện đương nhiên rồi, nhưng...',
+                'Bạn có tin không? Từ xưởng nhỏ bé năm đó giờ đã thành đế chế tỷ đô.',
+                'Nghe có vẻ vô lý, nhưng đây là sự thật: họ từng bán cả mì ăn liền.',
+                'Hầu hết mọi người không nhận ra rằng thất bại chính là bước đệm quan trọng nhất.',
+                'Nói thật nha, cái này ít ai kể cho bạn nghe đâu...',
                 'Trời đất ơi, lúc đó tôi mới nhận ra...',
-                'Đơn giản vô cùng mấy em ơi.',
-                'Chuyện đó nó là như vậy thôi.',
-                'Có hết rồi, phần còn lại là chuyện của mấy em.'
+                'Đơn giản vô cùng, nhưng lúc đó không ai nghĩ ra.',
+                'Chuyện đó nó là như vậy thôi — nhưng bài học thì sâu vô cùng.',
+                'Nhìn lại thì mới thấy mọi quyết định đó đều có lý do của nó.',
+                'Điều ít ai biết là họ đã gần sụp đổ hoàn toàn trước khi thành công.',
+                'Có hết rồi, phần còn lại là chuyện của bạn mà thôi.'
             ]
         },
 
@@ -210,25 +252,47 @@ BẠN LÀ MỘT BIÊN KỊCH VIDEO CHUYÊN NGHIỆP. Hãy viết kịch bản th
 
 GIỌNG ĐIỆU:
 - Thân mật, như đang tâm sự với bạn trẻ
-- Xưng "anh/em" hoặc "tôi/mấy em" 
+- Có thể xưng "anh/em", "tôi/bạn", hoặc "mình" — LINH HOẠT theo cảm giác tự nhiên của từng đoạn
 - Tự nhiên, có humor nhẹ, không gượng ép
 - Thẳng thắn, nói thật, không vòng vo
+
+❌ TUYỆT ĐỐI KHÔNG ĐƯỢC DÙNG CÁC MẪU CÂU SAU (đã bị dùng lặp lại quá nhiều):
+- "Mấy đứa nghĩ..." / "Mấy bạn nghĩ..." / "Mấy em nghĩ..."
+- "Nhiều đứa nghĩ..." / "Nhiều người nghĩ..."
+- Bất kỳ câu nào bắt đầu bằng "Mấy [đại từ] nghĩ" đều BỊ CẤM
+- Dùng cùng một format gọi khán giả nhiều hơn 1 lần trong toàn bộ kịch bản
+
+✅ SÁNG TẠO NGẪU NHIÊN — mỗi khi cần gọi khán giả, hãy CHỌN MỘT CÁCH KHÁC NHAU:
+- Dạng câu hỏi bất ngờ: "Bạn có tin không?", "Thử đoán xem...", "Nghe có vẻ vô lý nhưng..."
+- Dạng tuyên bố: "Sự thật là...", "Điều ít ai biết là...", "Con số này sẽ làm bạn ngạc nhiên..."
+- Dạng kể chuyện: "Hãy tưởng tượng...", "Câu chuyện bắt đầu từ...", "Nếu tôi nói với bạn rằng..."
+- Dạng cảm thán: "Thật ra thì...", "Nói thật nha...", "Điều khiến tôi tò mò nhất là..."
+- Dạng dẫn dắt: "Hồi đó, không ai ngờ rằng...", "Nhìn lại thì mới thấy...", "Trước khi mọi thứ thay đổi..."
 
 CÁCH VIẾT:
 1. Dùng SỐ LIỆU CỤ THỂ (năm, số tiền, thời gian, phần trăm)
 2. Xen kẽ câu ngắn và câu dài tạo nhịp điệu
-3. Đặt câu hỏi tu từ để tương tác: "Mấy em biết không?", "Vậy làm sao?"
+3. Mỗi câu hỏi tu từ phải dùng cách diễn đạt KHÁC NHAU — không lặp format
 4. Dùng từ nối tự nhiên: "Nhưng mà", "Bởi vì", "Thành ra", "Cho nên"
-5. Kết thúc ý bằng: "vậy đó", "thôi", "à", "nha"
-6. Thỉnh thoảng dùng tiếng lóng: "nhảm nhí", "xàm long", "sờ lờ"
+5. Kết thúc ý bằng: "vậy đó", "thôi", "à", "nha" — xen kẽ, không lặp
+6. Thỉnh thoảng dùng tiếng lóng: "nhảm nhí", "chắc kèo", "không phải dạng vừa"
 
-MẪU CÂU HAY:
-- "Nghe xong cái này là bảo đảm..."
-- "Nhưng mà khoan, vấn đề là ở chỗ này..."
+MẪU CÂU ĐA DẠNG (không được dùng chỉ một vài câu này mà PHẢI SÁNG TẠO THÊM):
+- "Bạn có tin không? Từ [điểm A] đến [điểm B]..."
+- "Nghe có vẻ vô lý, nhưng đây là sự thật..."
+- "Điều ít ai kể cho bạn nghe là..."
+- "Hầu hết mọi người không nhận ra rằng..."
 - "Nói thật nha, cái này..."
-- "Trời đất ơi, lúc đó..."
-- "Đơn giản vô cùng thôi."
-- "Có hết rồi, phần còn lại là chuyện của mấy em."
+- "Nhìn lại thì mới thấy..."
+- "Trời đất ơi, lúc đó tôi mới nhận ra..."
+- "Đơn giản vô cùng — nhưng ít ai làm được."
+- "Một điều khiến tôi tò mò là..."
+- "Con số này sẽ làm bạn bật ngửa..."
+
+CHIỀU SÂU SÁNG TẠO:
+- Mỗi kịch bản phải có ÍT NHẤT 5 cách khác nhau để dẫn dắt câu chuyện
+- Thỉnh thoảng để câu chuyện TỰ KỂ — không cần lúc nào cũng gọi khán giả
+- Xen kẽ giữa: kể trực tiếp, đặt câu hỏi, tuyên bố bất ngờ, mô tả cảnh, trích dẫn
 
 TRÁNH:
 - Ngôn ngữ formal, cứng nhắc
@@ -236,6 +300,7 @@ TRÁNH:
 - Lý thuyết suông không ví dụ
 - Giọng rao giảng, lên lớp
 - Hứa hẹn viển vông
+- Lặp lại cùng một format gọi khán giả
 
 LƯU Ý B-ROLL:
 - Kịch bản này dùng cho 100% B-roll với voiceover

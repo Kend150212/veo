@@ -44,9 +44,55 @@ export async function generateNarrativeScript(
 
     const promptInstructions = getTemplatePromptInstructions(input.templateId)
 
+    // Generate a unique seed for each episode to force variation
+    const episodeSeed = `EP-${Date.now()}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`
+
+    const bannedOpeners = [
+        '"Mấy đứa nghĩ..."',
+        '"Mấy bạn nghĩ..."',
+        '"Mấy em nghĩ..."',
+        '"Nhiều đứa nghĩ..."',
+        '"Nhiều người nghĩ..."',
+        'bất kỳ câu bắt đầu bằng "Mấy [đại từ] nghĩ"'
+    ]
+
+    const freshOpenerPool = [
+        'Bạn có tin không?',
+        'Thử đoán xem...',
+        'Nghe có vẻ vô lý, nhưng...',
+        'Sự thật là...',
+        'Điều ít ai biết là...',
+        'Hầu hết mọi người không nhận ra rằng...',
+        'Con số này sẽ làm bạn ngạc nhiên...',
+        'Câu chuyện bắt đầu từ...',
+        'Hãy tưởng tượng...',
+        'Nếu tôi nói với bạn rằng...',
+        'Có một điều thú vị là...',
+        'Thật ra thì...',
+        'Hồi đó, không ai ngờ rằng...',
+        'Trước khi mọi thứ thay đổi...',
+        'Nhìn lại thì mới thấy...',
+        'Điều khiến tôi tò mò nhất là...',
+        'Cái hay là ở chỗ này...',
+        'Nghe mà không tin được luôn...',
+        'Bạn có bao giờ nghĩ rằng...',
+        'Nói thật nha...'
+    ]
+    const episodeHints = freshOpenerPool
+        .sort(() => Math.random() - 0.5)
+        .slice(0, 4)
+
     const prompt = `Bạn là một biên kịch video chuyên nghiệp. Hãy viết kịch bản voiceover cho video B-roll.
 
 ${promptInstructions}
+
+🎲 MÃ TẬP NÀY: ${episodeSeed} — Mỗi tập PHẢI có giọng kể HOÀN TOÀN KHÁC tập trước.
+
+❌ TUYỆT ĐỐI CẤM dùng các mẫu câu sau trong tập này:
+${bannedOpeners.map(p => `- ${p}`).join('\n')}
+
+✅ GỢI Ý CÁCH MỞ ĐẦU CHO TẬP NÀY (biến tấu sáng tạo, KHÔNG sao chép nguyên văn):
+${episodeHints.map((h, i) => `${i + 1}. "${h}"`).join('\n')}
 
 THÔNG TIN VIDEO:
 - Chủ đề: ${input.topic}
@@ -58,8 +104,9 @@ ${input.personalStory ? `- Câu chuyện cá nhân để tham khảo: ${input.pe
 YÊU CẦU:
 1. Viết lời thoại TỰ NHIÊN, như đang NÓI CHUYỆN với người xem
 2. Mỗi segment phải có lời thoại phù hợp với thời lượng (khoảng 2-3 từ/giây)
-3. Dùng GIỌNG ĐIỆU và MẪU CÂU như hướng dẫn ở trên
+3. Dùng GIỌNG ĐIỆU và MẪU CÂU như hướng dẫn ở trên — NHƯNG không lặp format gọi khán giả
 4. Thêm gợi ý B-roll phù hợp với nội dung từng đoạn
+5. Xen kẽ nhiều kiểu dẫn dắt: kể trực tiếp, đặt câu hỏi khác nhau, tuyên bố bất ngờ, trích dẫn
 
 CẤU TRÚC OUTPUT (JSON):
 {
