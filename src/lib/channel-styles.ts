@@ -444,6 +444,18 @@ Newgrounds/Flash game aesthetic 2000s, sketchy energetic doodle lines, continuou
         category: 'illustration'
     },
     {
+        id: 'social-flat-blank-man',
+        name: 'Social Awareness Flat (Blank Man)',
+        nameVi: 'Hoạt Hình Xã Hội Phẳng (Blank Man)',
+        description: 'Bright Korean-style flat vector illustration with white blank-man figures, teal seats, bold color accessories, speech bubbles and sound waves — perfect for social awareness content',
+        descriptionVi: 'Minh họa phẳng phong cách Hàn Quốc với nhân vật trắng vô mặt, ghế teal, phụ kiện màu đậm, bong bóng thoại và sóng âm — lý tưởng cho nội dung nhận thức xã hội',
+        promptKeywords: `Bright and clean flat vector illustration style, similar to modern tech company explainers but with a social awareness tone. Crisp black linework. The color palette is vibrant but cohesive: environment elements (seats, walls, props) are teal or pastel yellow, the figures are clean white with simple round heads (faceless or minimal dot eyes), wearing accessories in bold colors like yellow, burnt orange, and cobalt blue. Speech bubbles and sound wave visualizations float between figures. The scene is evenly lit with cheerful colors, but blank facial expressions and neutral/stoic pose structure create a powerful contrast. High-definition flat vector graphic, perfectly clean lines, no gradients, no texture. Style similar to Korean public transit safety animation.`,
+        hasCharacters: true,
+        suggestedCharCount: 3,
+        previewImage: '/images/styles/style_social_flat_blank_man.png',
+        category: 'illustration'
+    },
+    {
         id: 'line-art',
         name: 'Line Art',
         nameVi: 'Nghệ Thuật Nét',
