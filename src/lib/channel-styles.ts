@@ -440,7 +440,8 @@ Newgrounds/Flash game aesthetic 2000s, sketchy energetic doodle lines, continuou
 5. Execution: perfectly clean lines, no gradients, no texture, high-definition vector graphic.`,
         hasCharacters: true,
         suggestedCharCount: 1,
-        category: 'minimalist'
+        previewImage: '/images/styles/style_modern_tech_serious_flat.png',
+        category: 'illustration'
     },
     {
         id: 'line-art',
