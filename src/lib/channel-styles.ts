@@ -427,6 +427,22 @@ Newgrounds/Flash game aesthetic 2000s, sketchy energetic doodle lines, continuou
         category: 'minimalist'
     },
     {
+        id: 'modern-tech-serious-flat',
+        name: 'Modern Tech Serious Flat',
+        nameVi: 'Đồ Họa Phẳng Lạnh Lùng',
+        description: 'Clean flat vector illustration with precise dark outlines, cool anchor colors, bold accent color blocks, and serious faceless \'blank man\' figures',
+        descriptionVi: 'Minh họa vector phẳng sạch sẽ với nét viền tối chính xác, màu neo lạnh lùng, khối màu accent đậm và nhân vật "người trắng" vô biểu cảm nghiêm túc',
+        promptKeywords: `A clean, flat vector illustration style, characterized by:
+1. Linework: Crisp, precise, dark outlines (ideally black or charcoal) on all elements.
+2. Color Palette: A cohesive, multi-tone palette featuring a cool, desaturated background or anchor color (like deep teal or slate gray) and vibrant, bold color blocks for accents (such as cobalt blue, bright yellow, and burnt orange) on key elements.
+3. Figures: Faceless or simple-faced 'blank man' figures, predominantly clean white, but wearing key accessories or clothing in bold accent colors.
+4. Tone & Mood: Bright, clean, even studio lighting that feels modern and corporate, contrasted sharply with a serious, expressionless, or stoic posture of the figures.
+5. Execution: perfectly clean lines, no gradients, no texture, high-definition vector graphic.`,
+        hasCharacters: true,
+        suggestedCharCount: 1,
+        category: 'minimalist'
+    },
+    {
         id: 'line-art',
         name: 'Line Art',
         nameVi: 'Nghệ Thuật Nét',
